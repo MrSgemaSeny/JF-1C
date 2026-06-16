@@ -24,7 +24,7 @@ const reviews = [
 
 export function Reviews() {
   return (
-    <Section className="bg-white text-brand-green border-t border-brand-green/10 overflow-hidden" id="reviews">
+    <Section className="bg-brand-beige text-brand-green border-t border-brand-green/10 overflow-hidden" id="reviews">
       <div className="mb-16">
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}

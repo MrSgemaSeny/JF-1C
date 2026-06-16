@@ -17,8 +17,8 @@ export function HomePage() {
         <About />
         <Advantages />
         <Trust />
-        <SolutionPicker />
         <Services />
+        <SolutionPicker />
         <Reviews />
       </main>
       <Footer />

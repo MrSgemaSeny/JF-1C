@@ -10,22 +10,22 @@ const questions = [
   {
     id: 'turnover',
     q: 'Примерный годовой оборот (диапазон)?',
-    options: ['До 10 млн', '10–100 млн', '100+ млн'],
+    options: ['1-3 млн', '4-10 млн', '10+ млн'],
   },
   {
     id: 'employees',
     q: 'Кол-во сотрудников?',
-    options: ['1–5', '6–50', '50+'],
+    options: ['1–10', '11–50', '50+'],
   },
   {
     id: 'needs',
-    q: 'Что важнее всего прямо сейчас?',
+    q: 'Что для вас важнее прямо сейчас?',
     options: ['Бухгалтерия', 'Налоги', 'Кадры', 'Юридическая защита'],
   },
   {
     id: 'timeline',
     q: 'Срок внедрения решения?',
-    options: ['Срочно (1 мес)', '1–3 мес', 'Более 3 мес'],
+    options: ['В течение дня', '1-3 дня', 'Более 3 дней'],
   },
 ];
 
@@ -97,16 +97,16 @@ export function SolutionPicker() {
               <form onSubmit={submitForm} className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm text-brand-green/70 mb-2">Имя</label>
-                  <input value={contact.name} onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))} className="w-full p-3 rounded-lg" required />
+                  <input value={contact.name} onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))} className="w-full p-3 rounded-lg bg-white border border-brand-green/20" required />
                 </div>
                 <div>
                   <label className="block text-sm text-brand-green/70 mb-2">Телефон или e-mail</label>
-                  <input value={contact.phone} onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))} className="w-full p-3 rounded-lg" required />
+                  <input value={contact.phone} onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))} className="w-full p-3 rounded-lg bg-white border border-brand-green/20" required />
                 </div>
 
                 <div className="md:col-span-2">
                   <label className="block text-sm text-brand-green/70 mb-2">Комментарий</label>
-                  <textarea className="w-full p-3 rounded-lg" rows={4} />
+                  <textarea className="w-full p-3 rounded-lg bg-white border border-brand-green/20" rows={4} />
                 </div>
 
                 <div className="md:col-span-2 flex items-center gap-4">
