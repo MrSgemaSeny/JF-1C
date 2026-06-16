@@ -180,7 +180,7 @@ export function ServicesPage() {
       <main>
         <Section className="bg-brand-beige pt-28 pb-12">
           <Container>
-            <div className="mt-16">
+            <div className="mt-2">
               <h3 className="text-3xl font-black text-brand-green mb-6">Как мы работаем</h3>
               <div className="grid gap-6 md:grid-cols-3">
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -205,10 +205,15 @@ export function ServicesPage() {
                 </div>
                 <div className="bg-white rounded-2xl p-6 shadow-sm">
                   <h4 className="font-black text-lg mb-2">Консультация после результата</h4>
-                  <p className="text-brand-green/70">Обсуждаем итоговую отчётность и рекомендации без дополнительной платы.</p>
+                  <p className="text-brand-green/70">Обсуждаем итоговую отчётность и рекомендации без дополнительной платой.</p>
                 </div>
               </div>
             </div>
+          </Container>
+        </Section>
+
+        <Section className="bg-brand-green pt-28 pb-12">
+          <Container>
             <div className="mt-12 grid gap-8 lg:grid-cols-2">
               {services.map((s, i) => (
                 <motion.div
@@ -268,24 +273,36 @@ export function ServicesPage() {
                 </motion.div>
               ))}
             </div>
+          </Container>
+        </Section>
 
-
-            <div className="mt-16">
-              <h3 className="text-3xl font-black text-brand-green mb-6">Кейсы</h3>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                  <h4 className="font-black mb-2">Оптимизация налогообложения для ТОО</h4>
-                  <p className="text-brand-green/70">Клиент: строительная компания — снизили налоговую нагрузку на 20%.</p>
+        <Section className="bg-brand-beige pt-28 pb-12">
+          <Container>
+            <div className="rounded-[32px] bg-brand-beige p-8 border border-brand-green/10 shadow-sm">
+              <h3 className="text-3xl font-black text-brand-green mb-4">Зачем нужны бухгалтерские услуги и подписка?</h3>
+              <p className="text-lg text-brand-green/80 leading-relaxed mb-6">Профессиональное ведение бухгалтерии освобождает вас от рутинных задач, снижает риски штрафов и позволяет сосредоточиться на росте бизнеса. Подписка делает процесс регулярным, понятным и прогнозируемым — вы получаете отчёты и поддержку точно по графику.</p>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="rounded-3xl bg-white p-5 border border-brand-green/10">
+                  <h4 className="text-xl font-bold text-brand-green mb-2">Контроль без стресса</h4>
+                  <p className="text-brand-green/70 text-sm">Все цифры в одном месте, без рисков потерять документы или сделать ошибку.</p>
                 </div>
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                  <h4 className="font-black mb-2">Восстановление учета для ИП</h4>
-                  <p className="text-brand-green/70">Восстановили учет за 2 года и пересдали отчетность без штрафов.</p>
+                <div className="rounded-3xl bg-white p-5 border border-brand-green/10">
+                  <h4 className="text-xl font-bold text-brand-green mb-2">Экономия времени</h4>
+                  <p className="text-brand-green/70 text-sm">Мы ведём отчётность, вы принимаете решения на основе готовых данных.</p>
+                </div>
+                <div className="rounded-3xl bg-white p-5 border border-brand-green/10">
+                  <h4 className="text-xl font-bold text-brand-green mb-2">Гарантия регулярности</h4>
+                  <p className="text-brand-green/70 text-sm">Подписка гарантирует, что отчёты, декларации и консультации идут по плану.</p>
                 </div>
               </div>
             </div>
+          </Container>
+        </Section>
 
+        <Section className="bg-brand-green pt-28 pb-12">
+          <Container>
             <div className="mt-16">
-              <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }} className="bg-brand-green rounded-2xl p-8 text-brand-beige">
+              <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }} className="bg-brand-beige rounded-2xl p-8 text-brand-green">
                 <div className="grid md:grid-cols-3 gap-6">
                   <motion.div
                     className="bg-brand-beige/5 p-6 rounded-xl"
@@ -296,9 +313,9 @@ export function ServicesPage() {
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                   >
                       <h4 className="text-2xl font-black">Старт</h4>
-                      <p className="text-sm text-brand-beige/80 mb-4">Базовый набор для новых ИП</p>
+                      <p className="text-sm text-brand-green/80 mb-4">Базовый набор для новых ИП</p>
                       <div className="text-3xl font-black mb-4">от 49 000 ₸/мес</div>
-                      <ul className="text-sm space-y-2 text-brand-beige/80">
+                      <ul className="text-sm space-y-2 text-brand-green/80">
                         <li>Ведение учёта</li>
                         <li>Ежемесячная отчётность</li>
                         <li>Консультации по телефону</li>
@@ -314,9 +331,9 @@ export function ServicesPage() {
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                   >
                     <h4 className="text-2xl font-black">Бизнес</h4>
-                    <p className="text-sm text-brand-beige/80 mb-4">Оптимальный пакет для малого бизнеса</p>
+                    <p className="text-sm text-brand-green/80 mb-4">Оптимальный пакет для малого бизнеса</p>
                     <div className="text-3xl font-black mb-4">от 149 000 ₸/мес</div>
-                    <ul className="text-sm space-y-2 text-brand-beige/80">
+                    <ul className="text-sm space-y-2 text-brand-green/80">
                       <li>Полное сопровождение бухгалтерии</li>
                       <li>Налоговое планирование</li>
                       <li>Поддержка при проверках</li>
@@ -343,30 +360,34 @@ export function ServicesPage() {
                 </div>
               </motion.div>
             </div>
+          </Container>
+        </Section>
 
-            <div className="mt-16 grid gap-8 lg:grid-cols-2 items-start">
-              <div>
-                <h3 className="text-3xl font-black text-brand-green mb-4">Часто задаваемые вопросы</h3>
+        <Section className="bg-brand-beige pt-28 pb-12">
+          <Container>
+            <div className="grid gap-8 lg:grid-cols-2 items-start">
+              <div className="bg-brand-beige rounded-[32px] p-8 shadow-lg border border-brand-green/10">
+                <h3 className="text-3xl font-black text-brand-green mb-6">Часто задаваемые вопросы</h3>
                 <div className="space-y-4">
                   {faqs.map((f, i) => (
-                    <details key={i} className="bg-white/80 p-4 rounded-xl border border-brand-green/10">
-                      <summary className="cursor-pointer font-bold text-brand-green">{f.q}</summary>
-                      <p className="mt-2 text-brand-green/70">{f.a}</p>
+                    <details key={i} className="rounded-3xl border border-brand-green/10 bg-brand-beige/90 p-5 shadow-sm">
+                      <summary className="cursor-pointer font-bold text-brand-green text-lg">{f.q}</summary>
+                      <p className="mt-3 text-brand-green/70 leading-relaxed">{f.a}</p>
                     </details>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-brand-green rounded-4xl p-8 text-brand-beige">
-                <h3 className="text-2xl font-black mb-3">Готовы обсудить задачу?</h3>
-                <p className="text-brand-beige/90 mb-6">Оставьте заявку — перезвоним и подготовим коммерческое предложение.</p>
+              <div className="bg-brand-beige rounded-[32px] p-8 shadow-lg border border-brand-green/10">
+                <h3 className="text-2xl font-black text-brand-green mb-3">Готовы обсудить задачу?</h3>
+                <p className="text-brand-green/90 mb-6 leading-relaxed">Оставьте заявку — перезвоним и подготовим коммерческое предложение.</p>
                 <form className="space-y-4">
-                  <input className="w-full p-3 rounded-lg text-brand-green" placeholder="Имя" />
-                  <input className="w-full p-3 rounded-lg text-brand-green" placeholder="Телефон или e-mail" />
-                  <textarea className="w-full p-3 rounded-lg text-brand-green" placeholder="Краткое описание задачи" rows={4} />
-                  <div className="flex gap-4">
-                    <button type="button" className="px-4 py-2 bg-brand-beige text-brand-green rounded-lg font-bold">Отправить</button>
-                    <button type="button" className="px-4 py-2 border border-brand-beige text-brand-beige rounded-lg">Позвоните мне</button>
+                  <input className="w-full p-4 rounded-3xl border border-brand-green/10 bg-white text-brand-green placeholder-brand-green/50" placeholder="Имя" />
+                  <input className="w-full p-4 rounded-3xl border border-brand-green/10 bg-white text-brand-green placeholder-brand-green/50" placeholder="Телефон или e-mail" />
+                  <textarea className="w-full p-4 rounded-3xl border border-brand-green/10 bg-white text-brand-green placeholder-brand-green/50" placeholder="Краткое описание задачи" rows={4} />
+                  <div className="flex flex-col gap-4 sm:flex-row">
+                    <button type="button" className="w-full rounded-3xl bg-brand-green px-6 py-4 text-sm font-bold text-brand-beige transition hover:bg-brand-green/90">Отправить</button>
+                    <button type="button" className="w-full rounded-3xl border border-brand-green text-brand-green px-6 py-4 transition hover:bg-brand-green/5">Позвоните мне</button>
                   </div>
                 </form>
               </div>
