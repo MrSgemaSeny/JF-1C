@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: #00562D; 
+  --color-brand-beige: #F5F5DC;
+  --color-brand-text: #00562D; /* Default text is green */
+}
+
+@layer base {
+  body {
+    @apply bg-brand-beige text-brand-green font-sans antialiased selection:bg-brand-green selection:text-brand-beige;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom utility for hiding scrollbar in sliders */
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .glass-panel {
+    @apply bg-brand-beige/40 backdrop-blur-xl border border-brand-green/10;
+  }
+}
