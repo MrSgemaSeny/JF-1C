@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const stats = [
   { value: '10+', label: 'Лет на рынке' },
   { value: '>500', label: 'Довольных клиентов' },
-  { value: '1 млрд', label: 'Сэкономлено тенге' }
+  { value: 'N/A ₸', label: 'Сэкономлено тенге' }
 ];
 
 export function Trust() {

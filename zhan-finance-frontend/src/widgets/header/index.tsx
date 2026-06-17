@@ -21,8 +21,8 @@ export function Header() {
           </Link>
           
           <nav className="hidden md:flex gap-8 bg-white/50 px-8 py-3 rounded-full border border-brand-green/10">
-            <a href="#about" className="text-sm font-bold text-brand-green/70 hover:text-brand-green transition-colors uppercase tracking-widest">О нас</a>
-            <a href="#advantages" className="text-sm font-bold text-brand-green/70 hover:text-brand-green transition-colors uppercase tracking-widest">Преимущества</a>
+            <Link to="/about" className="text-sm font-bold text-brand-green/70 hover:text-brand-green transition-colors uppercase tracking-widest">О нас</Link>
+            <Link to="/" className="text-sm font-bold text-brand-green/70 hover:text-brand-green transition-colors uppercase tracking-widest">Главная</Link>
             <Link to="/services" className="text-sm font-bold text-brand-green/70 hover:text-brand-green transition-colors uppercase tracking-widest">Услуги</Link>
           </nav>
 
