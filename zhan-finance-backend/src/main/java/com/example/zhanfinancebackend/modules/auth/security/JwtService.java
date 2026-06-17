@@ -42,6 +42,7 @@ public class JwtService {
         payload.put("sub", user.getEmail());
         payload.put("uid", user.getId());
         payload.put("role", user.getRole().name());
+        payload.put("type", "access");
         payload.put("iat", now.getEpochSecond());
         payload.put("exp", now.plusMillis(accessTokenExpirationMs).getEpochSecond());
         String unsignedToken = encode(header) + "." + encode(payload);
@@ -50,19 +51,42 @@ public class JwtService {
 
     public boolean isTokenValid(String token, String username) {
         try {
-            return username.equals(extractUsername(token)) && !isExpired(token) && signatureMatches(token);
+            return signatureMatches(token)
+                    && isAccessToken(token)
+                    && !isExpired(token)
+                    && username.equals(extractUsername(token));
         } catch (RuntimeException exception) {
             return false;
         }
+    }
+
+    public String extractUsernameIfValidAccessToken(String token) {
+        if (!isTokenValidShape(token)) {
+            return null;
+        }
+        return extractUsername(token);
     }
 
     public String extractUsername(String token) {
         return payload(token).get("sub").toString();
     }
 
+    private boolean isTokenValidShape(String token) {
+        try {
+            return signatureMatches(token) && isAccessToken(token) && !isExpired(token);
+        } catch (RuntimeException exception) {
+            return false;
+        }
+    }
+
     private boolean isExpired(String token) {
         Number expiresAt = (Number) payload(token).get("exp");
         return Instant.now().getEpochSecond() >= expiresAt.longValue();
+    }
+
+    private boolean isAccessToken(String token) {
+        Object type = payload(token).get("type");
+        return "access".equals(type);
     }
 
     private boolean signatureMatches(String token) {

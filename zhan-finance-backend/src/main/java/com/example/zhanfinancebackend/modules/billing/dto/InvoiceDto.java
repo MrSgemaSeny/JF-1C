@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 public record InvoiceDto(
         Long id,
+        Long clientId,
         @NotBlank @Size(max = 160) String title,
         @NotNull @DecimalMin("0.00") BigDecimal amount,
         InvoiceStatus status,

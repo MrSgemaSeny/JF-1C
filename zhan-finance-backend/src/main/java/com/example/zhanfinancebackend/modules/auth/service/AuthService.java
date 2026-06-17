@@ -49,7 +49,7 @@ public class AuthService {
                 request.fullName(),
                 request.email().toLowerCase(),
                 passwordEncoder.encode(request.password()),
-                Role.USER
+                Role.CLIENT
         );
         User savedUser = userRepository.save(user);
         RefreshToken refreshToken = refreshTokenService.create(savedUser);

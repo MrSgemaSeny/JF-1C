@@ -1,6 +1,7 @@
 package com.example.zhanfinancebackend.modules.user.service;
 
 import com.example.zhanfinancebackend.modules.auth.entity.User;
+import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.user.dto.UserProfileDto;
 import com.example.zhanfinancebackend.modules.user.dto.UserProfileUpdateRequest;
 import com.example.zhanfinancebackend.modules.user.entity.UserProfile;
@@ -11,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
 
-    public UserService(UserProfileRepository userProfileRepository) {
+    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
+        this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
     }
 
@@ -25,9 +28,10 @@ public class UserService {
 
     @Transactional
     public UserProfileDto updateProfile(User user, UserProfileUpdateRequest request) {
-        UserProfile profile = getOrCreate(user);
+        User managedUser = userRepository.getReferenceById(user.getId());
+        UserProfile profile = getOrCreate(managedUser);
         if (request.fullName() != null && !request.fullName().isBlank()) {
-            user.setFullName(request.fullName());
+            managedUser.setFullName(request.fullName());
         }
         profile.setPhone(request.phone());
         profile.setCompanyName(request.companyName());
