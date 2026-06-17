@@ -1,0 +1,141 @@
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ROUTES } from '@/shared/config/routes';
+
+const navItems = [
+  { label: 'Главная', path: ROUTES.HOME },
+  { label: 'Услуги', path: ROUTES.SERVICES },
+  { label: 'О компании', path: ROUTES.ABOUT },
+];
+
+export function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
+
+  const isHome = location.pathname === ROUTES.HOME;
+
+  return (
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled || !isHome
+            ? 'bg-brand-beige/90 backdrop-blur-md border-b border-brand-green/10 py-3 shadow-sm'
+            : 'bg-transparent py-5'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+          <Link to={ROUTES.HOME} className="flex items-center gap-3 group relative z-50">
+            <div className="w-10 h-10 rounded-xl bg-brand-green flex items-center justify-center text-brand-beige font-black text-xl group-hover:scale-105 transition-transform shadow-lg">
+              Z
+            </div>
+            <div className="flex flex-col">
+              <span className={`font-black text-xl leading-none uppercase tracking-wide transition-colors ${isScrolled || !isHome ? 'text-brand-green' : 'text-brand-green lg:text-brand-beige'}`}>
+                Zhan
+              </span>
+              <span className={`text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 transition-colors ${isScrolled || !isHome ? 'text-brand-green' : 'text-brand-green lg:text-brand-beige'}`}>
+                Finance
+              </span>
+            </div>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all relative ${
+                    isScrolled || !isHome
+                      ? isActive ? 'text-brand-green bg-brand-green/5' : 'text-brand-green/70 hover:text-brand-green hover:bg-brand-green/5'
+                      : isActive ? 'text-brand-green bg-white lg:text-brand-beige lg:bg-white/10' : 'text-brand-green hover:bg-white/50 lg:text-brand-beige/80 lg:hover:text-brand-beige lg:hover:bg-white/10'
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <motion.div layoutId="nav-pill" className="absolute inset-0 border border-brand-green/20 rounded-full" transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }} />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="flex items-center gap-4 relative z-50">
+            <a
+              href="https://wa.me/+77073495503"
+              target="_blank"
+              rel="noreferrer"
+              className={`hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
+                isScrolled || !isHome
+                  ? 'bg-brand-green text-brand-beige hover:bg-brand-green/90 shadow-lg shadow-brand-green/20'
+                  : 'bg-brand-green text-brand-beige lg:bg-white lg:text-brand-green hover:scale-105 shadow-xl'
+              }`}
+            >
+              Связаться
+              <ArrowRight className="w-4 h-4" />
+            </a>
+
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`md:hidden p-2 rounded-lg transition-colors ${
+                isScrolled || !isHome || isMobileMenuOpen ? 'text-brand-green bg-brand-green/5' : 'text-brand-green bg-white/50'
+              }`}
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-40 bg-brand-beige pt-24 px-6 md:hidden overflow-y-auto"
+          >
+            <nav className="flex flex-col gap-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`p-4 rounded-2xl text-xl font-black uppercase tracking-wider ${
+                    location.pathname === item.path ? 'bg-brand-green text-brand-beige' : 'bg-white text-brand-green border border-brand-green/10'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="mt-8 p-6 bg-brand-green text-brand-beige rounded-3xl">
+              <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-4">Начать работу</p>
+              <a href="tel:+77000000000" className="block text-2xl font-black mb-6 hover:opacity-80">+7 700 000 00 00</a>
+              <a href="https://wa.me/77000000000" className="flex items-center justify-center gap-2 w-full py-4 bg-brand-beige text-brand-green rounded-xl font-bold uppercase">
+                Написать в WhatsApp
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

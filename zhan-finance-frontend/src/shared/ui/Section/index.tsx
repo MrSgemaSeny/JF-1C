@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 import { Container } from '../Container';
-import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 interface SectionProps {
@@ -10,12 +9,15 @@ interface SectionProps {
   id?: string;
 }
 
-export function Section({ children, className, containerClassName, id }: SectionProps) {
-  return (
-    <section id={id} className={twMerge('py-24 md:py-32 relative', className)}>
-      <Container className={containerClassName}>
-        {children}
-      </Container>
-    </section>
-  );
-}
+export const Section = forwardRef<HTMLElement, SectionProps>(
+  ({ children, className, containerClassName, id }, ref) => {
+    return (
+      <section ref={ref} id={id} className={twMerge('py-24 md:py-32 relative', className)}>
+        <Container className={containerClassName}>
+          {children}
+        </Container>
+      </section>
+    );
+  }
+);
+Section.displayName = 'Section';
