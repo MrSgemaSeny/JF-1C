@@ -6,6 +6,7 @@ import { Trust } from '@/widgets/trust';
 import { Services } from '@/widgets/services';
 import { SolutionPicker } from '@/widgets/solutionPicker';
 import { Reviews } from '@/widgets/reviews';
+import { Team } from '@/widgets/team';
 import { Footer } from '@/widgets/footer';
 
 export function HomePage() {
@@ -20,6 +21,7 @@ export function HomePage() {
         <Services />
         <SolutionPicker />
         <Reviews />
+        <Team />
       </main>
       <Footer />
     </>
