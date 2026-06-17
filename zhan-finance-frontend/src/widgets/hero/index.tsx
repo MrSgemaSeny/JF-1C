@@ -3,80 +3,195 @@ import { motion } from 'framer-motion';
 
 export function Hero() {
   return (
-    <div className="relative min-h-screen flex items-center overflow-hidden bg-brand-beige pt-20">
+    <div className="relative min-h-screen flex items-center overflow-hidden bg-brand-beige pt-24">
       <Container className="relative z-10 w-full">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
-          
-          <div className="lg:col-span-8 flex flex-col items-start space-y-10">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
+        <div className="grid lg:grid-cols-12 gap-16 items-center">
+
+          {/* Текстовый блок */}
+          <div className="lg:col-span-7 flex flex-col items-start">
+            <motion.h1
+              initial={{ opacity: 0, y: 32 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.7, ease: 'easeOut' }}
+              className="text-5xl sm:text-7xl lg:text-[6.5rem] font-black uppercase leading-[0.92] tracking-tighter text-brand-green"
             >
-              <h1 className="text-5xl sm:text-7xl lg:text-[6.5rem] font-black uppercase leading-[0.9] tracking-tighter text-brand-green space-y-4">
-                <span className="relative inline-block">
-                  <span className="absolute -inset-6 bg-brand-green/10 rounded-2xl -z-10"></span>
-                  Надежный
-                </span><br/>
-                Финансовый<br/>
-                <span className="font-light italic text-brand-green/80 space-y-4">партнёр</span>
-              </h1>
-            </motion.div>
+              Надежный<br />
+              Финансовый<br />
+              Партнёр
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
+              className="mt-8 text-xl md:text-2xl text-brand-green/70 max-w-lg font-medium leading-relaxed"
+            >
+              Берем на себя бухгалтерию, налоги и кадры. Вы фокусируетесь на росте бизнеса, мы — на безопасности.
+            </motion.p>
 
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-8 pt-8 w-full relative"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35, ease: 'easeOut' }}
+              className="mt-12"
             >
-              <p className="text-1.5xl md:text-3xl text-brand-green/80 max-w-xl font-medium leading-relaxed">
-                Берем на себя бухгалтерию, налоги и кадры. Вы фокусируетесь на росте бизнеса, мы — на безопасности.
-              </p>
-              
-              <div className="sm:ml-auto relative">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-40 h-16 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center text-xl font-bold uppercase tracking-wider shadow-xl shadow-brand-green/20"
-                >
-                  Начать
-                </motion.button>
-              </div>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="h-16 px-12 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center text-lg font-bold uppercase tracking-wider shadow-xl shadow-brand-green/15"
+              >
+                Начать
+              </motion.button>
             </motion.div>
           </div>
 
-          <div className="lg:col-span-4 hidden lg:block">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="w-full aspect-[4/6] bg-brand-green rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden shadow-2xl shadow-brand-green/20"
-            >
-              <div className="text-brand-beige space-y-2 relative z-10">
-                <h3 className="text-5xl font-black mb-4">100%</h3>
-                <p className="text-brand-beige/70 uppercase tracking-widest text-sm font-bold">Гарантия результата</p>
-              </div>
+          {/* Абстрактная композиция: слои-карточки в духе отчётов/документов */}
+          <div className="lg:col-span-5 hidden lg:flex items-center justify-center">
+            <div className="relative w-full max-w-md aspect-square">
 
-              <div className="relative z-10 p-6 bg-brand-beige/10 backdrop-blur-md rounded-xl border border-white/10">
-                <p className="text-brand-beige/90 text-sm font-medium leading-relaxed">
-                  "Помогаем бизнесу экономить легально."
-                </p>
-              </div>
-              <div className="relative z-10 p-6 bg-brand-beige/10 backdrop-blur-md rounded-xl border border-white/10">
-                <p className="text-brand-beige/90 text-sm font-medium leading-relaxed">
-                  "Берем на себя учет — вы занимаетесь ростом."
-                </p>
-              </div>
-              <div className="relative z-10 p-6 bg-brand-beige/10 backdrop-blur-md rounded-xl border border-white/10">
-                <p className="text-brand-beige/90 text-sm font-medium leading-relaxed">
-                  "Каждая цифра проверена, каждый отчет — вовремя."
-                </p>
-              </div>
-            </motion.div>
+              {/* Задняя карточка */}
+              <motion.div
+                initial={{ opacity: 0, y: 24, rotate: -6 }}
+                animate={{ opacity: 1, y: 0, rotate: -6 }}
+                transition={{ duration: 0.8, delay: 0.25, ease: 'easeOut' }}
+                className="absolute inset-0 m-auto w-[78%] h-[68%] rounded-3xl bg-brand-green/10"
+              />
+
+              {/* Средняя карточка с псевдо-графиком роста */}
+              <motion.div
+                initial={{ opacity: 0, y: 16, rotate: 3 }}
+                animate={{ opacity: 1, y: 0, rotate: 3 }}
+                transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+                className="absolute inset-0 m-auto w-[72%] h-[60%] rounded-3xl bg-brand-green/20 flex items-end p-6"
+              >
+                <svg viewBox="0 0 200 80" className="w-full h-2/3" fill="none">
+                  <path
+                    d="M4 64 L40 48 L76 56 L112 28 L148 36 L196 8"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-brand-green/50"
+                  />
+                </svg>
+              </motion.div>
+
+              {/* Передняя карточка — основной акцент */}
+              <motion.div
+                initial={{ opacity: 0, y: 0, rotate: -2, scale: 0.94 }}
+                animate={{
+                  opacity: 1,
+                  y: [0, -10, 0],
+                  rotate: -2,
+                  scale: 1,
+                }}
+                transition={{
+                  opacity: { duration: 0.8, delay: 0.5 },
+                  scale: { duration: 0.8, delay: 0.5 },
+                  y: { duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 },
+                }}
+                className="absolute inset-0 m-auto w-[62%] h-[72%] rounded-3xl bg-brand-green shadow-2xl shadow-brand-green/30 flex flex-col justify-between p-7"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="w-9 h-9 rounded-lg bg-brand-beige/90" />
+                  <div className="flex flex-col items-end gap-1.5">
+                    <div className="w-12 h-1.5 rounded-full bg-brand-beige/40" />
+                    <div className="w-8 h-1.5 rounded-full bg-brand-beige/40" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2.5">
+                  <div className="w-full h-2 rounded-full bg-brand-beige/30" />
+                  <div className="w-4/5 h-2 rounded-full bg-brand-beige/30" />
+                  <div className="w-3/5 h-2 rounded-full bg-brand-beige/30" />
+                </div>
+
+                <div className="flex items-end justify-between">
+                  <span className="text-brand-beige/90 text-3xl font-black tracking-tight">
+                    100%
+                  </span>
+                  <span className="text-brand-beige/60 text-xs font-semibold uppercase tracking-wider">
+                    надёжность
+                  </span>
+                </div>
+              </motion.div>
+
+            </div>
           </div>
-          
+
         </div>
       </Container>
     </div>
   );
 }
+
+/* второй вариант - фотография
+import { Container } from "@/shared/ui/Container";
+import { motion } from "framer-motion";
+import logoZf from "@/shared/assets/icons/logo-zf-2.jpg";
+
+export function Hero() {
+  return (
+    <div className="relative min-h-screen flex items-center overflow-hidden bg-brand-beige pt-24">
+      <Container className="relative z-10 w-full">
+        <div className="grid lg:grid-cols-12 gap-16 items-center">
+          <div className="lg:col-span-7 flex flex-col items-start">
+            <motion.h1
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="text-5xl sm:text-7xl lg:text-[6.5rem] font-black uppercase leading-[0.92] tracking-tighter text-brand-green"
+            >
+              Надежный
+              <br />
+              Финансовый
+              <br />
+              Партнёр
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+              className="mt-8 text-xl md:text-2xl text-brand-green/70 max-w-lg font-medium leading-relaxed"
+            >
+              Берем на себя бухгалтерию, налоги и кадры. Вы фокусируетесь на
+              росте бизнеса, мы — на безопасности.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
+              className="mt-12"
+            >
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="h-16 px-12 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center text-lg font-bold uppercase tracking-wider shadow-xl shadow-brand-green/15"
+              >
+                Начать
+              </motion.button>
+            </motion.div>
+          </div>
+
+          <div className="lg:col-span-5 hidden lg:flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              className="w-full max-w-md"
+            >
+              <img
+                src={logoZf}
+                alt="Zhan Finance"
+                className="w-full h-auto object-contain mix-blend-multiply"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </Container>
+    </div>
+  );
+}
+ */
