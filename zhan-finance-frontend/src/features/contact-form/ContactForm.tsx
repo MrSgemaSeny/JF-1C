@@ -6,7 +6,7 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ title = 'Связаться с нами', className = '' }: ContactFormProps) {
-  const { name, setName, phone, setPhone, submitted, handleSubmit } = useContactForm();
+  const { name, setName, phone, setPhone, submitted, loading, error, handleSubmit } = useContactForm();
 
   return (
     <div className={className}>
@@ -37,11 +37,13 @@ export function ContactForm({ title = 'Связаться с нами', classNam
               required
             />
           </div>
+          {error && <p className="text-sm font-semibold text-red-600">{error}</p>}
           <button
             type="submit"
-            className="w-full mt-4 bg-brand-green text-brand-beige py-5 rounded-xl text-lg font-bold uppercase tracking-wider hover:bg-brand-green/90 hover:text-white transition-all"
+            disabled={loading}
+            className="w-full mt-4 bg-brand-green text-brand-beige py-5 rounded-xl text-lg font-bold uppercase tracking-wider hover:bg-brand-green/90 hover:text-white transition-all disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Отправить заявку
+            {loading ? 'Отправляем...' : 'Отправить заявку'}
           </button>
         </form>
       )}

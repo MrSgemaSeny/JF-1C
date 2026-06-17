@@ -1,14 +1,33 @@
 import { useState } from 'react';
+import { apiRequest } from '@/shared/api/http';
 
 export function useContactForm() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
-    console.log('Contact form submitted', { name, phone });
+    setLoading(true);
+    setError(null);
+
+    try {
+      await apiRequest('/api/contact-requests', {
+        method: 'POST',
+        body: JSON.stringify({
+          name,
+          phone,
+          source: 'frontend'
+        })
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось отправить заявку');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return {
@@ -17,6 +36,8 @@ export function useContactForm() {
     phone,
     setPhone,
     submitted,
+    loading,
+    error,
     handleSubmit
   };
 }

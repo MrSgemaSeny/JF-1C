@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: zhan-finance-postgres
+    environment:
+      POSTGRES_DB: zhan_finance
+      POSTGRES_USER: zhan
+      POSTGRES_PASSWORD: zhan
+    ports:
+      - "5432:5432"
+    volumes:
+      - zhan-finance-postgres:/var/lib/postgresql/data
+
+volumes:
+  zhan-finance-postgres:
