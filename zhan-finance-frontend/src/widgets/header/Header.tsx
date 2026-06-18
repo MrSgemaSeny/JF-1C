@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { ROUTES } from '@/shared/config/routes';
+import { useAuth } from '@/features/auth/AuthContext';
 
 const navItems = [
   { label: 'Главная', path: ROUTES.HOME },
@@ -14,6 +15,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -47,10 +49,10 @@ export function Header() {
               Z
             </div>
             <div className="flex flex-col">
-              <span className={`font-black text-xl leading-none uppercase tracking-wide transition-colors ${isScrolled || !isHome ? 'text-brand-green' : 'text-brand-green lg:text-brand-beige'}`}>
+              <span className="font-black text-xl leading-none uppercase tracking-wide text-brand-green transition-colors">
                 Zhan
               </span>
-              <span className={`text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 transition-colors ${isScrolled || !isHome ? 'text-brand-green' : 'text-brand-green lg:text-brand-beige'}`}>
+              <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 text-brand-green transition-colors">
                 Finance
               </span>
             </div>
@@ -66,7 +68,7 @@ export function Header() {
                   className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all relative ${
                     isScrolled || !isHome
                       ? isActive ? 'text-brand-green bg-brand-green/5' : 'text-brand-green/70 hover:text-brand-green hover:bg-brand-green/5'
-                      : isActive ? 'text-brand-green bg-white lg:text-brand-beige lg:bg-white/10' : 'text-brand-green hover:bg-white/50 lg:text-brand-beige/80 lg:hover:text-brand-beige lg:hover:bg-white/10'
+                      : isActive ? 'text-brand-green' : 'text-brand-green hover:bg-white/50'
                   }`}
                 >
                   {item.label}
@@ -78,7 +80,19 @@ export function Header() {
             })}
           </nav>
 
-          <div className="flex items-center gap-4 relative z-50">
+          <div className="flex items-center gap-3 relative z-50">
+            <Link
+              to={user ? ROUTES.PROFILE : ROUTES.LOGIN}
+              className={`hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all border ${
+                isScrolled || !isHome
+                  ? 'text-brand-green border-brand-green/15 hover:bg-brand-green/5'
+                  : 'text-brand-green border-brand-green/15 hover:bg-white/50'
+              }`}
+            >
+              <User className="w-4 h-4" />
+              {user ? 'Профиль' : 'Войти'}
+            </Link>
+
             <a
               href="https://wa.me/+77073495503"
               target="_blank"
@@ -125,6 +139,13 @@ export function Header() {
                   {item.label}
                 </Link>
               ))}
+              <Link
+                to={user ? ROUTES.PROFILE : ROUTES.LOGIN}
+                className="p-4 rounded-2xl text-xl font-black uppercase tracking-wider bg-white text-brand-green border border-brand-green/10 flex items-center gap-2"
+              >
+                <User className="w-5 h-5" />
+                {user ? 'Профиль' : 'Войти'}
+              </Link>
             </nav>
             <div className="mt-8 p-6 bg-brand-green text-brand-beige rounded-3xl">
               <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-4">Начать работу</p>

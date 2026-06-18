@@ -10,7 +10,7 @@
 @layer base {
   body {
     @apply bg-brand-beige text-brand-green font-sans antialiased selection:bg-brand-green selection:text-brand-beige;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 
