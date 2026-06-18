@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
-  base: '/',
+  base: '/JF-1C/',
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
