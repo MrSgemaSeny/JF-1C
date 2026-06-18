@@ -1,132 +1,76 @@
 package com.example.zhanfinancebackend.modules.auth.security;
 
 import com.example.zhanfinancebackend.modules.auth.entity.User;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Date;
 
 @Service
 public class JwtService {
 
-    private static final String HMAC_ALGORITHM = "HmacSHA256";
-    private static final Base64.Encoder URL_ENCODER = Base64.getUrlEncoder().withoutPadding();
-    private static final Base64.Decoder URL_DECODER = Base64.getUrlDecoder();
+    private static final String CLAIM_TOKEN_TYPE = "type";
+    private static final String TOKEN_TYPE_ACCESS = "access";
 
-    private final ObjectMapper objectMapper;
-    private final String secret;
+    private final SecretKey signingKey;
     private final long accessTokenExpirationMs;
 
     public JwtService(
-            ObjectMapper objectMapper,
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.access-token-expiration-ms}") long accessTokenExpirationMs
     ) {
-        this.objectMapper = objectMapper;
-        this.secret = secret;
+        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpirationMs = accessTokenExpirationMs;
     }
 
     public String generateAccessToken(User user) {
         Instant now = Instant.now();
-        Map<String, Object> header = Map.of("alg", "HS256", "typ", "JWT");
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("sub", user.getEmail());
-        payload.put("uid", user.getId());
-        payload.put("role", user.getRole().name());
-        payload.put("type", "access");
-        payload.put("iat", now.getEpochSecond());
-        payload.put("exp", now.plusMillis(accessTokenExpirationMs).getEpochSecond());
-        String unsignedToken = encode(header) + "." + encode(payload);
-        return unsignedToken + "." + sign(unsignedToken);
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .claim("uid", user.getId())
+                .claim("role", user.getRole().name())
+                .claim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_ACCESS)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusMillis(accessTokenExpirationMs)))
+                .signWith(signingKey)
+                .compact();
     }
 
     public boolean isTokenValid(String token, String username) {
-        try {
-            return signatureMatches(token)
-                    && isAccessToken(token)
-                    && !isExpired(token)
-                    && username.equals(extractUsername(token));
-        } catch (RuntimeException exception) {
+        Claims claims = parseClaimsOrNull(token);
+        if (claims == null) {
             return false;
         }
+        return TOKEN_TYPE_ACCESS.equals(claims.get(CLAIM_TOKEN_TYPE, String.class))
+                && username.equals(claims.getSubject());
     }
 
     public String extractUsernameIfValidAccessToken(String token) {
-        if (!isTokenValidShape(token)) {
+        Claims claims = parseClaimsOrNull(token);
+        if (claims == null || !TOKEN_TYPE_ACCESS.equals(claims.get(CLAIM_TOKEN_TYPE, String.class))) {
             return null;
         }
-        return extractUsername(token);
+        return claims.getSubject();
     }
 
-    public String extractUsername(String token) {
-        return payload(token).get("sub").toString();
-    }
-
-    private boolean isTokenValidShape(String token) {
+    private Claims parseClaimsOrNull(String token) {
         try {
-            return signatureMatches(token) && isAccessToken(token) && !isExpired(token);
-        } catch (RuntimeException exception) {
-            return false;
-        }
-    }
-
-    private boolean isExpired(String token) {
-        Number expiresAt = (Number) payload(token).get("exp");
-        return Instant.now().getEpochSecond() >= expiresAt.longValue();
-    }
-
-    private boolean isAccessToken(String token) {
-        Object type = payload(token).get("type");
-        return "access".equals(type);
-    }
-
-    private boolean signatureMatches(String token) {
-        String[] parts = token.split("\\.");
-        if (parts.length != 3) {
-            return false;
-        }
-        return sign(parts[0] + "." + parts[1]).equals(parts[2]);
-    }
-
-    private String encode(Map<String, Object> value) {
-        try {
-            byte[] json = objectMapper.writeValueAsBytes(value);
-            return URL_ENCODER.encodeToString(json);
-        } catch (Exception exception) {
-            throw new IllegalStateException("Cannot encode JWT", exception);
-        }
-    }
-
-    private Map<String, Object> payload(String token) {
-        try {
-            String[] parts = token.split("\\.");
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Invalid token");
-            }
-            byte[] json = URL_DECODER.decode(parts[1]);
-            return objectMapper.readValue(json, new TypeReference<>() {
-            });
-        } catch (Exception exception) {
-            throw new IllegalArgumentException("Invalid token", exception);
-        }
-    }
-
-    private String sign(String value) {
-        try {
-            Mac mac = Mac.getInstance(HMAC_ALGORITHM);
-            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM));
-            return URL_ENCODER.encodeToString(mac.doFinal(value.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception exception) {
-            throw new IllegalStateException("Cannot sign JWT", exception);
+            return Jwts.parser()
+                    .verifyWith(signingKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException | IllegalArgumentException exception) {
+            // JwtException покрывает и истёкший токен (ExpiredJwtException - его подкласс),
+            // и неверную подпись. Невалидный токен = null, без разделения по причине.
+            return null;
         }
     }
 }
