@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
-// https://vitejs.dev/config/
 export default defineConfig({
+  base: '/JF-1C/',
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
