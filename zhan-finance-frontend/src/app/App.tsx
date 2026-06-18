@@ -11,9 +11,11 @@ import { AuthProvider } from '@/features/auth/AuthContext';
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
 
 export function App() {
+  const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '');
+
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBasename}>
         <Routes>
           <Route element={<MainLayout />}>
             <Route path={ROUTES.HOME} element={<HomePage />} />
