@@ -1,0 +1,23 @@
+package com.example.zhanfinancebackend.modules.crm.dto;
+
+import com.example.zhanfinancebackend.modules.auth.dto.UserDto;
+import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
+import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
+
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+
+public record TaskDto(
+        Long id,
+        String title,
+        String description,
+        UserDto client,
+        UserDto assignedTo,
+        TaskStatus status,
+        TaskPriority priority,
+        LocalDate dueDate,
+        UserDto createdBy,
+        ZonedDateTime createdAt,
+        ZonedDateTime updatedAt
+) {
+}

@@ -155,6 +155,36 @@ class ApiSmokeTests {
     }
 
     @Test
+    void crmTasksWork() throws Exception {
+        JsonNode clientAuth = register("client_smoke@example.com");
+        String clientToken = clientAuth.get("accessToken").asText();
+        
+        // Client requests a task
+        MvcResult requestResult = mockMvc.perform(post("/api/crm/tasks/request")
+                        .header("Authorization", "Bearer " + clientToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "title": "Need help with integration",
+                                  "description": "Please call me"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("NEW"))
+                .andExpect(jsonPath("$.data.client.email").value("client_smoke@example.com"))
+                .andReturn();
+                
+        long taskId = objectMapper.readTree(requestResult.getResponse().getContentAsString())
+                .get("data").get("id").asLong();
+                
+        // Client can fetch their own task
+        mockMvc.perform(get("/api/crm/tasks/" + taskId)
+                        .header("Authorization", "Bearer " + clientToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.title").value("Need help with integration"));
+    }
+
+    @Test
     void protectedEndpointsRequireJwt() throws Exception {
         mockMvc.perform(get("/api/users/me"))
                 .andExpect(status().isForbidden());
