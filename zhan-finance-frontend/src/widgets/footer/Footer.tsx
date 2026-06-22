@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Camera, Briefcase, Send } from "lucide-react";
+import { Mail, Phone, MapPin, User, Briefcase, Send } from "lucide-react";
 import { ContactForm } from "@/features/contact-form/ContactForm";
 import { ROUTES } from "@/shared/config/routes";
 
@@ -105,19 +105,19 @@ export function Footer() {
 
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://t.me/mrsgemaseny"
                 className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
               >
-                <Camera className="w-5 h-5" />
+                <User className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="#tel:+77759573787"
                 className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
               >
                 <Briefcase className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="https://2gis.kz/shymkent/search/zhanfinance/firm/70000001060962340/69.629124%2C42.354754?m=69.629774%2C42.354893%2F16.83"
                 className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
               >
                 <Send className="w-5 h-5" />
