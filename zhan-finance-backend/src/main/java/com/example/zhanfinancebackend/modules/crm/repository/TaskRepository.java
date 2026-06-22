@@ -15,8 +15,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy")
     List<Task> findAllWithDetails();
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy where t.client = :client")
-    List<Task> findAllByClientWithDetails(@Param("client") User client);
+    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy where t.client.id = :clientId or t.createdBy.id = :clientId")
+    List<Task> findAllByClientWithDetails(@Param("clientId") Long clientId);
 
     @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy where c.assignedEmployee = :employee or t.assignedTo = :employee")
     List<Task> findAllByEmployeeWithDetails(@Param("employee") User employee);

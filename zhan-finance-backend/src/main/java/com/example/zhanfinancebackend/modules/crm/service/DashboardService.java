@@ -59,7 +59,7 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public ClientDashboardDto getClientDashboard(User client) {
-        List<Task> clientTasks = taskRepository.findAllByClientWithDetails(client);
+        List<Task> clientTasks = taskRepository.findAllByClientWithDetails(client.getId());
         long tasksCount = clientTasks.size();
         
         Map<String, Long> tasksByStatus = clientTasks.stream()

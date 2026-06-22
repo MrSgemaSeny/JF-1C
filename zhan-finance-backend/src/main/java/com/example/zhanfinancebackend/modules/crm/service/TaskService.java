@@ -67,7 +67,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public List<TaskDto> getTasksForClient(User client) {
-        return taskRepository.findAllByClientWithDetails(client).stream().map(this::mapToDto).toList();
+        return taskRepository.findAllByClientWithDetails(client.getId()).stream().map(this::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)
