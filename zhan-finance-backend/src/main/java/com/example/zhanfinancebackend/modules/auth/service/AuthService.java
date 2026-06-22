@@ -11,8 +11,10 @@ import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.auth.security.JwtService;
+import com.example.zhanfinancebackend.modules.crm.service.ClientService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,19 +27,22 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final ClientService clientService;
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             JwtService jwtService,
-            RefreshTokenService refreshTokenService
+            RefreshTokenService refreshTokenService,
+            ClientService clientService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.clientService = clientService;
     }
 
     @Transactional
@@ -45,24 +50,28 @@ public class AuthService {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
             throw new ApiException(ErrorCode.CONFLICT, "Email is already registered");
         }
+
         User user = new User(
                 request.fullName(),
                 request.email().toLowerCase(),
                 passwordEncoder.encode(request.password()),
                 Role.CLIENT
         );
+
         User savedUser = userRepository.save(user);
+        // Создаём CRM-карточку клиента при регистрации
+        clientService.ensureProfile(savedUser);
+
         RefreshToken refreshToken = refreshTokenService.create(savedUser);
         return response(savedUser, refreshToken.getToken());
     }
 
-    @Transactional
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
-        User user = userRepository.findByEmailIgnoreCase(request.email())
-                .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED, "Invalid credentials"));
+
+        User user = (User) authentication.getPrincipal();
         RefreshToken refreshToken = refreshTokenService.create(user);
         return response(user, refreshToken.getToken());
     }
@@ -70,7 +79,11 @@ public class AuthService {
     @Transactional
     public AuthResponse refresh(RefreshRequest request) {
         RefreshToken refreshToken = refreshTokenService.verify(request.refreshToken());
-        return response(refreshToken.getUser(), refreshToken.getToken());
+        User user = refreshToken.getUser();
+
+        RefreshToken newRefreshToken = refreshTokenService.create(user);
+
+        return response(user, newRefreshToken.getToken());
     }
 
     private AuthResponse response(User user, String refreshToken) {
@@ -80,6 +93,7 @@ public class AuthService {
                 "Bearer",
                 user.getId(),
                 user.getEmail(),
+                user.getFullName(),
                 user.getRole()
         );
     }

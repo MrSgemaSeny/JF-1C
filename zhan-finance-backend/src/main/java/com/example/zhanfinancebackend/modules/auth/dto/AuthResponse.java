@@ -6,8 +6,8 @@ public record AuthResponse(
         String accessToken,
         String refreshToken,
         String tokenType,
-        Long userId,
+        Long id,
         String email,
+        String fullName,
         Role role
-) {
-}
+) {}
