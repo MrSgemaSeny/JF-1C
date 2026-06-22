@@ -40,7 +40,7 @@ public class DashboardService {
         Map<String, Long> tasksByStatus = allTasks.stream()
                 .collect(Collectors.groupingBy(t -> t.getStatus().name(), Collectors.counting()));
                 
-        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus);
+        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count());
     }
 
     @Transactional(readOnly = true)

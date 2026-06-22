@@ -9,12 +9,27 @@ export interface UserDto {
   role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
 }
 
+export interface ClientInfoDto {
+  id: number;
+  fullName: string;
+  email: string;
+  companyName?: string;
+}
+
+export interface EmployeeInfoDto {
+  id: number;
+  fullName: string;
+  email: string;
+}
+
 export interface TaskDto {
   id: number;
   title: string;
   description?: string;
-  client: UserDto;
-  assignedTo?: UserDto;
+  clientId?: number;
+  client?: ClientInfoDto;
+  assignedToId?: number;
+  assignedTo?: EmployeeInfoDto;
   status: TaskStatus;
   priority: TaskPriority;
   dueDate?: string;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getTasks, updateTaskStatus } from '@/entities/task/api/taskApi';
+import { useApiData } from '@/shared/hooks/useApiData';
 import { StatusBadge, PriorityBadge } from '@/shared/ui/Badge';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
@@ -7,10 +8,8 @@ import { TaskDetailModal } from '@/widgets/task-detail-modal/Taskdetailmodal';
 import type { TaskDto, TaskStatus } from '@/entities/task/model/types';
 
 export function AdminTasksPage() {
-  const [tasks, setTasks] = useState<TaskDto[]>([]);
+  const { data: tasks, isLoading, error, refetch: fetchTasks } = useApiData(getTasks);
   const [filteredTasks, setFilteredTasks] = useState<TaskDto[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -19,28 +18,13 @@ export function AdminTasksPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  useEffect(() => {
+    if (!tasks) return;
     let filtered = tasks;
     if (statusFilter) filtered = filtered.filter(t => t.status === statusFilter);
     if (searchQuery) filtered = filtered.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase()));
     setFilteredTasks(filtered);
   }, [tasks, statusFilter, searchQuery]);
 
-  const fetchTasks = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await getTasks();
-      setTasks(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load tasks');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleTaskClick = (task: TaskDto) => {
     setSelectedTask(task);
@@ -52,12 +36,24 @@ export function AdminTasksPage() {
       await updateTaskStatus(id, status);
       fetchTasks();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update task');
+      alert(err instanceof Error ? err.message : 'Failed to update task');
     }
   };
 
   if (isLoading) return <Spinner />;
-  if (error) return <div className="p-4 bg-red-50 border border-red-200 rounded text-red-700">{error}</div>;
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 border border-red-200 rounded text-red-700">
+        <p className="font-medium">Error loading tasks</p>
+        <p className="text-sm mt-1">{error.message}</p>
+        {error.isRetryable && (
+          <button onClick={fetchTasks} className="mt-2 text-sm text-brand-green hover:underline">
+            Retry
+          </button>
+        )}
+      </div>
+    );
+  }
   if (!filteredTasks.length) return <Empty label="No tasks found" />;
 
   return (
@@ -104,7 +100,19 @@ export function AdminTasksPage() {
               <tr key={t.id} className="hover:bg-gray-50 cursor-pointer">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" onClick={() => handleTaskClick(t)}>{t.title}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{t.client?.fullName}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm"><StatusBadge status={t.status} /></td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <select
+                    value={t.status}
+                    onChange={(e) => handleStatusChange(t.id, e.target.value as TaskStatus)}
+                    className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-brand-green focus:border-brand-green bg-white"
+                  >
+                    <option value="NEW">New</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="ON_REVIEW">On Review</option>
+                    <option value="DONE">Done</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm"><PriorityBadge priority={t.priority} /></td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <button

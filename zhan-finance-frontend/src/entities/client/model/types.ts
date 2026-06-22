@@ -6,6 +6,7 @@ export interface ClientDto {
   companyName?: string;
   phone?: string;
   notes?: string;
+  assignedEmployee?: UserDto;
   createdAt?: string;
   updatedAt?: string;
 }

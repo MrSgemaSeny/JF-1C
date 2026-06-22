@@ -5,6 +5,8 @@ import com.example.zhanfinancebackend.common.exception.ErrorCode;
 import com.example.zhanfinancebackend.modules.auth.dto.UserDto;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
+import com.example.zhanfinancebackend.modules.crm.dto.ClientInfoDto;
+import com.example.zhanfinancebackend.modules.crm.dto.EmployeeInfoDto;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskCreateRequest;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskDto;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskRequestCreateRequest;
@@ -143,8 +145,10 @@ public class TaskService {
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
-                mapUserToDto(task.getClient()),
-                mapUserToDto(task.getAssignedTo()),
+                task.getClient() != null ? task.getClient().getId() : null,
+                mapUserToClientInfoDto(task.getClient()),
+                task.getAssignedTo() != null ? task.getAssignedTo().getId() : null,
+                mapUserToEmployeeInfoDto(task.getAssignedTo()),
                 task.getStatus(),
                 task.getPriority(),
                 task.getDueDate(),
@@ -157,5 +161,15 @@ public class TaskService {
     private UserDto mapUserToDto(User user) {
         if (user == null) return null;
         return new UserDto(user.getId(), user.getFullName(), user.getEmail(), user.getRole());
+    }
+
+    private ClientInfoDto mapUserToClientInfoDto(User user) {
+        if (user == null) return null;
+        return new ClientInfoDto(user.getId(), user.getFullName(), user.getEmail(), null);
+    }
+
+    private EmployeeInfoDto mapUserToEmployeeInfoDto(User user) {
+        if (user == null) return null;
+        return new EmployeeInfoDto(user.getId(), user.getFullName(), user.getEmail());
     }
 }

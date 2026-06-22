@@ -10,6 +10,7 @@ public record ClientDto(
         String companyName,
         String phone,
         String notes,
+        UserDto assignedEmployee,
         ZonedDateTime createdAt,
         ZonedDateTime updatedAt
 ) {

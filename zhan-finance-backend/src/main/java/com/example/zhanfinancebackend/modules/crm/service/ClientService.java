@@ -80,6 +80,7 @@ public class ClientService {
                 profile.getCompanyName(),
                 profile.getPhone(),
                 profile.getNotes(),
+                profile.getUser() != null ? mapUserToDto(profile.getUser().getAssignedEmployee()) : null,
                 profile.getCreatedAt() != null ? profile.getCreatedAt().atZone(ZoneOffset.UTC) : null,
                 profile.getUpdatedAt() != null ? profile.getUpdatedAt().atZone(ZoneOffset.UTC) : null
         );

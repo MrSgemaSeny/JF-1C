@@ -6,6 +6,8 @@ public record AdminDashboardDto(
         long totalClients,
         long totalEmployees,
         long totalTasks,
-        Map<String, Long> tasksByStatus
+        Map<String, Long> tasksByStatus,
+        long totalUsers
 ) {
 }
+

@@ -14,3 +14,12 @@ export async function assignEmployee(id: number, employeeId: number): Promise<vo
     method: 'POST',
   });
 }
+
+export interface ClientStatsDto {
+  clientId: number;
+  taskCount: number;
+}
+
+export async function getClientStats(): Promise<ClientStatsDto[]> {
+  return apiRequest<ClientStatsDto[]>('/api/admin/clients/stats');
+}
