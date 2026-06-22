@@ -43,9 +43,22 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
     }
   });
 
-  const body = (await response.json()) as ApiEnvelope<T>;
+  if (!response.ok) {
+    let errorMessage = `Request failed with status ${response.status}`;
+    try {
+      const body = await response.json();
+      if (body && body.message) {
+        errorMessage = body.message;
+      }
+    } catch (_) {
+      // Ignore JSON parse error for error responses
+    }
+    throw new ApiError(errorMessage, response.status);
+  }
 
-  if (!response.ok || !body.success) {
+  const body = (await response.json()) as ApiEnvelope<T>;
+  
+  if (!body.success) {
     throw new ApiError(body.message ?? 'Request failed', response.status);
   }
 

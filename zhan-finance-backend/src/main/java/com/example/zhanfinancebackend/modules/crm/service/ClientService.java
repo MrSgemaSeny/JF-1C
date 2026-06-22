@@ -3,6 +3,7 @@ package com.example.zhanfinancebackend.modules.crm.service;
 import com.example.zhanfinancebackend.common.exception.ApiException;
 import com.example.zhanfinancebackend.common.exception.ErrorCode;
 import com.example.zhanfinancebackend.modules.auth.dto.UserDto;
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.crm.dto.ClientDto;
@@ -25,8 +26,17 @@ public class ClientService {
         this.userRepository = userRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ClientDto> getAllClients() {
+        
+        List<User> clientsWithoutProfile = userRepository.findAllByRole(Role.CLIENT).stream()
+                .filter(user -> clientProfileRepository.findByUser(user).isEmpty())
+                .toList();
+
+        for (User client : clientsWithoutProfile) {
+            ensureProfile(client);
+        }
+
         return clientProfileRepository.findAllWithUser().stream().map(this::mapToDto).toList();
     }
 

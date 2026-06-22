@@ -28,13 +28,25 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken create(User user) {
-        refreshTokenRepository.deleteAllByUser(user);
-        RefreshToken token = new RefreshToken(
+        // 1. Сначала создаём НОВЫЙ токен и сохраняем его.
+        //    Это гарантирует, что в момент удаления старых токенов
+        //    у пользователя уже есть валидный новый.
+        RefreshToken newToken = new RefreshToken(
                 UUID.randomUUID().toString(),
                 user,
                 Instant.now().plusMillis(refreshTokenExpirationMs)
         );
-        return refreshTokenRepository.save(token);
+        RefreshToken savedNewToken = refreshTokenRepository.save(newToken);
+
+        // 2. Потом удаляем ВСЕ СТАРЫЕ токены (кроме новосозданного).
+        //    Если два refresh-запроса придут одновременно:
+        //    - оба создадут новый токен (два разных)
+        //    - оба попытаются удалить старые
+        //    - но ни один не удалит сам себя, т.к. мы исключили свой ID
+        //    → нет StaleObjectStateException, нет race condition
+        refreshTokenRepository.deleteAllByUserExceptId(user, savedNewToken.getId());
+
+        return savedNewToken;
     }
 
     @Transactional(readOnly = true)
