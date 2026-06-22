@@ -1,55 +1,115 @@
-import { apiRequest } from '@/shared/api/http';
-import { USE_MOCK_API } from '@/shared/config/env';
-import * as mock from './taskApi.mock';
 import type { TaskDto, TaskCreateRequest, TaskRequestCreateRequest, TaskStatus, TaskFilter } from '../model/types';
 
-function toQuery(filter?: TaskFilter): string {
-  if (!filter) return '';
-  const params = new URLSearchParams();
-  if (filter.status) params.append('status', filter.status);
-  if (filter.clientId) params.append('clientId', filter.clientId.toString());
-  if (filter.assignedToId) params.append('assignedToId', filter.assignedToId.toString());
-  const str = params.toString();
-  return str ? `?${str}` : '';
+const STORAGE_KEY = 'mock_crm_tasks';
+
+function loadTasks(): TaskDto[] {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data) return JSON.parse(data);
+  // Default mock tasks
+  const defaultTasks: TaskDto[] = [
+    {
+      id: 1,
+      title: 'Fix login screen',
+      description: 'The login screen is not responsive on mobile devices.',
+      client: { id: 3, fullName: 'Client One', email: 'client@test.com', role: 'CLIENT' },
+      assignedTo: { id: 2, fullName: 'Employee One', email: 'employee@test.com', role: 'EMPLOYEE' },
+      status: 'IN_PROGRESS',
+      priority: 'HIGH',
+      createdBy: { id: 3, fullName: 'Client One', email: 'client@test.com', role: 'CLIENT' },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+  saveTasks(defaultTasks);
+  return defaultTasks;
+}
+
+function saveTasks(tasks: TaskDto[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
 export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
-  if (USE_MOCK_API) return mock.getTasks(filter);
-  return apiRequest<TaskDto[]>(`/api/crm/tasks${toQuery(filter)}`);
+  let tasks = loadTasks();
+  if (filter) {
+    if (filter.status) tasks = tasks.filter(t => t.status === filter.status);
+    if (filter.clientId) tasks = tasks.filter(t => t.client.id === filter.clientId);
+    if (filter.assignedToId) tasks = tasks.filter(t => t.assignedTo?.id === filter.assignedToId);
+  }
+  return tasks;
 }
 
 export async function getTask(id: number): Promise<TaskDto> {
-  if (USE_MOCK_API) return mock.getTask(id);
-  return apiRequest<TaskDto>(`/api/crm/tasks/${id}`);
+  const task = loadTasks().find(t => t.id === id);
+  if (!task) throw new Error('Task not found');
+  return task;
 }
 
 export async function createTask(request: TaskCreateRequest): Promise<TaskDto> {
-  if (USE_MOCK_API) return mock.createTask(request);
-  return apiRequest<TaskDto>('/api/crm/tasks', {
-    method: 'POST',
-    body: JSON.stringify(request),
-  });
+  const tasks = loadTasks();
+  const newTask: TaskDto = {
+    id: Date.now(),
+    title: request.title,
+    description: request.description,
+    client: { id: request.clientId, fullName: 'Mock Client', email: 'mock@client.com', role: 'CLIENT' },
+    assignedTo: request.assignedToId ? { id: request.assignedToId, fullName: 'Mock Employee', email: 'mock@employee.com', role: 'EMPLOYEE' } : undefined,
+    status: 'NEW',
+    priority: request.priority || 'MEDIUM',
+    dueDate: request.dueDate,
+    createdBy: { id: 1, fullName: 'Mock Admin', email: 'admin@test.com', role: 'ADMIN' },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  tasks.push(newTask);
+  saveTasks(tasks);
+  return newTask;
 }
 
-export async function requestTask(request: TaskRequestCreateRequest): Promise<TaskDto> {
-  if (USE_MOCK_API) return mock.requestTask(request);
-  return apiRequest<TaskDto>('/api/crm/tasks/request', {
-    method: 'POST',
-    body: JSON.stringify(request),
-  });
+/**
+ * FIXED: requestTask теперь требует передачи clientId через параметр (как это делает backend).
+ * На практике - это должен быть текущий пользователь, но в mock мы не имеем доступа к контексту.
+ * Поэтому этот параметр должен передаваться при вызове с фронтенда.
+ * 
+ * ВАЖНО: Это временное решение. Когда перейдешь на реальный backend - 
+ * backend автоматически возьмет clientId из JWT токена.
+ */
+export async function requestTask(request: TaskRequestCreateRequest & { clientId?: number }): Promise<TaskDto> {
+  const tasks = loadTasks();
+  
+  // Если clientId не передан - используем дефолт для demo
+  const clientId = request.clientId ?? 3;
+  
+  const newTask: TaskDto = {
+    id: Date.now(),
+    title: request.title,
+    description: request.description,
+    client: { id: clientId, fullName: 'Client One', email: 'client@test.com', role: 'CLIENT' },
+    status: 'NEW',
+    priority: 'MEDIUM',
+    createdBy: { id: clientId, fullName: 'Client One', email: 'client@test.com', role: 'CLIENT' },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  tasks.push(newTask);
+  saveTasks(tasks);
+  return newTask;
 }
 
 export async function updateTaskStatus(id: number, status: TaskStatus): Promise<TaskDto> {
-  if (USE_MOCK_API) return mock.updateTaskStatus(id, status);
-  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/status`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status }),
-  });
+  const tasks = loadTasks();
+  const taskIndex = tasks.findIndex(t => t.id === id);
+  if (taskIndex === -1) throw new Error('Task not found');
+  tasks[taskIndex].status = status;
+  tasks[taskIndex].updatedAt = new Date().toISOString();
+  saveTasks(tasks);
+  return tasks[taskIndex];
 }
 
 export async function assignTask(id: number, assigneeId?: number): Promise<TaskDto> {
-  if (USE_MOCK_API) return mock.assignTask(id, assigneeId);
-  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/assign${assigneeId ? `?assigneeId=${assigneeId}` : ''}`, {
-    method: 'PATCH',
-  });
+  const tasks = loadTasks();
+  const taskIndex = tasks.findIndex(t => t.id === id);
+  if (taskIndex === -1) throw new Error('Task not found');
+  tasks[taskIndex].assignedTo = assigneeId ? { id: assigneeId, fullName: 'Mock Employee', email: 'mock@employee.com', role: 'EMPLOYEE' } : undefined;
+  tasks[taskIndex].updatedAt = new Date().toISOString();
+  saveTasks(tasks);
+  return tasks[taskIndex];
 }

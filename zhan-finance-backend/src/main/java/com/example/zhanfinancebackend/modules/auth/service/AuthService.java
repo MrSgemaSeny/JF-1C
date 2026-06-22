@@ -11,6 +11,7 @@ import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.auth.security.JwtService;
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.crm.service.ClientService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -71,7 +72,10 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
-        User user = (User) authentication.getPrincipal();
+        // Правильно: берём User из UserPrincipal
+        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        User user = principal.getUser();
+
         RefreshToken refreshToken = refreshTokenService.create(user);
         return response(user, refreshToken.getToken());
     }

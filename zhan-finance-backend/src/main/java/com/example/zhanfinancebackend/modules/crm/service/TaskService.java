@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class TaskService {
@@ -34,6 +35,32 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks() {
         return taskRepository.findAllWithDetails().stream().map(this::mapToDto).toList();
+    }
+
+    /**
+     * Получить все задачи с опциональной фильтрацией.
+     * Используется только администраторами.
+     */
+    @Transactional(readOnly = true)
+    public List<TaskDto> getAllTasks(Long clientId, Long assignedToId, String status) {
+        Stream<Task> tasks = taskRepository.findAllWithDetails().stream();
+
+        if (clientId != null) {
+            tasks = tasks.filter(t -> t.getClient().getId().equals(clientId));
+        }
+        if (assignedToId != null) {
+            tasks = tasks.filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(assignedToId));
+        }
+        if (status != null && !status.isEmpty()) {
+            try {
+                TaskStatus ts = TaskStatus.valueOf(status);
+                tasks = tasks.filter(t -> t.getStatus() == ts);
+            } catch (IllegalArgumentException e) {
+                // Игнорируем неправильный статус
+            }
+        }
+
+        return tasks.map(this::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)

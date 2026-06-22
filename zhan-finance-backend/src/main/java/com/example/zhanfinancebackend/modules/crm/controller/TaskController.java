@@ -32,14 +32,25 @@ public class TaskController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ApiResponse<List<TaskDto>> getTasks(@AuthenticationPrincipal UserPrincipal principal) {
+    public ApiResponse<List<TaskDto>> getTasks(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(required = false) Long clientId,
+            @RequestParam(required = false) Long assignedToId,
+            @RequestParam(required = false) String status
+    ) {
         User user = principal.getUser();
+
         if (user.getRole() == Role.ADMIN) {
-            return ApiResponse.success(taskService.getAllTasks());
+            // Админ может видеть все задачи, с опциональными фильтрами
+            return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, status));
         }
+
         if (user.getRole() == Role.EMPLOYEE) {
+            // Сотрудник видит только свои назначенные, опции фильтра игнорируются
             return ApiResponse.success(taskService.getTasksForEmployee(user));
         }
+
+        // Клиент видит только свои задачи (clientId берется из текущего юзера)
         return ApiResponse.success(taskService.getTasksForClient(user));
     }
 
@@ -84,7 +95,7 @@ public class TaskController {
         accessService.assertCanUpdateTaskStatus(principal.getUser(), task);
         return ApiResponse.success(taskService.updateTaskStatus(id, request.status()));
     }
-    
+
     @PatchMapping("/{id}/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<TaskDto> assignTask(
