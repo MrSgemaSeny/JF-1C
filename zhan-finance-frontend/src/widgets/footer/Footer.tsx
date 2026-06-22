@@ -111,7 +111,7 @@ export function Footer() {
                 <User className="w-5 h-5" />
               </a>
               <a
-                href="#tel:+77759573787"
+                href="tel:+77759573787"
                 className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
               >
                 <Briefcase className="w-5 h-5" />
