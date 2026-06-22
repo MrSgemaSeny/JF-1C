@@ -41,7 +41,7 @@ function toStoredAuth(response: AuthResponse): StoredAuth {
   return {
     accessToken: response.accessToken,
     refreshToken: response.refreshToken,
-    userId: response.userId,
+    userId: response.id,
     email: response.email,
     role: response.role
   };
