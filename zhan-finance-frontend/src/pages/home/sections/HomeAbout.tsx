@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const polaroids = [
   {
     id: 1,
-    src: 'https://images.unsplash.com/photo-1554200876-56c2f25224fa?q=80&w=600&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1568992687947-868a62a9f521?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Office 1',
     rotation: -15,
     x: -60,
@@ -28,7 +28,7 @@ const polaroids = [
   },
   {
     id: 3,
-    src: 'https://images.unsplash.com/photo-1556761175-5973dc0f32d7?q=80&w=600&auto=format&fit=crop',
+    src: 'https://images.unsplash.com/photo-1730544512990-f9188f203793?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Office 3',
     rotation: -5,
     x: 20,
