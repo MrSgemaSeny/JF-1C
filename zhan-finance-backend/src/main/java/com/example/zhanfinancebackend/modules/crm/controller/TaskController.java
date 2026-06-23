@@ -106,4 +106,13 @@ public class TaskController {
         accessService.assertCanAssignTask(principal.getUser());
         return ApiResponse.success(taskService.assignTask(id, assigneeId));
     }
+
+    @PutMapping("/batch")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ApiResponse<List<TaskDto>> batchUpdateTasks(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskBatchUpdateRequest request
+    ) {
+        return ApiResponse.success(taskService.batchUpdateTasks(request, principal.getUser()));
+    }
 }

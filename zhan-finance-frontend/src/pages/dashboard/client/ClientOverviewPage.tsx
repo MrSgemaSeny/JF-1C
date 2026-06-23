@@ -74,7 +74,7 @@ export function ClientOverviewPage() {
 
     setIsSubmitting(true);
     try {
-      await requestTask({ title, description });
+      await requestTask({ title, description, clientId: user?.userId || 0 });
       setTitle('');
       setDescription('');
       setShowForm(false);

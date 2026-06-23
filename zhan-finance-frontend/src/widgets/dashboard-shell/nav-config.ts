@@ -12,6 +12,8 @@ export const navConfig: Record<UserRole, NavItem[]> = {
     { label: 'Employees', href: ROUTES.ADMIN_EMPLOYEES },
     { label: 'Clients', href: ROUTES.ADMIN_CLIENTS },
     { label: 'Tasks', href: ROUTES.ADMIN_TASKS },
+    { label: 'Archive (Done)', href: ROUTES.ADMIN_ARCHIVE_DONE },
+    { label: 'Archive (Cancelled)', href: ROUTES.ADMIN_ARCHIVE_CANCELLED },
   ],
   EMPLOYEE: [
     { label: 'Overview', href: ROUTES.EMPLOYEE },

@@ -21,8 +21,8 @@ export function ClientTasksPage() {
 
   const handleCreateRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title) return;
-    await requestTask({ title, description });
+    if (!title || !user?.userId) return;
+    await requestTask({ title, description, clientId: user.userId });
     setTitle('');
     setDescription('');
     fetchTasks();

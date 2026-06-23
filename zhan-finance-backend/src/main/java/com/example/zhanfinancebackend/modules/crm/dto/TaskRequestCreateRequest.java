@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record TaskRequestCreateRequest(
         @NotBlank String title,
-        String description
+        String description,
+        Long clientId
 ) {
 }

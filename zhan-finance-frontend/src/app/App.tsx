@@ -16,11 +16,16 @@ import { AdminOverviewPage } from '@/pages/dashboard/admin/AdminOverviewPage';
 import { AdminEmployeesPage } from '@/pages/dashboard/admin/AdminEmployeesPage';
 import { AdminClientsPage } from '@/pages/dashboard/admin/AdminClientsPage';
 import { AdminTasksPage } from '@/pages/dashboard/admin/AdminTasksPage';
+import { AdminArchiveDonePage } from '@/pages/dashboard/admin/AdminArchiveDonePage';
+import { AdminArchiveCancelledPage } from '@/pages/dashboard/admin/AdminArchiveCancelledPage';
 
 // Employee
 import { EmployeeOverviewPage } from '@/pages/dashboard/employee/EmployeeOverviewPage';
 import { EmployeeClientsPage } from '@/pages/dashboard/employee/EmployeeClientsPage';
 import { EmployeeTasksPage } from '@/pages/dashboard/employee/EmployeeTasksPage';
+
+// Shared Task Details
+import { TaskDetailsPage } from '@/pages/task-details/TaskDetailsPage';
 
 // Client
 import { ClientOverviewPage } from '@/pages/dashboard/client/ClientOverviewPage';
@@ -55,6 +60,9 @@ export function App() {
               <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
               <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
               <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
+              <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
+              <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />
+              <Route path={ROUTES.ADMIN_TASK_DETAILS} element={<TaskDetailsPage />} />
             </Route>
 
             {/* Employee Routes */}
@@ -62,6 +70,7 @@ export function App() {
               <Route path={ROUTES.EMPLOYEE} element={<EmployeeOverviewPage />} />
               <Route path={ROUTES.EMPLOYEE_CLIENTS} element={<EmployeeClientsPage />} />
               <Route path={ROUTES.EMPLOYEE_TASKS} element={<EmployeeTasksPage />} />
+              <Route path={ROUTES.EMPLOYEE_TASK_DETAILS} element={<TaskDetailsPage />} />
             </Route>
 
             {/* Client Routes */}

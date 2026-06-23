@@ -5,6 +5,8 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tasks")
@@ -38,6 +40,9 @@ public class Task extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Subtask> subtasks = new ArrayList<>();
 
     protected Task() {
     }
@@ -110,5 +115,29 @@ public class Task extends BaseEntity {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public List<Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    public void setSubtasks(List<Subtask> subtasks) {
+        this.subtasks.clear();
+        if (subtasks != null) {
+            this.subtasks.addAll(subtasks);
+            for (Subtask st : subtasks) {
+                st.setTask(this);
+            }
+        }
+    }
+
+    public void addSubtask(Subtask subtask) {
+        subtasks.add(subtask);
+        subtask.setTask(this);
+    }
+
+    public void removeSubtask(Subtask subtask) {
+        subtasks.remove(subtask);
+        subtask.setTask(null);
     }
 }

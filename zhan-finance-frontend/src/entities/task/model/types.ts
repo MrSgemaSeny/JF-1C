@@ -22,6 +22,16 @@ export interface EmployeeInfoDto {
   email: string;
 }
 
+export type SubtaskStatus = 'NEW' | 'IN_PROGRESS' | 'DONE';
+
+export interface SubtaskDto {
+  id: number;
+  taskId: number;
+  title: string;
+  status: SubtaskStatus;
+  createdAt: string;
+}
+
 export interface TaskDto {
   id: number;
   title: string;
@@ -33,6 +43,7 @@ export interface TaskDto {
   status: TaskStatus;
   priority: TaskPriority;
   dueDate?: string;
+  subtasks?: SubtaskDto[]; // Добавлено для фронтенда (моки)
   createdBy: UserDto;
   createdAt: string;
   updatedAt: string;
@@ -50,10 +61,19 @@ export interface TaskCreateRequest {
 export interface TaskRequestCreateRequest {
   title: string;
   description?: string;
+  clientId: number;
 }
 
 export interface TaskFilter {
   status?: TaskStatus;
   clientId?: number;
   assignedToId?: number;
+}
+
+export interface TaskBatchUpdateRequest {
+  updates: {
+    id: number;
+    status?: TaskStatus;
+    // Можно добавить другие поля для обновления, если нужно
+  }[];
 }

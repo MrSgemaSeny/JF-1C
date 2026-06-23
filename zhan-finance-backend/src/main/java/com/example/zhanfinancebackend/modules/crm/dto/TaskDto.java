@@ -6,6 +6,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 public record TaskDto(
         Long id,
@@ -20,6 +21,7 @@ public record TaskDto(
         LocalDate dueDate,
         UserDto createdBy,
         ZonedDateTime createdAt,
-        ZonedDateTime updatedAt
+        ZonedDateTime updatedAt,
+        List<SubtaskDto> subtasks
 ) {
 }

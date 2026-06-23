@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record TaskCreateRequest(
         @NotBlank String title,
@@ -12,6 +13,7 @@ public record TaskCreateRequest(
         @NotNull Long clientId,
         Long assignedToId,
         TaskPriority priority,
-        LocalDate dueDate
+        LocalDate dueDate,
+        List<SubtaskCreateRequest> subtasks
 ) {
 }

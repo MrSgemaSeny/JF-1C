@@ -1,0 +1,429 @@
+import React, { useState, useRef, useEffect } from 'react';
+import type { TaskDto, SubtaskDto, TaskStatus } from '../model/types';
+import { PriorityBadge, StatusBadge } from '@/shared/ui/Badge';
+import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown } from 'lucide-react';
+import { twMerge } from 'tailwind-merge';
+
+import type { EmployeeDto } from '@/entities/employee/model/types';
+
+interface TaskCardProps {
+  task: TaskDto;
+  onClick?: () => void;
+  className?: string;
+  onUpdateTask: (updatedTask: TaskDto) => void;
+  userRole: 'ADMIN' | 'EMPLOYEE';
+  employees?: EmployeeDto[] | null;
+}
+
+const ALL_STATUSES: TaskStatus[] = ['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'];
+
+function computeTaskStatus(subtasks: SubtaskDto[] | undefined): TaskStatus | null {
+  if (!subtasks || subtasks.length === 0) return null;
+
+  const allNew = subtasks.every(st => st.status === 'NEW');
+  if (allNew) return 'NEW';
+
+  const allDone = subtasks.every(st => st.status === 'DONE');
+  if (allDone) return 'DONE';
+
+  // Any subtask IN_PROGRESS or DONE (but not all DONE) → IN_PROGRESS
+  return 'IN_PROGRESS';
+}
+
+function formatDueDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  return `${day}.${month}`;
+}
+
+function getDueDateInfo(dueDate?: string): { color: string; icon: 'overdue' | 'soon' | 'normal' } | null {
+  if (!dueDate) return null;
+
+  const now = new Date();
+  const due = new Date(dueDate);
+
+  if (due.getTime() < now.getTime()) {
+    return { color: 'text-red-500', icon: 'overdue' };
+  }
+
+  const msIn24h = 24 * 60 * 60 * 1000;
+  if (due.getTime() - now.getTime() < msIn24h) {
+    return { color: 'text-orange-500', icon: 'soon' };
+  }
+
+  return { color: 'text-gray-400', icon: 'normal' };
+}
+
+export function TaskCard({ task, onClick, className, onUpdateTask, userRole, employees }: TaskCardProps) {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editingSubtaskId, setEditingSubtaskId] = useState<number | null>(null);
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const subtaskInputRef = useRef<HTMLInputElement>(null);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
+  const dueDateInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
+  }, [isEditingTitle]);
+
+  useEffect(() => {
+    if (editingSubtaskId !== null && subtaskInputRef.current) {
+      subtaskInputRef.current.focus();
+    }
+  }, [editingSubtaskId]);
+
+  // Close status dropdown on outside click
+  useEffect(() => {
+    if (!isStatusDropdownOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
+        setIsStatusDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isStatusDropdownOpen]);
+
+  const applyAutoStatus = (updatedTask: TaskDto): TaskDto => {
+    const autoStatus = computeTaskStatus(updatedTask.subtasks);
+    if (autoStatus !== null && autoStatus !== updatedTask.status) {
+      return { ...updatedTask, status: autoStatus };
+    }
+    return updatedTask;
+  };
+
+  const handleTitleSave = (e: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) => {
+    if ('key' in e && e.key !== 'Enter') return;
+    setIsEditingTitle(false);
+    const newTitle = (e.target as HTMLInputElement).value.trim();
+    if (newTitle && newTitle !== task.title) {
+      onUpdateTask({ ...task, title: newTitle });
+    }
+  };
+
+  const handleSubtaskSave = (e: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>, subtaskId: number) => {
+    if ('key' in e && e.key !== 'Enter') return;
+    setEditingSubtaskId(null);
+    const newTitle = (e.target as HTMLInputElement).value.trim();
+
+    // If the title is empty, remove the subtask (it was likely a newly added one that user cancelled)
+    if (!newTitle) {
+      const updatedSubtasks = task.subtasks?.filter(st => st.id !== subtaskId);
+      const updatedTask = { ...task, subtasks: updatedSubtasks };
+      onUpdateTask(applyAutoStatus(updatedTask));
+      return;
+    }
+
+    const updatedSubtasks = task.subtasks?.map(st =>
+      st.id === subtaskId ? { ...st, title: newTitle } : st
+    );
+    onUpdateTask({ ...task, subtasks: updatedSubtasks });
+  };
+
+  const handleSubtaskClick = (e: React.MouseEvent, subtask: SubtaskDto) => {
+    e.stopPropagation();
+    let newStatus: SubtaskDto['status'] = 'NEW';
+    if (subtask.status === 'NEW') newStatus = 'IN_PROGRESS';
+    else if (subtask.status === 'IN_PROGRESS') newStatus = 'DONE';
+    else if (subtask.status === 'DONE') newStatus = 'NEW';
+
+    const updatedSubtasks = task.subtasks?.map(st =>
+      st.id === subtask.id ? { ...st, status: newStatus } : st
+    );
+    const updatedTask = { ...task, subtasks: updatedSubtasks };
+    onUpdateTask(applyAutoStatus(updatedTask));
+  };
+
+  const handleAddSubtask = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newSubtask: SubtaskDto = {
+      id: Date.now(),
+      taskId: task.id,
+      title: '',
+      status: 'NEW',
+      createdAt: new Date().toISOString(),
+    };
+    const updatedSubtasks = [...(task.subtasks || []), newSubtask];
+    const updatedTask = { ...task, subtasks: updatedSubtasks };
+    onUpdateTask(applyAutoStatus(updatedTask));
+    setEditingSubtaskId(newSubtask.id);
+  };
+
+  const handleStatusSelect = (e: React.MouseEvent, newStatus: TaskStatus) => {
+    e.stopPropagation();
+    setIsStatusDropdownOpen(false);
+    if (newStatus !== task.status) {
+      onUpdateTask({ ...task, status: newStatus });
+    }
+  };
+
+  const handleDueDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    setIsEditingDueDate(false);
+    const newDate = e.target.value;
+    if (newDate) {
+      onUpdateTask({ ...task, dueDate: new Date(newDate).toISOString() });
+    }
+  };
+
+  const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.stopPropagation();
+    const employeeId = Number(e.target.value);
+    if (!employeeId) {
+      onUpdateTask({ ...task, assignedTo: undefined });
+      return;
+    }
+    const emp = employees?.find(emp => emp.id === employeeId);
+    if (emp) {
+      onUpdateTask({ ...task, assignedTo: { id: emp.id, fullName: emp.fullName, email: emp.email } });
+    }
+  };
+
+  const completedCount = task.subtasks?.filter(st => st.status === 'DONE').length || 0;
+  const inProgressCount = task.subtasks?.filter(st => st.status === 'IN_PROGRESS').length || 0;
+  const totalSubtasks = task.subtasks?.length || 0;
+  const dueDateInfo = getDueDateInfo(task.dueDate);
+
+  return (
+    <div
+      className={twMerge(
+        'flex flex-col bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all h-full min-h-[200px]',
+        isStatusDropdownOpen ? 'relative z-50' : 'relative z-0',
+        className
+      )}
+    >
+      {/* Header: Title + Open button */}
+      <div className="flex items-start justify-between mb-3 gap-2">
+        {isEditingTitle ? (
+          <input
+            ref={titleInputRef}
+            defaultValue={task.title}
+            onBlur={handleTitleSave}
+            onKeyDown={handleTitleSave}
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 font-semibold text-gray-800 text-base bg-gray-50 border border-gray-300 rounded px-2 py-1 outline-none focus:border-brand-green"
+          />
+        ) : (
+          <h3
+            onDoubleClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); }}
+            className="flex-1 font-semibold text-gray-800 text-base leading-tight cursor-text hover:bg-gray-50 rounded px-1 -ml-1 transition-colors"
+            title="Double-click to edit"
+          >
+            {task.title || 'Untitled Task'}
+          </h3>
+        )}
+
+        <button
+          onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+          className="text-gray-400 hover:text-brand-green hover:bg-gray-50 p-1.5 rounded transition-colors flex-shrink-0"
+          title="Open details"
+        >
+          <ArrowUpRight size={18} />
+        </button>
+      </div>
+
+      {/* Client info */}
+      {task.client && (
+        <p className="text-xs text-gray-500 mb-2 truncate bg-gray-50 self-start px-2 py-1 rounded-md">
+          Client: {task.client.fullName}
+        </p>
+      )}
+
+      {/* Assignee info */}
+      {userRole === 'ADMIN' ? (
+        <div className="mb-4 text-xs">
+          <select 
+            value={task.assignedTo?.id || ''}
+            onChange={handleAssigneeChange}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full bg-gray-50 border border-gray-200 text-gray-600 rounded px-2 py-1 outline-none focus:border-brand-green"
+          >
+            <option value="">Не назначен</option>
+            {employees?.map(emp => (
+              <option key={emp.id} value={emp.id}>{emp.fullName}</option>
+            ))}
+          </select>
+        </div>
+      ) : task.assignedTo && (
+        <p className="text-xs text-gray-500 mb-4 truncate bg-gray-50 self-start px-2 py-1 rounded-md">
+          Исполнитель: {task.assignedTo.fullName}
+        </p>
+      )}
+
+      {/* Subtasks list */}
+      <div className="flex-1 flex flex-col gap-2 mb-4">
+        {task.subtasks?.map(st => (
+          <div key={st.id} className="flex items-start gap-2 group">
+            <div
+              onClick={(e) => handleSubtaskClick(e, st)}
+              className="mt-0.5 cursor-pointer shrink-0"
+              title="Click to change status"
+            >
+              {st.status === 'DONE' && <CheckSquare size={16} className="text-brand-green" />}
+              {st.status === 'IN_PROGRESS' && <Clock size={16} className="text-orange-500" />}
+              {st.status === 'NEW' && <Square size={16} className="text-gray-300 group-hover:text-gray-400" />}
+            </div>
+
+            {editingSubtaskId === st.id ? (
+              <input
+                ref={subtaskInputRef}
+                defaultValue={st.title}
+                onBlur={(e) => handleSubtaskSave(e, st.id)}
+                onKeyDown={(e) => handleSubtaskSave(e, st.id)}
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 text-sm bg-gray-50 border border-gray-300 rounded px-1 py-0 outline-none focus:border-brand-green"
+              />
+            ) : (
+              <span
+                onDoubleClick={(e) => { e.stopPropagation(); setEditingSubtaskId(st.id); }}
+                className={twMerge(
+                  "text-sm cursor-text px-1 -ml-1 rounded hover:bg-gray-50 transition-colors flex-1",
+                  st.status === 'DONE' && "line-through text-gray-400",
+                  st.status === 'IN_PROGRESS' && "text-gray-800 font-medium",
+                  st.status === 'NEW' && "text-gray-600"
+                )}
+                title="Double-click to edit"
+              >
+                {st.title}
+              </span>
+            )}
+          </div>
+        ))}
+
+        {/* Add subtask button */}
+        <button
+          onClick={handleAddSubtask}
+          className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-1 self-start"
+        >
+          <Plus size={14} />
+          <span>Добавить подзадачу</span>
+        </button>
+      </div>
+
+      {/* Progress bar */}
+      {totalSubtasks > 0 && (
+        <div className="mb-4">
+          <div className="w-full bg-gray-100 rounded-full h-1 overflow-hidden flex">
+            <div
+              className="bg-brand-green h-1 transition-all duration-300"
+              style={{ width: `${(completedCount / totalSubtasks) * 100}%` }}
+            />
+            <div
+              className="bg-orange-400 h-1 transition-all duration-300"
+              style={{ width: `${(inProgressCount / totalSubtasks) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Status badge with admin dropdown */}
+      <div className="relative mb-3" ref={statusDropdownRef}>
+        <div
+          onClick={(e) => {
+            if (userRole === 'ADMIN') {
+              e.stopPropagation();
+              setIsStatusDropdownOpen(prev => !prev);
+            }
+          }}
+          className={twMerge(
+            'inline-flex items-center gap-1 rounded-full pr-1',
+            userRole === 'ADMIN' && 'cursor-pointer hover:bg-gray-50'
+          )}
+          title={userRole === 'ADMIN' ? 'Click to change status' : undefined}
+        >
+          <StatusBadge status={task.status} />
+          {userRole === 'ADMIN' && (
+            <ChevronDown size={14} className="text-gray-400" />
+          )}
+        </div>
+
+        {isStatusDropdownOpen && userRole === 'ADMIN' && (
+          <div className="absolute left-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[140px]">
+            {ALL_STATUSES.map(s => (
+              <button
+                key={s}
+                onClick={(e) => handleStatusSelect(e, s)}
+                className={twMerge(
+                  'w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors',
+                  s === task.status && 'font-semibold bg-gray-50'
+                )}
+              >
+                <StatusBadge status={s} />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Footer: Priority + dates */}
+      <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
+        <PriorityBadge priority={task.priority} />
+
+        <div className="flex items-center gap-3">
+          {/* Due date */}
+          {dueDateInfo && task.dueDate && !isEditingDueDate && (
+            <span
+              className={twMerge(
+                'flex items-center gap-1 text-[10px] font-medium',
+                dueDateInfo.color,
+                userRole === 'ADMIN' && 'cursor-pointer hover:opacity-80'
+              )}
+              title={userRole === 'ADMIN' ? 'Click to change due date' : `Due: ${new Date(task.dueDate).toLocaleDateString()}`}
+              onClick={(e) => {
+                if (userRole === 'ADMIN') {
+                  e.stopPropagation();
+                  setIsEditingDueDate(true);
+                }
+              }}
+            >
+              {dueDateInfo.icon === 'normal'
+                ? <Calendar size={12} />
+                : <CalendarClock size={12} />
+              }
+              {formatDueDate(task.dueDate)}
+            </span>
+          )}
+
+          {/* Due date - no date yet, admin can add one */}
+          {!task.dueDate && !isEditingDueDate && userRole === 'ADMIN' && (
+            <span
+              className="flex items-center gap-1 text-[10px] text-gray-300 font-medium cursor-pointer hover:text-gray-400 transition-colors"
+              title="Set due date"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditingDueDate(true);
+              }}
+            >
+              <Calendar size={12} />
+            </span>
+          )}
+
+          {/* Native date input for editing */}
+          {isEditingDueDate && (
+            <input
+              ref={dueDateInputRef}
+              type="date"
+              defaultValue={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
+              onChange={handleDueDateChange}
+              onBlur={() => setIsEditingDueDate(false)}
+              onClick={(e) => e.stopPropagation()}
+              autoFocus
+              className="text-[10px] border border-gray-300 rounded px-1 py-0.5 outline-none focus:border-brand-green w-[110px]"
+            />
+          )}
+
+          {/* Created date */}
+          <span className="text-[10px] text-gray-400 font-medium">
+            {new Date(task.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
