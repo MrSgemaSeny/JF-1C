@@ -6,6 +6,7 @@ import { Trust } from '@/widgets/trust/Trust';
 import { HomeServices } from './sections/HomeServices';
 import { Reviews } from '@/widgets/reviews/Reviews';
 import { Team } from '@/widgets/team/Team';
+import { Offices } from '@/widgets/offices/Offices';
 import { Footer } from '@/widgets/footer/Footer';
 import { SolutionPicker } from '@/features/solution-picker/SolutionPicker';
 
@@ -22,6 +23,7 @@ export function HomePage() {
         <SolutionPicker />
         <Reviews />
         <Team />
+        <Offices />
       </main>
       <Footer />
     </>

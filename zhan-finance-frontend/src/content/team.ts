@@ -9,7 +9,7 @@ export const teamRows: TeamMember[][] = [
   [
     {
       name: 'ЖАРИЛКАГАНОВ АМАНКЕЛЬДИ НАКМАДИНОВИЧ',
-      role: 'Руководитель команды',
+      role: 'Руководитель компании',
       photo: '',
       highlight: true,
     },
