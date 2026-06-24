@@ -16,15 +16,36 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final EmailNotificationService emailNotificationService;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.url}")
+    private String frontendUrl;
+
+    public NotificationService(NotificationRepository notificationRepository, EmailNotificationService emailNotificationService) {
         this.notificationRepository = notificationRepository;
+        this.emailNotificationService = emailNotificationService;
+    }
+
+    @Transactional
+    public void createNotification(User user, String title, String message, String relativeLink) {
+        Notification notification = new Notification(user, title, message);
+        notificationRepository.save(notification);
+
+        // Also fire off an email asynchronously
+        String emailText = message;
+        if (relativeLink != null && !relativeLink.isBlank()) {
+            emailText += "\n\nView details here: " + frontendUrl + relativeLink;
+        }
+        
+        // We only send emails to users who have an email address (should be all users)
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            emailNotificationService.sendEmailAsync(user.getEmail(), title, emailText);
+        }
     }
 
     @Transactional
     public void createNotification(User user, String title, String message) {
-        Notification notification = new Notification(user, title, message);
-        notificationRepository.save(notification);
+        createNotification(user, title, message, null);
     }
 
     @Transactional(readOnly = true)

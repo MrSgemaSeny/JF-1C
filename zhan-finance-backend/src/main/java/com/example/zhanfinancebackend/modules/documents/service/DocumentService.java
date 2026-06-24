@@ -61,8 +61,14 @@ public class DocumentService {
         documentAccessService.assertCanCreateFor(actor, targetUser);
 
         String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "File type not allowed: " + contentType);
+        if (contentType == null) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "File type not recognized");
+        }
+        
+        // Relaxing content type checks to allow common image formats and standard documents
+        // For production, maybe use a more robust detection like Apache Tika.
+        if (contentType.contains("exe") || contentType.contains("javascript")) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Executable files are not allowed");
         }
 
         String storageKey = storageService.store(file);
@@ -89,18 +95,22 @@ public class DocumentService {
             // Notify Assigned Employee if exists
             User employee = targetUser.getAssignedEmployee();
             if (employee != null) {
+                String link = taskId != null ? "/employee/tasks/" + taskId : "/employee/documents";
                 notificationService.createNotification(
                         employee,
                         "New Document Uploaded",
-                        "Client " + targetUser.getFullName() + " uploaded a new file: " + document.getFileName()
+                        "Client " + targetUser.getFullName() + " uploaded a new file: " + document.getFileName(),
+                        link
                 );
             }
         } else {
             // Notify the Client
+            String link = "/client/documents";
             notificationService.createNotification(
                     targetUser,
                     "New Document Available",
-                    "A new document has been uploaded for you: " + document.getFileName()
+                    "A new document has been uploaded for you: " + document.getFileName(),
+                    link
             );
         }
 
@@ -161,7 +171,8 @@ public class DocumentService {
             notificationService.createNotification(
                     document.getUser(),
                     "Document Status Updated",
-                    "The status of your document '" + document.getFileName() + "' is now: " + status
+                    "The status of your document '" + document.getFileName() + "' is now: " + status,
+                    "/client/documents"
             );
         }
 

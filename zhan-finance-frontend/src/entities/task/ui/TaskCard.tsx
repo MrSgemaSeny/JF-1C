@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { TaskDto, SubtaskDto, TaskStatus } from '../model/types';
 import { PriorityBadge, StatusBadge } from '@/shared/ui/Badge';
-import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown, MessageSquare, Trash2, X } from 'lucide-react';
+import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown, MessageSquare, Trash2, X, Paperclip, Loader2 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
+import { uploadDocument } from '@/entities/document/api/documentApi';
 
 import type { EmployeeDto } from '@/entities/employee/model/types';
 
@@ -64,6 +65,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
   const [editingSubtaskId, setEditingSubtaskId] = useState<number | null>(null);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
   const allSubtasksDone = hasSubtasks 
@@ -74,6 +76,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
   const subtaskInputRef = useRef<HTMLInputElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
   const dueDateInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
@@ -197,6 +200,22 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
   const totalSubtasks = task.subtasks?.length || 0;
   const dueDateInfo = getDueDateInfo(task.dueDate);
 
+  const handleInlineUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      await uploadDocument(file, task.client?.id, task.id);
+    } catch (err) {
+      console.error('Failed to upload inline', err);
+      alert('Failed to upload document');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div
       className={twMerge(
@@ -229,13 +248,31 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
           </h3>
         )}
 
-        <button
-          onClick={(e) => { e.stopPropagation(); onClick?.(); }}
-          className="text-gray-400 hover:text-brand-green hover:bg-gray-50 p-1.5 rounded transition-colors flex-shrink-0"
-          title="Open details"
-        >
-          <ArrowUpRight size={18} />
-        </button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {/* Hidden file input */}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleInlineUpload} 
+            className="hidden" 
+          />
+          <button
+            onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+            disabled={isUploading}
+            className="text-gray-400 hover:text-brand-green hover:bg-gray-50 p-1.5 rounded transition-colors flex-shrink-0 disabled:opacity-50"
+            title="Attach a document"
+          >
+            {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Paperclip size={16} />}
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+            className="text-gray-400 hover:text-brand-green hover:bg-gray-50 p-1.5 rounded transition-colors flex-shrink-0"
+            title="Open details"
+          >
+            <ArrowUpRight size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Client info */}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, Activity, Clock, Tag, User as UserIcon, XCircle, ArrowUpRight, Check, Calendar, CheckCircle2, ChevronRight, Hash, PlayCircle } from 'lucide-react';
+import { X, MessageSquare, Activity, Clock, Tag, User as UserIcon, XCircle, ArrowUpRight, Check, Calendar, CheckCircle2, ChevronRight, Hash, PlayCircle, FileText, Download } from 'lucide-react';
 import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '../model/types';
 import { getTaskComments, addTaskComment, getTaskHistory } from '../api/taskApi';
+import { getTaskDocuments, downloadDocument } from '@/entities/document/api/documentApi';
+import type { DocumentDto } from '@/entities/document/model/types';
 import { StatusBadge, PriorityBadge } from '@/shared/ui/Badge';
 import { twMerge } from 'tailwind-merge';
 import { Edit2, Plus, Trash2, CheckSquare, Square } from 'lucide-react';
@@ -14,9 +16,10 @@ interface TaskDetailsModalProps {
 }
 
 export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: TaskDetailsModalProps) {
-  const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
+  const [activeTab, setActiveTab] = useState<'comments' | 'history' | 'documents'>('comments');
   const [comments, setComments] = useState<TaskCommentDto[]>([]);
   const [history, setHistory] = useState<TaskActivityDto[]>([]);
+  const [documents, setDocuments] = useState<DocumentDto[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +35,17 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
   useEffect(() => {
     fetchComments();
     fetchHistory();
+    fetchDocuments();
   }, [task.id]);
+
+  const fetchDocuments = async () => {
+    try {
+      const data = await getTaskDocuments(task.id);
+      setDocuments(data);
+    } catch (error) {
+      console.error('Failed to load documents:', error);
+    }
+  };
 
   const fetchComments = async () => {
     try {
@@ -235,6 +248,42 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                   title="Нажмите чтобы изменить"
                 >
                   {task.description || <span className="text-gray-400 italic">Описание отсутствует...</span>}
+                </div>
+              )}
+            </div>
+
+            {/* Documents / Attachments */}
+            <div className="mb-8 group">
+              <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <FileText size={16} /> Вложения ({documents.length})
+              </h3>
+              
+              {documents.length > 0 ? (
+                <div className="grid grid-cols-1 gap-2">
+                  {documents.map(doc => (
+                    <div key={doc.id} className="group/doc bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:border-brand-green transition-all hover:shadow-sm">
+                      <div className="bg-brand-green/10 text-brand-green p-2 rounded-lg shrink-0">
+                        <FileText size={20} />
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="font-medium text-gray-800 text-sm truncate" title={doc.fileName}>{doc.fileName}</span>
+                        <span className="text-xs text-gray-500">
+                          {(doc.fileSize / 1024).toFixed(1)} KB • {new Date(doc.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <button 
+                        onClick={() => downloadDocument(doc.id, doc.fileName)}
+                        className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-md transition-colors opacity-0 group-hover/doc:opacity-100 focus:opacity-100"
+                        title="Скачать"
+                      >
+                        <Download size={18} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-400 italic bg-gray-50 border border-dashed border-gray-200 rounded-lg p-4 text-center">
+                  Нет прикрепленных документов
                 </div>
               )}
             </div>

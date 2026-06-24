@@ -36,11 +36,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final CrmAccessService accessService;
+    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CrmAccessService accessService) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CrmAccessService accessService, com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.accessService = accessService;
+        this.notificationService = notificationService;
     }
 
     @Transactional(readOnly = true)
@@ -145,6 +147,26 @@ public class TaskService {
         Task task = getTaskEntity(taskId);
         if (task.getStatus() != status) {
             logActivity(task, user, "Изменил статус с " + task.getStatus() + " на " + status);
+            
+            // Notify the other party
+            if (user.getRole() == Role.CLIENT) {
+                User employee = task.getClient().getAssignedEmployee();
+                if (employee != null) {
+                    notificationService.createNotification(
+                            employee,
+                            "Task Status Updated",
+                            "Client " + user.getFullName() + " updated task '" + task.getTitle() + "' to " + status,
+                            "/employee/tasks/" + task.getId()
+                    );
+                }
+            } else {
+                notificationService.createNotification(
+                        task.getClient(),
+                        "Task Status Updated",
+                        "The status of your task '" + task.getTitle() + "' has been updated to: " + status,
+                        "/client/documents" // Assuming client sees tasks there for MVP, or a client dashboard
+                );
+            }
         }
         task.setStatus(status);
         return mapToDto(taskRepository.save(task));
@@ -190,6 +212,7 @@ public class TaskService {
             }
 
             if (dto.status() != null && dto.status() != task.getStatus()) {
+                TaskStatus oldStatus = task.getStatus();
                 if (user.getRole() == Role.CLIENT) {
                     if (task.getStatus() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.ON_REVIEW && 
                        (dto.status() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE || dto.status() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.IN_PROGRESS)) {
@@ -198,11 +221,25 @@ public class TaskService {
                                dto.status() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.NEW) {
                         task.setStatus(dto.status());
                     }
-                    // Silently ignore other invalid status changes instead of throwing an exception
-                    // so we don't break their ability to save description/subtasks.
                 } else {
                     accessService.assertCanUpdateTaskStatus(user, task);
                     task.setStatus(dto.status());
+                }
+
+                // Batch status update notification
+                if (task.getStatus() != oldStatus) {
+                    if (user.getRole() == Role.CLIENT) {
+                        User employee = task.getClient().getAssignedEmployee();
+                        if (employee != null) {
+                            notificationService.createNotification(employee, "Task Status Updated", 
+                                "Client updated task '" + task.getTitle() + "' to " + task.getStatus(), 
+                                "/employee/tasks/" + task.getId());
+                        }
+                    } else {
+                        notificationService.createNotification(task.getClient(), "Task Status Updated", 
+                            "Your task '" + task.getTitle() + "' was updated to: " + task.getStatus(), 
+                            "/client/documents");
+                    }
                 }
             }
 
