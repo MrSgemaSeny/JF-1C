@@ -12,7 +12,7 @@ import { useApiData } from '@/shared/hooks/useApiData';
 interface TaskGridBoardProps {
   initialTasks: TaskDto[];
   onBatchSave: (tasks: TaskDto[]) => Promise<void>;
-  userRole: 'ADMIN' | 'EMPLOYEE';
+  userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
 }
 
 export interface TaskGridBoardRef {
