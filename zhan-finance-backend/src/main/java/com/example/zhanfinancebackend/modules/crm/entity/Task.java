@@ -44,6 +44,17 @@ public class Task extends BaseEntity {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subtask> subtasks = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "task_tags", joinColumns = @JoinColumn(name = "task_id"))
+    @Column(name = "tag")
+    private List<String> tags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskComment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskActivity> history = new ArrayList<>();
+
     protected Task() {
     }
 
@@ -139,5 +150,48 @@ public class Task extends BaseEntity {
     public void removeSubtask(Subtask subtask) {
         subtasks.remove(subtask);
         subtask.setTask(null);
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags.clear();
+        if (tags != null) {
+            this.tags.addAll(tags);
+        }
+    }
+
+    public List<TaskComment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<TaskComment> comments) {
+        this.comments.clear();
+        if (comments != null) {
+            this.comments.addAll(comments);
+        }
+    }
+
+    public void addComment(TaskComment comment) {
+        comments.add(comment);
+        comment.setTask(this);
+    }
+
+    public List<TaskActivity> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<TaskActivity> history) {
+        this.history.clear();
+        if (history != null) {
+            this.history.addAll(history);
+        }
+    }
+
+    public void addActivity(TaskActivity activity) {
+        history.add(activity);
+        activity.setTask(this);
     }
 }

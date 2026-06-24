@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { TaskDto, SubtaskDto, TaskStatus } from '../model/types';
 import { PriorityBadge, StatusBadge } from '@/shared/ui/Badge';
-import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown } from 'lucide-react';
+import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown, MessageSquare, Trash2 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 import type { EmployeeDto } from '@/entities/employee/model/types';
@@ -11,20 +11,24 @@ interface TaskCardProps {
   onClick?: () => void;
   className?: string;
   onUpdateTask: (updatedTask: TaskDto) => void;
-  userRole: 'ADMIN' | 'EMPLOYEE';
+  onDeleteTask?: (taskId: number) => void;
+  userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
   employees?: EmployeeDto[] | null;
 }
 
 const ALL_STATUSES: TaskStatus[] = ['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'];
 
-function computeTaskStatus(subtasks: SubtaskDto[] | undefined): TaskStatus | null {
+function computeTaskStatus(subtasks: SubtaskDto[] | undefined, currentStatus: TaskStatus): TaskStatus | null {
   if (!subtasks || subtasks.length === 0) return null;
 
   const allNew = subtasks.every(st => st.status === 'NEW');
   if (allNew) return 'NEW';
 
   const allDone = subtasks.every(st => st.status === 'DONE');
-  if (allDone) return 'DONE';
+  if (allDone) {
+    if (currentStatus === 'NEW') return 'IN_PROGRESS';
+    return null; // Не переводим автоматически в DONE, пользователь должен "Сдать задачу"
+  }
 
   // Any subtask IN_PROGRESS or DONE (but not all DONE) → IN_PROGRESS
   return 'IN_PROGRESS';
@@ -55,11 +59,16 @@ function getDueDateInfo(dueDate?: string): { color: string; icon: 'overdue' | 's
   return { color: 'text-gray-400', icon: 'normal' };
 }
 
-export function TaskCard({ task, onClick, className, onUpdateTask, userRole, employees }: TaskCardProps) {
+export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask, userRole, employees }: TaskCardProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingSubtaskId, setEditingSubtaskId] = useState<number | null>(null);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+
+  const hasSubtasks = task.subtasks && task.subtasks.length > 0;
+  const allSubtasksDone = hasSubtasks 
+    ? task.subtasks!.every(st => st.status === 'DONE')
+    : true;
 
   const titleInputRef = useRef<HTMLInputElement>(null);
   const subtaskInputRef = useRef<HTMLInputElement>(null);
@@ -91,7 +100,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, userRole, emp
   }, [isStatusDropdownOpen]);
 
   const applyAutoStatus = (updatedTask: TaskDto): TaskDto => {
-    const autoStatus = computeTaskStatus(updatedTask.subtasks);
+    const autoStatus = computeTaskStatus(updatedTask.subtasks, task.status);
     if (autoStatus !== null && autoStatus !== updatedTask.status) {
       return { ...updatedTask, status: autoStatus };
     }
@@ -176,12 +185,12 @@ export function TaskCard({ task, onClick, className, onUpdateTask, userRole, emp
     e.stopPropagation();
     const employeeId = Number(e.target.value);
     if (!employeeId) {
-      onUpdateTask({ ...task, assignedTo: undefined });
+      onUpdateTask({ ...task, assignedTo: undefined, assignedToId: undefined });
       return;
     }
     const emp = employees?.find(emp => emp.id === employeeId);
     if (emp) {
-      onUpdateTask({ ...task, assignedTo: { id: emp.id, fullName: emp.fullName, email: emp.email } });
+      onUpdateTask({ ...task, assignedToId: emp.id, assignedTo: { id: emp.id, fullName: emp.fullName, email: emp.email } });
     }
   };
 
@@ -254,6 +263,17 @@ export function TaskCard({ task, onClick, className, onUpdateTask, userRole, emp
         <p className="text-xs text-gray-500 mb-4 truncate bg-gray-50 self-start px-2 py-1 rounded-md">
           Исполнитель: {task.assignedTo.fullName}
         </p>
+      )}
+
+      {/* Tags */}
+      {task.tags && task.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {task.tags.map(tag => (
+            <span key={tag} className="text-[10px] font-medium bg-brand-green/10 text-brand-green px-2 py-0.5 rounded">
+              {tag}
+            </span>
+          ))}
+        </div>
       )}
 
       {/* Subtasks list */}
@@ -357,15 +377,64 @@ export function TaskCard({ task, onClick, className, onUpdateTask, userRole, emp
                 <StatusBadge status={s} />
               </button>
             ))}
+            {onDeleteTask && (
+              <>
+                <div className="my-1 border-t border-gray-100"></div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsStatusDropdownOpen(false);
+                    onDeleteTask(task.id);
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1.5"
+                >
+                  <Trash2 size={12} />
+                  Удалить задачу
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
 
+      {/* Action buttons */}
+      {(userRole === 'EMPLOYEE' || userRole === 'ADMIN') && task.status !== 'ON_REVIEW' && task.status !== 'DONE' && task.status !== 'CANCELLED' && allSubtasksDone && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdateTask({ ...task, status: 'ON_REVIEW' });
+          }}
+          className="mt-3 w-full py-1.5 bg-brand-green/10 text-brand-green font-medium rounded-lg text-xs hover:bg-brand-green/20 transition-colors border border-brand-green/20"
+        >
+          Сдать задачу
+        </button>
+      )}
+
+      {userRole === 'ADMIN' && task.status === 'ON_REVIEW' && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdateTask({ ...task, status: 'DONE' });
+          }}
+          className="mt-3 w-full py-1.5 bg-brand-green text-white font-medium rounded-lg text-xs hover:bg-brand-green/90 transition-colors shadow-sm"
+        >
+          Подтвердить
+        </button>
+      )}
+
       {/* Footer: Priority + dates */}
-      <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
+      <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">
         <PriorityBadge priority={task.priority} />
 
         <div className="flex items-center gap-3">
+          {/* Comments count */}
+          {task.comments && task.comments.length > 0 && (
+            <span className="flex items-center gap-1 text-[10px] text-gray-400 font-medium">
+              <MessageSquare size={12} />
+              {task.comments.length}
+            </span>
+          )}
+
           {/* Due date */}
           {dueDateInfo && task.dueDate && !isEditingDueDate && (
             <span

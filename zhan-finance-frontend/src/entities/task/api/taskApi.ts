@@ -43,9 +43,32 @@ export async function assignTask(id: number, assigneeId?: number): Promise<TaskD
   });
 }
 
+export async function deleteTask(id: number): Promise<void> {
+  return apiRequest<void>(`/api/crm/tasks/${id}`, {
+    method: 'DELETE',
+  });
+}
+
 export async function batchUpdateTasks(updatedTasks: TaskDto[]): Promise<void> {
   await apiRequest<TaskDto[]>('/api/crm/tasks/batch', {
     method: 'PUT',
     body: JSON.stringify({ updates: updatedTasks }),
   });
+}
+
+import type { TaskCommentDto, TaskActivityDto } from '../model/types';
+
+export async function getTaskComments(taskId: number): Promise<TaskCommentDto[]> {
+  return apiRequest<TaskCommentDto[]>(`/api/crm/tasks/${taskId}/comments`);
+}
+
+export async function addTaskComment(taskId: number, text: string): Promise<TaskCommentDto> {
+  return apiRequest<TaskCommentDto>(`/api/crm/tasks/${taskId}/comments`, {
+    method: 'POST',
+    body: JSON.stringify({ text }),
+  });
+}
+
+export async function getTaskHistory(taskId: number): Promise<TaskActivityDto[]> {
+  return apiRequest<TaskActivityDto[]>(`/api/crm/tasks/${taskId}/history`);
 }

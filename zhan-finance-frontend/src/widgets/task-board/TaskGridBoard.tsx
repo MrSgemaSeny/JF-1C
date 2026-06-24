@@ -2,9 +2,10 @@ import React, { useState, useEffect, useMemo, forwardRef, useImperativeHandle } 
 import { TaskCard } from '@/entities/task/ui/TaskCard';
 import type { TaskDto, TaskStatus, TaskPriority } from '@/entities/task/model/types';
 import { TaskSaveButton } from '@/features/task/ui/TaskSaveButton';
-import { useNavigate } from 'react-router-dom';
 import { Filter, ArrowUpDown, X } from 'lucide-react';
 import { getEmployees } from '@/entities/employee/api/employeeApi';
+import { deleteTask } from '@/entities/task/api/taskApi';
+import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useApiData } from '@/shared/hooks/useApiData';
 
@@ -53,12 +54,12 @@ const PRIORITY_WEIGHT: Record<TaskPriority, number> = {
 };
 
 export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({ initialTasks, onBatchSave, userRole }, ref) => {
-  const navigate = useNavigate();
   const [tasks, setTasks] = useState<TaskDto[]>(initialTasks);
   const [isSaving, setIsSaving] = useState(false);
   const [createdTaskIds, setCreatedTaskIds] = useState<Set<number>>(new Set());
+  const [selectedTaskForModal, setSelectedTaskForModal] = useState<TaskDto | null>(null);
 
-  const { data: employees } = useApiData(getEmployees);
+  const { data: employees } = useApiData(userRole === 'ADMIN' ? getEmployees : async () => []);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'ALL'>('ALL');
@@ -164,6 +165,28 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
     setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
   };
 
+  const handleDeleteTask = async (taskId: number) => {
+    if (!window.confirm('Удалить эту задачу навсегда?')) return;
+    
+    if (taskId > 1000000000000) {
+      // Это локальная несохраненная задача, просто удаляем из стейта
+      setTasks(prev => prev.filter(t => t.id !== taskId));
+      setCreatedTaskIds(prev => {
+        const next = new Set(prev);
+        next.delete(taskId);
+        return next;
+      });
+      return;
+    }
+    
+    try {
+      await deleteTask(taskId);
+      setTasks(prev => prev.filter(t => t.id !== taskId));
+    } catch (e) {
+      alert('Ошибка при удалении задачи');
+    }
+  };
+
   const handleSave = async () => {
     if (!hasChanges) return;
     setIsSaving(true);
@@ -181,8 +204,10 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
   };
 
   const handleTaskClick = (id: number) => {
-    const prefix = userRole === 'ADMIN' ? 'admin' : 'employee';
-    navigate(`/${prefix}/tasks/${id}`);
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+      setSelectedTaskForModal(task);
+    }
   };
 
   const clearFilters = () => {
@@ -253,6 +278,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
             task={task} 
             onClick={() => handleTaskClick(task.id)}
             onUpdateTask={handleUpdateTask}
+            onDeleteTask={handleDeleteTask}
             userRole={userRole}
             employees={employees}
           />
@@ -274,6 +300,18 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
         onSave={handleSave}
         onCancel={handleCancel}
       />
+
+      {selectedTaskForModal && (
+        <TaskDetailsModal
+          task={selectedTaskForModal}
+          onClose={() => setSelectedTaskForModal(null)}
+          onUpdateTask={(updated) => {
+            handleUpdateTask(updated);
+            setSelectedTaskForModal(updated);
+          }}
+          userRole={userRole}
+        />
+      )}
     </div>
   );
 }

@@ -32,6 +32,22 @@ export interface SubtaskDto {
   createdAt: string;
 }
 
+export interface TaskCommentDto {
+  id: number;
+  taskId: number;
+  author: UserDto;
+  text: string;
+  createdAt: string;
+}
+
+export interface TaskActivityDto {
+  id: number;
+  taskId: number;
+  actor: UserDto;
+  actionText: string;
+  createdAt: string;
+}
+
 export interface TaskDto {
   id: number;
   title: string;
@@ -43,7 +59,10 @@ export interface TaskDto {
   status: TaskStatus;
   priority: TaskPriority;
   dueDate?: string;
-  subtasks?: SubtaskDto[]; // Добавлено для фронтенда (моки)
+  subtasks?: SubtaskDto[];
+  tags?: string[];
+  comments?: TaskCommentDto[];
+  history?: TaskActivityDto[];
   createdBy: UserDto;
   createdAt: string;
   updatedAt: string;
@@ -74,6 +93,7 @@ export interface TaskBatchUpdateRequest {
   updates: {
     id: number;
     status?: TaskStatus;
+    tags?: string[];
     // Можно добавить другие поля для обновления, если нужно
   }[];
 }

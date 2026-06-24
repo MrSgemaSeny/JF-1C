@@ -22,6 +22,7 @@ public record TaskDto(
         UserDto createdBy,
         ZonedDateTime createdAt,
         ZonedDateTime updatedAt,
-        List<SubtaskDto> subtasks
+        List<SubtaskDto> subtasks,
+        List<String> tags
 ) {
 }

@@ -13,8 +13,12 @@ import com.example.zhanfinancebackend.modules.crm.dto.TaskRequestCreateRequest;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskBatchUpdateRequest;
 import com.example.zhanfinancebackend.modules.crm.dto.SubtaskDto;
 import com.example.zhanfinancebackend.modules.crm.dto.SubtaskCreateRequest;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskCommentDto;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskActivityDto;
 import com.example.zhanfinancebackend.modules.crm.entity.Subtask;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
+import com.example.zhanfinancebackend.modules.crm.entity.TaskComment;
+import com.example.zhanfinancebackend.modules.crm.entity.TaskActivity;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
@@ -135,19 +139,26 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDto updateTaskStatus(Long taskId, TaskStatus status) {
+    public TaskDto updateTaskStatus(Long taskId, TaskStatus status, User user) {
         Task task = getTaskEntity(taskId);
+        if (task.getStatus() != status) {
+            logActivity(task, user, "Изменил статус с " + task.getStatus() + " на " + status);
+        }
         task.setStatus(status);
         return mapToDto(taskRepository.save(task));
     }
 
     @Transactional
-    public TaskDto assignTask(Long taskId, Long assigneeId) {
+    public TaskDto assignTask(Long taskId, Long assigneeId, User user) {
         Task task = getTaskEntity(taskId);
         User assignee = null;
         if (assigneeId != null) {
             assignee = userRepository.findById(assigneeId)
                     .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Assignee not found"));
+        }
+        if (task.getAssignedTo() != assignee) {
+            String assigneeName = assignee != null ? assignee.getFullName() : "Не назначен";
+            logActivity(task, user, "Назначил исполнителя: " + assigneeName);
         }
         task.setAssignedTo(assignee);
         return mapToDto(taskRepository.save(task));
@@ -159,11 +170,27 @@ public class TaskService {
         if (request.updates() == null) return result;
 
         for (TaskDto dto : request.updates()) {
-            Task task = getTaskEntity(dto.id());
-            accessService.assertCanUpdateTaskStatus(user, task);
+            Task task;
+            if (dto.id() != null && dto.id() > 1000000000000L) {
+                // Создаем новую задачу, так как ID сгенерирован на фронтенде
+                User client = user; // fallback
+                if (dto.clientId() != null) {
+                    client = userRepository.findById(dto.clientId()).orElse(user);
+                }
+                task = new Task(dto.title() != null ? dto.title() : "New Task", client, user);
+                if (dto.description() != null) task.setDescription(dto.description());
+                if (dto.priority() != null) task.setPriority(dto.priority());
+                if (dto.status() != null) task.setStatus(dto.status());
+                task = taskRepository.save(task);
+            } else {
+                task = getTaskEntity(dto.id());
+                accessService.assertCanUpdateTaskStatus(user, task);
+            }
 
             if (dto.status() != null) task.setStatus(dto.status());
             if (dto.priority() != null) task.setPriority(dto.priority());
+            if (dto.title() != null) task.setTitle(dto.title());
+            task.setDescription(dto.description());
             task.setDueDate(dto.dueDate());
 
             if (dto.assignedToId() != null) {
@@ -191,14 +218,19 @@ public class TaskService {
                 }
 
                 for (SubtaskDto stDto : dto.subtasks()) {
-                    if (stDto.id() != null) {
-                        task.getSubtasks().stream()
+                    if (stDto.id() != null && stDto.id() > 0) {
+                        Subtask existing = task.getSubtasks().stream()
                                 .filter(st -> st.getId().equals(stDto.id()))
                                 .findFirst()
-                                .ifPresent(st -> {
-                                    st.setTitle(stDto.title());
-                                    if (stDto.status() != null) st.setStatus(stDto.status());
-                                });
+                                .orElse(null);
+                        if (existing != null) {
+                            existing.setTitle(stDto.title());
+                            if (stDto.status() != null) existing.setStatus(stDto.status());
+                        } else {
+                            Subtask newSt = new Subtask(task, stDto.title());
+                            if (stDto.status() != null) newSt.setStatus(stDto.status());
+                            task.addSubtask(newSt);
+                        }
                     } else {
                         Subtask newSt = new Subtask(task, stDto.title());
                         if (stDto.status() != null) newSt.setStatus(stDto.status());
@@ -210,9 +242,58 @@ public class TaskService {
                 task.getSubtasks().clear();
             }
 
+            if (dto.tags() != null) {
+                task.setTags(dto.tags());
+            }
+
+            // Логгируем просто факт пакетного обновления (если что-то реально менялось можно добавить сложную логику)
+            // Пока оставим без логирования каждой мелкой правки при batch-апдейте, 
+            // иначе лог будет заспамлен перетягиванием карточек.
+
             result.add(mapToDto(taskRepository.save(task)));
         }
         return result;
+    }
+
+    @Transactional
+    public TaskCommentDto addComment(Long taskId, String text, User author) {
+        Task task = getTaskEntity(taskId);
+        accessService.assertCanReadTask(author, task);
+        
+        TaskComment comment = new TaskComment(task, author, text);
+        task.addComment(comment);
+        logActivity(task, author, "Оставил комментарий: " + (text.length() > 30 ? text.substring(0, 30) + "..." : text));
+        
+        taskRepository.save(task); // cascading save
+        return mapCommentToDto(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskCommentDto> getTaskComments(Long taskId, User user) {
+        Task task = getTaskEntity(taskId);
+        accessService.assertCanReadTask(user, task);
+        return task.getComments().stream().map(this::mapCommentToDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskActivityDto> getTaskHistory(Long taskId, User user) {
+        Task task = getTaskEntity(taskId);
+        accessService.assertCanReadTask(user, task);
+        return task.getHistory().stream()
+                .sorted(java.util.Comparator.comparing(TaskActivity::getCreatedAt).reversed())
+                .map(this::mapActivityToDto)
+                .toList();
+    }
+
+    @Transactional
+    public void deleteTask(Long taskId) {
+        Task task = getTaskEntity(taskId);
+        taskRepository.delete(task);
+    }
+
+    private void logActivity(Task task, User actor, String actionText) {
+        TaskActivity activity = new TaskActivity(task, actor, actionText);
+        task.addActivity(activity);
     }
 
     public TaskDto mapToDto(Task task) {
@@ -231,7 +312,8 @@ public class TaskService {
                 mapUserToDto(task.getCreatedBy()),
                 task.getCreatedAt() != null ? task.getCreatedAt().atZone(ZoneOffset.UTC) : null,
                 task.getUpdatedAt() != null ? task.getUpdatedAt().atZone(ZoneOffset.UTC) : null,
-                task.getSubtasks() != null ? task.getSubtasks().stream().map(this::mapSubtaskToDto).toList() : List.of()
+                task.getSubtasks() != null ? task.getSubtasks().stream().map(this::mapSubtaskToDto).toList() : List.of(),
+                task.getTags() != null ? new java.util.ArrayList<>(task.getTags()) : List.of()
         );
     }
 
@@ -258,5 +340,25 @@ public class TaskService {
     private EmployeeInfoDto mapUserToEmployeeInfoDto(User user) {
         if (user == null) return null;
         return new EmployeeInfoDto(user.getId(), user.getFullName(), user.getEmail());
+    }
+
+    private TaskCommentDto mapCommentToDto(TaskComment comment) {
+        return new TaskCommentDto(
+                comment.getId(),
+                comment.getTask().getId(),
+                mapUserToDto(comment.getAuthor()),
+                comment.getText(),
+                comment.getCreatedAt() != null ? comment.getCreatedAt().atZone(ZoneOffset.UTC) : null
+        );
+    }
+
+    private TaskActivityDto mapActivityToDto(TaskActivity activity) {
+        return new TaskActivityDto(
+                activity.getId(),
+                activity.getTask().getId(),
+                mapUserToDto(activity.getActor()),
+                activity.getActionText(),
+                activity.getCreatedAt() != null ? activity.getCreatedAt().atZone(ZoneOffset.UTC) : null
+        );
     }
 }

@@ -93,7 +93,7 @@ public class TaskController {
     ) {
         Task task = taskService.getTaskEntity(id);
         accessService.assertCanUpdateTaskStatus(principal.getUser(), task);
-        return ApiResponse.success(taskService.updateTaskStatus(id, request.status()));
+        return ApiResponse.success(taskService.updateTaskStatus(id, request.status(), principal.getUser()));
     }
 
     @PatchMapping("/{id}/assign")
@@ -104,7 +104,7 @@ public class TaskController {
             @RequestParam(required = false) Long assigneeId
     ) {
         accessService.assertCanAssignTask(principal.getUser());
-        return ApiResponse.success(taskService.assignTask(id, assigneeId));
+        return ApiResponse.success(taskService.assignTask(id, assigneeId, principal.getUser()));
     }
 
     @PutMapping("/batch")
@@ -114,5 +114,50 @@ public class TaskController {
             @Valid @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskBatchUpdateRequest request
     ) {
         return ApiResponse.success(taskService.batchUpdateTasks(request, principal.getUser()));
+    }
+
+    @GetMapping("/{id}/comments")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.TaskCommentDto>> getTaskComments(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(taskService.getTaskComments(id, principal.getUser()));
+    }
+
+    @PostMapping("/{id}/comments")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ApiResponse<com.example.zhanfinancebackend.modules.crm.dto.TaskCommentDto> addComment(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body
+    ) {
+        String text = body.get("text");
+        if (text == null || text.trim().isEmpty()) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST, 
+                    "Текст комментария не может быть пустым"
+            );
+        }
+        return ApiResponse.success(taskService.addComment(id, text, principal.getUser()));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<Void> deleteTask(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        taskService.deleteTask(id);
+        return ApiResponse.success(null);
+    }
+
+    @GetMapping("/{id}/history")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.TaskActivityDto>> getTaskHistory(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(taskService.getTaskHistory(id, principal.getUser()));
     }
 }
