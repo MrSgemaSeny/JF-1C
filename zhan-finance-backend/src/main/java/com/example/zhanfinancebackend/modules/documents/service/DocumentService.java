@@ -3,10 +3,14 @@ package com.example.zhanfinancebackend.modules.documents.service;
 import com.example.zhanfinancebackend.common.exception.ApiException;
 import com.example.zhanfinancebackend.common.exception.ErrorCode;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
+
 import com.example.zhanfinancebackend.modules.documents.dto.DocumentDto;
 import com.example.zhanfinancebackend.modules.documents.entity.Document;
 import com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
+import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
+import com.example.zhanfinancebackend.modules.crm.entity.Task;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,8 +24,10 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
     private final StorageService storageService;
     private final DocumentAccessService documentAccessService;
+    private final NotificationService notificationService;
 
     // MVP allowed types
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
@@ -35,16 +41,20 @@ public class DocumentService {
 
     public DocumentService(DocumentRepository documentRepository,
                            UserRepository userRepository,
+                           TaskRepository taskRepository,
                            StorageService storageService,
-                           DocumentAccessService documentAccessService) {
+                           DocumentAccessService documentAccessService,
+                           NotificationService notificationService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
+        this.taskRepository = taskRepository;
         this.storageService = storageService;
         this.documentAccessService = documentAccessService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
-    public DocumentDto uploadDocument(Long targetUserId, MultipartFile file, User actor) {
+    public DocumentDto uploadDocument(Long targetUserId, Long taskId, MultipartFile file, User actor) {
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Target user not found"));
 
@@ -66,7 +76,34 @@ public class DocumentService {
                 file.getSize()
         );
 
+        if (taskId != null) {
+            Task task = taskRepository.findById(taskId)
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Task not found"));
+            document.setTask(task);
+        }
+
         document = documentRepository.save(document);
+
+        // --- Notification Logic ---
+        if (actor.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT) {
+            // Notify Assigned Employee if exists
+            User employee = targetUser.getAssignedEmployee();
+            if (employee != null) {
+                notificationService.createNotification(
+                        employee,
+                        "New Document Uploaded",
+                        "Client " + targetUser.getFullName() + " uploaded a new file: " + document.getFileName()
+                );
+            }
+        } else {
+            // Notify the Client
+            notificationService.createNotification(
+                    targetUser,
+                    "New Document Available",
+                    "A new document has been uploaded for you: " + document.getFileName()
+            );
+        }
+
         return mapToDto(document);
     }
 
@@ -81,6 +118,54 @@ public class DocumentService {
         return documentRepository.findByUserIdOrderByCreatedAtDesc(targetUserId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DocumentDto> getAllVisibleDocuments(User actor) {
+        if (actor.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN) {
+            return documentRepository.findAllByOrderByCreatedAtDesc().stream()
+                    .map(this::mapToDto)
+                    .collect(Collectors.toList());
+        } else if (actor.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.EMPLOYEE) {
+            return documentRepository.findByUser_AssignedEmployee_IdOrderByCreatedAtDesc(actor.getId()).stream()
+                    .map(this::mapToDto)
+                    .collect(Collectors.toList());
+        } else {
+            return getUserDocuments(actor.getId(), actor);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<DocumentDto> getTaskDocuments(Long taskId, User actor) {
+        // Technically anyone who can read the task should be able to read its documents.
+        // For simplicity, we just fetch them. Ideally we check task access here.
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Task not found"));
+        
+        // Assert can read task user
+        documentAccessService.assertCanCreateFor(actor, task.getClient());
+
+        return documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public DocumentDto updateDocumentStatus(Long documentId, String status, User actor) {
+        Document document = getDocumentWithAccessCheck(documentId, actor);
+        document.setStatus(status);
+        document = documentRepository.save(document);
+
+        // --- Notification Logic ---
+        if (actor.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT) {
+            notificationService.createNotification(
+                    document.getUser(),
+                    "Document Status Updated",
+                    "The status of your document '" + document.getFileName() + "' is now: " + status
+            );
+        }
+
+        return mapToDto(document);
     }
 
     @Transactional(readOnly = true)
@@ -107,9 +192,12 @@ public class DocumentService {
         return new DocumentDto(
                 document.getId(),
                 document.getUser().getId(),
+                document.getUser().getFullName(),
+                document.getTask() != null ? document.getTask().getId() : null,
                 document.getFileName(),
                 document.getContentType(),
                 document.getFileSize(),
+                document.getStatus(),
                 document.getCreatedAt()
         );
     }

@@ -14,14 +14,18 @@ export const navConfig: Record<UserRole, NavItem[]> = {
     { label: 'Tasks', href: ROUTES.ADMIN_TASKS },
     { label: 'Archive (Done)', href: ROUTES.ADMIN_ARCHIVE_DONE },
     { label: 'Archive (Cancelled)', href: ROUTES.ADMIN_ARCHIVE_CANCELLED },
+    { label: 'Notifications', href: ROUTES.NOTIFICATIONS },
   ],
   EMPLOYEE: [
     { label: 'Overview', href: ROUTES.EMPLOYEE },
     { label: 'My Clients', href: ROUTES.EMPLOYEE_CLIENTS },
     { label: 'My Tasks', href: ROUTES.EMPLOYEE_TASKS },
+    { label: 'Documents', href: ROUTES.EMPLOYEE_DOCUMENTS },
+    { label: 'Notifications', href: ROUTES.NOTIFICATIONS },
   ],
   CLIENT: [
     { label: 'Overview', href: ROUTES.CLIENT },
     { label: 'Documents', href: ROUTES.CLIENT_DOCUMENTS },
+    { label: 'Notifications', href: ROUTES.NOTIFICATIONS },
   ],
 };

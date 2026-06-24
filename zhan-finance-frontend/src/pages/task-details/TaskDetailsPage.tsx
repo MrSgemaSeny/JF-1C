@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getTask } from '@/entities/task/api/taskApi';
+import { getTaskDocuments, uploadDocument, downloadDocument, deleteDocument, updateDocumentStatus } from '@/entities/document/api/documentApi';
 import type { TaskDto, SubtaskDto } from '@/entities/task/model/types';
+import type { DocumentDto } from '@/entities/document/model/types';
 import { Spinner } from '@/shared/ui/Spinner';
 import { StatusBadge, PriorityBadge } from '@/shared/ui/Badge';
-import { ArrowLeft, CheckSquare, Square, BarChart3, Clock } from 'lucide-react';
+import { ArrowLeft, CheckSquare, Square, BarChart3, Clock, FileText, FileSpreadsheet, File as FileIcon, Upload, Download, Trash2, MoreVertical } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 
@@ -14,19 +16,65 @@ export function TaskDetailsPage() {
   const [task, setTask] = useState<TaskDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [subtasks, setSubtasks] = useState<SubtaskDto[]>([]);
+  const [documents, setDocuments] = useState<DocumentDto[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    getTask(Number(id))
-      .then(data => {
-        setTask(data);
-        // Use real subtasks from the task, or empty list
-        setSubtasks(data.subtasks ?? []);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    
+    Promise.all([
+      getTask(Number(id)),
+      getTaskDocuments(Number(id)).catch(() => []) // if it fails, just empty array
+    ])
+    .then(([taskData, docsData]) => {
+      setTask(taskData);
+      setSubtasks(taskData.subtasks ?? []);
+      setDocuments(docsData);
+    })
+    .catch(console.error)
+    .finally(() => setLoading(false));
   }, [id]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !task) return;
+    
+    setIsUploading(true);
+    try {
+      await uploadDocument(file, task.client?.id, task.id);
+      const updatedDocs = await getTaskDocuments(task.id);
+      setDocuments(updatedDocs);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch (err) {
+      console.error('Failed to upload', err);
+      alert('Failed to upload document');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDownloadDoc = async (doc: DocumentDto) => {
+    try {
+      await downloadDocument(doc.id, doc.fileName);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteDoc = async (id: number) => {
+    if (!window.confirm('Delete this attached document?')) return;
+    try {
+      await deleteDocument(id);
+      if (task) {
+        const updatedDocs = await getTaskDocuments(task.id);
+        setDocuments(updatedDocs);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (loading) return <Spinner />;
   if (!task) return <div className="text-gray-500">Task not found</div>;
@@ -132,6 +180,70 @@ export function TaskDetailsPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Attached Documents */}
+          <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm mt-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Attached Documents</h2>
+              <div>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileUpload} 
+                  className="hidden" 
+                />
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {isUploading ? <Spinner size="sm" /> : <Upload size={16} />}
+                  <span>Attach File</span>
+                </button>
+              </div>
+            </div>
+
+            {documents.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                No documents attached to this task yet.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {documents.map(doc => (
+                  <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:border-brand-green/30 transition-colors group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gray-50 text-gray-400 rounded-lg group-hover:text-brand-green group-hover:bg-brand-green/10 transition-colors">
+                        <FileIcon size={20} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-900 line-clamp-1">{doc.fileName}</span>
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                          <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                          <span>•</span>
+                          <span className={twMerge(
+                            "px-1.5 py-0.5 rounded font-semibold",
+                            doc.status === 'DONE' ? 'bg-green-100 text-green-700' :
+                            doc.status === 'PROCESSING' ? 'bg-orange-100 text-orange-700' :
+                            'bg-gray-100 text-gray-600'
+                          )}>
+                            {doc.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => handleDownloadDoc(doc)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md">
+                        <Download size={16} />
+                      </button>
+                      <button onClick={() => handleDeleteDoc(doc.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

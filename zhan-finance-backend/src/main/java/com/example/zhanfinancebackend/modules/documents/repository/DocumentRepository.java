@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<Document> findByUser_AssignedEmployee_IdOrderByCreatedAtDesc(Long employeeId);
+    List<Document> findAllByOrderByCreatedAtDesc();
+    List<Document> findByTaskIdOrderByCreatedAtDesc(Long taskId);
 }

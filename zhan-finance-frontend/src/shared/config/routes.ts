@@ -16,8 +16,10 @@ export const ROUTES = {
   EMPLOYEE_CLIENTS: '/employee/clients',
   EMPLOYEE_TASKS: '/employee/tasks',
   EMPLOYEE_TASK_DETAILS: '/employee/tasks/:id',
+  EMPLOYEE_DOCUMENTS: '/employee/documents',
   CLIENT: '/client',
   CLIENT_DOCUMENTS: '/client/documents',
+  NOTIFICATIONS: '/notifications',
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];

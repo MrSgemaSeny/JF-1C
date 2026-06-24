@@ -1,6 +1,7 @@
 package com.example.zhanfinancebackend.modules.documents.entity;
 
 import com.example.zhanfinancebackend.modules.auth.entity.User;
+import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -34,6 +35,13 @@ public class Document {
     @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    private Task task;
+
+    @Column(name = "status", length = 50)
+    private String status = "UPLOADED";
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -63,5 +71,9 @@ public class Document {
     public void setContentType(String contentType) { this.contentType = contentType; }
     public Long getFileSize() { return fileSize; }
     public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
+    public Task getTask() { return task; }
+    public void setTask(Task task) { this.task = task; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

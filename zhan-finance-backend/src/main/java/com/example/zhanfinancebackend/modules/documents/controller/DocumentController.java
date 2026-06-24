@@ -36,14 +36,14 @@ public class DocumentController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload a document")
-    public ApiResponse<DocumentUploadResponse> uploadDocument(
+    public ApiResponse<DocumentDto> uploadDocument(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "userId", required = false) Long targetUserId,
+            @RequestParam(value = "taskId", required = false) Long taskId,
             @AuthenticationPrincipal UserPrincipal principal) {
         
         Long finalTargetUserId = targetUserId != null ? targetUserId : principal.getUser().getId();
-        DocumentDto dto = documentService.uploadDocument(finalTargetUserId, file, principal.getUser());
-        return ApiResponse.success(new DocumentUploadResponse(dto.getId(), dto.getFileName()));
+        return ApiResponse.success(documentService.uploadDocument(finalTargetUserId, taskId, file, principal.getUser()));
     }
 
     @GetMapping
@@ -54,6 +54,30 @@ public class DocumentController {
         
         Long finalTargetUserId = targetUserId != null ? targetUserId : principal.getUser().getId();
         return ApiResponse.success(documentService.getUserDocuments(finalTargetUserId, principal.getUser()));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "Get all visible documents for the current employee/admin")
+    public ApiResponse<List<DocumentDto>> getAllDocuments(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(documentService.getAllVisibleDocuments(principal.getUser()));
+    }
+
+    @GetMapping("/task/{taskId}")
+    @Operation(summary = "Get documents for a specific task")
+    public ApiResponse<List<DocumentDto>> getTaskDocuments(
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(documentService.getTaskDocuments(taskId, principal.getUser()));
+    }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Update document status")
+    public ApiResponse<DocumentDto> updateDocumentStatus(
+            @PathVariable Long id,
+            @RequestParam("status") String status,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(documentService.updateDocumentStatus(id, status, principal.getUser()));
     }
 
     @GetMapping("/{id}/download")

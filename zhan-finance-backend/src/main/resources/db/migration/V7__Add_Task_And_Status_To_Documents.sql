@@ -1,0 +1,7 @@
+ALTER TABLE documents
+ADD COLUMN task_id BIGINT,
+ADD COLUMN status VARCHAR(50) DEFAULT 'UPLOADED';
+
+ALTER TABLE documents
+ADD CONSTRAINT fk_documents_task_id
+FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE;

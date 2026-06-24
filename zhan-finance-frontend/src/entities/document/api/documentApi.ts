@@ -1,22 +1,39 @@
 import { apiRequest, API_BASE_URL, getAccessToken } from '@/shared/api/http';
 import type { DocumentDto, DocumentUploadResponse } from '../model/types';
 
-export async function uploadDocument(file: File, userId?: number): Promise<DocumentUploadResponse> {
+export async function uploadDocument(file: File, userId?: number, taskId?: number): Promise<DocumentDto> {
   const formData = new FormData();
   formData.append('file', file);
   if (userId) {
     formData.append('userId', userId.toString());
   }
+  if (taskId) {
+    formData.append('taskId', taskId.toString());
+  }
 
-  return apiRequest<DocumentUploadResponse>('/api/documents/upload', {
+  return apiRequest<DocumentDto>('/api/documents/upload', {
     method: 'POST',
     body: formData,
+  });
+}
+
+export async function getTaskDocuments(taskId: number): Promise<DocumentDto[]> {
+  return apiRequest<DocumentDto[]>(`/api/documents/task/${taskId}`);
+}
+
+export async function updateDocumentStatus(id: number, status: string): Promise<DocumentDto> {
+  return apiRequest<DocumentDto>(`/api/documents/${id}/status?status=${status}`, {
+    method: 'PATCH',
   });
 }
 
 export async function getDocuments(userId?: number): Promise<DocumentDto[]> {
   const query = userId ? `?userId=${userId}` : '';
   return apiRequest<DocumentDto[]>(`/api/documents${query}`);
+}
+
+export async function getAllDocuments(): Promise<DocumentDto[]> {
+  return apiRequest<DocumentDto[]>('/api/documents/all');
 }
 
 export async function deleteDocument(id: number): Promise<void> {

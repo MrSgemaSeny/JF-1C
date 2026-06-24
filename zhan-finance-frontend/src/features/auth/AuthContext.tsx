@@ -59,9 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  useEffect(() => {
-    // http.ts не должен импортировать AuthContext напрямую (циклическая
-    // зависимость), поэтому регистрируем geter/refresh здесь, один раз.
+  // Synchronously configure HTTP client so it's ready for child components' first render
+  useMemo(() => {
     configureAuth(
       () => user?.accessToken ?? null,
       async () => {

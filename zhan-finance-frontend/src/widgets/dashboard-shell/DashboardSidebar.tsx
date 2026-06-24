@@ -12,7 +12,9 @@ import {
   Briefcase,
   LogOut,
   ChevronRight,
+  Bell,
 } from 'lucide-react';
+import { useNotifications } from '@/features/notifications/NotificationContext';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
   'Overview':            <LayoutDashboard size={16} />,
@@ -25,6 +27,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Archive (Cancelled)': <XCircle size={16} />,
   'Documents':           <FileText size={16} />,
   'My Requests':         <Briefcase size={16} />,
+  'Notifications':       <Bell size={16} />,
 };
 
 function getInitials(email?: string): string {
@@ -41,6 +44,7 @@ const ROLE_LABELS: Record<string, string> = {
 export function DashboardSidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const { unreadCount } = useNotifications();
 
   if (!user) return null;
 
@@ -77,7 +81,14 @@ export function DashboardSidebar() {
                 {icon}
               </span>
               <span className="flex-1">{item.label}</span>
-              {isActive && (
+              
+              {item.label === 'Notifications' && unreadCount > 0 && (
+                <span className="flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full shadow-sm">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+              
+              {isActive && item.label !== 'Notifications' && (
                 <ChevronRight size={14} className="opacity-50" />
               )}
             </Link>

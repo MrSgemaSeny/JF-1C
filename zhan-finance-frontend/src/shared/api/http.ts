@@ -74,13 +74,20 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
  * исходную 401-ошибку дальше, вызывающий код решает, что делать
  * (обычно: разлогинить и отправить на /login).
  */
+let refreshPromise: Promise<string | null> | null = null;
+
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getAccessToken();
   try {
     return await rawRequest<T>(path, init, token);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      const newToken = await onUnauthorized();
+      if (!refreshPromise) {
+        refreshPromise = onUnauthorized().finally(() => {
+          refreshPromise = null;
+        });
+      }
+      const newToken = await refreshPromise;
       if (newToken) {
         return await rawRequest<T>(path, init, newToken);
       }

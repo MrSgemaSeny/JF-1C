@@ -7,9 +7,12 @@ import { ServicesPage } from '@/pages/services/ServicesPage';
 import { LoginPage } from '@/pages/auth/login/LoginPage';
 import { RegisterPage } from '@/pages/auth/register/RegisterPage';
 import { AuthProvider } from '@/features/auth/AuthContext';
+import { NotificationProvider } from '@/features/notifications/NotificationContext';
+import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
 import { RoleProtectedRoute } from '@/features/auth/RoleProtectedRoute';
 import { DashboardLayout } from '@/widgets/dashboard-shell/DashboardLayout';
 import { DashboardRedirect } from '@/pages/dashboard/DashboardRedirect';
+import { NotificationsPage } from '@/pages/dashboard/shared/NotificationsPage';
 
 // Admin
 import { AdminOverviewPage } from '@/pages/dashboard/admin/AdminOverviewPage';
@@ -23,6 +26,7 @@ import { AdminArchiveCancelledPage } from '@/pages/dashboard/admin/AdminArchiveC
 import { EmployeeOverviewPage } from '@/pages/dashboard/employee/EmployeeOverviewPage';
 import { EmployeeClientsPage } from '@/pages/dashboard/employee/EmployeeClientsPage';
 import { EmployeeTasksPage } from '@/pages/dashboard/employee/EmployeeTasksPage';
+import { EmployeeDocumentsPage } from '@/pages/dashboard/employee/EmployeeDocumentsPage';
 
 // Shared Task Details
 import { TaskDetailsPage } from '@/pages/task-details/TaskDetailsPage';
@@ -36,51 +40,59 @@ export function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter basename={routerBasename}>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path={ROUTES.HOME} element={<HomePage />} />
-            <Route path={ROUTES.ABOUT} element={<AboutPage />} />
-            <Route path={ROUTES.SERVICES} element={<ServicesPage />} />
-          </Route>
-
-          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
-
-          {/* Dashboard Entry Point */}
-          <Route path={ROUTES.PROFILE} element={<DashboardRedirect />} />
-
-          {/* Dashboard Shell Layout */}
-          <Route element={<DashboardLayout />}>
-            
-            {/* Admin Routes */}
-            <Route element={<RoleProtectedRoute allow={['ADMIN']} />}>
-              <Route path={ROUTES.ADMIN} element={<AdminOverviewPage />} />
-              <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
-              <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
-              <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
-              <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
-              <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />
-              <Route path={ROUTES.ADMIN_TASK_DETAILS} element={<TaskDetailsPage />} />
+      <NotificationProvider>
+        <BrowserRouter basename={routerBasename}>
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path={ROUTES.HOME} element={<HomePage />} />
+              <Route path={ROUTES.ABOUT} element={<AboutPage />} />
+              <Route path={ROUTES.SERVICES} element={<ServicesPage />} />
             </Route>
 
-            {/* Employee Routes */}
-            <Route element={<RoleProtectedRoute allow={['EMPLOYEE']} />}>
-              <Route path={ROUTES.EMPLOYEE} element={<EmployeeOverviewPage />} />
-              <Route path={ROUTES.EMPLOYEE_CLIENTS} element={<EmployeeClientsPage />} />
-              <Route path={ROUTES.EMPLOYEE_TASKS} element={<EmployeeTasksPage />} />
-              <Route path={ROUTES.EMPLOYEE_TASK_DETAILS} element={<TaskDetailsPage />} />
-            </Route>
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
-            {/* Client Routes */}
-            <Route element={<RoleProtectedRoute allow={['CLIENT']} />}>
-              <Route path={ROUTES.CLIENT} element={<ClientOverviewPage />} />
-              <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
+            {/* Dashboard Entry Point */}
+            <Route path={ROUTES.PROFILE} element={<DashboardRedirect />} />
+
+            {/* Dashboard Shell Layout */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<DashboardLayout />}>
+              
+                {/* Admin Routes */}
+              <Route element={<RoleProtectedRoute allow={['ADMIN']} />}>
+                <Route path={ROUTES.ADMIN} element={<AdminOverviewPage />} />
+                <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
+                <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
+                <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
+                <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
+                <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />
+                <Route path={ROUTES.ADMIN_TASK_DETAILS} element={<TaskDetailsPage />} />
+              </Route>
+
+              {/* Employee Routes */}
+              <Route element={<RoleProtectedRoute allow={['EMPLOYEE']} />}>
+                <Route path={ROUTES.EMPLOYEE} element={<EmployeeOverviewPage />} />
+                <Route path={ROUTES.EMPLOYEE_CLIENTS} element={<EmployeeClientsPage />} />
+                <Route path={ROUTES.EMPLOYEE_TASKS} element={<EmployeeTasksPage />} />
+                <Route path={ROUTES.EMPLOYEE_TASK_DETAILS} element={<TaskDetailsPage />} />
+                <Route path={ROUTES.EMPLOYEE_DOCUMENTS} element={<EmployeeDocumentsPage />} />
+              </Route>
+
+              {/* Client Routes */}
+              <Route element={<RoleProtectedRoute allow={['CLIENT']} />}>
+                <Route path={ROUTES.CLIENT} element={<ClientOverviewPage />} />
+                <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
+              </Route>
+              
+              {/* Shared Routes for all authenticated users */}
+              <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+                
+              </Route>
             </Route>
-            
-          </Route>
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

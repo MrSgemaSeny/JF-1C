@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
-import { getClients, getClientStats, ClientStatsDto } from '@/entities/client/api/clientApi';
+import { getClients, getClientStats, ClientStatsDto, assignEmployee } from '@/entities/client/api/clientApi';
 import type { ClientDto } from '@/entities/client/model/types';
 import { useApiData } from '@/shared/hooks/useApiData';
 import { Spinner } from '@/shared/ui/Spinner';
+import { getEmployees } from '@/entities/employee/api/employeeApi';
 
 export function AdminClientsPage() {
   const { data: clients, isLoading: isClientsLoading, error: clientsError, refetch: refetchClients } = useApiData(getClients);
   const { data: statsData, isLoading: isStatsLoading, error: statsError } = useApiData(getClientStats);
+  const { data: employees } = useApiData(getEmployees);
 
   const [stats, setStats] = useState<Record<number, ClientStatsDto>>({});
+  const [assigningId, setAssigningId] = useState<number | null>(null);
 
   useEffect(() => {
     if (statsData) {
@@ -19,6 +22,19 @@ export function AdminClientsPage() {
       setStats(statsMap);
     }
   }, [statsData]);
+
+  const handleAssign = async (clientId: number, employeeId: number) => {
+    setAssigningId(clientId);
+    try {
+      await assignEmployee(clientId, employeeId);
+      refetchClients();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to assign employee');
+    } finally {
+      setAssigningId(null);
+    }
+  };
 
   if (isClientsLoading) return <Spinner />;
   if (clientsError) return <div className="p-4 text-red-500">Error loading data</div>;
@@ -47,7 +63,24 @@ export function AdminClientsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{c.companyName || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{c.user?.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {c.assignedEmployee?.fullName || <span className="text-yellow-600 font-medium">Unassigned</span>}
+                    <select
+                      className="form-select w-full rounded-md border-gray-300 text-sm focus:border-brand-green focus:ring-brand-green disabled:opacity-50"
+                      value={c.assignedEmployee?.id || ''}
+                      disabled={assigningId === c.id}
+                      onChange={(e) => {
+                        const newEmpId = parseInt(e.target.value, 10);
+                        if (!isNaN(newEmpId)) {
+                          handleAssign(c.id, newEmpId);
+                        }
+                      }}
+                    >
+                      <option value="" disabled>Select Employee</option>
+                      {employees?.map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                          {emp.fullName}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {isStatsLoading ? (
