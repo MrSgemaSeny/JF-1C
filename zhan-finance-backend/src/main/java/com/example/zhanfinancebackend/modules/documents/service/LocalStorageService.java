@@ -25,7 +25,7 @@ public class LocalStorageService implements StorageService {
     private final Path rootLocation;
 
     public LocalStorageService(@Value("${app.storage.local.path:./uploads}") String storagePath) {
-        this.rootLocation = Paths.get(storagePath);
+        this.rootLocation = Paths.get(storagePath).toAbsolutePath().normalize();
     }
 
     @PostConstruct

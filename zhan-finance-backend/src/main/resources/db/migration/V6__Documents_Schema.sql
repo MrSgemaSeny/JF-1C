@@ -9,8 +9,8 @@ CREATE TABLE documents (
     file_size   BIGINT NOT NULL,              -- в байтах
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
-    CONSTRAINT fk_documents_user     FOREIGN KEY (user_id)     REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_documents_uploader FOREIGN KEY (uploaded_by) REFERENCES users(id)
+    CONSTRAINT fk_documents_user     FOREIGN KEY (user_id)     REFERENCES app_users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_documents_uploader FOREIGN KEY (uploaded_by) REFERENCES app_users(id)
 );
 
 CREATE INDEX idx_documents_user ON documents(user_id);
