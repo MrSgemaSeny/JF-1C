@@ -5,12 +5,15 @@ import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.crm.dto.ClientDto;
+import com.example.zhanfinancebackend.modules.crm.dto.EmployeeDto;
 import com.example.zhanfinancebackend.modules.crm.service.ClientService;
 import com.example.zhanfinancebackend.modules.crm.service.CrmAccessService;
+import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
@@ -19,15 +22,18 @@ public class ClientController {
 
     private final ClientService clientService;
     private final CrmAccessService accessService;
+    private final UserRepository userRepository;
 
-    public ClientController(ClientService clientService, CrmAccessService accessService) {
+    public ClientController(ClientService clientService, CrmAccessService accessService, UserRepository userRepository) {
         this.clientService = clientService;
         this.accessService = accessService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<List<ClientDto>> getClients(@AuthenticationPrincipal UserPrincipal principal) {
+
         User user = principal.getUser();
         if (user.getRole() == Role.ADMIN) {
             return ApiResponse.success(clientService.getAllClients());

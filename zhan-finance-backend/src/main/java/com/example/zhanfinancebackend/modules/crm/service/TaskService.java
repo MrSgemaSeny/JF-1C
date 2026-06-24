@@ -3,6 +3,7 @@ package com.example.zhanfinancebackend.modules.crm.service;
 import com.example.zhanfinancebackend.common.exception.ApiException;
 import com.example.zhanfinancebackend.common.exception.ErrorCode;
 import com.example.zhanfinancebackend.modules.auth.dto.UserDto;
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.crm.dto.ClientInfoDto;
@@ -134,6 +135,7 @@ public class TaskService {
         Task task = new Task(request.title(), client, client);
         task.setDescription(request.description());
         task.setStatus(TaskStatus.NEW);
+        task.setDueDate(request.dueDate());
 
         return mapToDto(taskRepository.save(task));
     }
@@ -184,20 +186,45 @@ public class TaskService {
                 task = taskRepository.save(task);
             } else {
                 task = getTaskEntity(dto.id());
-                accessService.assertCanUpdateTaskStatus(user, task);
+                accessService.assertCanUpdateTaskDetails(user, task);
             }
 
-            if (dto.status() != null) task.setStatus(dto.status());
-            if (dto.priority() != null) task.setPriority(dto.priority());
+            if (dto.status() != null && dto.status() != task.getStatus()) {
+                if (user.getRole() == Role.CLIENT) {
+                    if (task.getStatus() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.ON_REVIEW && 
+                       (dto.status() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE || dto.status() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.IN_PROGRESS)) {
+                        task.setStatus(dto.status());
+                    } else if (dto.status() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.IN_PROGRESS || 
+                               dto.status() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.NEW) {
+                        task.setStatus(dto.status());
+                    }
+                    // Silently ignore other invalid status changes instead of throwing an exception
+                    // so we don't break their ability to save description/subtasks.
+                } else {
+                    accessService.assertCanUpdateTaskStatus(user, task);
+                    task.setStatus(dto.status());
+                }
+            }
+
+            if (dto.priority() != null) {
+                if (user.getRole() == Role.CLIENT && dto.priority() != task.getPriority()) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Client cannot change task priority");
+                }
+                task.setPriority(dto.priority());
+            }
+
             if (dto.title() != null) task.setTitle(dto.title());
             task.setDescription(dto.description());
             task.setDueDate(dto.dueDate());
 
             if (dto.assignedToId() != null) {
+                if (user.getRole() == Role.CLIENT && (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(dto.assignedToId()))) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Client cannot assign tasks");
+                }
                 User assignee = userRepository.findById(dto.assignedToId())
                         .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Assignee not found"));
                 task.setAssignedTo(assignee);
-            } else {
+            } else if (user.getRole() != Role.CLIENT) {
                 task.setAssignedTo(null);
             }
 

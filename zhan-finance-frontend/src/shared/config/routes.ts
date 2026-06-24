@@ -17,7 +17,6 @@ export const ROUTES = {
   EMPLOYEE_TASKS: '/employee/tasks',
   EMPLOYEE_TASK_DETAILS: '/employee/tasks/:id',
   CLIENT: '/client',
-  CLIENT_TASKS: '/client/tasks',
   CLIENT_DOCUMENTS: '/client/documents',
 } as const;
 

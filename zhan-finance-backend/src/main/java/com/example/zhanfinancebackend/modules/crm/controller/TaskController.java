@@ -108,7 +108,7 @@ public class TaskController {
     }
 
     @PutMapping("/batch")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
     public ApiResponse<List<TaskDto>> batchUpdateTasks(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskBatchUpdateRequest request
@@ -159,5 +159,31 @@ public class TaskController {
             @PathVariable Long id
     ) {
         return ApiResponse.success(taskService.getTaskHistory(id, principal.getUser()));
+    }
+
+    /**
+     * PATCH /api/crm/tasks/{id}/review-decision
+     * Только для CLIENT: принять (DONE) или вернуть на доработку (IN_PROGRESS) задачу со статусом ON_REVIEW.
+     */
+    @PatchMapping("/{id}/review-decision")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
+    public ApiResponse<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> reviewDecision(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body
+    ) {
+        String decision = body.get("decision"); // "ACCEPT" or "REJECT"
+        com.example.zhanfinancebackend.modules.crm.entity.TaskStatus newStatus;
+        if ("ACCEPT".equals(decision)) {
+            newStatus = com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE;
+        } else if ("REJECT".equals(decision)) {
+            newStatus = com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.IN_PROGRESS;
+        } else {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST,
+                    "decision должен быть ACCEPT или REJECT"
+            );
+        }
+        return ApiResponse.success(taskService.updateTaskStatus(id, newStatus, principal.getUser()));
     }
 }

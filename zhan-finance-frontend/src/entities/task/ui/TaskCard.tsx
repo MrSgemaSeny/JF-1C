@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { TaskDto, SubtaskDto, TaskStatus } from '../model/types';
 import { PriorityBadge, StatusBadge } from '@/shared/ui/Badge';
-import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown, MessageSquare, Trash2 } from 'lucide-react';
+import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown, MessageSquare, Trash2, X } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 import type { EmployeeDto } from '@/entities/employee/model/types';
@@ -48,15 +48,15 @@ function getDueDateInfo(dueDate?: string): { color: string; icon: 'overdue' | 's
   const due = new Date(dueDate);
 
   if (due.getTime() < now.getTime()) {
-    return { color: 'text-red-500', icon: 'overdue' };
+    return { color: 'red', icon: 'overdue' };
   }
 
   const msIn24h = 24 * 60 * 60 * 1000;
   if (due.getTime() - now.getTime() < msIn24h) {
-    return { color: 'text-orange-500', icon: 'soon' };
+    return { color: 'orange', icon: 'soon' };
   }
 
-  return { color: 'text-gray-400', icon: 'normal' };
+  return { color: 'gray', icon: 'normal' };
 }
 
 export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask, userRole, employees }: TaskCardProps) {
@@ -176,9 +176,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
     e.stopPropagation();
     setIsEditingDueDate(false);
     const newDate = e.target.value;
-    if (newDate) {
-      onUpdateTask({ ...task, dueDate: new Date(newDate).toISOString() });
-    }
+    onUpdateTask({ ...task, dueDate: newDate ? new Date(newDate).toISOString() : undefined });
   };
 
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -220,7 +218,10 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
           />
         ) : (
           <h3
-            onDoubleClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); }}
+            onDoubleClick={(e) => {
+              e.stopPropagation(); 
+              setIsEditingTitle(true);
+            }}
             className="flex-1 font-semibold text-gray-800 text-base leading-tight cursor-text hover:bg-gray-50 rounded px-1 -ml-1 transition-colors"
             title="Double-click to edit"
           >
@@ -313,6 +314,18 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
                 {st.title}
               </span>
             )}
+            
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const updatedSubtasks = task.subtasks?.filter(sub => sub.id !== st.id);
+                onUpdateTask({ ...task, subtasks: updatedSubtasks });
+              }}
+              className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+              title="Удалить подзадачу"
+            >
+              <X size={16} />
+            </button>
           </div>
         ))}
 
@@ -377,7 +390,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
                 <StatusBadge status={s} />
               </button>
             ))}
-            {onDeleteTask && (
+            {onDeleteTask && userRole === 'ADMIN' && (
               <>
                 <div className="my-1 border-t border-gray-100"></div>
                 <button
@@ -422,6 +435,29 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
         </button>
       )}
 
+      {userRole === 'CLIENT' && task.status === 'ON_REVIEW' && (
+        <div className="mt-3 flex gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateTask({ ...task, status: 'DONE' });
+            }}
+            className="flex-1 py-1.5 bg-brand-green text-white font-medium rounded-lg text-xs hover:bg-brand-green/90 transition-colors shadow-sm"
+          >
+            Принять работу
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateTask({ ...task, status: 'IN_PROGRESS' });
+            }}
+            className="flex-1 py-1.5 bg-red-100 text-red-600 font-medium rounded-lg text-xs hover:bg-red-200 transition-colors"
+          >
+            На доработку
+          </button>
+        </div>
+      )}
+
       {/* Footer: Priority + dates */}
       <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">
         <PriorityBadge priority={task.priority} />
@@ -435,42 +471,42 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
             </span>
           )}
 
-          {/* Due date */}
-          {dueDateInfo && task.dueDate && !isEditingDueDate && (
+          {/* Due date badge (clickable) */}
+          {task.dueDate && !isEditingDueDate && dueDateInfo && (
             <span
               className={twMerge(
-                'flex items-center gap-1 text-[10px] font-medium',
-                dueDateInfo.color,
-                userRole === 'ADMIN' && 'cursor-pointer hover:opacity-80'
+                'flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium cursor-pointer transition-all shadow-sm border',
+                dueDateInfo.color === 'red' ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' :
+                dueDateInfo.color === 'orange' ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100' :
+                'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
               )}
-              title={userRole === 'ADMIN' ? 'Click to change due date' : `Due: ${new Date(task.dueDate).toLocaleDateString()}`}
+              title="Click to change due date"
               onClick={(e) => {
-                if (userRole === 'ADMIN') {
-                  e.stopPropagation();
-                  setIsEditingDueDate(true);
-                }
+                e.stopPropagation();
+                setIsEditingDueDate(true);
               }}
             >
               {dueDateInfo.icon === 'normal'
-                ? <Calendar size={12} />
-                : <CalendarClock size={12} />
+                ? <Calendar size={14} />
+                : <CalendarClock size={14} />
               }
               {formatDueDate(task.dueDate)}
             </span>
           )}
 
-          {/* Due date - no date yet, admin can add one */}
-          {!task.dueDate && !isEditingDueDate && userRole === 'ADMIN' && (
-            <span
-              className="flex items-center gap-1 text-[10px] text-gray-300 font-medium cursor-pointer hover:text-gray-400 transition-colors"
+          {/* Due date - no date yet */}
+          {!task.dueDate && !isEditingDueDate && (
+            <button
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-50/80 text-gray-400 hover:bg-brand-green/10 hover:text-brand-green transition-all text-xs font-medium border border-dashed border-gray-300 hover:border-brand-green/50"
               title="Set due date"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditingDueDate(true);
               }}
             >
-              <Calendar size={12} />
-            </span>
+              <Calendar size={14} />
+              <span>Дедлайн</span>
+            </button>
           )}
 
           {/* Native date input for editing */}
@@ -483,7 +519,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
               onBlur={() => setIsEditingDueDate(false)}
               onClick={(e) => e.stopPropagation()}
               autoFocus
-              className="text-[10px] border border-gray-300 rounded px-1 py-0.5 outline-none focus:border-brand-green w-[110px]"
+              className="text-xs border border-brand-green bg-brand-green/5 text-gray-700 rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green shadow-sm transition-all w-[125px]"
             />
           )}
 

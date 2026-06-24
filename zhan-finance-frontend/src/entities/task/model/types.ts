@@ -81,6 +81,7 @@ export interface TaskRequestCreateRequest {
   title: string;
   description?: string;
   clientId: number;
+  dueDate?: string;
 }
 
 export interface TaskFilter {

@@ -80,6 +80,25 @@ public class CrmAccessService {
         }
     }
 
+    public boolean canUpdateTaskDetails(User actor, Task task) {
+        if (actor.getRole() == Role.ADMIN) {
+            return true;
+        }
+        if (actor.getRole() == Role.EMPLOYEE) {
+            return sameUser(actor, task.getAssignedTo());
+        }
+        if (actor.getRole() == Role.CLIENT) {
+            return sameUser(actor, task.getClient());
+        }
+        return false;
+    }
+
+    public void assertCanUpdateTaskDetails(User actor, Task task) {
+        if (!canUpdateTaskDetails(actor, task)) {
+            throw new ApiException(ErrorCode.FORBIDDEN, "Task details update denied");
+        }
+    }
+
     public boolean canAssignClient(User actor) {
         return actor.getRole() == Role.ADMIN;
     }

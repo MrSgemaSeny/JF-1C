@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, Activity, Clock, Tag, User as UserIcon } from 'lucide-react';
+import { X, MessageSquare, Activity, Clock, Tag, User as UserIcon, XCircle, ArrowUpRight, Check, Calendar, CheckCircle2, ChevronRight, Hash, PlayCircle } from 'lucide-react';
 import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '../model/types';
 import { getTaskComments, addTaskComment, getTaskHistory } from '../api/taskApi';
 import { StatusBadge, PriorityBadge } from '@/shared/ui/Badge';
@@ -134,7 +134,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
         <div className="flex items-start justify-between p-6 border-b border-gray-100">
           <div className="flex-1 mr-4">
             <div className="flex items-center gap-3 mb-2">
-              {isEditingTitle && (userRole === 'ADMIN' || userRole === 'EMPLOYEE') ? (
+              {isEditingTitle ? (
                 <input
                   type="text"
                   value={editedTitle}
@@ -147,8 +147,8 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
               ) : (
                 <h2 
                   className="text-2xl font-bold text-gray-800 cursor-pointer hover:bg-gray-50 rounded px-1 -ml-1 transition-colors flex-1"
-                  onClick={() => (userRole === 'ADMIN' || userRole === 'EMPLOYEE') && setIsEditingTitle(true)}
-                  title={(userRole === 'ADMIN' || userRole === 'EMPLOYEE') ? "Нажмите чтобы изменить" : ""}
+                  onClick={() => setIsEditingTitle(true)}
+                  title="Нажмите чтобы изменить"
                 >
                   {task.title}
                 </h2>
@@ -191,7 +191,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
             <div className="mb-8 group">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">Описание</h3>
-                {!isEditingDescription && (userRole === 'ADMIN' || userRole === 'EMPLOYEE') && (
+                {!isEditingDescription && (
                   <button 
                     onClick={() => setIsEditingDescription(true)}
                     className="text-gray-400 hover:text-brand-green opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-xs"
@@ -230,9 +230,9 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                 </div>
               ) : (
                 <div 
-                  onClick={() => (userRole === 'ADMIN' || userRole === 'EMPLOYEE') && setIsEditingDescription(true)}
+                  onClick={() => setIsEditingDescription(true)}
                   className="text-gray-600 bg-gray-50 p-4 rounded-xl min-h-[100px] whitespace-pre-wrap cursor-pointer hover:bg-gray-100 transition-colors"
-                  title={(userRole === 'ADMIN' || userRole === 'EMPLOYEE') ? "Нажмите чтобы изменить" : ""}
+                  title="Нажмите чтобы изменить"
                 >
                   {task.description || <span className="text-gray-400 italic">Описание отсутствует...</span>}
                 </div>
@@ -251,28 +251,24 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                     className="inline-flex items-center gap-1 bg-brand-green/10 text-brand-green px-3 py-1 rounded-full text-sm font-medium"
                   >
                     {tag}
-                    {(userRole === 'ADMIN' || userRole === 'EMPLOYEE') && (
                       <button 
                         onClick={() => handleRemoveTag(tag)}
                         className="hover:text-red-500 ml-1"
                       >
                         &times;
                       </button>
-                    )}
                   </span>
                 ))}
                 {(!task.tags || task.tags.length === 0) && (
                   <span className="text-gray-400 text-sm">Нет меток</span>
                 )}
               </div>
-              {(userRole === 'ADMIN' || userRole === 'EMPLOYEE') && (
                 <input 
                   type="text" 
                   placeholder="Добавить метку (Enter)" 
                   onKeyDown={handleAddTag}
                   className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-brand-green w-full max-w-[200px]"
                 />
-              )}
             </div>
 
             {/* Subtasks */}
@@ -285,12 +281,11 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                 {task.subtasks?.map(st => (
                   <div key={st.id} className="flex items-start gap-2 text-sm p-2 hover:bg-gray-50 rounded-lg group">
                     <button
-                      onClick={() => (userRole === 'ADMIN' || userRole === 'EMPLOYEE') && handleToggleSubtask(st.id)}
+                      onClick={() => handleToggleSubtask(st.id)}
                       className={twMerge(
                         "mt-0.5 text-gray-400 hover:text-brand-green transition-colors",
                         st.status === 'DONE' && "text-brand-green"
                       )}
-                      disabled={userRole !== 'ADMIN' && userRole !== 'EMPLOYEE'}
                     >
                       {st.status === 'DONE' ? <CheckSquare size={16} /> : <Square size={16} />}
                     </button>
@@ -302,14 +297,13 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                       {st.title}
                     </span>
 
-                    {(userRole === 'ADMIN' || userRole === 'EMPLOYEE') && (
                       <button
                         onClick={() => handleDeleteSubtask(st.id)}
-                        className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+                        className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+                        title="Удалить подзадачу"
                       >
-                        <Trash2 size={14} />
+                        <X size={16} />
                       </button>
-                    )}
                   </div>
                 ))}
                 {(!task.subtasks || task.subtasks.length === 0) && (
@@ -317,7 +311,6 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                 )}
               </div>
 
-              {(userRole === 'ADMIN' || userRole === 'EMPLOYEE') && (
                 <div className="flex items-center gap-2 px-2">
                   <input
                     type="text"
@@ -335,7 +328,6 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                     <Plus size={16} />
                   </button>
                 </div>
-              )}
             </div>
           </div>
 

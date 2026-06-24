@@ -29,7 +29,6 @@ import { TaskDetailsPage } from '@/pages/task-details/TaskDetailsPage';
 
 // Client
 import { ClientOverviewPage } from '@/pages/dashboard/client/ClientOverviewPage';
-import { ClientTasksPage } from '@/pages/dashboard/client/ClientTasksPage';
 import { ClientDocumentsPage } from '@/pages/dashboard/client/ClientDocumentsPage';
 
 export function App() {
@@ -76,7 +75,6 @@ export function App() {
             {/* Client Routes */}
             <Route element={<RoleProtectedRoute allow={['CLIENT']} />}>
               <Route path={ROUTES.CLIENT} element={<ClientOverviewPage />} />
-              <Route path={ROUTES.CLIENT_TASKS} element={<ClientTasksPage />} />
               <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
             </Route>
             

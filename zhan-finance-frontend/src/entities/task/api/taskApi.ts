@@ -72,3 +72,10 @@ export async function addTaskComment(taskId: number, text: string): Promise<Task
 export async function getTaskHistory(taskId: number): Promise<TaskActivityDto[]> {
   return apiRequest<TaskActivityDto[]>(`/api/crm/tasks/${taskId}/history`);
 }
+
+export async function reviewTaskDecision(taskId: number, decision: 'ACCEPT' | 'REJECT'): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/crm/tasks/${taskId}/review-decision`, {
+    method: 'PATCH',
+    body: JSON.stringify({ decision }),
+  });
+}

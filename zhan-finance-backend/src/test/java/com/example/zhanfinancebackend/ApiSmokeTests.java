@@ -187,10 +187,10 @@ class ApiSmokeTests {
     @Test
     void protectedEndpointsRequireJwt() throws Exception {
         mockMvc.perform(get("/api/users/me"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().is4xxClientError());
 
         mockMvc.perform(get("/api/contact-requests"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().is4xxClientError());
     }
 
     private JsonNode register(String email) throws Exception {

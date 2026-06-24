@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getTasks, requestTask } from '@/entities/task/api/taskApi';
+import { getTasks, requestTask, reviewTaskDecision, batchUpdateTasks } from '@/entities/task/api/taskApi';
 import type { TaskDto, TaskStatus } from '@/entities/task/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@/shared/ui/Spinner';
+import { TaskGridBoard } from '@/widgets/task-board/TaskGridBoard';
 
 const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   NEW: 'New',
@@ -30,15 +30,16 @@ const PRIORITY_COLORS: Record<string, string> = {
 
 export function ClientOverviewPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
 
   // Form state
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [dueDate, setDueDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filter state
@@ -74,9 +75,15 @@ export function ClientOverviewPage() {
 
     setIsSubmitting(true);
     try {
-      await requestTask({ title, description, clientId: user?.userId || 0 });
+      await requestTask({ 
+        title, 
+        description, 
+        clientId: user?.userId || 0,
+        dueDate: dueDate ? new Date(dueDate).toISOString() : undefined 
+      });
       setTitle('');
       setDescription('');
+      setDueDate('');
       setShowForm(false);
       await fetchTasks();
     } catch (err) {
@@ -84,6 +91,35 @@ export function ClientOverviewPage() {
       console.error(err);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateTask = async (updatedTask: TaskDto) => {
+    // CLIENT может только менять статус ON_REVIEW -> DONE или IN_PROGRESS через специальный endpoint
+    const original = tasks.find(t => t.id === updatedTask.id);
+    if (original && original.status === 'ON_REVIEW' && updatedTask.status !== original.status) {
+      const decision = updatedTask.status === 'DONE' ? 'ACCEPT' : 'REJECT';
+      try {
+        const result = await reviewTaskDecision(updatedTask.id, decision);
+        setTasks(prev => prev.map(t => t.id === result.id ? result : t));
+        if (selectedTask?.id === result.id) setSelectedTask(result);
+      } catch (err) {
+        console.error(err);
+        alert('Не удалось обновить статус задачи');
+      }
+    } else {
+      // Для комментариев и других обновлений — просто обновляем локальный стейт
+      setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
+      if (selectedTask?.id === updatedTask.id) setSelectedTask(updatedTask);
+    }
+  };
+
+  const handleBatchSave = async (allTasks: TaskDto[]) => {
+    try {
+      await batchUpdateTasks(allTasks);
+      await fetchTasks();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update tasks');
     }
   };
 
@@ -175,6 +211,18 @@ export function ClientOverviewPage() {
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Deadline (optional)
+              </label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-green"
+              />
+            </div>
+
             <div className="flex gap-2">
               <button
                 type="submit"
@@ -189,6 +237,7 @@ export function ClientOverviewPage() {
                   setShowForm(false);
                   setTitle('');
                   setDescription('');
+                  setDueDate('');
                 }}
                 className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium transition"
               >
@@ -229,92 +278,11 @@ export function ClientOverviewPage() {
           )}
         </div>
 
-        {filteredTasks.length === 0 ? (
-          <div className="bg-white p-8 rounded-lg border border-gray-200 text-center">
-            <p className="text-gray-600">
-              {tasks.length === 0
-                ? 'No requests yet. Create one to get started!'
-                : `No requests with "${TASK_STATUS_LABELS[statusFilter as TaskStatus]}" status`}
-            </p>
-          </div>
-        ) : (
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Priority
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Due Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Assigned To
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredTasks.map((task) => (
-                  <tr key={task.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 text-sm">
-                      <div className="font-medium text-gray-900 max-w-xs truncate">
-                        {task.title}
-                      </div>
-                      {task.description && (
-                        <p className="text-gray-500 text-xs mt-1 line-clamp-1">
-                          {task.description}
-                        </p>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span
-                        className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          TASK_STATUS_COLORS[task.status]
-                        }`}
-                      >
-                        {TASK_STATUS_LABELS[task.status]}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className={`font-medium ${PRIORITY_COLORS[task.priority] || ''}`}>
-                        {task.priority}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {task.dueDate
-                        ? new Date(task.dueDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })
-                        : '-'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {task.assignedTo?.fullName || '-'}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <button
-                        onClick={() => navigate(`/JF-1C/client/tasks/${task.id}`)}
-                        className="text-brand-green hover:text-green-700 font-medium transition"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <TaskGridBoard 
+          initialTasks={filteredTasks}
+          onBatchSave={handleBatchSave}
+          userRole="CLIENT"
+        />
       </div>
     </div>
   );
