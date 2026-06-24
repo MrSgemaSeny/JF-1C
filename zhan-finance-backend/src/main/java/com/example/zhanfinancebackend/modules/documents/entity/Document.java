@@ -1,0 +1,67 @@
+package com.example.zhanfinancebackend.modules.documents.entity;
+
+import com.example.zhanfinancebackend.modules.auth.entity.User;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "documents")
+public class Document {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uploaded_by", nullable = false)
+    private User uploadedBy;
+
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
+    @Column(name = "storage_key", nullable = false, unique = true, length = 512)
+    private String storageKey;
+
+    @Column(name = "content_type", nullable = false, length = 100)
+    private String contentType;
+
+    @Column(name = "file_size", nullable = false)
+    private Long fileSize;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    protected Document() {
+    }
+
+    public Document(User user, User uploadedBy, String fileName, String storageKey, String contentType, Long fileSize) {
+        this.user = user;
+        this.uploadedBy = uploadedBy;
+        this.fileName = fileName;
+        this.storageKey = storageKey;
+        this.contentType = contentType;
+        this.fileSize = fileSize;
+    }
+
+    public Long getId() { return id; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    public User getUploadedBy() { return uploadedBy; }
+    public void setUploadedBy(User uploadedBy) { this.uploadedBy = uploadedBy; }
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
+    public String getStorageKey() { return storageKey; }
+    public void setStorageKey(String storageKey) { this.storageKey = storageKey; }
+    public String getContentType() { return contentType; }
+    public void setContentType(String contentType) { this.contentType = contentType; }
+    public Long getFileSize() { return fileSize; }
+    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+}

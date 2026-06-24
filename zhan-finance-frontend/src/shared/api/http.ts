@@ -34,13 +34,16 @@ export function configureAuth(tokenGetter: TokenGetter, refreshHandler: RefreshH
 }
 
 async function rawRequest<T>(path: string, init: RequestInit | undefined, accessToken: string | null): Promise<T> {
+  const isFormData = init?.body instanceof FormData;
+  const headers = {
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    ...init?.headers
+  };
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-      ...init?.headers
-    }
+    headers
   });
 
   if (!response.ok) {
@@ -85,3 +88,5 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
     throw error;
   }
 }
+
+export { API_BASE_URL, getAccessToken };
