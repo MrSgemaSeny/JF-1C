@@ -1,8 +1,9 @@
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
+  className?: string;
 }
 
-export function Spinner({ size = 'md' }: SpinnerProps) {
+export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
   const sizeClasses = {
     sm: 'h-4 w-4 border-t-2 border-b-2',
     md: 'h-8 w-8 border-t-2 border-b-2',
@@ -10,8 +11,8 @@ export function Spinner({ size = 'md' }: SpinnerProps) {
   };
 
   return (
-    <div className={`flex justify-center items-center ${size === 'lg' ? 'p-8' : 'p-2'}`}>
-      <div className={`animate-spin rounded-full border-brand-green ${sizeClasses[size]}`}></div>
+    <div className={`flex justify-center items-center ${size === 'lg' ? 'p-8' : 'p-2'} ${className}`}>
+      <div className={`animate-spin rounded-full border-current ${sizeClasses[size]}`}></div>
     </div>
   );
 }
