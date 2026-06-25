@@ -14,6 +14,7 @@ import { DashboardLayout } from '@/widgets/dashboard-shell/DashboardLayout';
 import { DashboardRedirect } from '@/pages/dashboard/DashboardRedirect';
 import { NotificationsPage } from '@/pages/dashboard/shared/NotificationsPage';
 import { SettingsPage } from '@/pages/dashboard/shared/settings/SettingsPage';
+import { ScrollToTop } from '@/shared/ui/ScrollToTop';
 
 // Admin
 import { AdminOverviewPage } from '@/pages/dashboard/admin/AdminOverviewPage';
@@ -46,6 +47,7 @@ export function App() {
       <AuthProvider>
         <NotificationProvider>
         <BrowserRouter basename={routerBasename}>
+          <ScrollToTop />
           <Routes>
             <Route element={<MainLayout />}>
               <Route path={ROUTES.HOME} element={<HomePage />} />
