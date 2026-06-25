@@ -52,7 +52,7 @@ export function ClientChatPage() {
     if (otherUserId && user) {
       const token = localStorage.getItem('token');
       stompClient = new Client({
-        webSocketFactory: () => new SockJS(`http://localhost:8080/ws?token=${token}`),
+        webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws?token=${token}`),
         connectHeaders: { Authorization: `Bearer ${token}` },
         reconnectDelay: 5000,
         onConnect: () => {
