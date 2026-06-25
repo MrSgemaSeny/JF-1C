@@ -109,7 +109,8 @@ public class AuthService {
                 user.getId(),
                 user.getEmail(),
                 user.getFullName(),
-                user.getRole()
+                user.getRole(),
+                false
         );
     }
 }

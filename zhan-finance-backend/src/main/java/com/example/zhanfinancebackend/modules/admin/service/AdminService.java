@@ -44,7 +44,14 @@ public class AdminService {
     }
 
     public void approveEmployee(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ApiException(
+                        com.example.zhanfinancebackend.common.exception.ErrorCode.NOT_FOUND, "User not found"));
+        if (user.getRole() != Role.EMPLOYEE) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST,
+                    "Only employees can be approved");
+        }
         user.setEnabled(true);
         userRepository.save(user);
     }

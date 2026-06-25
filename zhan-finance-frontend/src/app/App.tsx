@@ -34,6 +34,7 @@ import { TaskDetailsPage } from '@/pages/task-details/TaskDetailsPage';
 // Client
 import { ClientOverviewPage } from '@/pages/dashboard/client/ClientOverviewPage';
 import { ClientDocumentsPage } from '@/pages/dashboard/client/ClientDocumentsPage';
+import { CompleteProfilePage } from '@/pages/auth/complete-profile/CompleteProfilePage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export function App() {
@@ -53,6 +54,7 @@ export function App() {
 
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+            <Route path={ROUTES.COMPLETE_PROFILE} element={<CompleteProfilePage />} />
 
             {/* Dashboard Entry Point */}
             <Route path={ROUTES.PROFILE} element={<DashboardRedirect />} />

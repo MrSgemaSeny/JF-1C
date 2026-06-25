@@ -8,7 +8,9 @@ export interface AuthResponse {
   tokenType: string;
   id: number;
   email: string;
+  fullName: string;
   role: UserRole;
+  isNewUser: boolean;
 }
 
 export interface LoginRequest {
@@ -40,8 +42,8 @@ export function login(request: LoginRequest): Promise<AuthResponse> {
   });
 }
 
-export function register(request: RegisterRequest): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/api/auth/register', {
+export function register(request: RegisterRequest): Promise<AuthResponse | null> {
+  return apiRequest<AuthResponse | null>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(request)
   });

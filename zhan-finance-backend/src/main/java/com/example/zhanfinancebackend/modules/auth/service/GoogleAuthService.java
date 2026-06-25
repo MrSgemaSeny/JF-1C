@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,65 +47,71 @@ public class GoogleAuthService {
 
     @Transactional
     public AuthResponse loginWithGoogle(String credential, Role requestedRole) {
+        GoogleIdToken idToken;
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singletonList(googleClientId))
                     .build();
-
-            GoogleIdToken idToken = verifier.verify(credential);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
-                String email = payload.getEmail().toLowerCase();
-                String name = (String) payload.get("name");
-
-                Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
-                User user;
-
-                if (optionalUser.isPresent()) {
-                    user = optionalUser.get();
-                    if (!user.isEnabled()) {
-                        throw new ApiException(ErrorCode.UNAUTHORIZED, "Аккаунт еще не активирован администратором");
-                    }
-                } else {
-                    Role assignedRole = requestedRole != null ? requestedRole : Role.CLIENT;
-                    boolean isEmployee = assignedRole == Role.EMPLOYEE;
-
-                    user = new User(
-                            name != null ? name : "Google User",
-                            email,
-                            UUID.randomUUID().toString(),
-                            assignedRole
-                    );
-                    
-                    if (isEmployee) {
-                        user.setEnabled(false);
-                    }
-                    
-                    user = userRepository.save(user);
-                    
-                    if (!isEmployee) {
-                        clientService.ensureProfile(user);
-                    } else {
-                        return null; // pending approval
-                    }
-                }
-
-                RefreshToken refreshToken = refreshTokenService.create(user);
-
-                return new AuthResponse(
-                        jwtService.generateAccessToken(user),
-                        refreshToken.getToken(),
-                        "Bearer",
-                        user.getId(),
-                        user.getEmail(),
-                        user.getFullName(),
-                        user.getRole()
-                );
-            } else {
-                throw new ApiException(ErrorCode.UNAUTHORIZED, "Invalid Google token");
-            }
-        } catch (Exception e) {
+            idToken = verifier.verify(credential);
+        } catch (IOException | java.security.GeneralSecurityException e) {
             throw new ApiException(ErrorCode.UNAUTHORIZED, "Google authentication failed: " + e.getMessage());
         }
+
+        if (idToken == null) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "Invalid Google token");
+        }
+
+        GoogleIdToken.Payload payload = idToken.getPayload();
+        String email = payload.getEmail().toLowerCase();
+        String name = (String) payload.get("name");
+
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
+        User user;
+        boolean isNewUser;
+
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+            if (!user.isEnabled()) {
+                throw new ApiException(ErrorCode.UNAUTHORIZED, "Аккаунт ещё не активирован администратором");
+            }
+            isNewUser = false;
+        } else {
+            Role assignedRole = requestedRole != null ? requestedRole : Role.CLIENT;
+            boolean isEmployee = assignedRole == Role.EMPLOYEE;
+
+            user = new User(
+                    name != null ? name : "Google User",
+                    email,
+                    UUID.randomUUID().toString(),
+                    assignedRole
+            );
+
+            if (isEmployee) {
+                user.setEnabled(false);
+            }
+
+            user = userRepository.save(user);
+
+            if (isEmployee) {
+                return null; // pending approval
+            }
+
+            // New Client: create empty profile (phone/company filled later via onboarding)
+            clientService.ensureProfile(user);
+            isNewUser = true;
+        }
+
+        RefreshToken refreshToken = refreshTokenService.create(user);
+
+        return new AuthResponse(
+                jwtService.generateAccessToken(user),
+                refreshToken.getToken(),
+                "Bearer",
+                user.getId(),
+                user.getEmail(),
+                user.getFullName(),
+                user.getRole(),
+                isNewUser
+        );
     }
 }

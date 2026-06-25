@@ -9,5 +9,6 @@ public record AuthResponse(
         Long id,
         String email,
         String fullName,
-        Role role
+        Role role,
+        boolean isNewUser
 ) {}

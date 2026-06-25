@@ -18,8 +18,14 @@ export function LoginPage() {
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
       if (credentialResponse.credential) {
-        await loginWithGoogle(credentialResponse.credential);
-        navigate(ROUTES.PROFILE);
+        const result = await loginWithGoogle(credentialResponse.credential);
+        if (result.isPendingApproval) {
+          setError('Ваш аккаунт ожидает подтверждения администратора.');
+        } else if (result.isNewUser) {
+          navigate(ROUTES.COMPLETE_PROFILE);
+        } else {
+          navigate(ROUTES.PROFILE);
+        }
       }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Не удалось войти через Google.');
@@ -111,7 +117,6 @@ export function LoginPage() {
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => setError('Ошибка авторизации Google')}
-              useOneTap
             />
           </div>
         </div>

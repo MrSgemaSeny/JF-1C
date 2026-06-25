@@ -27,6 +27,8 @@ export function RegisterPage() {
         const result = await loginWithGoogle(credentialResponse.credential, role);
         if (result.isPendingApproval) {
           setSuccessMessage('Заявка на регистрацию отправлена! Администратор проверит ваши данные.');
+        } else if (result.isNewUser && role === 'CLIENT') {
+          navigate(ROUTES.COMPLETE_PROFILE);
         } else {
           navigate(ROUTES.PROFILE);
         }
