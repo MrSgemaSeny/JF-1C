@@ -68,7 +68,7 @@ services:
       dockerfile: Dockerfile
     container_name: jf1c_frontend
     ports:
-      - "80:80"
+      - "5173:80"
     depends_on:
       - backend
     restart: unless-stopped
