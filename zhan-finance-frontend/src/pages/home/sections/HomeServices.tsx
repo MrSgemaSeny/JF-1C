@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 import { ROUTES } from '@/shared/config/routes';
-import { mockServices } from '@/content/services';
+import { mockServices } from '@/shared/config/content/services';
 
 export function HomeServices() {
   return (

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { pricingPlans } from '@/content/pricing-plans';
+import { pricingPlans } from '@/shared/config/content/pricing-plans';
 
 export function PricingTable() {
   return (

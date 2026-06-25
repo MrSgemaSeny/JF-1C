@@ -16,15 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 @Service
 public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public ChatService(ChatMessageRepository chatMessageRepository, UserRepository userRepository) {
+    public ChatService(ChatMessageRepository chatMessageRepository, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
         this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Transactional(readOnly = true)
@@ -52,8 +56,13 @@ public class ChatService {
 
         ChatMessage message = new ChatMessage(sender, receiver, request.content());
         ChatMessage saved = chatMessageRepository.save(message);
+        ChatMessageDto dto = toDto(saved);
 
-        return toDto(saved);
+        // Broadcast via WebSocket to receiver and sender
+        messagingTemplate.convertAndSend("/topic/chat/" + receiverId, dto);
+        messagingTemplate.convertAndSend("/topic/chat/" + currentUserId, dto);
+
+        return dto;
     }
     
     @Transactional

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
-import { teamRows } from '@/content/team';
+import { teamRows } from '@/shared/config/content/team';
 
 export function Team() {
   return (

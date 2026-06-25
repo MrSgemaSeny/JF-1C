@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 import { Quote } from 'lucide-react';
-import { reviewsList } from '@/content/reviews';
+import { reviewsList } from '@/shared/config/content/reviews';
 
 export function Reviews() {
   return (

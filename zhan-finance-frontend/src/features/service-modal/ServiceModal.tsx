@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import type { Service } from '@/content/services';
+import type { Service } from '@/shared/config/content/services';
 
 interface ServiceModalProps {
   item: Service;

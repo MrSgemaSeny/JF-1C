@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
-import { trustStats } from '@/content/stats';
+import { trustStats } from '@/shared/config/content/stats';
 
 export function Trust() {
   const containerRef = useRef<HTMLDivElement>(null);

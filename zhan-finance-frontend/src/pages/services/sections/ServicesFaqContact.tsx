@@ -1,5 +1,5 @@
 import { Section } from '@/shared/ui/Section';
-import { faqs } from '@/content/faq';
+import { faqs } from '@/shared/config/content/faq';
 
 export function ServicesFaqContact() {
   return (

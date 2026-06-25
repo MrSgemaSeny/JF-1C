@@ -1,6 +1,6 @@
 import { Briefcase } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
-import { workProcess } from '@/content/work-process';
+import { workProcess } from '@/shared/config/content/work-process';
 
 export function AboutProcess() {
   return (

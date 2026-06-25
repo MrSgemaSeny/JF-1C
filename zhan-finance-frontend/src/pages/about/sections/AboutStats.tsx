@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Section } from '@/shared/ui/Section';
-import { aboutStats } from '@/content/stats';
+import { aboutStats } from '@/shared/config/content/stats';
 
 export function AboutStats() {
   return (

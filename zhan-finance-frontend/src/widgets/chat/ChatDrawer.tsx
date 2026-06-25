@@ -3,6 +3,8 @@ import { X, Send, User } from 'lucide-react';
 import { getChatHistory, sendChatMessage, markChatAsRead, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 interface ChatDrawerProps {
   isOpen: boolean;
@@ -43,30 +45,52 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
   }, [messages]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let stompClient: Client | null = null;
     
-    if (isOpen && otherUserId) {
-      interval = setInterval(async () => {
-        try {
-          const newMsgs = await getChatHistory(otherUserId, lastMessageIdRef.current);
-          if (newMsgs && newMsgs.length > 0) {
-            setMessages(prev => [...prev, ...newMsgs]);
-            const maxId = Math.max(...newMsgs.map(m => m.id));
-            if (maxId > lastMessageIdRef.current) {
-              lastMessageIdRef.current = maxId;
-              markChatAsRead(otherUserId).catch(console.error);
+    if (isOpen && otherUserId && user) {
+      // 1. Setup Stomp client
+      const token = localStorage.getItem('token');
+      stompClient = new Client({
+        webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+        connectHeaders: {
+          Authorization: `Bearer ${token}`
+        },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        onConnect: () => {
+          console.log('Connected to WebSocket');
+          // Subscribe to my own chat updates
+          stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
+            if (message.body) {
+              const chatMessage: ChatMessageDto = JSON.parse(message.body);
+              // Only add if it's from/to the person we're chatting with
+              if (chatMessage.senderId === otherUserId || chatMessage.receiverId === otherUserId) {
+                 setMessages(prev => {
+                   if (prev.find(m => m.id === chatMessage.id)) return prev;
+                   return [...prev, chatMessage];
+                 });
+                 if (chatMessage.id > lastMessageIdRef.current) {
+                   lastMessageIdRef.current = chatMessage.id;
+                 }
+                 markChatAsRead(otherUserId).catch(console.error);
+              }
             }
-          }
-        } catch (error) {
-          console.error('Failed to poll messages:', error);
-        }
-      }, 3000); // Poll every 3 seconds to avoid spamming
+          });
+        },
+        onStompError: (frame) => {
+          console.error('Broker reported error: ' + frame.headers['message']);
+          console.error('Additional details: ' + frame.body);
+        },
+      });
+
+      stompClient.activate();
     }
 
     return () => {
-      if (interval) clearInterval(interval);
+      if (stompClient) stompClient.deactivate();
     };
-  }, [isOpen, otherUserId]);
+  }, [isOpen, otherUserId, user]);
 
   const loadInitialHistory = async () => {
     if (!otherUserId) return;

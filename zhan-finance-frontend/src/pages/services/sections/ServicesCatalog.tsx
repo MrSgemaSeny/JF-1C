@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Section } from '@/shared/ui/Section';
-import { servicesList } from '@/content/services';
-import type { Service } from '@/content/services';
+import { servicesList } from '@/shared/config/content/services';
+import type { Service } from '@/shared/config/content/services';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 
 export function ServicesCatalog() {
