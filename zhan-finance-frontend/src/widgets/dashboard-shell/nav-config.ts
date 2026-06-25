@@ -20,6 +20,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   ],
   EMPLOYEE: [
     { label: 'Overview', href: ROUTES.EMPLOYEE },
+    { label: 'Calendar', href: ROUTES.EMPLOYEE_CALENDAR },
     { label: 'Chat', href: ROUTES.EMPLOYEE_CHAT },
     { label: 'My Clients', href: ROUTES.EMPLOYEE_CLIENTS },
     { label: 'My Tasks', href: ROUTES.EMPLOYEE_TASKS },
@@ -29,6 +30,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   ],
   CLIENT: [
     { label: 'Overview', href: ROUTES.CLIENT },
+    { label: 'Calendar', href: ROUTES.CLIENT_CALENDAR },
     { label: 'Chat', href: ROUTES.CLIENT_CHAT },
     { label: 'Documents', href: ROUTES.CLIENT_DOCUMENTS },
     { label: 'Settings', href: ROUTES.SETTINGS },

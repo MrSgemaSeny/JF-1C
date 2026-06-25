@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { apiRequest } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Users, ClipboardList, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { MiniCalendarWidget } from '../shared/calendar/MiniCalendarWidget';
 
 interface EmployeeDashboardDto {
   totalClients: number;
@@ -96,23 +97,40 @@ export function EmployeeOverviewPage() {
         ))}
       </div>
 
-      {/* Task status breakdown */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-base font-semibold text-gray-800 mb-5">Мои задачи по статусам</h2>
-        <div className="space-y-3">
-          {Object.entries(STATUS_CONFIG).map(([status, cfg]) => {
-            const count = data.tasksByStatus[status] ?? 0;
-            const percent = data.totalTasks > 0 ? Math.round((count / data.totalTasks) * 100) : 0;
-            return (
-              <div key={status} className="flex items-center gap-4">
-                <span className={`text-xs font-semibold w-28 ${cfg.textColor}`}>{cfg.label}</span>
-                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full ${cfg.color}`} style={{ width: `${percent}%` }} />
-                </div>
-                <span className="text-sm font-bold text-gray-700 w-6 text-right">{count}</span>
-              </div>
-            );
-          })}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Task status breakdown */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-6">Воронка задач</h2>
+            
+            <div className="space-y-4">
+              {['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'].map((status) => {
+                const count = data.tasksByStatus[status] ?? 0;
+                const total = data.totalTasks || 1; // prevent div by zero
+                const percent = Math.round((count / total) * 100);
+                const config = STATUS_CONFIG[status];
+                
+                return (
+                  <div key={status} className="flex items-center gap-4">
+                    <div className="w-28 text-sm font-medium text-gray-600">{config.label}</div>
+                    <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-500 ${config.color}`} 
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                    <div className={`w-12 text-right text-sm font-bold ${config.textColor}`}>
+                      {count}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <MiniCalendarWidget />
         </div>
       </div>
     </div>

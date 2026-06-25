@@ -39,6 +39,7 @@ import { ClientOverviewPage } from '@/pages/dashboard/client/ClientOverviewPage'
 import { ClientDocumentsPage } from '@/pages/dashboard/client/ClientDocumentsPage';
 import { ClientChatPage } from '@/pages/dashboard/client/ClientChatPage';
 import { CompleteProfilePage } from '@/pages/auth/complete-profile/CompleteProfilePage';
+import { CalendarPage } from '@/pages/dashboard/shared/calendar/CalendarPage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export function App() {
@@ -88,6 +89,7 @@ export function App() {
                 <Route path={ROUTES.EMPLOYEE_TASKS} element={<EmployeeTasksPage />} />
                 <Route path={ROUTES.EMPLOYEE_TASK_DETAILS} element={<TaskDetailsPage />} />
                 <Route path={ROUTES.EMPLOYEE_DOCUMENTS} element={<EmployeeDocumentsPage />} />
+                <Route path={ROUTES.EMPLOYEE_CALENDAR} element={<CalendarPage />} />
               </Route>
 
               {/* Client Routes */}
@@ -95,6 +97,7 @@ export function App() {
                 <Route path={ROUTES.CLIENT} element={<ClientOverviewPage />} />
                 <Route path={ROUTES.CLIENT_CHAT} element={<ClientChatPage />} />
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
+                <Route path={ROUTES.CLIENT_CALENDAR} element={<CalendarPage />} />
               </Route>
               
               {/* Shared Routes for all authenticated users */}

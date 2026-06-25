@@ -128,8 +128,19 @@ public class TaskService {
                 task.addSubtask(subtask);
             }
         }
+        
+        Task savedTask = taskRepository.save(task);
 
-        return mapToDto(taskRepository.save(task));
+        if (creator.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT && client.getId().equals(savedTask.getClient().getId())) {
+            notificationService.createNotification(
+                    client,
+                    "Новый запрос документов",
+                    "Сотрудник запросил у вас документ по задаче: " + savedTask.getTitle(),
+                    "/dashboard/client"
+            );
+        }
+
+        return mapToDto(savedTask);
     }
 
     @Transactional
@@ -222,7 +233,7 @@ public class TaskService {
                         task.setStatus(dto.status());
                     }
                 } else {
-                    accessService.assertCanUpdateTaskStatus(user, task);
+                    accessService.assertCanUpdateTaskStatus(user, task, dto.status());
                     task.setStatus(dto.status());
                 }
 

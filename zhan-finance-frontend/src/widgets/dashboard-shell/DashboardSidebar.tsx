@@ -15,12 +15,14 @@ import {
   Bell,
   Settings,
   MessageCircle,
+  CalendarDays,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { API_BASE_URL } from '@/shared/api/http';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
   'Overview':            <LayoutDashboard size={16} />,
+  'Calendar':            <CalendarDays size={16} />,
   'Chat':                <MessageCircle size={16} />,
   'Employees':           <UserCheck size={16} />,
   'Clients':             <Users size={16} />,

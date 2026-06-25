@@ -64,18 +64,21 @@ public class CrmAccessService {
         }
     }
 
-    public boolean canUpdateTaskStatus(User actor, Task task) {
+    public boolean canUpdateTaskStatus(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.TaskStatus newStatus) {
         if (actor.getRole() == Role.ADMIN) {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
             return sameUser(actor, task.getAssignedTo());
         }
+        if (actor.getRole() == Role.CLIENT) {
+            return sameUser(actor, task.getClient()) && newStatus == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE;
+        }
         return false;
     }
 
-    public void assertCanUpdateTaskStatus(User actor, Task task) {
-        if (!canUpdateTaskStatus(actor, task)) {
+    public void assertCanUpdateTaskStatus(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.TaskStatus newStatus) {
+        if (!canUpdateTaskStatus(actor, task, newStatus)) {
             throw new ApiException(ErrorCode.FORBIDDEN, "Task status update denied");
         }
     }

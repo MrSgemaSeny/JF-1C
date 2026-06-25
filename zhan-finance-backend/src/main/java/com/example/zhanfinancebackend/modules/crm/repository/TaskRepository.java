@@ -23,4 +23,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy where t.id = :id")
     Optional<Task> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("select t from Task t left join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy " +
+           "where (c.id = :userId or t.assignedTo.id = :userId or t.createdBy.id = :userId) " +
+           "and t.dueDate >= :startDate and t.dueDate <= :endDate")
+    List<Task> findTasksForCalendar(
+            @Param("userId") Long userId,
+            @Param("startDate") java.time.LocalDate startDate,
+            @Param("endDate") java.time.LocalDate endDate
+    );
 }

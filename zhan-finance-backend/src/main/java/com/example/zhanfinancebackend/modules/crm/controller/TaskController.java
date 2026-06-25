@@ -85,14 +85,14 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
     public ApiResponse<TaskDto> updateStatus(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
             @Valid @RequestBody TaskStatusUpdateRequest request
     ) {
         Task task = taskService.getTaskEntity(id);
-        accessService.assertCanUpdateTaskStatus(principal.getUser(), task);
+        accessService.assertCanUpdateTaskStatus(principal.getUser(), task, request.status());
         return ApiResponse.success(taskService.updateTaskStatus(id, request.status(), principal.getUser()));
     }
 
