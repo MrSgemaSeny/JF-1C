@@ -9,6 +9,7 @@ import com.example.zhanfinancebackend.modules.crm.dto.EmployeeDashboardDto;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.crm.repository.ClientProfileRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class DashboardService {
         this.clientProfileRepository = clientProfileRepository;
     }
 
+    @Cacheable(value = "dashboard_admin")
     @Transactional(readOnly = true)
     public AdminDashboardDto getAdminDashboard() {
         long clientsCount = userRepository.countByRole(Role.CLIENT);
@@ -43,6 +45,7 @@ public class DashboardService {
         return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count());
     }
 
+    @Cacheable(value = "dashboard_employee", key = "#employee.id")
     @Transactional(readOnly = true)
     public EmployeeDashboardDto getEmployeeDashboard(User employee) {
         long clientsCount = userRepository.countByAssignedEmployee(employee);
@@ -57,6 +60,7 @@ public class DashboardService {
         return new EmployeeDashboardDto(clientsCount, tasksCount, tasksByStatus);
     }
 
+    @Cacheable(value = "dashboard_client", key = "#client.id")
     @Transactional(readOnly = true)
     public ClientDashboardDto getClientDashboard(User client) {
         List<Task> clientTasks = taskRepository.findAllByClientWithDetails(client.getId());

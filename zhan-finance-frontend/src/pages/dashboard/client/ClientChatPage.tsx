@@ -4,6 +4,8 @@ import { getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, Cha
 import { useAuth } from '@/features/auth/AuthContext';
 import { getMyProfile } from '@/entities/user/api/userApi';
 import { Spinner } from '@/shared/ui/Spinner';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 export function ClientChatPage() {
   const { user } = useAuth();
@@ -43,31 +45,41 @@ export function ClientChatPage() {
     scrollToBottom();
   }, [messages]);
 
+  // WebSockets for active chat
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let stompClient: Client | null = null;
     
-    if (otherUserId) {
-      interval = setInterval(async () => {
-        try {
-          const newMsgs = await getChatHistory(otherUserId, lastMessageIdRef.current);
-          if (newMsgs && newMsgs.length > 0) {
-            setMessages(prev => [...prev, ...newMsgs]);
-            const maxId = Math.max(...newMsgs.map(m => m.id));
-            if (maxId > lastMessageIdRef.current) {
-              lastMessageIdRef.current = maxId;
-              markChatAsRead(otherUserId).catch(console.error);
+    if (otherUserId && user) {
+      const token = localStorage.getItem('token');
+      stompClient = new Client({
+        webSocketFactory: () => new SockJS(`http://localhost:8080/ws?token=${token}`),
+        connectHeaders: { Authorization: `Bearer ${token}` },
+        reconnectDelay: 5000,
+        onConnect: () => {
+          stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
+            if (message.body) {
+              const chatMessage: ChatMessageDto = JSON.parse(message.body);
+              if (chatMessage.senderId === otherUserId || chatMessage.receiverId === otherUserId) {
+                 setMessages(prev => {
+                   if (prev.find(m => m.id === chatMessage.id)) return prev;
+                   return [...prev, chatMessage];
+                 });
+                 if (chatMessage.id > lastMessageIdRef.current) {
+                   lastMessageIdRef.current = chatMessage.id;
+                 }
+                 markChatAsRead(otherUserId).catch(console.error);
+              }
             }
-          }
-        } catch (error) {
-          console.error('Failed to poll messages:', error);
+          });
         }
-      }, 3000);
+      });
+      stompClient.activate();
     }
 
     return () => {
-      if (interval) clearInterval(interval);
+      if (stompClient) stompClient.deactivate();
     };
-  }, [otherUserId]);
+  }, [otherUserId, user]);
 
   const loadInitialHistory = async () => {
     if (!otherUserId) return;

@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: jf1c_postgres
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: pass1
+      POSTGRES_DB: zhanfindb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - jf1c_network
+
+  redis:
+    image: redis:latest
+    container_name: jf1c_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - jf1c_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: jf1c_minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+    networks:
+      - jf1c_network
+
+  backend:
+    build:
+      context: ./zhan-finance-backend
+      dockerfile: Dockerfile
+    container_name: jf1c_backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/zhanfindb?characterEncoding=UTF-8
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=change-me-change-me-change-me-change-me-in-production-long-key-needed
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - jf1c_network
+
+  frontend:
+    build:
+      context: ./zhan-finance-frontend
+      dockerfile: Dockerfile
+    container_name: jf1c_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - jf1c_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+
+networks:
+  jf1c_network:
+    driver: bridge

@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { getChatContacts, getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, ChatContactDto, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 export function EmployeeChatPage() {
   const { user } = useAuth();
@@ -79,30 +81,40 @@ export function EmployeeChatPage() {
     }
   };
 
-  // Poll for active chat
+  // WebSockets for active chat
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (selectedContact) {
-      interval = setInterval(async () => {
-        try {
-          const newMsgs = await getChatHistory(selectedContact.id, lastMessageIdRef.current);
-          if (newMsgs && newMsgs.length > 0) {
-            setMessages(prev => [...prev, ...newMsgs]);
-            const maxId = Math.max(...newMsgs.map(m => m.id));
-            if (maxId > lastMessageIdRef.current) {
-              lastMessageIdRef.current = maxId;
-              markChatAsRead(selectedContact.id).catch(console.error);
+    let stompClient: Client | null = null;
+    
+    if (selectedContact && user) {
+      const token = localStorage.getItem('token');
+      stompClient = new Client({
+        webSocketFactory: () => new SockJS(`http://localhost:8080/ws?token=${token}`),
+        connectHeaders: { Authorization: `Bearer ${token}` },
+        reconnectDelay: 5000,
+        onConnect: () => {
+          stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
+            if (message.body) {
+              const chatMessage: ChatMessageDto = JSON.parse(message.body);
+              if (chatMessage.senderId === selectedContact.id || chatMessage.receiverId === selectedContact.id) {
+                 setMessages(prev => {
+                   if (prev.find(m => m.id === chatMessage.id)) return prev;
+                   return [...prev, chatMessage];
+                 });
+                 if (chatMessage.id > lastMessageIdRef.current) {
+                   lastMessageIdRef.current = chatMessage.id;
+                 }
+                 markChatAsRead(selectedContact.id).catch(console.error);
+              }
             }
-          }
-        } catch (e) {
-          console.error(e);
+          });
         }
-      }, 3000);
+      });
+      stompClient.activate();
     }
     return () => {
-      if (interval) clearInterval(interval);
+      if (stompClient) stompClient.deactivate();
     };
-  }, [selectedContact?.id]);
+  }, [selectedContact?.id, user]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

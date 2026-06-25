@@ -51,7 +51,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
       // 1. Setup Stomp client
       const token = localStorage.getItem('token');
       stompClient = new Client({
-        webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+        webSocketFactory: () => new SockJS(`http://localhost:8080/ws?token=${token}`),
         connectHeaders: {
           Authorization: `Bearer ${token}`
         },

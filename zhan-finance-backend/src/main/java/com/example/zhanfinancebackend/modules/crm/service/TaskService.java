@@ -23,6 +23,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.TaskActivity;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,6 +98,7 @@ public class TaskService {
         return mapToDto(getTaskEntity(id));
     }
 
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public TaskDto createTask(TaskCreateRequest request, User creator) {
         User client = userRepository.findById(request.clientId())
@@ -143,6 +145,7 @@ public class TaskService {
         return mapToDto(savedTask);
     }
 
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public TaskDto requestTask(TaskRequestCreateRequest request, User client) {
         Task task = new Task(request.title(), client, client);
@@ -153,6 +156,7 @@ public class TaskService {
         return mapToDto(taskRepository.save(task));
     }
 
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public TaskDto updateTaskStatus(Long taskId, TaskStatus status, User user) {
         Task task = getTaskEntity(taskId);
@@ -183,6 +187,7 @@ public class TaskService {
         return mapToDto(taskRepository.save(task));
     }
 
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public TaskDto assignTask(Long taskId, Long assigneeId, User user) {
         Task task = getTaskEntity(taskId);
@@ -199,6 +204,7 @@ public class TaskService {
         return mapToDto(taskRepository.save(task));
     }
 
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public List<TaskDto> batchUpdateTasks(TaskBatchUpdateRequest request, User user) {
         java.util.List<TaskDto> result = new java.util.ArrayList<>();
@@ -360,6 +366,7 @@ public class TaskService {
                 .toList();
     }
 
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public void deleteTask(Long taskId) {
         Task task = getTaskEntity(taskId);
