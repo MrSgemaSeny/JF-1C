@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, MessageSquare, Activity, Clock, Tag, User as UserIcon, XCircle, ArrowUpRight, Check, Calendar, CheckCircle2, ChevronRight, Hash, PlayCircle, FileText, Download } from 'lucide-react';
 import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '../model/types';
 import { getTaskComments, addTaskComment, getTaskHistory } from '../api/taskApi';
-import { getTaskDocuments, downloadDocument } from '@/entities/document/api/documentApi';
+import { getTaskDocuments, downloadDocument, uploadDocument } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { StatusBadge, PriorityBadge } from '@/shared/ui/Badge';
 import { twMerge } from 'tailwind-merge';
-import { Edit2, Plus, Trash2, CheckSquare, Square } from 'lucide-react';
+import { Edit2, Plus, Trash2, CheckSquare, Square, Loader2, Paperclip } from 'lucide-react';
 
 interface TaskDetailsModalProps {
   task: TaskDto;
@@ -31,6 +31,26 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
   const [editedDescription, setEditedDescription] = useState(task.description || '');
 
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleInlineUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      await uploadDocument(file, task.client?.id, task.id);
+      await fetchDocuments();
+    } catch (err) {
+      console.error('Failed to upload document', err);
+      alert('Failed to upload document');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   useEffect(() => {
     fetchComments();
@@ -254,9 +274,28 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
 
             {/* Documents / Attachments */}
             <div className="mb-8 group">
-              <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <FileText size={16} /> Вложения ({documents.length})
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+                  <FileText size={16} /> Вложения ({documents.length})
+                </h3>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleInlineUpload} 
+                    className="hidden" 
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="text-gray-400 hover:text-brand-green p-1 rounded transition-colors disabled:opacity-50 flex items-center gap-1 text-xs font-medium"
+                    title="Прикрепить файл"
+                  >
+                    {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Paperclip size={14} />}
+                    Прикрепить
+                  </button>
+                </div>
+              </div>
               
               {documents.length > 0 ? (
                 <div className="grid grid-cols-1 gap-2">

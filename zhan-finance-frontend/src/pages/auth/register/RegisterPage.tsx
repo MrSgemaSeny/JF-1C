@@ -18,6 +18,16 @@ export function RegisterPage() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
+
+    if (password.length < 8) {
+      setError('Пароль должен содержать минимум 8 символов');
+      return;
+    }
+    if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
+      setError('Пароль должен содержать хотя бы одну букву и одну цифру');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await register(fullName, email, password);
@@ -42,19 +52,19 @@ export function RegisterPage() {
         <h1 className="text-3xl font-black uppercase text-brand-green mb-2">Регистрация</h1>
         <p className="text-brand-green/70 mb-8">Создайте аккаунт, чтобы открыть личный кабинет.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
           <div>
             <label htmlFor="fullName" className="block text-sm font-bold text-brand-green mb-1.5">Имя</label>
             <input
               id="fullName"
               type="text"
               required
-              autoComplete="name"
+              autoComplete="off"
               maxLength={120}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="Иван Иванов"
+              placeholder="Имя Фамилия"
             />
           </div>
 
@@ -64,7 +74,7 @@ export function RegisterPage() {
               id="email"
               type="email"
               required
-              autoComplete="email"
+              autoComplete="off"
               maxLength={160}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -80,12 +90,12 @@ export function RegisterPage() {
               type="password"
               required
               autoComplete="new-password"
-              minLength={6}
+              minLength={8}
               maxLength={120}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="Минимум 6 символов"
+              placeholder="Минимум 8 символов, буквы и цифры"
             />
           </div>
 
