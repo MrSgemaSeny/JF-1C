@@ -13,6 +13,10 @@ export const ROUTES = {
   ADMIN_TASK_DETAILS: '/admin/tasks/:id',
   ADMIN_ARCHIVE_DONE: '/admin/archive/done',
   ADMIN_ARCHIVE_CANCELLED: '/admin/archive/cancelled',
+
+  // Shared Dashboard Routes
+  SETTINGS: '/settings',
+  NOTIFICATIONS: '/notifications',
   EMPLOYEE: '/employee',
   EMPLOYEE_CLIENTS: '/employee/clients',
   EMPLOYEE_TASKS: '/employee/tasks',

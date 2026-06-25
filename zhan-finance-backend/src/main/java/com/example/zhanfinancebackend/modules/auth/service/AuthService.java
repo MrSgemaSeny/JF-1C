@@ -110,7 +110,9 @@ public class AuthService {
                 user.getEmail(),
                 user.getFullName(),
                 user.getRole(),
-                false
+                false,
+                user.getAvatarUrl(),
+                user.getAuthProvider()
         );
     }
 }

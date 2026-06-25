@@ -13,10 +13,13 @@ interface StoredAuth {
   fullName: string;
   role: UserRole;
   isNewUser?: boolean;
+  avatarUrl?: string;
+  authProvider?: 'LOCAL' | 'GOOGLE';
 }
 
 interface AuthContextValue {
   user: StoredAuth | null;
+  setUser: (user: StoredAuth | null) => void;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: (credential: string, role?: 'CLIENT' | 'EMPLOYEE') => Promise<{ isPendingApproval: boolean; isNewUser: boolean }>;
@@ -49,6 +52,8 @@ function toStoredAuth(response: AuthResponse): StoredAuth {
     fullName: response.fullName,
     role: response.role,
     isNewUser: response.isNewUser,
+    avatarUrl: response.avatarUrl,
+    authProvider: response.authProvider,
   };
 }
 
@@ -88,6 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(() => ({
     user,
+    setUser,
     isLoading,
     async login(email, password) {
       setIsLoading(true);

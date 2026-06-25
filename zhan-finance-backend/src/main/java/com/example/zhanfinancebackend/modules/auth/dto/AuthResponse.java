@@ -10,5 +10,7 @@ public record AuthResponse(
         String email,
         String fullName,
         Role role,
-        boolean isNewUser
+        boolean isNewUser,
+        String avatarUrl,
+        com.example.zhanfinancebackend.modules.auth.entity.AuthProvider authProvider
 ) {}

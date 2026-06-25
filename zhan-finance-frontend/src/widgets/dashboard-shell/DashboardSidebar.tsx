@@ -13,8 +13,10 @@ import {
   LogOut,
   ChevronRight,
   Bell,
+  Settings,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
+import { API_BASE_URL } from '@/shared/api/http';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
   'Overview':            <LayoutDashboard size={16} />,
@@ -27,6 +29,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Archive (Cancelled)': <XCircle size={16} />,
   'Documents':           <FileText size={16} />,
   'My Requests':         <Briefcase size={16} />,
+  'Settings':            <Settings size={16} />,
   'Notifications':       <Bell size={16} />,
 };
 
@@ -99,8 +102,16 @@ export function DashboardSidebar() {
       {/* User block */}
       <div className="p-4 border-t border-gray-100 space-y-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-green to-green-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-            <span className="text-white text-sm font-bold">{getInitials(user.email)}</span>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-green to-green-600 flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden">
+            {user.avatarUrl ? (
+              <img 
+                src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}${user.avatarUrl}`} 
+                alt="Avatar" 
+                className="w-full h-full object-cover" 
+              />
+            ) : (
+              <span className="text-white text-sm font-bold">{getInitials(user.fullName || user.email)}</span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-gray-800 truncate">{user.email}</p>

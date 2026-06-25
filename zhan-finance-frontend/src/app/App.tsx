@@ -13,6 +13,7 @@ import { RoleProtectedRoute } from '@/features/auth/RoleProtectedRoute';
 import { DashboardLayout } from '@/widgets/dashboard-shell/DashboardLayout';
 import { DashboardRedirect } from '@/pages/dashboard/DashboardRedirect';
 import { NotificationsPage } from '@/pages/dashboard/shared/NotificationsPage';
+import { SettingsPage } from '@/pages/dashboard/shared/settings/SettingsPage';
 
 // Admin
 import { AdminOverviewPage } from '@/pages/dashboard/admin/AdminOverviewPage';
@@ -91,6 +92,7 @@ export function App() {
               
               {/* Shared Routes for all authenticated users */}
               <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+              <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
                 
               </Route>
             </Route>

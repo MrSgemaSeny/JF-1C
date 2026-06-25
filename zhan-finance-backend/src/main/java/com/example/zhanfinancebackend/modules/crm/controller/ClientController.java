@@ -65,20 +65,5 @@ public class ClientController {
         clientService.assignEmployeeToClient(userId, employeeId);
         return ApiResponse.success(null);
     }
-
-    /** Allows the authenticated client to update their own profile (phone, companyName). */
-    @PutMapping("/me/profile")
-    @PreAuthorize("hasRole('CLIENT')")
-    public ApiResponse<ClientDto> updateMyProfile(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody UpdateProfileRequest request
-    ) {
-        Long userId = principal.getId();
-        return ApiResponse.success(
-                clientService.updateClientProfile(userId, request.companyName(), request.phone(), null)
-        );
-    }
-
-    public record UpdateProfileRequest(String companyName, String phone) {}
 }
 

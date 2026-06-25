@@ -23,6 +23,13 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Column(name = "avatar_url", length = 512)
+    private String avatarUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    private AuthProvider authProvider = AuthProvider.LOCAL;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
     private Role role = Role.CLIENT;
@@ -90,5 +97,21 @@ public class User extends BaseEntity {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
     }
 }

@@ -64,6 +64,7 @@ public class GoogleAuthService {
         GoogleIdToken.Payload payload = idToken.getPayload();
         String email = payload.getEmail().toLowerCase();
         String name = (String) payload.get("name");
+        String picture = (String) payload.get("picture");
 
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         User user;
@@ -73,6 +74,19 @@ public class GoogleAuthService {
             user = optionalUser.get();
             if (!user.isEnabled()) {
                 throw new ApiException(ErrorCode.UNAUTHORIZED, "Аккаунт ещё не активирован администратором");
+            }
+            // Update avatar and provider if they login via Google
+            boolean updated = false;
+            if (picture != null && user.getAvatarUrl() == null) {
+                user.setAvatarUrl(picture);
+                updated = true;
+            }
+            if (user.getAuthProvider() != com.example.zhanfinancebackend.modules.auth.entity.AuthProvider.GOOGLE) {
+                user.setAuthProvider(com.example.zhanfinancebackend.modules.auth.entity.AuthProvider.GOOGLE);
+                updated = true;
+            }
+            if (updated) {
+                user = userRepository.save(user);
             }
             isNewUser = false;
         } else {
@@ -85,6 +99,10 @@ public class GoogleAuthService {
                     UUID.randomUUID().toString(),
                     assignedRole
             );
+            user.setAuthProvider(com.example.zhanfinancebackend.modules.auth.entity.AuthProvider.GOOGLE);
+            if (picture != null) {
+                user.setAvatarUrl(picture);
+            }
 
             if (isEmployee) {
                 user.setEnabled(false);
@@ -111,7 +129,9 @@ public class GoogleAuthService {
                 user.getEmail(),
                 user.getFullName(),
                 user.getRole(),
-                isNewUser
+                isNewUser,
+                user.getAvatarUrl(),
+                user.getAuthProvider()
         );
     }
 }

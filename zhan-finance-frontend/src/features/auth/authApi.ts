@@ -11,6 +11,8 @@ export interface AuthResponse {
   fullName: string;
   role: UserRole;
   isNewUser: boolean;
+  avatarUrl?: string;
+  authProvider: 'LOCAL' | 'GOOGLE';
 }
 
 export interface LoginRequest {

@@ -1,0 +1,3 @@
+ALTER TABLE app_users
+    ADD COLUMN avatar_url VARCHAR(512),
+    ADD COLUMN auth_provider VARCHAR(32) DEFAULT 'LOCAL' NOT NULL;

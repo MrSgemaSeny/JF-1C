@@ -18,8 +18,11 @@ export function Team() {
           {teamRows.map((row, rowIndex) => (
             <div 
               key={rowIndex} 
-              className={`flex flex-wrap justify-center gap-6 md:gap-8 w-full ${
-                rowIndex === 0 ? 'max-w-lg' : rowIndex === 1 ? 'max-w-4xl' : 'max-w-6xl'
+              className={`w-full grid gap-x-4 gap-y-10 sm:gap-6 md:gap-8 justify-items-center mx-auto ${
+                row.length === 1 ? 'grid-cols-1 max-w-sm' :
+                row.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl' :
+                row.length === 6 ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 max-w-[90rem]' :
+                'flex flex-wrap justify-center'
               }`}
             >
               {row.map((member, colIndex) => (
@@ -29,12 +32,10 @@ export function Team() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: colIndex * 0.1 }}
                   viewport={{ once: true }}
-                  className={`flex flex-col items-center text-center group ${
-                    member.highlight ? 'w-full md:w-2/3' : 'w-[calc(50%-12px)] md:w-auto'
-                  }`}
+                  className="flex flex-col items-center text-center group w-full"
                 >
-                  <div className={`relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-transform duration-500 group-hover:scale-105 ${
-                    member.highlight ? 'w-48 h-48 md:w-64 md:h-64' : 'w-32 h-32 md:w-40 md:h-40'
+                  <div className={`relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-transform duration-500 group-hover:scale-105 aspect-[3/4] ${
+                    member.highlight ? 'w-56 md:w-72' : 'w-40 md:w-48'
                   }`}>
                     {member.photo ? (
                       <img src={member.photo} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
@@ -47,7 +48,7 @@ export function Team() {
                     )}
                   </div>
                   <h3 className={`font-black uppercase tracking-wider text-brand-green leading-tight mb-2 ${
-                    member.highlight ? 'text-xl md:text-2xl' : 'text-sm md:text-base'
+                    member.highlight ? 'text-xl md:text-2xl' : 'text-sm md:text-base max-w-[200px]'
                   }`}>
                     {member.name}
                   </h3>

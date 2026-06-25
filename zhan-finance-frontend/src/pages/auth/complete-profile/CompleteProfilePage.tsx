@@ -4,14 +4,7 @@ import { ArrowRight, Building2, Phone, Sparkles } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { ApiError } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
-import { apiRequest } from '@/shared/api/http';
-
-async function updateProfile(phone: string, companyName: string): Promise<void> {
-  return apiRequest<void>('/api/crm/clients/me/profile', {
-    method: 'PUT',
-    body: JSON.stringify({ phone, companyName }),
-  });
-}
+import { updateMyProfile } from '@/entities/user/api/userApi';
 
 export function CompleteProfilePage() {
   const { user } = useAuth();
@@ -27,7 +20,11 @@ export function CompleteProfilePage() {
     setError(null);
     setIsSubmitting(true);
     try {
-      await updateProfile(phone, companyName);
+      await updateMyProfile({
+        fullName: user?.fullName || 'Google User',
+        phone,
+        companyName
+      });
       navigate(ROUTES.PROFILE);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Не удалось сохранить данные.');
@@ -80,7 +77,7 @@ export function CompleteProfilePage() {
           <div>
             <label htmlFor="companyName" className="block text-sm font-bold text-brand-green mb-1.5 flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5" />
-              Название ИП / ТОО
+              Название ИП / ТОО (можно оставить пустым)
             </label>
             <input
               id="companyName"
