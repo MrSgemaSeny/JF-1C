@@ -91,7 +91,7 @@ class ApiSmokeTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.email").value("smoke@example.com"));
 
-        mockMvc.perform(patch("/api/users/me")
+        mockMvc.perform(put("/api/users/me")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

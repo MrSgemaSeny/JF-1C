@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM gradle:8.5-jdk17 AS builder
+FROM eclipse-temurin:17-jdk-alpine AS builder
 WORKDIR /app
 
 # Copy gradle configuration files first to cache dependencies
@@ -7,7 +7,10 @@ COPY build.gradle settings.gradle /app/
 COPY gradle /app/gradle
 COPY gradlew /app/
 
-# Download dependencies
+# Add execute permissions to the wrapper
+RUN chmod +x ./gradlew
+
+# Download dependencies BEFORE copying src to ensure layer caching works correctly
 RUN ./gradlew dependencies --no-daemon
 
 # Copy the rest of the source code
