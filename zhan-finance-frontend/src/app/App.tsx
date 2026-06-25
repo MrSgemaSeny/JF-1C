@@ -23,6 +23,7 @@ import { AdminClientsPage } from '@/pages/dashboard/admin/AdminClientsPage';
 import { AdminTasksPage } from '@/pages/dashboard/admin/AdminTasksPage';
 import { AdminArchiveDonePage } from '@/pages/dashboard/admin/AdminArchiveDonePage';
 import { AdminArchiveCancelledPage } from '@/pages/dashboard/admin/AdminArchiveCancelledPage';
+import { EmployeeChatPage } from '@/pages/dashboard/employee/EmployeeChatPage';
 
 // Employee
 import { EmployeeOverviewPage } from '@/pages/dashboard/employee/EmployeeOverviewPage';
@@ -36,6 +37,7 @@ import { TaskDetailsPage } from '@/pages/task-details/TaskDetailsPage';
 // Client
 import { ClientOverviewPage } from '@/pages/dashboard/client/ClientOverviewPage';
 import { ClientDocumentsPage } from '@/pages/dashboard/client/ClientDocumentsPage';
+import { ClientChatPage } from '@/pages/dashboard/client/ClientChatPage';
 import { CompleteProfilePage } from '@/pages/auth/complete-profile/CompleteProfilePage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -69,6 +71,7 @@ export function App() {
                 {/* Admin Routes */}
               <Route element={<RoleProtectedRoute allow={['ADMIN']} />}>
                 <Route path={ROUTES.ADMIN} element={<AdminOverviewPage />} />
+                <Route path={ROUTES.ADMIN_CHAT} element={<EmployeeChatPage />} />
                 <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
                 <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
                 <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
@@ -80,6 +83,7 @@ export function App() {
               {/* Employee Routes */}
               <Route element={<RoleProtectedRoute allow={['EMPLOYEE']} />}>
                 <Route path={ROUTES.EMPLOYEE} element={<EmployeeOverviewPage />} />
+                <Route path={ROUTES.EMPLOYEE_CHAT} element={<EmployeeChatPage />} />
                 <Route path={ROUTES.EMPLOYEE_CLIENTS} element={<EmployeeClientsPage />} />
                 <Route path={ROUTES.EMPLOYEE_TASKS} element={<EmployeeTasksPage />} />
                 <Route path={ROUTES.EMPLOYEE_TASK_DETAILS} element={<TaskDetailsPage />} />
@@ -89,6 +93,7 @@ export function App() {
               {/* Client Routes */}
               <Route element={<RoleProtectedRoute allow={['CLIENT']} />}>
                 <Route path={ROUTES.CLIENT} element={<ClientOverviewPage />} />
+                <Route path={ROUTES.CLIENT_CHAT} element={<ClientChatPage />} />
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
               </Route>
               

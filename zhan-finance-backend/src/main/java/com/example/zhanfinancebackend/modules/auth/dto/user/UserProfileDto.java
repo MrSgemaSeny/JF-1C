@@ -11,5 +11,7 @@ public record UserProfileDto(
         String phone,
         String companyName,
         String avatarUrl,
-        AuthProvider authProvider
+        AuthProvider authProvider,
+        Long assignedEmployeeId,
+        String assignedEmployeeName
 ) {}

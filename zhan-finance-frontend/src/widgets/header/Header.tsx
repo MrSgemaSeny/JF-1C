@@ -94,7 +94,7 @@ export function Header() {
             </Link>
 
             <a
-              href="https://wa.me/+77073495503"
+              href="https://wa.me/+77753855077"
               target="_blank"
               rel="noreferrer"
               className={`hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${

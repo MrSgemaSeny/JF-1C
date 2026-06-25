@@ -57,6 +57,13 @@ public class UserService {
             }
         }
 
+        Long assignedEmployeeId = null;
+        String assignedEmployeeName = null;
+        if (user.getAssignedEmployee() != null) {
+            assignedEmployeeId = user.getAssignedEmployee().getId();
+            assignedEmployeeName = user.getAssignedEmployee().getFullName();
+        }
+
         return new UserProfileDto(
                 user.getId(),
                 user.getEmail(),
@@ -65,7 +72,9 @@ public class UserService {
                 phone,
                 companyName,
                 user.getAvatarUrl(),
-                user.getAuthProvider()
+                user.getAuthProvider(),
+                assignedEmployeeId,
+                assignedEmployeeName
         );
     }
 

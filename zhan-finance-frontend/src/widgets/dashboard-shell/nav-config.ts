@@ -9,6 +9,7 @@ export interface NavItem {
 export const navConfig: Record<UserRole, NavItem[]> = {
   ADMIN: [
     { label: 'Overview', href: ROUTES.ADMIN },
+    { label: 'Chat', href: ROUTES.ADMIN_CHAT },
     { label: 'Employees', href: ROUTES.ADMIN_EMPLOYEES },
     { label: 'Clients', href: ROUTES.ADMIN_CLIENTS },
     { label: 'Tasks', href: ROUTES.ADMIN_TASKS },
@@ -19,6 +20,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   ],
   EMPLOYEE: [
     { label: 'Overview', href: ROUTES.EMPLOYEE },
+    { label: 'Chat', href: ROUTES.EMPLOYEE_CHAT },
     { label: 'My Clients', href: ROUTES.EMPLOYEE_CLIENTS },
     { label: 'My Tasks', href: ROUTES.EMPLOYEE_TASKS },
     { label: 'Documents', href: ROUTES.EMPLOYEE_DOCUMENTS },
@@ -27,6 +29,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   ],
   CLIENT: [
     { label: 'Overview', href: ROUTES.CLIENT },
+    { label: 'Chat', href: ROUTES.CLIENT_CHAT },
     { label: 'Documents', href: ROUTES.CLIENT_DOCUMENTS },
     { label: 'Settings', href: ROUTES.SETTINGS },
     { label: 'Notifications', href: ROUTES.NOTIFICATIONS },

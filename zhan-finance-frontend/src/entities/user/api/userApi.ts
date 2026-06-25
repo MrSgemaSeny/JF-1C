@@ -9,6 +9,8 @@ export interface UserProfileDto {
   companyName?: string;
   avatarUrl?: string;
   authProvider: 'LOCAL' | 'GOOGLE';
+  assignedEmployeeId?: number;
+  assignedEmployeeName?: string;
 }
 
 export interface UpdateProfileRequest {

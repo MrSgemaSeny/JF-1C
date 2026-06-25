@@ -13,17 +13,20 @@ export const ROUTES = {
   ADMIN_TASK_DETAILS: '/admin/tasks/:id',
   ADMIN_ARCHIVE_DONE: '/admin/archive/done',
   ADMIN_ARCHIVE_CANCELLED: '/admin/archive/cancelled',
+  ADMIN_CHAT: '/admin/chat',
 
   // Shared Dashboard Routes
   SETTINGS: '/settings',
   NOTIFICATIONS: '/notifications',
   EMPLOYEE: '/employee',
   EMPLOYEE_CLIENTS: '/employee/clients',
+  EMPLOYEE_CHAT: '/employee/chat',
   EMPLOYEE_TASKS: '/employee/tasks',
   EMPLOYEE_TASK_DETAILS: '/employee/tasks/:id',
   EMPLOYEE_DOCUMENTS: '/employee/documents',
   CLIENT: '/client',
   CLIENT_DOCUMENTS: '/client/documents',
+  CLIENT_CHAT: '/client/chat',
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];

@@ -1,0 +1,44 @@
+package com.example.zhanfinancebackend.modules.chat.repository;
+
+import com.example.zhanfinancebackend.modules.chat.entity.ChatMessage;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
+
+    @Query("SELECT m FROM ChatMessage m WHERE " +
+           "((m.sender.id = :userId1 AND m.receiver.id = :userId2) OR " +
+           "(m.sender.id = :userId2 AND m.receiver.id = :userId1)) " +
+           "AND m.id > :afterId " +
+           "ORDER BY m.createdAt ASC")
+    List<ChatMessage> findChatHistory(
+            @Param("userId1") Long userId1, 
+            @Param("userId2") Long userId2, 
+            @Param("afterId") Long afterId
+    );
+
+    @Query("SELECT m FROM ChatMessage m WHERE " +
+           "((m.sender.id = :userId1 AND m.receiver.id = :userId2) OR " +
+           "(m.sender.id = :userId2 AND m.receiver.id = :userId1)) " +
+           "ORDER BY m.createdAt ASC")
+    List<ChatMessage> findChatHistoryFull(
+            @Param("userId1") Long userId1, 
+            @Param("userId2") Long userId2
+    );
+    
+    int countByReceiverIdAndIsReadFalse(Long receiverId);
+    
+    int countBySenderIdAndReceiverIdAndIsReadFalse(Long senderId, Long receiverId);
+    
+    @Query(value = "SELECT * FROM chat_messages WHERE " +
+           "((sender_id = :userId1 AND receiver_id = :userId2) OR " +
+           "(sender_id = :userId2 AND receiver_id = :userId1)) " +
+           "ORDER BY created_at DESC LIMIT 1", nativeQuery = true)
+    ChatMessage findLastMessage(
+            @Param("userId1") Long userId1, 
+            @Param("userId2") Long userId2
+    );
+}
