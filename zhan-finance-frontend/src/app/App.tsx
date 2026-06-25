@@ -34,13 +34,15 @@ import { TaskDetailsPage } from '@/pages/task-details/TaskDetailsPage';
 // Client
 import { ClientOverviewPage } from '@/pages/dashboard/client/ClientOverviewPage';
 import { ClientDocumentsPage } from '@/pages/dashboard/client/ClientDocumentsPage';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export function App() {
   const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   return (
-    <AuthProvider>
-      <NotificationProvider>
+    <GoogleOAuthProvider clientId="249161344734-j51fft6shbogf2clnrhofn3l0c1euihl.apps.googleusercontent.com">
+      <AuthProvider>
+        <NotificationProvider>
         <BrowserRouter basename={routerBasename}>
           <Routes>
             <Route element={<MainLayout />}>
@@ -94,5 +96,6 @@ export function App() {
         </BrowserRouter>
       </NotificationProvider>
     </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }

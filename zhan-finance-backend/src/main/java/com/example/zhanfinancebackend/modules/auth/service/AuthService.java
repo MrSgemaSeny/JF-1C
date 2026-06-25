@@ -52,19 +52,30 @@ public class AuthService {
             throw new ApiException(ErrorCode.CONFLICT, "Email is already registered");
         }
 
+        Role assignedRole = request.role() != null ? request.role() : Role.CLIENT;
+        boolean isEmployee = assignedRole == Role.EMPLOYEE;
+
         User user = new User(
                 request.fullName(),
                 request.email().toLowerCase(),
                 passwordEncoder.encode(request.password()),
-                Role.CLIENT
+                assignedRole
         );
 
-        User savedUser = userRepository.save(user);
-        // Создаём CRM-карточку клиента при регистрации
-        clientService.ensureProfile(savedUser);
+        if (isEmployee) {
+            user.setEnabled(false); // Employee needs admin approval
+        }
 
-        RefreshToken refreshToken = refreshTokenService.create(savedUser);
-        return response(savedUser, refreshToken.getToken());
+        User savedUser = userRepository.save(user);
+
+        if (!isEmployee) {
+            // Создаём CRM-карточку клиента при регистрации
+            clientService.ensureProfile(savedUser, request.companyName(), request.phone());
+            RefreshToken refreshToken = refreshTokenService.create(savedUser);
+            return response(savedUser, refreshToken.getToken());
+        } else {
+            return null; // Return null to indicate pending approval
+        }
     }
 
     public AuthResponse login(LoginRequest request) {

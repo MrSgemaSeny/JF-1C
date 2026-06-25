@@ -11,3 +11,13 @@ import type { EmployeeDto } from '../model/types';
 export async function getEmployees(): Promise<EmployeeDto[]> {
   return apiRequest<EmployeeDto[]>('/api/admin/employees');
 }
+
+export async function getPendingEmployees(): Promise<EmployeeDto[]> {
+  return apiRequest<EmployeeDto[]>('/api/admin/employees/pending');
+}
+
+export async function approveEmployee(id: number): Promise<void> {
+  return apiRequest<void>(`/api/admin/employees/${id}/approve`, {
+    method: 'POST'
+  });
+}

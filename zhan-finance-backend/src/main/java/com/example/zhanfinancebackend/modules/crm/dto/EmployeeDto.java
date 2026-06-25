@@ -7,6 +7,7 @@ public record EmployeeDto(
         String fullName,
         String email,
         String role,
+        boolean enabled,
         ZonedDateTime createdAt
 ) {
 }

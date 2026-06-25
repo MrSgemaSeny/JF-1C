@@ -20,10 +20,17 @@ export interface RegisterRequest {
   fullName: string;
   email: string;
   password: string;
+  role: 'CLIENT' | 'EMPLOYEE';
+  phone?: string;
+  companyName?: string;
 }
 
 export interface RefreshRequest {
   refreshToken: string;
+}
+
+export interface GoogleLoginRequest {
+  credential: string;
 }
 
 export function login(request: LoginRequest): Promise<AuthResponse> {
@@ -44,5 +51,12 @@ export function refresh(request: RefreshRequest): Promise<AuthResponse> {
   return apiRequest<AuthResponse>('/api/auth/refresh', {
     method: 'POST',
     body: JSON.stringify(request)
+  });
+}
+
+export async function loginWithGoogle(credential: string, role?: 'CLIENT' | 'EMPLOYEE'): Promise<AuthResponse> {
+  return apiRequest<AuthResponse>('/api/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential, role })
   });
 }

@@ -36,6 +36,19 @@ public class AdminService {
                 .toList();
     }
 
+    public List<EmployeeDto> getPendingEmployees() {
+        return userRepository.findAll().stream()
+                .filter(u -> u.getRole() == Role.EMPLOYEE && !u.isEnabled())
+                .map(this::mapToEmployeeDto)
+                .toList();
+    }
+
+    public void approveEmployee(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
     public List<EmployeeDto> getAssignedEmployees() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getRole() == Role.EMPLOYEE)
@@ -81,6 +94,7 @@ public class AdminService {
                 user.getFullName(),
                 user.getEmail(),
                 user.getRole().name(),
+                user.isEnabled(),
                 user.getCreatedAt() != null ? user.getCreatedAt().atZone(ZoneOffset.UTC) : null
         );
     }

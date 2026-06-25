@@ -4,15 +4,27 @@ import { ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { ApiError } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      if (credentialResponse.credential) {
+        await loginWithGoogle(credentialResponse.credential);
+        navigate(ROUTES.PROFILE);
+      }
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Не удалось войти через Google.');
+    }
+  };
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -85,6 +97,24 @@ export function LoginPage() {
             {!isSubmitting && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-brand-green/20"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-brand-green/50">или</span>
+            </div>
+          </div>
+          <div className="mt-6 flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Ошибка авторизации Google')}
+              useOneTap
+            />
+          </div>
+        </div>
 
         <p className="text-center text-sm text-brand-green/70 mt-6">
           Нет аккаунта?{' '}

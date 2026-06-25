@@ -29,6 +29,17 @@ public class AdminController {
         return ApiResponse.success(adminService.getAllEmployees());
     }
 
+    @GetMapping("/employees/pending")
+    public ApiResponse<List<EmployeeDto>> getPendingEmployees() {
+        return ApiResponse.success(adminService.getPendingEmployees());
+    }
+
+    @PostMapping("/employees/{id}/approve")
+    public ApiResponse<Void> approveEmployee(@PathVariable Long id) {
+        adminService.approveEmployee(id);
+        return ApiResponse.success(null, "Сотрудник одобрен");
+    }
+
     @GetMapping("/employees/assigned")
     public ApiResponse<List<EmployeeDto>> getAssignedEmployees() {
         return ApiResponse.success(adminService.getAssignedEmployees());

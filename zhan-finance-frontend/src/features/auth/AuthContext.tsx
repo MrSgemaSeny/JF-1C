@@ -17,7 +17,8 @@ interface AuthContextValue {
   user: StoredAuth | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (fullName: string, email: string, password: string) => Promise<void>;
+  loginWithGoogle: (credential: string, role?: 'CLIENT' | 'EMPLOYEE') => Promise<{ isPendingApproval: boolean }>;
+  register: (req: authApi.RegisterRequest) => Promise<{ isPendingApproval: boolean }>;
   logout: () => void;
 }
 
@@ -93,11 +94,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     },
-    async register(fullName, email, password) {
+    async register(req) {
       setIsLoading(true);
       try {
-        const response = await authApi.register({ fullName, email, password });
-        setUser(toStoredAuth(response));
+        const response = await authApi.register(req);
+        if (response) {
+          setUser(toStoredAuth(response));
+          return { isPendingApproval: false };
+        } else {
+          return { isPendingApproval: true };
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    async loginWithGoogle(credential, role) {
+      setIsLoading(true);
+      try {
+        const response = await authApi.loginWithGoogle(credential, role);
+        if (response) {
+          setUser(toStoredAuth(response));
+          return { isPendingApproval: false };
+        } else {
+          return { isPendingApproval: true };
+        }
       } finally {
         setIsLoading(false);
       }

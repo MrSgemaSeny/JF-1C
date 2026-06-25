@@ -98,8 +98,22 @@ public class ClientService {
 
     @Transactional
     public void ensureProfile(User user) {
-        clientProfileRepository.findByUser(user)
-                .orElseGet(() -> clientProfileRepository.save(new ClientProfile(user)));
+        ensureProfile(user, null, null);
+    }
+
+    @Transactional
+    public void ensureProfile(User user, String companyName, String phone) {
+        ClientProfile profile = clientProfileRepository.findByUser(user)
+                .orElseGet(() -> new ClientProfile(user));
+        
+        if (companyName != null && !companyName.isBlank()) {
+            profile.setCompanyName(companyName);
+        }
+        if (phone != null && !phone.isBlank()) {
+            profile.setPhone(phone);
+        }
+        
+        clientProfileRepository.save(profile);
     }
 
     public UserDto mapUserToDto(User user) {
