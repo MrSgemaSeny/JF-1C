@@ -8,7 +8,7 @@ export function DashboardLayout() {
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-[100dvh] bg-gray-50 overflow-hidden">
       <DashboardSidebar 
         isMobileOpen={isMobileOpen} 
         onMobileClose={() => setIsMobileOpen(false)}
@@ -34,8 +34,10 @@ export function DashboardLayout() {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 min-w-0 overflow-y-auto p-4 md:p-8 relative">
-          <Outlet />
+        <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto relative flex flex-col">
+          <div className="flex-1 flex flex-col min-h-0 p-4 md:p-8">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

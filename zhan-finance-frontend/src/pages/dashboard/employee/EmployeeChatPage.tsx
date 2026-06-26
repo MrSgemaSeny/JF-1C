@@ -121,13 +121,16 @@ export function EmployeeChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const isSendingRef = useRef(false);
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedContact || isSending) return;
+    if (!newMessage.trim() || !selectedContact || isSendingRef.current) return;
 
     const content = newMessage.trim();
     setNewMessage('');
     setIsSending(true);
+    isSendingRef.current = true;
 
     try {
       const sent = await sendChatMessage(selectedContact.id, content);
@@ -151,6 +154,7 @@ export function EmployeeChatPage() {
       setNewMessage(content);
     } finally {
       setIsSending(false);
+      isSendingRef.current = false;
     }
   };
 
@@ -175,7 +179,7 @@ export function EmployeeChatPage() {
   );
 
   return (
-    <div className="flex h-[calc(100dvh-100px)] md:h-[calc(100vh-4rem)] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+    <div className="flex flex-1 min-h-0 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
       
       {/* Sidebar - Contacts */}
       <div className={twMerge(
