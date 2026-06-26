@@ -315,9 +315,9 @@ export function EmployeeChatPage() {
                   return (
                     <div 
                       key={msg.id} 
-                      className={`flex flex-col ${isMine ? 'items-end' : 'items-start'} ${!showTail ? 'mb-[2px]' : 'mb-3'}`}
+                      className={`flex flex-col w-full ${!showTail ? 'mb-[2px]' : 'mb-3'}`}
                     >
-                      <div className={`flex items-center gap-2 group ${isMine ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex items-center gap-2 group w-full ${isMine ? 'flex-row-reverse' : ''}`}>
                         <div 
                           className={`px-4 py-2.5 max-w-[85%] md:max-w-[70%] relative ${
                             msg.isDeleted ? 'bg-transparent border border-gray-200 text-gray-400 italic rounded-2xl' :
@@ -331,14 +331,14 @@ export function EmployeeChatPage() {
                         {isMine && !msg.isDeleted && (
                           <button 
                             onClick={() => handleDeleteMessage(msg.id)}
-                            className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all shrink-0"
                             title="Удалить сообщение"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
                       </div>
-                      <span className={`text-[10px] text-gray-400 mt-1 ${isMine ? 'mr-1' : 'ml-1'}`}>
+                      <span className={`text-[10px] text-gray-400 mt-1 ${isMine ? 'self-end mr-1' : 'self-start ml-1'}`}>
                         {formatTime(msg.createdAt)}
                       </span>
                     </div>
