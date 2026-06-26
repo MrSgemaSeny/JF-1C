@@ -508,17 +508,19 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
             </span>
           )}
 
-          {/* Due date badge (clickable) */}
+          {/* Due date badge (clickable for admin) */}
           {task.dueDate && !isEditingDueDate && dueDateInfo && (
             <span
               className={twMerge(
-                'flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium cursor-pointer transition-all shadow-sm border',
-                dueDateInfo.color === 'red' ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' :
-                dueDateInfo.color === 'orange' ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100' :
-                'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                'flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-all shadow-sm border',
+                dueDateInfo.color === 'red' ? 'bg-red-50 text-red-600 border-red-200' :
+                dueDateInfo.color === 'orange' ? 'bg-orange-50 text-orange-600 border-orange-200' :
+                'bg-gray-50 text-gray-600 border-gray-200',
+                userRole === 'ADMIN' ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
               )}
-              title="Click to change due date"
+              title={userRole === 'ADMIN' ? "Click to change due date" : "Due date"}
               onClick={(e) => {
+                if (userRole !== 'ADMIN') return;
                 e.stopPropagation();
                 setIsEditingDueDate(true);
               }}
@@ -532,7 +534,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
           )}
 
           {/* Due date - no date yet */}
-          {!task.dueDate && !isEditingDueDate && (
+          {!task.dueDate && !isEditingDueDate && userRole === 'ADMIN' && (
             <button
               className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-50/80 text-gray-400 hover:bg-brand-green/10 hover:text-brand-green transition-all text-xs font-medium border border-dashed border-gray-300 hover:border-brand-green/50"
               title="Set due date"

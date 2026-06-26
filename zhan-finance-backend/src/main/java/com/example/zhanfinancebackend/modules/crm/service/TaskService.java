@@ -291,7 +291,12 @@ public class TaskService {
 
             if (dto.title() != null) task.setTitle(dto.title());
             if (dto.description() != null) task.setDescription(dto.description());
-            if (dto.dueDate() != null) task.setDueDate(dto.dueDate());
+            if (dto.dueDate() != null) {
+                if (user.getRole() != Role.ADMIN && !dto.dueDate().equals(task.getDueDate())) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Только администратор может изменять дедлайн задачи");
+                }
+                task.setDueDate(dto.dueDate());
+            }
 
             if (dto.assignedToId() != null) {
                 if (user.getRole() == Role.CLIENT && (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(dto.assignedToId()))) {
