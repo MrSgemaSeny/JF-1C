@@ -79,7 +79,7 @@ export function ClientChatPage() {
   useEffect(() => {
     let stompClient: Client | null = null;
     if (selectedContact && user) {
-      const token = localStorage.getItem('token');
+      const token = user.accessToken;
       stompClient = new Client({
         webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws?token=${token}`),
         connectHeaders: { Authorization: `Bearer ${token}` },
@@ -166,7 +166,7 @@ export function ClientChatPage() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-[120px])] md:h-[calc(100vh-4rem)] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+    <div className="flex h-[calc(100dvh-100px)] md:h-[calc(100vh-4rem)] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
       
       {/* Sidebar - Contacts */}
       <div className={twMerge(
@@ -258,7 +258,7 @@ export function ClientChatPage() {
         {selectedContact ? (
           <>
             {/* Header */}
-            <div className="flex items-center px-4 md:px-6 py-4 border-b border-gray-100 bg-white">
+            <div className="flex items-center px-4 md:px-6 py-4 border-b border-gray-100 bg-white shrink-0">
               <button 
                 onClick={() => setSelectedContact(null)}
                 className="md:hidden mr-3 p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
@@ -344,7 +344,7 @@ export function ClientChatPage() {
             </div>
 
             {/* Input */}
-            <div className="p-3 md:p-4 bg-white border-t border-gray-100">
+            <div className="p-3 md:p-4 bg-white border-t border-gray-100 shrink-0">
               <form 
                 onSubmit={handleSend}
                 className="flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-2xl p-2 focus-within:border-brand-green focus-within:ring-1 focus-within:ring-brand-green transition-all"
