@@ -244,7 +244,9 @@ export function RegisterPage() {
           <div className="mt-6 flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => setError('Ошибка регистрации через Google')}
+              onError={() => setError('Ошибка авторизации Google')}
+              use_fedcm_for_prompt={false}
+              itp_support={true}
             />
           </div>
         </div>
