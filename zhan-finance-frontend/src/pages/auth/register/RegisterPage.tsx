@@ -135,113 +135,117 @@ export function RegisterPage() {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-bold text-brand-green mb-1.5">Имя</label>
-            <input
-              id="fullName"
-              type="text"
-              required
-              autoComplete="off"
-              maxLength={120}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="Имя Фамилия"
-            />
-          </div>
+        {role === 'CLIENT' ? (
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            <div>
+              <label htmlFor="fullName" className="block text-sm font-bold text-brand-green mb-1.5">Имя</label>
+              <input
+                id="fullName"
+                type="text"
+                required
+                autoComplete="off"
+                maxLength={120}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
+                placeholder="Имя Фамилия"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-bold text-brand-green mb-1.5">Email</label>
-            <input
-              id="email"
-              type="email"
-              required
-              autoComplete="off"
-              maxLength={160}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="example@gmail.com"
-            />
-          </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-bold text-brand-green mb-1.5">Email</label>
+              <input
+                id="email"
+                type="email"
+                required
+                autoComplete="off"
+                maxLength={160}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
+                placeholder="example@gmail.com"
+              />
+            </div>
 
-          {role === 'CLIENT' && (
-            <>
-              <div>
-                <label htmlFor="phone" className="block text-sm font-bold text-brand-green mb-1.5">Телефон</label>
-                <input
-                  id="phone"
-                  type="text"
-                  autoComplete="off"
-                  maxLength={32}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-                  placeholder="+7 (777) 000-00-00"
-                />
-              </div>
+            <div>
+              <label htmlFor="phone" className="block text-sm font-bold text-brand-green mb-1.5">Телефон</label>
+              <input
+                id="phone"
+                type="text"
+                autoComplete="off"
+                maxLength={32}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
+                placeholder="+7 (777) 000-00-00"
+              />
+            </div>
 
-              <div>
-                <label htmlFor="companyName" className="block text-sm font-bold text-brand-green mb-1.5">Название ИП/ТОО <span className="font-normal text-brand-green/50">(необязательно)</span></label>
-                <input
-                  id="companyName"
-                  type="text"
-                  autoComplete="off"
-                  maxLength={255}
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-                  placeholder="ТОО Zhan Finance"
-                />
-              </div>
-            </>
-          )}
+            <div>
+              <label htmlFor="companyName" className="block text-sm font-bold text-brand-green mb-1.5">Название ИП/ТОО <span className="font-normal text-brand-green/50">(необязательно)</span></label>
+              <input
+                id="companyName"
+                type="text"
+                autoComplete="off"
+                maxLength={255}
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
+                placeholder="ТОО Zhan Finance"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-bold text-brand-green mb-1.5">Пароль</label>
-            <input
-              id="password"
-              type="password"
-              required
-              autoComplete="new-password"
-              minLength={8}
-              maxLength={120}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="Минимум 8 символов, буквы и цифры"
-            />
-          </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-bold text-brand-green mb-1.5">Пароль</label>
+              <input
+                id="password"
+                type="password"
+                required
+                autoComplete="new-password"
+                minLength={8}
+                maxLength={120}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
+                placeholder="Минимум 8 символов, буквы и цифры"
+              />
+            </div>
 
-          {error && (
-            <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-              {error}
+            {error && (
+              <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? 'Обработка...' : 'Зарегистрироваться'}
+              {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+            </button>
+          </form>
+        ) : (
+          <div className="bg-brand-green/5 border border-brand-green/10 rounded-xl p-6 text-center space-y-4">
+            <p className="text-sm text-brand-green/80 leading-relaxed font-medium">
+              Для корректной работы корпоративной почты и системы уведомлений, сотрудники могут регистрироваться только через <b>Google Аккаунт</b>.
             </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isSubmitting 
-              ? 'Обработка...' 
-              : role === 'CLIENT' ? 'Зарегистрироваться' : 'Отправить заявку'}
-            {!isSubmitting && <ArrowRight className="w-4 h-4" />}
-          </button>
-        </form>
+          </div>
+        )}
 
         <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-brand-green/20"></div>
+          {role === 'CLIENT' && (
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-brand-green/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-brand-green/50">или</span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-brand-green/50">или</span>
-            </div>
-          </div>
-          <div className="mt-6 flex justify-center">
+          )}
+          <div className="flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => setError('Ошибка авторизации Google')}

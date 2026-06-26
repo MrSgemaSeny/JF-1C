@@ -3,12 +3,21 @@ import { apiRequest } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Users, UserCheck, ClipboardList, CheckCircle2, Clock, AlertCircle, XCircle } from 'lucide-react';
 
+interface EmployeeStatsDto {
+  employeeId: number;
+  employeeName: string;
+  activeTasks: number;
+  doneTasks: number;
+  overdueTasks: number;
+}
+
 interface AdminDashboardDto {
   totalClients: number;
   totalEmployees: number;
   totalTasks: number;
   tasksByStatus: Record<string, number>;
   totalUsers: number;
+  employeeStats: EmployeeStatsDto[];
 }
 
 async function getAdminDashboard(): Promise<AdminDashboardDto> {
@@ -114,6 +123,56 @@ export function AdminOverviewPage() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Employee Productivity */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 className="text-base font-semibold text-gray-800 mb-5">Продуктивность сотрудников</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead>
+              <tr className="border-b border-gray-100 text-gray-500">
+                <th className="pb-3 font-medium">Сотрудник</th>
+                <th className="pb-3 font-medium text-center">Выполнено</th>
+                <th className="pb-3 font-medium text-center">В работе</th>
+                <th className="pb-3 font-medium text-center">Просрочено</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {data.employeeStats.map(emp => (
+                <tr key={emp.employeeId} className="hover:bg-gray-50/50">
+                  <td className="py-3 font-medium text-gray-900">{emp.employeeName}</td>
+                  <td className="py-3 text-center">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-medium text-xs">
+                      <CheckCircle2 size={12} /> {emp.doneTasks}
+                    </span>
+                  </td>
+                  <td className="py-3 text-center">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium text-xs">
+                      <Clock size={12} /> {emp.activeTasks}
+                    </span>
+                  </td>
+                  <td className="py-3 text-center">
+                    {emp.overdueTasks > 0 ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 text-red-700 font-medium text-xs">
+                        <AlertCircle size={12} /> {emp.overdueTasks}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {data.employeeStats.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-4 text-center text-gray-500">
+                    Нет данных по сотрудникам
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

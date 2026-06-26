@@ -36,13 +36,48 @@ public class DashboardService {
         long clientsCount = userRepository.countByRole(Role.CLIENT);
         long employeesCount = userRepository.countByRole(Role.EMPLOYEE);
         
-        List<Task> allTasks = taskRepository.findAll();
+        List<Task> allTasks = taskRepository.findAllWithDetails();
         long tasksCount = allTasks.size();
         
         Map<String, Long> tasksByStatus = allTasks.stream()
                 .collect(Collectors.groupingBy(t -> t.getStatus().name(), Collectors.counting()));
                 
-        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count());
+        List<User> employees = userRepository.findAllByRole(Role.EMPLOYEE);
+        java.time.LocalDate today = java.time.LocalDate.now();
+        
+        List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto> employeeStats = employees.stream().map(emp -> {
+            long active = 0;
+            long done = 0;
+            long overdue = 0;
+            
+            for (Task t : allTasks) {
+                boolean isAssignedToEmp = (t.getAssignedTo() != null && t.getAssignedTo().getId().equals(emp.getId())) ||
+                                          (t.getAssignedTo() == null && t.getClient() != null && t.getClient().getAssignedEmployee() != null && t.getClient().getAssignedEmployee().getId().equals(emp.getId()));
+                
+                if (isAssignedToEmp) {
+                    if (t.getStatus() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE) {
+                        done++;
+                    } else if (t.getStatus() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.CANCELLED) {
+                        // ignore cancelled
+                    } else {
+                        active++;
+                        if (t.getDueDate() != null && t.getDueDate().isBefore(today)) {
+                            overdue++;
+                        }
+                    }
+                }
+            }
+            
+            return new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
+                    emp.getId(),
+                    emp.getFullName() != null && !emp.getFullName().isBlank() ? emp.getFullName() : emp.getEmail(),
+                    active,
+                    done,
+                    overdue
+            );
+        }).collect(Collectors.toList());
+                
+        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count(), employeeStats);
     }
 
     @Cacheable(value = "dashboard_employee", key = "#employee.id")

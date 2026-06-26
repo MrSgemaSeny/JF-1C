@@ -54,6 +54,10 @@ public class AuthService {
 
         Role assignedRole = request.role() != null ? request.role() : Role.CLIENT;
         boolean isEmployee = assignedRole == Role.EMPLOYEE;
+        
+        if (isEmployee) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Сотрудники могут регистрироваться только через Google-аккаунт.");
+        }
 
         User user = new User(
                 request.fullName(),
@@ -62,20 +66,12 @@ public class AuthService {
                 assignedRole
         );
 
-        if (isEmployee) {
-            user.setEnabled(false); // Employee needs admin approval
-        }
-
         User savedUser = userRepository.save(user);
 
-        if (!isEmployee) {
-            // Создаём CRM-карточку клиента при регистрации
-            clientService.ensureProfile(savedUser, request.companyName(), request.phone());
-            RefreshToken refreshToken = refreshTokenService.create(savedUser);
-            return response(savedUser, refreshToken.getToken());
-        } else {
-            return null; // Return null to indicate pending approval
-        }
+        // Создаём CRM-карточку клиента при регистрации
+        clientService.ensureProfile(savedUser, request.companyName(), request.phone());
+        RefreshToken refreshToken = refreshTokenService.create(savedUser);
+        return response(savedUser, refreshToken.getToken());
     }
 
     public AuthResponse login(LoginRequest request) {

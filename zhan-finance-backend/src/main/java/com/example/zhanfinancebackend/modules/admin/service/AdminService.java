@@ -82,7 +82,7 @@ public class AdminService {
         java.util.Map<String, Long> tasksByStatus = allTasks.stream()
                 .collect(java.util.stream.Collectors.groupingBy(t -> t.getStatus().name(), java.util.stream.Collectors.counting()));
                 
-        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count());
+        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count(), java.util.Collections.emptyList());
     }
 
     public List<com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto> getClientStats() {

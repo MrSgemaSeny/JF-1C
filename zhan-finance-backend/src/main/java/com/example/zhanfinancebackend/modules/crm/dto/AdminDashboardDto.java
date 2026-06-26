@@ -1,5 +1,6 @@
 package com.example.zhanfinancebackend.modules.crm.dto;
 
+import java.util.List;
 import java.util.Map;
 
 public record AdminDashboardDto(
@@ -7,7 +8,8 @@ public record AdminDashboardDto(
         long totalEmployees,
         long totalTasks,
         Map<String, Long> tasksByStatus,
-        long totalUsers
+        long totalUsers,
+        List<EmployeeStatsDto> employeeStats
 ) {
 }
 
