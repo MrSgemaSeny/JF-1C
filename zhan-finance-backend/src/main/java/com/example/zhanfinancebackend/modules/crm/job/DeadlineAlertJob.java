@@ -39,9 +39,9 @@ public class DeadlineAlertJob {
         
         int count = 0;
         for (Task task : dueTomorrowTasks) {
-            User assignee = task.getAssignedTo();
-            if (assignee != null) {
-                emailNotificationService.sendTaskDeadlineAlertEmail(assignee, task);
+            User employee = task.getClient().getAssignedEmployee();
+            if (employee != null) {
+                emailNotificationService.sendTaskDeadlineAlertEmail(employee, task);
                 count++;
             }
         }

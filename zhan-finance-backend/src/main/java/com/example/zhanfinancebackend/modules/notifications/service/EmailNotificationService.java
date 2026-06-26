@@ -95,11 +95,12 @@ public class EmailNotificationService {
         String html = String.format(
             "<h2>Горит Дедлайн!</h2>" +
             "<p>Здравствуйте, <b>%s</b>!</p>" +
-            "<p>Напоминаем, что срок выполнения задачи <b>%s</b> скоро истекает.</p>" +
+            "<p>Напоминаем, что срок выполнения задачи <b>%s</b> от клиента <b>%s</b> скоро истекает.</p>" +
             "<p><b>Дедлайн:</b> <span style=\"color: red; font-weight: bold;\">%s</span></p>" +
             "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Посмотреть задачу</a>",
             user.getFullName(),
             task.getTitle(),
+            task.getClient().getFullName(),
             deadlineStr,
             frontendUrl
         );

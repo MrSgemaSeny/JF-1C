@@ -154,12 +154,22 @@ public class TaskService {
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public TaskDto requestTask(TaskRequestCreateRequest request, User client) {
-        Task task = new Task(request.title(), client, client);
+        User managedClient = userRepository.findById(client.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Client not found"));
+
+        Task task = new Task(request.title(), managedClient, managedClient);
         task.setDescription(request.description());
         task.setStatus(TaskStatus.NEW);
         task.setDueDate(request.dueDate());
 
-        return mapToDto(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+
+        User employee = managedClient.getAssignedEmployee();
+        if (employee != null) {
+            emailNotificationService.sendTaskAssignedEmail(employee, savedTask);
+        }
+
+        return mapToDto(savedTask);
     }
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)

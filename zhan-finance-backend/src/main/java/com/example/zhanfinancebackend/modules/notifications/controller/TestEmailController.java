@@ -1,6 +1,7 @@
 package com.example.zhanfinancebackend.modules.notifications.controller;
 
-import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,20 +9,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestEmailController {
 
-    private final EmailNotificationService emailNotificationService;
+    private final JavaMailSender mailSender;
 
-    public TestEmailController(EmailNotificationService emailNotificationService) {
-        this.emailNotificationService = emailNotificationService;
+    public TestEmailController(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
     }
 
     @GetMapping("/api/test-email")
     public String sendTestEmail(@RequestParam String email) {
         String html = "<h2>Почта работает! 🚀</h2>" +
-                      "<p>Привет! Это тестовое сообщение от вашего сервера ZhanFinance.</p>" +
-                      "<p>Раз вы его видите, значит SMTP-настройки введены абсолютно верно и сервер готов рассылать реальные уведомления клиентам и сотрудникам.</p>";
+                      "<p>Привет! Это тестовое сообщение от вашего сервера ZhanFinance.</p>";
         
-        emailNotificationService.sendHtmlEmail(email, "Тестовое письмо от ZhanFinance", html);
-        
-        return "Успех! Тестовое письмо отправлено на адрес: " + email + ". Проверьте ваш ящик (включая папку Спам).";
+        try {
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom("orkathebestt@gmail.com");
+            helper.setTo(email);
+            helper.setSubject("Тестовое письмо от ZhanFinance");
+            helper.setText(html, true);
+            
+            mailSender.send(message);
+            return "Успех! Тестовое письмо отправлено на адрес: " + email;
+        } catch (Exception e) {
+            return "ОШИБКА ОТПРАВКИ: " + e.getMessage() + "\n\nДетали: " + e.toString();
+        }
     }
 }
