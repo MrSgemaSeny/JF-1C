@@ -126,7 +126,10 @@ export function ClientChatPage() {
 
     try {
       const sent = await sendChatMessage(selectedContact.id, content);
-      setMessages(prev => [...prev, sent]);
+      setMessages(prev => {
+        if (prev.find(m => m.id === sent.id)) return prev;
+        return [...prev, sent];
+      });
       lastMessageIdRef.current = Math.max(lastMessageIdRef.current, sent.id);
       
       setContacts(prev => {
@@ -318,7 +321,7 @@ export function ClientChatPage() {
                     >
                       <div className={`flex items-center gap-2 group w-full ${isMine ? 'flex-row-reverse' : ''}`}>
                         <div 
-                          className={`px-4 py-2.5 max-w-[85%] md:max-w-[70%] relative ${
+                          className={`px-4 py-2.5 w-fit shrink-0 max-w-[80vw] md:max-w-[60vw] relative ${
                             msg.isDeleted ? 'bg-transparent border border-gray-200 text-gray-400 italic rounded-2xl' :
                             isMine 
                               ? 'bg-brand-green text-white rounded-2xl rounded-tr-sm' 
