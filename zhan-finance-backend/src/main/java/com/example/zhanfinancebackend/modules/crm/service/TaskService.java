@@ -160,7 +160,6 @@ public class TaskService {
         Task task = new Task(request.title(), managedClient, managedClient);
         task.setDescription(request.description());
         task.setStatus(TaskStatus.NEW);
-        task.setDueDate(request.dueDate());
 
         Task savedTask = taskRepository.save(task);
 
