@@ -31,14 +31,14 @@ public class AdminService {
 
     public List<EmployeeDto> getAllEmployees() {
         return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE)
+                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
                 .map(this::mapToEmployeeDto)
                 .toList();
     }
 
     public List<EmployeeDto> getPendingEmployees() {
         return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE && !u.isEnabled())
+                .filter(u -> (u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN) && !u.isEnabled())
                 .map(this::mapToEmployeeDto)
                 .toList();
     }
@@ -47,7 +47,7 @@ public class AdminService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ApiException(
                         com.example.zhanfinancebackend.common.exception.ErrorCode.NOT_FOUND, "User not found"));
-        if (user.getRole() != Role.EMPLOYEE) {
+        if (user.getRole() != Role.EMPLOYEE && user.getRole() != Role.ADMIN) {
             throw new com.example.zhanfinancebackend.common.exception.ApiException(
                     com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST,
                     "Only employees can be approved");
@@ -58,7 +58,7 @@ public class AdminService {
 
     public List<EmployeeDto> getAssignedEmployees() {
         return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE)
+                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
                 .filter(emp -> userRepository.countByAssignedEmployee(emp) > 0)
                 .map(this::mapToEmployeeDto)
                 .toList();
@@ -66,7 +66,7 @@ public class AdminService {
 
     public List<EmployeeDto> getUnassignedEmployees() {
         return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE)
+                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
                 .filter(emp -> userRepository.countByAssignedEmployee(emp) == 0)
                 .map(this::mapToEmployeeDto)
                 .toList();

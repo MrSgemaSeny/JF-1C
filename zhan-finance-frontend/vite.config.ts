@@ -2,10 +2,20 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
+import fs from 'node:fs'
 
 export default defineConfig({
   base: '/JF-1C/',
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(), 
+    tailwindcss(),
+    {
+      name: 'copy-index-to-404',
+      closeBundle() {
+        fs.copyFileSync('dist/index.html', 'dist/404.html')
+      }
+    }
+  ],
   server: {
     proxy: {
       '/api': {

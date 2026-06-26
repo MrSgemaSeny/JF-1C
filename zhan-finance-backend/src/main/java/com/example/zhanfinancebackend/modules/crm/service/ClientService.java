@@ -37,7 +37,10 @@ public class ClientService {
             ensureProfile(client);
         }
 
-        return clientProfileRepository.findAllWithUser().stream().map(this::mapToDto).toList();
+        return clientProfileRepository.findAllWithUser().stream()
+                .filter(p -> p.getUser() != null && p.getUser().getRole() == Role.CLIENT)
+                .map(this::mapToDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
