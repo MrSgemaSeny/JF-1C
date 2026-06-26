@@ -160,6 +160,7 @@ public class TaskService {
         Task task = new Task(request.title(), managedClient, managedClient);
         task.setDescription(request.description());
         task.setStatus(TaskStatus.NEW);
+        task.setDueDate(request.dueDate());
 
         Task savedTask = taskRepository.save(task);
 
@@ -291,8 +292,8 @@ public class TaskService {
             if (dto.title() != null) task.setTitle(dto.title());
             if (dto.description() != null) task.setDescription(dto.description());
             if (dto.dueDate() != null) {
-                if (user.getRole() != Role.ADMIN && !dto.dueDate().equals(task.getDueDate())) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Только администратор может изменять дедлайн задачи");
+                if (user.getRole() == Role.EMPLOYEE && !dto.dueDate().equals(task.getDueDate())) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Сотрудник не может изменять дедлайн задачи");
                 }
                 task.setDueDate(dto.dueDate());
             }
