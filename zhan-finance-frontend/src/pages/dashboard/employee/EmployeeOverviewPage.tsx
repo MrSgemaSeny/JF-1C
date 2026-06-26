@@ -111,8 +111,8 @@ export function EmployeeOverviewPage() {
                 const config = STATUS_CONFIG[status];
                 
                 return (
-                  <div key={status} className="flex items-center gap-4">
-                    <div className="w-28 text-sm font-medium text-gray-600">{config.label}</div>
+                  <div key={status} className="flex items-center gap-2 md:gap-4">
+                    <div className="w-24 md:w-28 shrink-0 text-xs md:text-sm font-medium text-gray-600 truncate">{config.label}</div>
                     <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
                       <div 
                         className={`h-full rounded-full transition-all duration-500 ${config.color}`} 

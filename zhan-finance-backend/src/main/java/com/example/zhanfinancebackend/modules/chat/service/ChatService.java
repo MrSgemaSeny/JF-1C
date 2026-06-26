@@ -97,6 +97,7 @@ public class ChatService {
             if (currentUser.getAssignedEmployee() != null) {
                 usersToInclude.add(currentUser.getAssignedEmployee());
             }
+            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN)));
         }
 
         return usersToInclude.stream()
@@ -133,8 +134,11 @@ public class ChatService {
         }
 
         if (currentUser.getRole() == Role.CLIENT) {
+            if (otherUser.getRole() == Role.ADMIN) {
+                return; // Clients can chat with admins
+            }
             if (currentUser.getAssignedEmployee() == null || !currentUser.getAssignedEmployee().getId().equals(otherUserId)) {
-                throw new ApiException(ErrorCode.FORBIDDEN, "Client can only chat with their assigned employee");
+                throw new ApiException(ErrorCode.FORBIDDEN, "Client can only chat with their assigned employee or admins");
             }
         } else if (currentUser.getRole() == Role.EMPLOYEE) {
             if (otherUser.getRole() == Role.ADMIN || otherUser.getRole() == Role.EMPLOYEE) {

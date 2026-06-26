@@ -99,7 +99,7 @@ export function AdminOverviewPage() {
             const percent = data.totalTasks > 0 ? Math.round((count / data.totalTasks) * 100) : 0;
             return (
               <div key={status} className="flex items-center gap-4">
-                <div className="flex items-center gap-2 w-36 flex-shrink-0">
+                <div className="flex items-center gap-2 w-28 md:w-36 flex-shrink-0">
                   <span className="text-gray-400">{cfg.icon}</span>
                   <span className="text-sm font-medium text-gray-700">{cfg.label}</span>
                 </div>

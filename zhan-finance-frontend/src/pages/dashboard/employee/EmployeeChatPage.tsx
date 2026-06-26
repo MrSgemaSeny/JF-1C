@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
-import { Send, User, Search, UserCheck, Users, MessageCircle, Trash2 } from 'lucide-react';
+import { Send, User, Search, UserCheck, Users, MessageCircle, Trash2, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getChatContacts, getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, ChatContactDto, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { twMerge } from 'tailwind-merge';
 
 export function EmployeeChatPage() {
   const { user } = useAuth();
@@ -174,10 +175,13 @@ export function EmployeeChatPage() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="flex h-[calc(100vh-[120px])] md:h-[calc(100vh-4rem)] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
       
       {/* Sidebar - Contacts */}
-      <div className="w-80 border-r border-gray-100 flex flex-col bg-gray-50/50">
+      <div className={twMerge(
+        "w-full md:w-80 border-r border-gray-100 flex flex-col bg-gray-50/50 shrink-0",
+        selectedContact ? "hidden md:flex" : "flex"
+      )}>
         <div className="p-4 border-b border-gray-100">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Чаты</h2>
           <div className="relative">
@@ -254,11 +258,21 @@ export function EmployeeChatPage() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-white min-w-0">
+      <div className={twMerge(
+        "flex-1 flex flex-col bg-white min-w-0 h-full",
+        !selectedContact ? "hidden md:flex" : "flex"
+      )}>
         {selectedContact ? (
           <>
             {/* Header */}
-            <div className="flex items-center px-6 py-4 border-b border-gray-100 bg-white">
+            <div className="flex items-center px-4 md:px-6 py-4 border-b border-gray-100 bg-white">
+              <button 
+                onClick={() => setSelectedContact(null)}
+                className="md:hidden mr-3 p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Назад к контактам"
+              >
+                <ChevronLeft size={24} />
+              </button>
               <div className="flex items-center gap-3">
                 <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-white overflow-hidden ${
                   selectedContact.role === 'CLIENT' ? 'bg-blue-400' : 'bg-brand-green/80'
@@ -283,7 +297,7 @@ export function EmployeeChatPage() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col">
               {isLoadingChat ? (
                 <div className="flex-1 flex justify-center items-center">
                   <Spinner className="w-8 h-8 text-brand-green" />
@@ -305,7 +319,7 @@ export function EmployeeChatPage() {
                     >
                       <div className={`flex items-center gap-2 group ${isMine ? 'flex-row-reverse' : ''}`}>
                         <div 
-                          className={`px-4 py-2.5 max-w-[70%] relative ${
+                          className={`px-4 py-2.5 max-w-[85%] md:max-w-[70%] relative ${
                             msg.isDeleted ? 'bg-transparent border border-gray-200 text-gray-400 italic rounded-2xl' :
                             isMine 
                               ? 'bg-brand-green text-white rounded-2xl rounded-tr-sm' 
@@ -335,7 +349,7 @@ export function EmployeeChatPage() {
             </div>
 
             {/* Input */}
-            <div className="p-4 bg-white border-t border-gray-100">
+            <div className="p-3 md:p-4 bg-white border-t border-gray-100">
               <form 
                 onSubmit={handleSend}
                 className="flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-2xl p-2 focus-within:border-brand-green focus-within:ring-1 focus-within:ring-brand-green transition-all"
