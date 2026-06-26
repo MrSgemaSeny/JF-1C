@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -24,8 +25,13 @@ public class JwtService {
 
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.access-token-expiration-ms}") long accessTokenExpirationMs
+            @Value("${app.jwt.access-token-expiration-ms}") long accessTokenExpirationMs,
+            Environment env
     ) {
+        if (secret.contains("change-me") && 
+            java.util.Arrays.asList(env.getActiveProfiles()).contains("prod")) {
+            throw new IllegalStateException("CRITICAL: Default or weak JWT secret is used in production profile");
+        }
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpirationMs = accessTokenExpirationMs;
     }

@@ -47,9 +47,6 @@ export function EmployeeChatPage() {
 
   useEffect(() => {
     fetchContacts();
-    // Poll contacts every 10 seconds to update unread counts and last messages
-    const interval = setInterval(fetchContacts, 10000);
-    return () => clearInterval(interval);
   }, []);
 
   // When a contact is selected, load history
@@ -82,11 +79,16 @@ export function EmployeeChatPage() {
     }
   };
 
-  // WebSockets for active chat
+  const selectedContactIdRef = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    selectedContactIdRef.current = selectedContact?.id;
+  }, [selectedContact?.id]);
+
+  // WebSockets for active chat and contact updates
   useEffect(() => {
     let stompClient: Client | null = null;
     
-    if (selectedContact && user) {
+    if (user) {
       const token = user.accessToken;
       stompClient = new Client({
         webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws?token=${token}`),
@@ -96,7 +98,35 @@ export function EmployeeChatPage() {
           stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {
               const chatMessage: ChatMessageDto = JSON.parse(message.body);
-              if (chatMessage.senderId === selectedContact.id || chatMessage.receiverId === selectedContact.id) {
+              
+              // Update contacts list
+              setContacts(prev => {
+                const isCurrentChat = selectedContactIdRef.current === chatMessage.senderId || selectedContactIdRef.current === chatMessage.receiverId;
+                const contactId = chatMessage.senderId === user.userId ? chatMessage.receiverId : chatMessage.senderId;
+                
+                // If contact is not in list, we could fetch contacts, but for now we'll just update if exists
+                const updated = prev.map(c => {
+                  if (c.id === contactId) {
+                    return {
+                      ...c,
+                      lastMessage: chatMessage,
+                      unreadCount: (isCurrentChat || chatMessage.senderId === user.userId) ? 0 : c.unreadCount + 1
+                    };
+                  }
+                  return c;
+                });
+                
+                updated.sort((a, b) => {
+                  if (b.unreadCount !== a.unreadCount) return b.unreadCount - a.unreadCount;
+                  const timeA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
+                  const timeB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
+                  return timeB - timeA;
+                });
+                return updated;
+              });
+
+              // Update messages list if it's the active chat
+              if (selectedContactIdRef.current && (chatMessage.senderId === selectedContactIdRef.current || chatMessage.receiverId === selectedContactIdRef.current)) {
                  setMessages(prev => {
                    if (prev.find(m => m.id === chatMessage.id)) return prev;
                    return [...prev, chatMessage];
@@ -104,7 +134,7 @@ export function EmployeeChatPage() {
                  if (chatMessage.id > lastMessageIdRef.current) {
                    lastMessageIdRef.current = chatMessage.id;
                  }
-                 markChatAsRead(selectedContact.id).catch(console.error);
+                 markChatAsRead(selectedContactIdRef.current).catch(console.error);
               }
             }
           });
@@ -115,7 +145,7 @@ export function EmployeeChatPage() {
     return () => {
       if (stompClient) stompClient.deactivate();
     };
-  }, [selectedContact?.id, user]);
+  }, [user]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
