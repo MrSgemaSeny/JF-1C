@@ -69,7 +69,7 @@ public class CrmAccessService {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
-            return sameUser(actor, task.getAssignedTo());
+            return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
         }
         if (actor.getRole() == Role.CLIENT) {
             return sameUser(actor, task.getClient()) && newStatus == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE;
@@ -88,7 +88,7 @@ public class CrmAccessService {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
-            return sameUser(actor, task.getAssignedTo());
+            return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
         }
         if (actor.getRole() == Role.CLIENT) {
             return sameUser(actor, task.getClient());

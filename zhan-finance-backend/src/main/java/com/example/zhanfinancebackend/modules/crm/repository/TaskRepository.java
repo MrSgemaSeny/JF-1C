@@ -32,4 +32,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("startDate") java.time.LocalDate startDate,
             @Param("endDate") java.time.LocalDate endDate
     );
+
+    @Query("select t from Task t join fetch t.client c left join fetch t.assignedTo left join fetch t.createdBy " +
+           "where t.dueDate = :dueDate and t.status not in :excludedStatuses")
+    List<Task> findByDueDateAndStatusNotIn(
+            @Param("dueDate") java.time.LocalDate dueDate, 
+            @Param("excludedStatuses") List<TaskStatus> excludedStatuses
+    );
 }

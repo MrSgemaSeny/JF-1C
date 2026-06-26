@@ -38,12 +38,14 @@ public class TaskService {
     private final UserRepository userRepository;
     private final CrmAccessService accessService;
     private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
+    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CrmAccessService accessService, com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CrmAccessService accessService, com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService, com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.accessService = accessService;
         this.notificationService = notificationService;
+        this.emailNotificationService = emailNotificationService;
     }
 
     @Transactional(readOnly = true)
@@ -142,6 +144,10 @@ public class TaskService {
             );
         }
 
+        if (savedTask.getAssignedTo() != null) {
+            emailNotificationService.sendTaskAssignedEmail(savedTask.getAssignedTo(), savedTask);
+        }
+
         return mapToDto(savedTask);
     }
 
@@ -201,7 +207,13 @@ public class TaskService {
             logActivity(task, user, "Назначил исполнителя: " + assigneeName);
         }
         task.setAssignedTo(assignee);
-        return mapToDto(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+
+        if (assignee != null) {
+            emailNotificationService.sendTaskAssignedEmail(assignee, savedTask);
+        }
+
+        return mapToDto(savedTask);
     }
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
@@ -268,8 +280,8 @@ public class TaskService {
             }
 
             if (dto.title() != null) task.setTitle(dto.title());
-            task.setDescription(dto.description());
-            task.setDueDate(dto.dueDate());
+            if (dto.description() != null) task.setDescription(dto.description());
+            if (dto.dueDate() != null) task.setDueDate(dto.dueDate());
 
             if (dto.assignedToId() != null) {
                 if (user.getRole() == Role.CLIENT && (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(dto.assignedToId()))) {
@@ -277,6 +289,9 @@ public class TaskService {
                 }
                 User assignee = userRepository.findById(dto.assignedToId())
                         .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Assignee not found"));
+                if (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(assignee.getId())) {
+                    emailNotificationService.sendTaskAssignedEmail(assignee, task);
+                }
                 task.setAssignedTo(assignee);
             } else if (user.getRole() != Role.CLIENT) {
                 task.setAssignedTo(null);
@@ -318,9 +333,6 @@ public class TaskService {
                         task.addSubtask(newSt);
                     }
                 }
-            } else {
-                task.getSubtasks().forEach(st -> st.setTask(null));
-                task.getSubtasks().clear();
             }
 
             if (dto.tags() != null) {
