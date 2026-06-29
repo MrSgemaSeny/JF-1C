@@ -31,19 +31,16 @@ export interface LessonDto {
 
 // Learner API
 export async function getPublishedCourses(): Promise<CourseDto[]> {
-  const data = await apiRequest<{ data: CourseDto[] }>('/courses');
-  return data.data;
+  return await apiRequest<CourseDto[]>('/api/courses');
 }
 
 export async function getCourseById(id: number): Promise<CourseDto> {
-  const data = await apiRequest<{ data: CourseDto }>(`/courses/${id}`);
-  return data.data;
+  return await apiRequest<CourseDto>(`/api/courses/${id}`);
 }
 
 // Admin API
 export async function getAdminCourses(): Promise<CourseDto[]> {
-  const data = await apiRequest<{ data: CourseDto[] }>('/admin/courses');
-  return data.data;
+  return await apiRequest<CourseDto[]>('/api/admin/courses');
 }
 
 export async function createCourse(title: string, description: string, isPublished: boolean): Promise<CourseDto> {
@@ -52,12 +49,11 @@ export async function createCourse(title: string, description: string, isPublish
   formData.append('description', description);
   formData.append('isPublished', String(isPublished));
 
-  const data = await apiRequest<{ data: CourseDto }>('/admin/courses', {
+  return await apiRequest<CourseDto>('/api/admin/courses', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
   });
-  return data.data;
 }
 
 export async function updateCourse(id: number, title: string, description: string, isPublished: boolean): Promise<CourseDto> {
@@ -66,27 +62,25 @@ export async function updateCourse(id: number, title: string, description: strin
   formData.append('description', description);
   formData.append('isPublished', String(isPublished));
 
-  const data = await apiRequest<{ data: CourseDto }>(`/admin/courses/${id}`, {
+  return await apiRequest<CourseDto>(`/api/admin/courses/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
   });
-  return data.data;
 }
 
 export async function createSection(courseId: number, title: string): Promise<CourseSectionDto> {
   const formData = new URLSearchParams();
   formData.append('title', title);
-  const data = await apiRequest<{ data: CourseSectionDto }>(`/admin/courses/${courseId}/sections`, {
+  return await apiRequest<CourseSectionDto>(`/api/admin/courses/${courseId}/sections`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
   });
-  return data.data;
 }
 
 export async function deleteSection(sectionId: number): Promise<void> {
-  await apiRequest(`/admin/courses/sections/${sectionId}`, {
+  await apiRequest(`/api/admin/courses/sections/${sectionId}`, {
     method: 'DELETE',
   });
 }
@@ -106,15 +100,14 @@ export async function createLesson(
     formData.append('file', file);
   }
 
-  const data = await apiRequest<{ data: LessonDto }>(`/admin/courses/sections/${sectionId}/lessons`, {
+  return await apiRequest<LessonDto>(`/api/admin/courses/sections/${sectionId}/lessons`, {
     method: 'POST',
     body: formData // Note: Content-Type is intentionally omitted for FormData
   });
-  return data.data;
 }
 
 export async function deleteLesson(lessonId: number): Promise<void> {
-  await apiRequest(`/admin/courses/lessons/${lessonId}`, {
+  await apiRequest(`/api/admin/courses/lessons/${lessonId}`, {
     method: 'DELETE',
   });
 }

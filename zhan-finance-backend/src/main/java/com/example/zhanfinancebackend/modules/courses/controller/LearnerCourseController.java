@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.example.zhanfinancebackend.common.response.ApiResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,13 +33,13 @@ public class LearnerCourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Course>> getPublishedCourses() {
-        return ResponseEntity.ok(courseService.getPublishedCourses());
+    public ApiResponse<List<Course>> getPublishedCourses() {
+        return ApiResponse.success(courseService.getPublishedCourses());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
-        return ResponseEntity.ok(courseService.getCourseById(id));
+    public ApiResponse<Course> getCourseById(@PathVariable Long id) {
+        return ApiResponse.success(courseService.getCourseById(id));
     }
 
     @GetMapping("/lessons/{id}/file")

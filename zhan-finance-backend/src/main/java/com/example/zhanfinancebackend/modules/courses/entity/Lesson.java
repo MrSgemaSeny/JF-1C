@@ -1,9 +1,11 @@
 package com.example.zhanfinancebackend.modules.courses.entity;
 
-import com.example.zhanfinancebackend.modules.common.entity.BaseEntity;
+import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "lessons")
@@ -11,6 +13,7 @@ import lombok.Setter;
 @Setter
 public class Lesson extends BaseEntity {
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false)
     private CourseSection section;

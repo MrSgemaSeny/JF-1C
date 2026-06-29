@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.zhanfinancebackend.common.response.ApiResponse;
 import java.util.List;
 
 @RestController
@@ -30,81 +31,81 @@ public class AdminCourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        return ResponseEntity.ok(courseService.getAllCourses());
+    public ApiResponse<List<Course>> getAllCourses() {
+        return ApiResponse.success(courseService.getAllCourses());
     }
 
     @PostMapping
-    public ResponseEntity<Course> createCourse(
+    public ApiResponse<Course> createCourse(
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "isPublished", defaultValue = "false") boolean isPublished,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         User admin = userPrincipal.getUser();
-        return ResponseEntity.ok(courseService.createCourse(title, description, null, isPublished, admin));
+        return ApiResponse.success(courseService.createCourse(title, description, null, isPublished, admin));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> updateCourse(
+    public ApiResponse<Course> updateCourse(
             @PathVariable Long id,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "isPublished", required = false) Boolean isPublished) {
-        return ResponseEntity.ok(courseService.updateCourse(id, title, description, null, isPublished != null ? isPublished : false));
+        return ApiResponse.success(courseService.updateCourse(id, title, description, null, isPublished != null ? isPublished : false));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
+    public ApiResponse<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
-        return ResponseEntity.ok().build();
+        return ApiResponse.success(null);
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<CourseSection> createSection(
+    public ApiResponse<CourseSection> createSection(
             @PathVariable Long id,
             @RequestParam("title") String title,
             @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex) {
-        return ResponseEntity.ok(courseService.createSection(id, title, orderIndex));
+        return ApiResponse.success(courseService.createSection(id, title, orderIndex));
     }
 
     @PutMapping("/sections/{sectionId}")
-    public ResponseEntity<CourseSection> updateSection(
+    public ApiResponse<CourseSection> updateSection(
             @PathVariable Long sectionId,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "orderIndex", required = false) Integer orderIndex) {
-        return ResponseEntity.ok(courseService.updateSection(sectionId, title, orderIndex));
+        return ApiResponse.success(courseService.updateSection(sectionId, title, orderIndex));
     }
 
     @DeleteMapping("/sections/{sectionId}")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long sectionId) {
+    public ApiResponse<Void> deleteSection(@PathVariable Long sectionId) {
         courseService.deleteSection(sectionId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.success(null);
     }
 
     @PostMapping("/sections/{sectionId}/lessons")
-    public ResponseEntity<Lesson> createLesson(
+    public ApiResponse<Lesson> createLesson(
             @PathVariable Long sectionId,
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("type") LessonType type,
             @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex,
             @RequestParam(value = "file", required = false) MultipartFile file) {
-        return ResponseEntity.ok(lessonService.createLesson(sectionId, title, description, type, orderIndex, file));
+        return ApiResponse.success(lessonService.createLesson(sectionId, title, description, type, orderIndex, file));
     }
 
     @PutMapping("/lessons/{lessonId}")
-    public ResponseEntity<Lesson> updateLesson(
+    public ApiResponse<Lesson> updateLesson(
             @PathVariable Long lessonId,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "orderIndex", required = false) Integer orderIndex,
             @RequestParam(value = "file", required = false) MultipartFile file) {
-        return ResponseEntity.ok(lessonService.updateLesson(lessonId, title, description, orderIndex, file));
+        return ApiResponse.success(lessonService.updateLesson(lessonId, title, description, orderIndex, file));
     }
 
     @DeleteMapping("/lessons/{lessonId}")
-    public ResponseEntity<Void> deleteLesson(@PathVariable Long lessonId) {
+    public ApiResponse<Void> deleteLesson(@PathVariable Long lessonId) {
         lessonService.deleteLesson(lessonId);
-        return ResponseEntity.ok().build();
+        return ApiResponse.success(null);
     }
 }

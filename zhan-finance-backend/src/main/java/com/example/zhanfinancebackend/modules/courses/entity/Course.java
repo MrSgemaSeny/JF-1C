@@ -1,8 +1,10 @@
 package com.example.zhanfinancebackend.modules.courses.entity;
 
 import com.example.zhanfinancebackend.modules.auth.entity.User;
-import com.example.zhanfinancebackend.modules.common.entity.BaseEntity;
+import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,9 +26,11 @@ public class Course extends BaseEntity {
     @Column(name = "thumbnail")
     private String thumbnail;
 
+    @JsonProperty("isPublished")
     @Column(name = "is_published", nullable = false)
     private boolean isPublished = false;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;

@@ -130,7 +130,7 @@ export function AdminCourseEditPage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
+    <div className="p-6 w-full max-w-4xl mx-auto space-y-6">
       <button 
         onClick={() => navigate(ROUTES.ADMIN_COURSES)}
         className="flex items-center text-gray-500 hover:text-gray-900 transition-colors"
@@ -138,12 +138,12 @@ export function AdminCourseEditPage() {
         <ArrowLeft className="w-4 h-4 mr-2" /> Назад к списку
       </button>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden w-full">
+        <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-2xl font-bold">{isEditMode ? 'Редактирование курса' : 'Создание курса'}</h1>
           <button 
             onClick={handleSaveCourse}
-            className="bg-brand-green text-white px-4 py-2 rounded-lg font-medium hover:bg-brand-green/90 flex items-center gap-2 transition-colors"
+            className="bg-brand-green text-white px-4 py-2 rounded-lg font-medium hover:bg-brand-green/90 flex items-center gap-2 transition-colors shrink-0"
           >
             <Save className="w-5 h-5" />
             Сохранить

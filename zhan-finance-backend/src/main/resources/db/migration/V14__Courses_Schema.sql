@@ -4,7 +4,7 @@ CREATE TABLE courses (
     description TEXT,
     thumbnail VARCHAR(255),
     is_published BOOLEAN DEFAULT FALSE,
-    created_by BIGINT NOT NULL REFERENCES users(id),
+    created_by BIGINT NOT NULL REFERENCES app_users(id),
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

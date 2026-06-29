@@ -32,7 +32,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && user.role !== 'LEARNER') {
       fetchNotifications();
       // Optional polling every 60 seconds
       const interval = setInterval(fetchNotifications, 60000);

@@ -119,9 +119,11 @@ export function App() {
                 <Route path={ROUTES.LEARNER_LESSON} element={<LearnerLessonPage />} />
               </Route>
               
-              {/* Shared Routes for all authenticated users */}
-              <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
-              <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+              {/* Shared Routes for non-learner authenticated users */}
+              <Route element={<RoleProtectedRoute allow={['ADMIN', 'EMPLOYEE', 'CLIENT']} />}>
+                <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+                <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+              </Route>
                 
               </Route>
             </Route>

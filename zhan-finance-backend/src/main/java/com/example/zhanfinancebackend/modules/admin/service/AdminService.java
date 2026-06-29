@@ -117,15 +117,16 @@ public class AdminService {
     }
 
     public void createLearner(com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
+        if (userRepository.existsByEmailIgnoreCase(request.email())) {
             throw new com.example.zhanfinancebackend.common.exception.ApiException(
                     com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST, "Email уже используется");
         }
-        User user = new User();
-        user.setFullName(request.fullName());
-        user.setEmail(request.email());
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRole(Role.LEARNER);
+        User user = new User(
+                request.fullName(),
+                request.email().toLowerCase(),
+                passwordEncoder.encode(request.password()),
+                Role.LEARNER
+        );
         user.setEnabled(true);
         userRepository.save(user);
     }

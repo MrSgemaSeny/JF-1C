@@ -21,17 +21,37 @@ public class CourseService {
         this.sectionRepository = sectionRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+        List<Course> courses = courseRepository.findAll();
+        courses.forEach(this::initializeCourse);
+        return courses;
     }
 
+    @Transactional(readOnly = true)
     public List<Course> getPublishedCourses() {
-        return courseRepository.findAllByIsPublishedTrue();
+        List<Course> courses = courseRepository.findAllByIsPublishedTrue();
+        courses.forEach(this::initializeCourse);
+        return courses;
     }
 
+    @Transactional(readOnly = true)
     public Course getCourseById(Long id) {
-        return courseRepository.findById(id)
+        Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
+        initializeCourse(course);
+        return course;
+    }
+
+    private void initializeCourse(Course course) {
+        if (course.getSections() != null) {
+            course.getSections().size();
+            course.getSections().forEach(section -> {
+                if (section.getLessons() != null) {
+                    section.getLessons().size();
+                }
+            });
+        }
     }
 
     @Transactional
@@ -42,7 +62,9 @@ public class CourseService {
         course.setThumbnail(thumbnail);
         course.setPublished(isPublished);
         course.setCreatedBy(admin);
-        return courseRepository.save(course);
+        course = courseRepository.save(course);
+        initializeCourse(course);
+        return course;
     }
 
     @Transactional
@@ -67,7 +89,9 @@ public class CourseService {
         section.setCourse(course);
         section.setTitle(title);
         section.setOrderIndex(orderIndex);
-        return sectionRepository.save(section);
+        section = sectionRepository.save(section);
+        if (section.getLessons() != null) section.getLessons().size();
+        return section;
     }
 
     @Transactional
@@ -76,6 +100,7 @@ public class CourseService {
                 .orElseThrow(() -> new RuntimeException("Section not found"));
         if (title != null) section.setTitle(title);
         if (orderIndex != null) section.setOrderIndex(orderIndex);
+        if (section.getLessons() != null) section.getLessons().size();
         return sectionRepository.save(section);
     }
 

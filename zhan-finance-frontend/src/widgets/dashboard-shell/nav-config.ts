@@ -40,7 +40,5 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   ],
   LEARNER: [
     { label: 'Courses', href: ROUTES.LEARNER_COURSES },
-    { label: 'Settings', href: ROUTES.SETTINGS },
-    { label: 'Notifications', href: ROUTES.NOTIFICATIONS },
   ],
 };
