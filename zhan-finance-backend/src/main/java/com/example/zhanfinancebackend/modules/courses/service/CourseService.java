@@ -2,9 +2,7 @@ package com.example.zhanfinancebackend.modules.courses.service;
 
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.courses.entity.Course;
-import com.example.zhanfinancebackend.modules.courses.entity.CourseSection;
 import com.example.zhanfinancebackend.modules.courses.repository.CourseRepository;
-import com.example.zhanfinancebackend.modules.courses.repository.CourseSectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +12,9 @@ import java.util.List;
 public class CourseService {
 
     private final CourseRepository courseRepository;
-    private final CourseSectionRepository sectionRepository;
 
-    public CourseService(CourseRepository courseRepository, CourseSectionRepository sectionRepository) {
+    public CourseService(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -38,19 +34,25 @@ public class CourseService {
     @Transactional(readOnly = true)
     public Course getCourseById(Long id) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
         initializeCourse(course);
         return course;
     }
 
+    @Transactional(readOnly = true)
+    public Course getPublishedCourseById(Long id) {
+        Course course = getCourseById(id);
+        if (!course.isPublished()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN, "Course is not published");
+        }
+        return course;
+    }
+
     private void initializeCourse(Course course) {
-        if (course.getSections() != null) {
-            course.getSections().size();
-            course.getSections().forEach(section -> {
-                if (section.getLessons() != null) {
-                    section.getLessons().size();
-                }
-            });
+        if (course.getLessons() != null) {
+            course.getLessons().size();
         }
     }
 
@@ -80,32 +82,5 @@ public class CourseService {
     @Transactional
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
-    }
-
-    @Transactional
-    public CourseSection createSection(Long courseId, String title, int orderIndex) {
-        Course course = getCourseById(courseId);
-        CourseSection section = new CourseSection();
-        section.setCourse(course);
-        section.setTitle(title);
-        section.setOrderIndex(orderIndex);
-        section = sectionRepository.save(section);
-        if (section.getLessons() != null) section.getLessons().size();
-        return section;
-    }
-
-    @Transactional
-    public CourseSection updateSection(Long sectionId, String title, Integer orderIndex) {
-        CourseSection section = sectionRepository.findById(sectionId)
-                .orElseThrow(() -> new RuntimeException("Section not found"));
-        if (title != null) section.setTitle(title);
-        if (orderIndex != null) section.setOrderIndex(orderIndex);
-        if (section.getLessons() != null) section.getLessons().size();
-        return sectionRepository.save(section);
-    }
-
-    @Transactional
-    public void deleteSection(Long sectionId) {
-        sectionRepository.deleteById(sectionId);
     }
 }

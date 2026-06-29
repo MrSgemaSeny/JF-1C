@@ -3,7 +3,6 @@ package com.example.zhanfinancebackend.modules.courses.controller;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.courses.entity.Course;
-import com.example.zhanfinancebackend.modules.courses.entity.CourseSection;
 import com.example.zhanfinancebackend.modules.courses.entity.Lesson;
 import com.example.zhanfinancebackend.modules.courses.entity.LessonType;
 import com.example.zhanfinancebackend.modules.courses.service.CourseService;
@@ -35,6 +34,11 @@ public class AdminCourseController {
         return ApiResponse.success(courseService.getAllCourses());
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<Course> getCourseById(@PathVariable Long id) {
+        return ApiResponse.success(courseService.getCourseById(id));
+    }
+
     @PostMapping
     public ApiResponse<Course> createCourse(
             @RequestParam("title") String title,
@@ -60,37 +64,15 @@ public class AdminCourseController {
         return ApiResponse.success(null);
     }
 
-    @PostMapping("/{id}/sections")
-    public ApiResponse<CourseSection> createSection(
-            @PathVariable Long id,
-            @RequestParam("title") String title,
-            @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex) {
-        return ApiResponse.success(courseService.createSection(id, title, orderIndex));
-    }
-
-    @PutMapping("/sections/{sectionId}")
-    public ApiResponse<CourseSection> updateSection(
-            @PathVariable Long sectionId,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "orderIndex", required = false) Integer orderIndex) {
-        return ApiResponse.success(courseService.updateSection(sectionId, title, orderIndex));
-    }
-
-    @DeleteMapping("/sections/{sectionId}")
-    public ApiResponse<Void> deleteSection(@PathVariable Long sectionId) {
-        courseService.deleteSection(sectionId);
-        return ApiResponse.success(null);
-    }
-
-    @PostMapping("/sections/{sectionId}/lessons")
+    @PostMapping("/{courseId}/lessons")
     public ApiResponse<Lesson> createLesson(
-            @PathVariable Long sectionId,
+            @PathVariable Long courseId,
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("type") LessonType type,
             @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex,
             @RequestParam(value = "file", required = false) MultipartFile file) {
-        return ApiResponse.success(lessonService.createLesson(sectionId, title, description, type, orderIndex, file));
+        return ApiResponse.success(lessonService.createLesson(courseId, title, description, type, orderIndex, file));
     }
 
     @PutMapping("/lessons/{lessonId}")
@@ -98,9 +80,10 @@ public class AdminCourseController {
             @PathVariable Long lessonId,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "orderIndex", required = false) Integer orderIndex,
             @RequestParam(value = "file", required = false) MultipartFile file) {
-        return ApiResponse.success(lessonService.updateLesson(lessonId, title, description, orderIndex, file));
+        return ApiResponse.success(lessonService.updateLesson(lessonId, title, description, content, orderIndex, file));
     }
 
     @DeleteMapping("/lessons/{lessonId}")

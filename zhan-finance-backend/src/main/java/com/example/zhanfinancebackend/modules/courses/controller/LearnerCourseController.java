@@ -39,12 +39,15 @@ public class LearnerCourseController {
 
     @GetMapping("/{id}")
     public ApiResponse<Course> getCourseById(@PathVariable Long id) {
-        return ApiResponse.success(courseService.getCourseById(id));
+        return ApiResponse.success(courseService.getPublishedCourseById(id));
     }
 
     @GetMapping("/lessons/{id}/file")
-    public ResponseEntity<Resource> streamLessonFile(@PathVariable Long id, @RequestHeader HttpHeaders headers) throws IOException {
+    public ResponseEntity<org.springframework.core.io.support.ResourceRegion> streamLessonFile(@PathVariable Long id, @RequestHeader HttpHeaders headers) throws IOException {
         Lesson lesson = lessonService.getLessonById(id);
+        if (!lesson.getCourse().isPublished()) {
+            return ResponseEntity.status(403).build();
+        }
         if (lesson.getFilePath() == null) {
             return ResponseEntity.notFound().build();
         }
@@ -57,23 +60,23 @@ public class LearnerCourseController {
         long fileLength = resource.contentLength();
         HttpRange range = headers.getRange().isEmpty() ? null : headers.getRange().get(0);
 
-        if (range != null) {
-            long start = range.getRangeStart(fileLength);
-            long end = range.getRangeEnd(fileLength);
-            long rangeLength = end - start + 1;
+        long start = 0;
+        long end = fileLength - 1;
+        long rangeLength = fileLength;
 
-            return ResponseEntity.status(206)
-                    .header(HttpHeaders.CONTENT_TYPE, lesson.getContentType() != null ? lesson.getContentType() : "application/octet-stream")
-                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(rangeLength))
-                    .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileLength)
-                    .header(HttpHeaders.ACCEPT_RANGES, "bytes")
-                    .body(new org.springframework.core.io.support.ResourceRegion(resource, start, rangeLength).getResource());
+        if (range != null) {
+            start = range.getRangeStart(fileLength);
+            end = range.getRangeEnd(fileLength);
+            rangeLength = end - start + 1;
         }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, lesson.getContentType() != null ? lesson.getContentType() : "application/octet-stream")
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileLength))
+        org.springframework.core.io.support.ResourceRegion region = new org.springframework.core.io.support.ResourceRegion(resource, start, rangeLength);
+
+        return ResponseEntity.status(range != null ? 206 : 200)
+                .contentType(MediaType.parseMediaType(lesson.getContentType() != null ? lesson.getContentType() : "application/octet-stream"))
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(rangeLength))
+                .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileLength)
                 .header(HttpHeaders.ACCEPT_RANGES, "bytes")
-                .body(resource);
+                .body(region);
     }
 }

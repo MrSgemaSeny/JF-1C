@@ -37,5 +37,5 @@ public class Course extends BaseEntity {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
-    private List<CourseSection> sections = new ArrayList<>();
+    private List<Lesson> lessons = new ArrayList<>();
 }

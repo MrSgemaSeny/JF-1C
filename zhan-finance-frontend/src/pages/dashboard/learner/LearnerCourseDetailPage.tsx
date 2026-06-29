@@ -38,34 +38,32 @@ export function LearnerCourseDetailPage() {
       <p className="text-gray-600 mb-8">{course.description}</p>
 
       <div className="space-y-6">
-        {course.sections.map((section) => (
-          <div key={section.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
-              <h2 className="font-semibold text-lg">{section.title}</h2>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {section.lessons.map(lesson => (
-                <div 
-                  key={lesson.id} 
-                  className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => navigate(ROUTES.LEARNER_LESSON.replace(':courseId', id!).replace(':lessonId', String(lesson.id)))}
-                >
-                  <div className="flex items-center gap-3">
-                    {getIcon(lesson.type)}
-                    <div>
-                      <h4 className="font-medium text-gray-900">{lesson.title}</h4>
-                      <p className="text-sm text-gray-500">{lesson.type === 'VIDEO' ? 'Видео-урок' : 'Материал'}</p>
-                    </div>
-                  </div>
-                  <div className="text-brand-green text-sm">Открыть</div>
-                </div>
-              ))}
-              {section.lessons.length === 0 && (
-                <div className="px-6 py-4 text-gray-400 text-sm text-center">Нет уроков в этом разделе</div>
-              )}
-            </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-100">
+            <h2 className="font-semibold text-lg">Программа курса</h2>
           </div>
-        ))}
+          <div className="divide-y divide-gray-100">
+            {course.lessons.map(lesson => (
+              <div 
+                key={lesson.id} 
+                className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => navigate(ROUTES.LEARNER_LESSON.replace(':courseId', id!).replace(':lessonId', String(lesson.id)))}
+              >
+                <div className="flex items-center gap-3">
+                  {getIcon(lesson.type)}
+                  <div>
+                    <h4 className="font-medium text-gray-900">{lesson.title}</h4>
+                    <p className="text-sm text-gray-500">{lesson.type === 'VIDEO' ? 'Видео-урок' : 'Материал'}</p>
+                  </div>
+                </div>
+                <div className="text-brand-green text-sm font-medium">Открыть</div>
+              </div>
+            ))}
+            {course.lessons.length === 0 && (
+              <div className="px-6 py-8 text-gray-400 text-sm text-center">Нет уроков в этом курсе</div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

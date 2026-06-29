@@ -9,6 +9,7 @@ public class LessonDto {
     private Long sectionId;
     private String title;
     private String description;
+    private String content;
     private LessonType type;
     private String fileName;
     private String contentType;

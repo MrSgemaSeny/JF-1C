@@ -26,6 +26,7 @@ import { AdminArchiveCancelledPage } from '@/pages/dashboard/admin/AdminArchiveC
 import { EmployeeChatPage } from '@/pages/dashboard/employee/EmployeeChatPage';
 import { AdminCoursesPage } from '@/pages/dashboard/admin/AdminCoursesPage';
 import { AdminCourseEditPage } from '@/pages/dashboard/admin/AdminCourseEditPage';
+import { AdminLessonEditPage } from '@/pages/dashboard/admin/AdminLessonEditPage';
 import { AdminLearnersPage } from '@/pages/dashboard/admin/AdminLearnersPage';
 
 // Learner
@@ -90,6 +91,7 @@ export function App() {
                 <Route path={ROUTES.ADMIN_COURSES} element={<AdminCoursesPage />} />
                 <Route path={ROUTES.ADMIN_COURSES_NEW} element={<AdminCourseEditPage />} />
                 <Route path={ROUTES.ADMIN_COURSES_EDIT} element={<AdminCourseEditPage />} />
+                <Route path={ROUTES.ADMIN_LESSON_EDIT} element={<AdminLessonEditPage />} />
                 <Route path={ROUTES.ADMIN_LEARNERS} element={<AdminLearnersPage />} />
               </Route>
 

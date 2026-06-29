@@ -14,5 +14,5 @@ public class CourseDto {
     private boolean isPublished;
     private Long createdById;
     private LocalDateTime createdAt;
-    private List<CourseSectionDto> sections = new ArrayList<>();
+    private List<LessonDto> lessons = new ArrayList<>();
 }
