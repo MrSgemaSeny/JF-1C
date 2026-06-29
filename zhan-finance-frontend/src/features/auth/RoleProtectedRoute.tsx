@@ -11,6 +11,8 @@ export function roleHome(role: UserRole): string {
       return ROUTES.EMPLOYEE;
     case 'CLIENT':
       return ROUTES.CLIENT;
+    case 'LEARNER':
+      return ROUTES.LEARNER_COURSES;
     default:
       return ROUTES.HOME;
   }

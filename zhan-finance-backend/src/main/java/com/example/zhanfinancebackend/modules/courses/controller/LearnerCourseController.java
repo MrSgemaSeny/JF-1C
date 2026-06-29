@@ -1,0 +1,78 @@
+package com.example.zhanfinancebackend.modules.courses.controller;
+
+import com.example.zhanfinancebackend.modules.courses.entity.Course;
+import com.example.zhanfinancebackend.modules.courses.entity.Lesson;
+import com.example.zhanfinancebackend.modules.courses.service.CourseService;
+import com.example.zhanfinancebackend.modules.courses.service.LessonService;
+import com.example.zhanfinancebackend.modules.documents.service.StorageService;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRange;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/courses")
+@PreAuthorize("hasAnyRole('ADMIN', 'LEARNER')")
+public class LearnerCourseController {
+
+    private final CourseService courseService;
+    private final LessonService lessonService;
+    private final StorageService storageService;
+
+    public LearnerCourseController(CourseService courseService, LessonService lessonService, StorageService storageService) {
+        this.courseService = courseService;
+        this.lessonService = lessonService;
+        this.storageService = storageService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Course>> getPublishedCourses() {
+        return ResponseEntity.ok(courseService.getPublishedCourses());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.getCourseById(id));
+    }
+
+    @GetMapping("/lessons/{id}/file")
+    public ResponseEntity<Resource> streamLessonFile(@PathVariable Long id, @RequestHeader HttpHeaders headers) throws IOException {
+        Lesson lesson = lessonService.getLessonById(id);
+        if (lesson.getFilePath() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Resource resource = storageService.loadAsResource(lesson.getFilePath());
+        if (resource == null || !resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        long fileLength = resource.contentLength();
+        HttpRange range = headers.getRange().isEmpty() ? null : headers.getRange().get(0);
+
+        if (range != null) {
+            long start = range.getRangeStart(fileLength);
+            long end = range.getRangeEnd(fileLength);
+            long rangeLength = end - start + 1;
+
+            return ResponseEntity.status(206)
+                    .header(HttpHeaders.CONTENT_TYPE, lesson.getContentType() != null ? lesson.getContentType() : "application/octet-stream")
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(rangeLength))
+                    .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileLength)
+                    .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                    .body(new org.springframework.core.io.support.ResourceRegion(resource, start, rangeLength).getResource());
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, lesson.getContentType() != null ? lesson.getContentType() : "application/octet-stream")
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileLength))
+                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                .body(resource);
+    }
+}

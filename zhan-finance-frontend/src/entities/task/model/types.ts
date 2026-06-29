@@ -6,7 +6,7 @@ export interface UserDto {
   id: number;
   fullName: string;
   email: string;
-  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
+  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
 }
 
 export interface ClientInfoDto {

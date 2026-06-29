@@ -1,6 +1,6 @@
 import { apiRequest } from '@/shared/api/http';
 
-export type UserRole = 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
+export type UserRole = 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
 
 export interface AuthResponse {
   accessToken: string;

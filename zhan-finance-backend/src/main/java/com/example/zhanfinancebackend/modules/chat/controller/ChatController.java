@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/chat")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
 public class ChatController {
 
     private final ChatService chatService;

@@ -4,7 +4,7 @@ export interface UserProfileDto {
   id: number;
   email: string;
   fullName: string;
-  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
+  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
   phone?: string;
   companyName?: string;
   avatarUrl?: string;
@@ -22,6 +22,18 @@ export interface UpdateProfileRequest {
 export interface UpdatePasswordRequest {
   currentPassword?: string;
   newPassword?: string;
+}
+
+export async function getAllLearners(): Promise<UserProfileDto[]> {
+  const data = await apiRequest<{ data: UserProfileDto[] }>('/admin/learners');
+  return data.data;
+}
+
+export async function createLearner(request: any): Promise<void> {
+  await apiRequest('/admin/learners', {
+    method: 'POST',
+    body: JSON.stringify(request)
+  });
 }
 
 export async function getMyProfile(): Promise<UserProfileDto> {

@@ -13,7 +13,7 @@ interface TaskCardProps {
   className?: string;
   onUpdateTask: (updatedTask: TaskDto) => void;
   onDeleteTask?: (taskId: number) => void;
-  userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
+  userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
   employees?: EmployeeDto[] | null;
 }
 

@@ -14,7 +14,7 @@ export interface ChatContactDto {
   id: number;
   fullName: string;
   email: string;
-  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
+  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
   avatarUrl?: string;
   unreadCount: number;
   lastMessage?: ChatMessageDto;

@@ -12,7 +12,7 @@ interface TaskDetailsModalProps {
   task: TaskDto;
   onClose: () => void;
   onUpdateTask: (updatedTask: TaskDto) => void;
-  userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT';
+  userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
 }
 
 export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: TaskDetailsModalProps) {

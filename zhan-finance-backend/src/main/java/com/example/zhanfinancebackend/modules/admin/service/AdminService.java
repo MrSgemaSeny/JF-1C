@@ -18,15 +18,18 @@ public class AdminService {
     private final UserRepository userRepository;
     private final ClientProfileRepository clientRepository;
     private final TaskRepository taskRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public AdminService(
             UserRepository userRepository,
             ClientProfileRepository clientRepository,
-            TaskRepository taskRepository
+            TaskRepository taskRepository,
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.taskRepository = taskRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<EmployeeDto> getAllEmployees() {
@@ -104,5 +107,26 @@ public class AdminService {
                 user.isEnabled(),
                 user.getCreatedAt() != null ? user.getCreatedAt().atZone(ZoneOffset.UTC) : null
         );
+    }
+
+    public List<EmployeeDto> getAllLearners() {
+        return userRepository.findAll().stream()
+                .filter(u -> u.getRole() == Role.LEARNER)
+                .map(this::mapToEmployeeDto)
+                .toList();
+    }
+
+    public void createLearner(com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST, "Email уже используется");
+        }
+        User user = new User();
+        user.setFullName(request.fullName());
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setRole(Role.LEARNER);
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 }

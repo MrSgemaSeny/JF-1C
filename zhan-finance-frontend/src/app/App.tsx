@@ -24,6 +24,14 @@ import { AdminTasksPage } from '@/pages/dashboard/admin/AdminTasksPage';
 import { AdminArchiveDonePage } from '@/pages/dashboard/admin/AdminArchiveDonePage';
 import { AdminArchiveCancelledPage } from '@/pages/dashboard/admin/AdminArchiveCancelledPage';
 import { EmployeeChatPage } from '@/pages/dashboard/employee/EmployeeChatPage';
+import { AdminCoursesPage } from '@/pages/dashboard/admin/AdminCoursesPage';
+import { AdminCourseEditPage } from '@/pages/dashboard/admin/AdminCourseEditPage';
+import { AdminLearnersPage } from '@/pages/dashboard/admin/AdminLearnersPage';
+
+// Learner
+import { LearnerCoursesPage } from '@/pages/dashboard/learner/LearnerCoursesPage';
+import { LearnerCourseDetailPage } from '@/pages/dashboard/learner/LearnerCourseDetailPage';
+import { LearnerLessonPage } from '@/pages/dashboard/learner/LearnerLessonPage';
 
 // Employee
 import { EmployeeOverviewPage } from '@/pages/dashboard/employee/EmployeeOverviewPage';
@@ -79,6 +87,10 @@ export function App() {
                 <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />
                 <Route path={ROUTES.ADMIN_TASK_DETAILS} element={<TaskDetailsPage />} />
+                <Route path={ROUTES.ADMIN_COURSES} element={<AdminCoursesPage />} />
+                <Route path={ROUTES.ADMIN_COURSES_NEW} element={<AdminCourseEditPage />} />
+                <Route path={ROUTES.ADMIN_COURSES_EDIT} element={<AdminCourseEditPage />} />
+                <Route path={ROUTES.ADMIN_LEARNERS} element={<AdminLearnersPage />} />
               </Route>
 
               {/* Employee Routes */}
@@ -98,6 +110,13 @@ export function App() {
                 <Route path={ROUTES.CLIENT_CHAT} element={<ClientChatPage />} />
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
                 <Route path={ROUTES.CLIENT_CALENDAR} element={<CalendarPage />} />
+              </Route>
+
+              {/* Learner Routes */}
+              <Route element={<RoleProtectedRoute allow={['LEARNER']} />}>
+                <Route path={ROUTES.LEARNER_COURSES} element={<LearnerCoursesPage />} />
+                <Route path={ROUTES.LEARNER_COURSE_DETAILS} element={<LearnerCourseDetailPage />} />
+                <Route path={ROUTES.LEARNER_LESSON} element={<LearnerLessonPage />} />
               </Route>
               
               {/* Shared Routes for all authenticated users */}

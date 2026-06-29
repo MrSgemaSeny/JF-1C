@@ -14,6 +14,10 @@ export const ROUTES = {
   ADMIN_ARCHIVE_DONE: '/admin/archive/done',
   ADMIN_ARCHIVE_CANCELLED: '/admin/archive/cancelled',
   ADMIN_CHAT: '/admin/chat',
+  ADMIN_COURSES: '/admin/courses',
+  ADMIN_COURSES_NEW: '/admin/courses/new',
+  ADMIN_COURSES_EDIT: '/admin/courses/:id/edit',
+  ADMIN_LEARNERS: '/admin/learners',
 
   // Shared Dashboard Routes
   SETTINGS: '/settings',
@@ -29,6 +33,11 @@ export const ROUTES = {
   CLIENT_DOCUMENTS: '/client/documents',
   CLIENT_CHAT: '/client/chat',
   CLIENT_CALENDAR: '/client/calendar',
+  
+  // Learner Routes
+  LEARNER_COURSES: '/courses',
+  LEARNER_COURSE_DETAILS: '/courses/:id',
+  LEARNER_LESSON: '/courses/:courseId/lessons/:lessonId',
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];

@@ -17,6 +17,7 @@ import {
   MessageCircle,
   CalendarDays,
   X,
+  BookOpen,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { API_BASE_URL } from '@/shared/api/http';
@@ -35,6 +36,8 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Archive (Cancelled)': <XCircle size={16} />,
   'Documents':           <FileText size={16} />,
   'My Requests':         <Briefcase size={16} />,
+  'Courses':             <BookOpen size={16} />,
+  'Learners':            <Users size={16} />,
   'Settings':            <Settings size={16} />,
   'Notifications':       <Bell size={16} />,
 };
@@ -48,6 +51,7 @@ const ROLE_LABELS: Record<string, string> = {
   ADMIN: 'Администратор',
   EMPLOYEE: 'Сотрудник',
   CLIENT: 'Клиент',
+  LEARNER: 'Обучающийся',
 };
 
 interface DashboardSidebarProps {

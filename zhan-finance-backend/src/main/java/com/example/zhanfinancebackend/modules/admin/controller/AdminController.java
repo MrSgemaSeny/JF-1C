@@ -59,4 +59,15 @@ public class AdminController {
     public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto>> getClientStats() {
         return ApiResponse.success(adminService.getClientStats());
     }
+
+    @GetMapping("/learners")
+    public ApiResponse<List<EmployeeDto>> getAllLearners() {
+        return ApiResponse.success(adminService.getAllLearners());
+    }
+
+    @PostMapping("/learners")
+    public ApiResponse<Void> createLearner(@RequestBody com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest request) {
+        adminService.createLearner(request);
+        return ApiResponse.success(null, "Обучающийся успешно создан");
+    }
 }
