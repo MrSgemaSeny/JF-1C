@@ -180,10 +180,6 @@ export function LearnerCourseDetailPage() {
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Уроков</p>
           <p className="text-3xl font-bold text-gray-900">{totalLessons}</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Разделов</p>
-          <p className="text-3xl font-bold text-gray-900">{course.sections?.length ?? 1}</p>
-        </div>
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 hidden sm:block">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Статус</p>
           <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 mt-1">
@@ -193,21 +189,8 @@ export function LearnerCourseDetailPage() {
         </div>
       </div>
 
-      {/* Sections with lessons */}
-      {course.sections && course.sections.length > 0 ? (
-        <div className="space-y-4">
-          {course.sections.map((section, idx) => (
-            <SectionCard
-              key={section.id}
-              sectionIndex={idx + 1}
-              title={section.title}
-              lessons={section.lessons ?? []}
-              courseId={id!}
-              onNavigate={handleLessonClick}
-            />
-          ))}
-        </div>
-      ) : (
+      {/* Lessons */}
+      {(
         /* Fallback: курс без sections — плоский список уроков */
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3.5 bg-gray-50 border-b border-gray-100">
