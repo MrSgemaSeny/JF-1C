@@ -1,100 +1,192 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, FileText, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CourseDto, LessonDto, getCourseById } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { Spinner } from '@/shared/ui/Spinner';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+function getFileUrl(lessonId: number) {
+  return `${API_BASE}/api/courses/lessons/${lessonId}/file`;
+}
 
 export function LearnerLessonPage() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
+  const navigate = useNavigate();
   const [course, setCourse] = useState<CourseDto | null>(null);
   const [lesson, setLesson] = useState<LessonDto | null>(null);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (courseId && lessonId) {
-      getCourseById(Number(courseId)).then(data => {
+    if (!courseId || !lessonId) return;
+    setIsLoading(true);
+    getCourseById(Number(courseId))
+      .then((data) => {
         setCourse(data);
-        const foundLesson = data.lessons.find(l => l.id === Number(lessonId));
-        if (foundLesson) {
-          setLesson(foundLesson);
-        }
-      }).catch(console.error);
-    }
+        const found = data.lessons.find((l) => l.id === Number(lessonId));
+        if (found) setLesson(found);
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, [courseId, lessonId]);
 
-  if (!lesson) return <div className="p-6 flex justify-center mt-20 text-gray-500">Загрузка урока...</div>;
+  // ── loading ────────────────────────────────────────────────────────────
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Spinner size="md" className="text-brand-green" />
+      </div>
+    );
+  }
 
-  const fileUrl = lesson.fileName ? `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/courses/lessons/${lesson.id}/file` : null;
+  if (!lesson || !course) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center text-sm text-gray-500">
+        Урок не найден
+      </div>
+    );
+  }
 
+  const allLessons = course.lessons;
+  const currentIndex = allLessons.findIndex((l) => l.id === lesson.id);
+  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+
+  const fileUrl = lesson.fileName ? getFileUrl(lesson.id) : null;
+  const hasVideo = lesson.type === 'VIDEO' && fileUrl;
+  const hasFile = lesson.type !== 'VIDEO' && fileUrl;
+
+  const goToLesson = (id: number) =>
+    navigate(
+      ROUTES.LEARNER_LESSON
+        .replace(':courseId', courseId!)
+        .replace(':lessonId', String(id))
+    );
+
+  // ── render ─────────────────────────────────────────────────────────────
   return (
-    <div className="p-6 max-w-4xl mx-auto pb-32">
-      <button 
+    <div className="space-y-6">
+
+      {/* Back */}
+      <button
         onClick={() => navigate(ROUTES.LEARNER_COURSE_DETAILS.replace(':id', courseId!))}
-        className="flex items-center text-gray-500 hover:text-gray-900 mb-8 transition-colors font-medium"
+        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors"
       >
-        <ArrowLeft className="w-5 h-5 mr-2" /> Вернуться к курсу
+        <ArrowLeft size={14} />
+        Вернуться к курсу
       </button>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-8 border-b border-gray-100 bg-gray-50/50">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">{lesson.title}</h1>
-        </div>
-
-        <div className="p-10 space-y-12">
-          {lesson.content ? (
-             <div className="text-lg text-gray-800 leading-relaxed whitespace-pre-wrap font-serif">
-                {lesson.content}
-             </div>
-          ) : null}
-
-          {fileUrl && (
-            <div className="pt-8 border-t border-gray-100">
-                {lesson.type === 'VIDEO' ? (
-                    <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 bg-black">
-                        <video 
-                            src={fileUrl} 
-                            controls 
-                            controlsList="nodownload"
-                            className="w-full aspect-video object-contain"
-                        />
-                    </div>
-                ) : (
-                    <a 
-                        href={fileUrl} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="flex items-center justify-between p-6 bg-brand-beige rounded-xl border border-brand-green/20 hover:border-brand-green/40 transition-colors group"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                                <FileText className="w-6 h-6 text-brand-green" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-900 group-hover:text-brand-green transition-colors">
-                                    Материал к уроку
-                                </h3>
-                                <p className="text-gray-500 text-sm">{lesson.fileName}</p>
-                            </div>
-                        </div>
-                        <span className="px-4 py-2 bg-white rounded-lg text-sm font-medium text-brand-green shadow-sm border border-gray-100">
-                            Открыть
-                        </span>
-                    </a>
-                )}
-            </div>
-          )}
-
-          {!lesson.content && !fileUrl && (
-            <div className="text-gray-400 flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                <FileText className="w-8 h-8 text-gray-300" />
-              </div>
-              <p className="text-xl font-medium text-gray-500">Урок пока пуст</p>
-              <p className="text-sm mt-2">Автор еще не добавил содержимое</p>
-            </div>
-          )}
-        </div>
+      {/* Header */}
+      <div>
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
+          Урок {currentIndex + 1} из {allLessons.length}
+        </p>
+        <h1 className="text-2xl font-bold text-gray-900">{lesson.title}</h1>
       </div>
+
+      {/* Video */}
+      {hasVideo && (
+        <div className="bg-black rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+          <video
+            src={fileUrl!}
+            controls
+            controlsList="nodownload"
+            className="w-full aspect-video"
+          />
+        </div>
+      )}
+
+      {/* Content card */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+        {/* Text content */}
+        {lesson.content && (
+          <div className="px-6 py-5 border-b border-gray-100">
+            <p className="text-sm font-semibold text-gray-700 mb-3">Описание</p>
+            <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+              {lesson.content}
+            </div>
+          </div>
+        )}
+
+        {/* File download */}
+        {hasFile && (
+          <div className="px-6 py-5">
+            <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
+              <Download size={14} className="text-brand-green" />
+              Материал к уроку
+            </p>
+            <a
+              href={fileUrl!}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-brand-green/30 hover:bg-gray-50 transition-all group"
+            >
+              <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+                <FileText size={18} className="text-green-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {lesson.fileName || 'Открыть файл'}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">Нажмите, чтобы открыть</p>
+              </div>
+              <ChevronRight size={16} className="text-gray-300 group-hover:text-brand-green transition-colors shrink-0" />
+            </a>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!lesson.content && !fileUrl && (
+          <div className="px-6 py-10 text-center text-sm text-gray-400">
+            Дополнительных материалов нет
+          </div>
+        )}
+
+      </div>
+
+      {/* Prev / Next */}
+      <div className="grid grid-cols-2 gap-4">
+        {prevLesson ? (
+          <button
+            onClick={() => goToLesson(prevLesson.id)}
+            className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md transition-all text-left group"
+          >
+            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0 group-hover:bg-gray-100 transition-colors">
+              <ChevronLeft size={16} className="text-gray-400" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-gray-400 mb-0.5">Предыдущий</p>
+              <p className="text-sm font-medium text-gray-900 truncate group-hover:text-brand-green transition-colors">
+                {prevLesson.title}
+              </p>
+            </div>
+          </button>
+        ) : (
+          <div />
+        )}
+
+        {nextLesson ? (
+          <button
+            onClick={() => goToLesson(nextLesson.id)}
+            className="flex items-center justify-end gap-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md transition-all text-right group"
+          >
+            <div className="min-w-0">
+              <p className="text-xs text-gray-400 mb-0.5">Следующий</p>
+              <p className="text-sm font-medium text-gray-900 truncate group-hover:text-brand-green transition-colors">
+                {nextLesson.title}
+              </p>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-brand-green/5 flex items-center justify-center shrink-0 group-hover:bg-brand-green transition-colors">
+              <ChevronRight size={16} className="text-brand-green group-hover:text-white transition-colors" />
+            </div>
+          </button>
+        ) : (
+          <div />
+        )}
+      </div>
+
     </div>
   );
 }
