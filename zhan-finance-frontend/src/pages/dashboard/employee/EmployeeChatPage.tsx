@@ -207,8 +207,8 @@ export function EmployeeChatPage() {
   };
 
   const filteredContacts = contacts.filter(c => 
-    c.fullName.toLowerCase().includes(search.toLowerCase()) || 
-    c.email.toLowerCase().includes(search.toLowerCase())
+    (c.fullName || '').toLowerCase().includes(search.toLowerCase()) || 
+    (c.email || '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (

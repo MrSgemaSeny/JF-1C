@@ -89,7 +89,7 @@ public class ChatService {
         List<User> usersToInclude = new ArrayList<>();
 
         if (currentUser.getRole() == Role.ADMIN) {
-            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.EMPLOYEE)));
+            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.EMPLOYEE, Role.CLIENT)));
         } else if (currentUser.getRole() == Role.EMPLOYEE) {
             usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.EMPLOYEE)));
             usersToInclude.addAll(userRepository.findAllByAssignedEmployee(currentUser));
