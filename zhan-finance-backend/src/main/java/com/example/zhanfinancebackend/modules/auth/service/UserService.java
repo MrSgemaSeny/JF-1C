@@ -30,14 +30,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final ClientProfileRepository clientProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
 
-    @Value("${app.storage.local.path:./uploads}")
-    private String uploadPath;
-
-    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService) {
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
         this.passwordEncoder = passwordEncoder;
+        this.storageService = storageService;
     }
 
     @Transactional(readOnly = true)
@@ -137,37 +136,18 @@ public class UserService {
             throw new ApiException(ErrorCode.BAD_REQUEST, "Допустимы только изображения");
         }
 
-        try {
-            Path uploadDir = Paths.get(uploadPath, "avatars");
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
-
-            // Remove old avatar if exists and it's a local file (not an external URL)
-            if (user.getAvatarUrl() != null && user.getAvatarUrl().startsWith("/uploads/avatars/")) {
-                String oldFileName = user.getAvatarUrl().substring("/uploads/avatars/".length());
-                Path oldFile = uploadDir.resolve(oldFileName);
-                Files.deleteIfExists(oldFile);
-            }
-
-            String originalFilename = file.getOriginalFilename();
-            String extension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-            String newFilename = UUID.randomUUID().toString() + extension;
-            Path filePath = uploadDir.resolve(newFilename);
-
-            Files.copy(file.getInputStream(), filePath);
-
-            String fileUrl = "/uploads/avatars/" + newFilename;
-            user.setAvatarUrl(fileUrl);
-            userRepository.save(user);
-
-            return getMyProfile(userId);
-
-        } catch (IOException e) {
-            throw new ApiException(ErrorCode.INTERNAL_ERROR, "Не удалось сохранить файл: " + e.getMessage());
+        // Remove old avatar if exists
+        if (user.getAvatarUrl() != null && user.getAvatarUrl().startsWith("/uploads/avatars/")) {
+            String oldStorageKey = user.getAvatarUrl().substring("/uploads/avatars/".length());
+            storageService.delete(oldStorageKey);
         }
+
+        String storageKey = storageService.store(file);
+        String fileUrl = "/uploads/avatars/" + storageKey;
+        
+        user.setAvatarUrl(fileUrl);
+        userRepository.save(user);
+
+        return getMyProfile(userId);
     }
 }

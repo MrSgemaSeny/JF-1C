@@ -177,7 +177,8 @@ public class TaskService {
     public TaskDto updateTaskStatus(Long taskId, TaskStatus status, User user) {
         Task task = getTaskEntity(taskId);
         if (task.getStatus() != status) {
-            logActivity(task, user, "Изменил статус с " + task.getStatus() + " на " + status);
+            String oldStatus = task.getStatus().name();
+            logActivity(task, user, "Изменил статус с " + oldStatus + " на " + status);
             
             // Notify the other party
             if (user.getRole() == Role.CLIENT) {
@@ -189,6 +190,7 @@ public class TaskService {
                             "Client " + user.getFullName() + " updated task '" + task.getTitle() + "' to " + status,
                             "/employee/tasks/" + task.getId()
                     );
+                    emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStatus, status.name());
                 }
             } else {
                 notificationService.createNotification(
@@ -197,6 +199,7 @@ public class TaskService {
                         "The status of your task '" + task.getTitle() + "' has been updated to: " + status,
                         "/client/documents" // Assuming client sees tasks there for MVP, or a client dashboard
                 );
+                emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStatus, status.name());
             }
         }
         task.setStatus(status);

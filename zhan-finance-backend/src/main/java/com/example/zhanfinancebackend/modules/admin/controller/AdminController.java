@@ -34,6 +34,11 @@ public class AdminController {
         return ApiResponse.success(adminService.getPendingEmployees());
     }
 
+    @GetMapping("/employees/workload")
+    public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto>> getEmployeeWorkload() {
+        return ApiResponse.success(adminService.getEmployeeWorkloads());
+    }
+
     @PostMapping("/employees/{id}/approve")
     public ApiResponse<Void> approveEmployee(@PathVariable Long id) {
         adminService.approveEmployee(id);

@@ -1,19 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getTasks, batchUpdateTasks } from '@/entities/task/api/taskApi';
 import type { TaskDto } from '@/entities/task/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
-import { TaskGridBoard } from '@/widgets/task-board/TaskGridBoard';
+import { TaskGridBoard, type TaskGridBoardRef } from '@/widgets/task-board/TaskGridBoard';
 import { Empty } from '@/shared/ui/Empty';
+import { Download } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 export function EmployeeTasksPage() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<TaskDto[]>([]);
+  const boardRef = useRef<TaskGridBoardRef>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const taskIdParam = searchParams.get('taskId');
 
   useEffect(() => {
     if (user?.userId) {
       loadTasks();
     }
   }, [user?.userId]);
+
+  useEffect(() => {
+    if (taskIdParam && tasks.length > 0 && boardRef.current) {
+      boardRef.current.openTaskModal(Number(taskIdParam));
+      setSearchParams(new URLSearchParams());
+    }
+  }, [taskIdParam, tasks, setSearchParams]);
 
   const loadTasks = () => {
     if (user?.userId) {
@@ -34,9 +46,34 @@ export function EmployeeTasksPage() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const blob = await import('@/entities/task/api/taskApi').then(m => m.exportTasksCsv());
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tasks_export_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      alert('Failed to export tasks');
+    }
+  };
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Tasks</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">My Tasks</h1>
+        <button 
+          onClick={handleExport}
+          className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-sm"
+        >
+          <Download size={18} />
+          <span>Export CSV</span>
+        </button>
+      </div>
       
       {!tasks.length ? (
         <Empty label="No tasks assigned to you" />

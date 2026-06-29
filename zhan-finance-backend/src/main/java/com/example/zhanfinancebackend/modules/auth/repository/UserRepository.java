@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByAssignedEmployee(User employee);
     
     List<User> findAllByRoleIn(List<com.example.zhanfinancebackend.modules.auth.entity.Role> roles);
+
+    @org.springframework.data.jpa.repository.Query("select u from User u where lower(u.fullName) like lower(concat('%', :query, '%')) or lower(u.email) like lower(concat('%', :query, '%'))")
+    List<User> searchUsers(@org.springframework.data.repository.query.Param("query") String query);
 }

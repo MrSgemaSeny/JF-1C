@@ -107,4 +107,23 @@ public class EmailNotificationService {
 
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+    public void sendTaskStatusUpdatedEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task, String oldStatus, String newStatus) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+
+        String subject = "Обновлен статус задачи: " + task.getTitle();
+        
+        String html = String.format(
+            "<h2>Статус задачи изменен</h2>" +
+            "<p>Здравствуйте, <b>%s</b>!</p>" +
+            "<p>Статус задачи <b>%s</b> был изменен с <b>%s</b> на <b>%s</b>.</p>" +
+            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Посмотреть задачу</a>",
+            user.getFullName(),
+            task.getTitle(),
+            oldStatus,
+            newStatus,
+            frontendUrl
+        );
+
+        sendHtmlEmail(user.getEmail(), subject, html);
+    }
 }

@@ -17,6 +17,7 @@ interface TaskGridBoardProps {
 
 export interface TaskGridBoardRef {
   createNewTask: (task: TaskDto) => void;
+  openTaskModal: (taskId: number) => void;
 }
 
 type SortOption = 'newest' | 'oldest' | 'deadline_asc' | 'deadline_desc' | 'priority';
@@ -70,6 +71,22 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
     createNewTask: (task: TaskDto) => {
       setTasks(prev => [task, ...prev]);
       setCreatedTaskIds(prev => new Set(prev).add(task.id));
+      setSelectedTaskForModal(task);
+    },
+    openTaskModal: async (taskId: number) => {
+      const existing = tasks.find(t => t.id === taskId);
+      if (existing) {
+        setSelectedTaskForModal(existing);
+      } else {
+        try {
+          const { getTask } = await import('@/entities/task/api/taskApi');
+          const fetched = await getTask(taskId);
+          setSelectedTaskForModal(fetched);
+        } catch (e) {
+          console.error('Task not found:', e);
+          alert('Task not found');
+        }
+      }
     }
   }));
 

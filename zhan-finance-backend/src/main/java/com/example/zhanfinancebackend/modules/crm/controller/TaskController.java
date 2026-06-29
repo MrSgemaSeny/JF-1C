@@ -56,6 +56,7 @@ public class TaskController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ApiResponse<TaskDto> getTask(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id

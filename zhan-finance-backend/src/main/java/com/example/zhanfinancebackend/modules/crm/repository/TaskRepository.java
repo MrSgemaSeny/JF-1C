@@ -39,4 +39,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("dueDate") java.time.LocalDate dueDate, 
             @Param("excludedStatuses") List<TaskStatus> excludedStatuses
     );
+
+    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.subtasks " +
+           "where lower(t.title) like lower(concat('%', :query, '%')) or lower(t.description) like lower(concat('%', :query, '%'))")
+    List<Task> searchTasks(@Param("query") String query);
 }

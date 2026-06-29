@@ -1,4 +1,4 @@
-import { apiRequest } from '@/shared/api/http';
+import { apiRequest, apiDownload } from '@/shared/api/http';
 import type { TaskDto, TaskCreateRequest, TaskRequestCreateRequest, TaskStatus, TaskFilter } from '../model/types';
 
 export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
@@ -10,6 +10,17 @@ export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
   const queryString = query.toString() ? `?${query.toString()}` : '';
   return apiRequest<TaskDto[]>(`/api/crm/tasks${queryString}`);
 }
+
+export async function exportTasksCsv(filter?: TaskFilter): Promise<Blob> {
+  const query = new URLSearchParams();
+  if (filter?.status) query.append('status', filter.status);
+  if (filter?.clientId) query.append('clientId', filter.clientId.toString());
+  if (filter?.assignedToId) query.append('assignedToId', filter.assignedToId.toString());
+  
+  const queryString = query.toString() ? `?${query.toString()}` : '';
+  return apiDownload(`/api/crm/export/tasks${queryString}`);
+}
+
 
 export async function getTask(id: number): Promise<TaskDto> {
   return apiRequest<TaskDto>(`/api/crm/tasks/${id}`);

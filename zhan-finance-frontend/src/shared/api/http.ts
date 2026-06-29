@@ -96,4 +96,49 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   }
 }
 
+async function rawDownload(path: string, init: RequestInit | undefined, accessToken: string | null): Promise<Blob> {
+  const headers = {
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    ...init?.headers
+  };
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers
+  });
+
+  if (!response.ok) {
+    let errorMessage = `Request failed with status ${response.status}`;
+    try {
+      const body = await response.json();
+      if (body && body.message) {
+        errorMessage = body.message;
+      }
+    } catch (_) {}
+    throw new ApiError(errorMessage, response.status);
+  }
+
+  return response.blob();
+}
+
+export async function apiDownload(path: string, init?: RequestInit): Promise<Blob> {
+  const token = getAccessToken();
+  try {
+    return await rawDownload(path, init, token);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      if (!refreshPromise) {
+        refreshPromise = onUnauthorized().finally(() => {
+          refreshPromise = null;
+        });
+      }
+      const newToken = await refreshPromise;
+      if (newToken) {
+        return await rawDownload(path, init, newToken);
+      }
+    }
+    throw error;
+  }
+}
+
 export { API_BASE_URL, getAccessToken };

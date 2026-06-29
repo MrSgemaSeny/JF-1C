@@ -81,7 +81,6 @@ export function AdminOverviewPage() {
         <p className="text-sm text-gray-500 mt-1">Общая статистика системы</p>
       </div>
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {statCards.map((card) => (
           <div key={card.label} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
@@ -97,6 +96,58 @@ export function AdminOverviewPage() {
           </div>
         ))}
       </div>
+
+      {/* Employee Workload */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-bold text-gray-900">Рабочая нагрузка сотрудников</h2>
+          <p className="text-sm text-gray-500">Количество активных, просроченных и выполненных задач</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Сотрудник</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">В работе</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Просрочено</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Выполнено</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {data.employeeStats.map(stat => (
+                <tr key={stat.employeeId} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {stat.employeeName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {stat.activeTasks}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stat.overdueTasks > 0 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}`}>
+                      {stat.overdueTasks}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {stat.doneTasks}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {data.employeeStats.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-4 text-center text-gray-500 text-sm">
+                    Нет данных о сотрудниках
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
 
       {/* Task distribution */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

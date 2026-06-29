@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { Menu } from 'lucide-react';
+import { GlobalSearch } from '@/widgets/search/GlobalSearch';
 
 export function DashboardLayout() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -35,6 +36,11 @@ export function DashboardLayout() {
 
         {/* Main Content Area */}
         <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto relative flex flex-col">
+          {/* Desktop Topbar */}
+          <div className="hidden lg:flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white z-10">
+            <GlobalSearch />
+          </div>
+          
           <div className="flex-1 flex flex-col min-h-0 p-4 md:p-8">
             <Outlet />
           </div>

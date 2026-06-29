@@ -75,6 +75,20 @@ public class AdminService {
                 .toList();
     }
 
+    public List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto> getEmployeeWorkloads() {
+        java.util.List<com.example.zhanfinancebackend.modules.crm.entity.Task> allTasks = taskRepository.findAll();
+        return userRepository.findAll().stream()
+                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
+                .map(u -> {
+                    int activeTasks = (int) allTasks.stream()
+                            .filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(u.getId()))
+                            .filter(t -> t.getStatus() != com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE)
+                            .count();
+                    return new com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto(u.getId(), u.getFullName(), u.getEmail(), activeTasks);
+                })
+                .toList();
+    }
+
     public AdminDashboardDto getAdminDashboard() {
         long clientsCount = userRepository.countByRole(Role.CLIENT);
         long employeesCount = userRepository.countByRole(Role.EMPLOYEE);
