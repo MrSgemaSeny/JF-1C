@@ -95,6 +95,7 @@ class CourseIntegrationTests {
                         .param("title", "First Lesson")
                         .param("type", "VIDEO")
                         .param("orderIndex", "0"))
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andReturn();
 
