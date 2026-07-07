@@ -42,7 +42,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserProfileDto getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
 
         String phone = null;
         String companyName = null;
@@ -80,7 +80,7 @@ public class UserService {
     @Transactional
     public UserProfileDto updateProfile(Long userId, UpdateProfileRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
 
         if (request.fullName() != null && !request.fullName().isBlank()) {
             user.setFullName(request.fullName());
@@ -104,14 +104,14 @@ public class UserService {
     @Transactional
     public void updatePassword(Long userId, UpdatePasswordRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
 
         if (user.getAuthProvider() == AuthProvider.GOOGLE && user.getPasswordHash() == null) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Пользователи Google не могут менять пароль таким образом");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Пользователи Google не могут менять пароль таким образом");
         }
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Неверный текущий пароль");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Неверный текущий пароль");
         }
 
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
@@ -121,19 +121,19 @@ public class UserService {
     @Transactional
     public UserProfileDto uploadAvatar(Long userId, MultipartFile file) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
 
         if (user.getAuthProvider() == AuthProvider.GOOGLE) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Пользователи Google не могут менять аватарку локально");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Пользователи Google не могут менять аватарку локально");
         }
 
         if (file.isEmpty()) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Файл пуст");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Файл пуст");
         }
 
         String contentType = file.getContentType();
         if (contentType == null || (!contentType.startsWith("image/"))) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Допустимы только изображения");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Допустимы только изображения");
         }
 
         // Remove old avatar if exists
@@ -151,3 +151,4 @@ public class UserService {
         return getMyProfile(userId);
     }
 }
+

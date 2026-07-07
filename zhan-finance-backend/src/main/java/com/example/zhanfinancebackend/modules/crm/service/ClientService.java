@@ -52,21 +52,21 @@ public class ClientService {
     public ClientDto getClient(Long id) {
         return clientProfileRepository.findByIdWithUser(id)
                 .map(this::mapToDto)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Client profile not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client profile not found"));
     }
 
     @Transactional(readOnly = true)
     public ClientProfile getClientProfileEntity(Long id) {
         return clientProfileRepository.findByIdWithUser(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Client profile not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client profile not found"));
     }
 
     @Transactional
     public void assignEmployeeToClient(Long clientId, Long employeeId) {
         User client = userRepository.findById(clientId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Client not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
         User employee = userRepository.findById(employeeId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Employee not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Employee not found"));
 
         client.setAssignedEmployee(employee);
         userRepository.save(client);
@@ -75,7 +75,7 @@ public class ClientService {
     @Transactional
     public ClientDto updateClientProfile(Long userId, String companyName, String phone, String notes) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
 
         ClientProfile profile = clientProfileRepository.findByUser(user).orElseGet(() -> new ClientProfile(user));
         profile.setCompanyName(companyName);

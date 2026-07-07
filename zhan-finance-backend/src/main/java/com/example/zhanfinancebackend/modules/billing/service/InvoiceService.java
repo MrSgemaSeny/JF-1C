@@ -74,7 +74,7 @@ public class InvoiceService {
 
     private Invoice get(User user, Long id) {
         Invoice invoice = invoiceRepository.findByIdWithClient(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Invoice not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Invoice not found"));
         invoiceAccessService.assertCanRead(user, invoice);
         return invoice;
     }
@@ -85,7 +85,7 @@ public class InvoiceService {
         }
         return userRepository.findById(clientId)
                 .filter(user -> user.getRole() == Role.CLIENT)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Client not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
     }
 
     private InvoiceDto toDto(Invoice invoice) {
@@ -99,3 +99,4 @@ public class InvoiceService {
         );
     }
 }
+

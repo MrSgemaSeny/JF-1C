@@ -52,9 +52,9 @@ public class RefreshTokenService {
     @Transactional(readOnly = true)
     public RefreshToken verify(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED, "Invalid refresh token"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Invalid refresh token"));
         if (refreshToken.getExpiresAt().isBefore(Instant.now())) {
-            throw new ApiException(ErrorCode.UNAUTHORIZED, "Refresh token expired");
+            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Refresh token expired");
         }
         return refreshToken;
     }

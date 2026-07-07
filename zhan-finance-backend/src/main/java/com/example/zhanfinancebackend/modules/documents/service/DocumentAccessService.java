@@ -28,13 +28,13 @@ public class DocumentAccessService {
 
     public void assertCanRead(User actor, Document document) {
         if (!canRead(actor, document)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Document access denied");
+            throw new org.springframework.security.access.AccessDeniedException("Document access denied");
         }
     }
 
     public void assertCanWrite(User actor, Document document) {
         if (!canWrite(actor, document)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Document mutation denied");
+            throw new org.springframework.security.access.AccessDeniedException("Document mutation denied");
         }
     }
 
@@ -46,7 +46,7 @@ public class DocumentAccessService {
 
     public void assertCanCreateFor(User actor, User targetUser) {
         if (!canCreateFor(actor, targetUser)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Document creation denied for this user");
+            throw new org.springframework.security.access.AccessDeniedException("Document creation denied for this user");
         }
     }
 
@@ -58,3 +58,4 @@ public class DocumentAccessService {
         return client.getAssignedEmployee() != null && sameUser(employee, client.getAssignedEmployee());
     }
 }
+

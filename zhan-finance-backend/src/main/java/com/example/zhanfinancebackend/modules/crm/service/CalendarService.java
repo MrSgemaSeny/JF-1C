@@ -100,12 +100,13 @@ public class CalendarService {
     @Transactional
     public void deleteEvent(User user, Long id) {
         CalendarEvent event = eventRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Event not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Event not found"));
                 
         if (!event.getUser().getId().equals(user.getId())) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Not your event");
+            throw new org.springframework.security.access.AccessDeniedException("Not your event");
         }
         
         eventRepository.delete(event);
     }
 }
+

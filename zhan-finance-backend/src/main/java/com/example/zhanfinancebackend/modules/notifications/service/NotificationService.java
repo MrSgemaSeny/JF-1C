@@ -58,10 +58,10 @@ public class NotificationService {
     @Transactional
     public NotificationDto markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Notification not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Notification not found"));
 
         if (!notification.getUser().getId().equals(userId)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Access denied");
+            throw new org.springframework.security.access.AccessDeniedException("Access denied");
         }
 
         notification.setRead(true);
@@ -83,3 +83,4 @@ public class NotificationService {
         );
     }
 }
+

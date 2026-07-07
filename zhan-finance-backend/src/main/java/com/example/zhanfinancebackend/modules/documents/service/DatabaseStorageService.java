@@ -30,7 +30,7 @@ public class DatabaseStorageService implements StorageService {
     public String store(MultipartFile file) {
         try {
             if (file.isEmpty()) {
-                throw new ApiException(ErrorCode.BAD_REQUEST, "Failed to store empty file.");
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Failed to store empty file.");
             }
             
             String originalFilename = StringUtils.cleanPath(file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown");
@@ -46,7 +46,7 @@ public class DatabaseStorageService implements StorageService {
             storedFileRepository.save(storedFile);
             return storageKey;
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.INTERNAL_ERROR, "Failed to store file in database.");
+            throw new RuntimeException("Failed to store file in database.");
         }
     }
 
@@ -69,7 +69,7 @@ public class DatabaseStorageService implements StorageService {
             try {
                 return localStorageService.loadAsResource("avatars/" + storageKey);
             } catch (Exception ex) {
-                throw new ApiException(ErrorCode.NOT_FOUND, "Could not read file: " + storageKey);
+                throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
             }
         }
     }
@@ -79,3 +79,4 @@ public class DatabaseStorageService implements StorageService {
         storedFileRepository.deleteById(storageKey);
     }
 }
+

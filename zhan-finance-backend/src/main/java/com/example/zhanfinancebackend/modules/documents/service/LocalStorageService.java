@@ -41,19 +41,19 @@ public class LocalStorageService implements StorageService {
     public String store(MultipartFile file) {
         try {
             if (file.isEmpty()) {
-                throw new ApiException(ErrorCode.BAD_REQUEST, "Failed to store empty file.");
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Failed to store empty file.");
             }
             
             String originalFilename = StringUtils.cleanPath(file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown");
             if (originalFilename.contains("..")) {
-                throw new ApiException(ErrorCode.BAD_REQUEST, "Cannot store file with relative path outside current directory.");
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Cannot store file with relative path outside current directory.");
             }
 
             String storageKey = UUID.randomUUID().toString() + "_" + originalFilename;
             Path destinationFile = this.rootLocation.resolve(Paths.get(storageKey)).normalize().toAbsolutePath();
 
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-                throw new ApiException(ErrorCode.BAD_REQUEST, "Cannot store file outside current directory.");
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Cannot store file outside current directory.");
             }
 
             try (InputStream inputStream = file.getInputStream()) {
@@ -62,7 +62,7 @@ public class LocalStorageService implements StorageService {
             
             return storageKey;
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.INTERNAL_ERROR, "Failed to store file.");
+            throw new RuntimeException("Failed to store file.");
         }
     }
 
@@ -74,10 +74,10 @@ public class LocalStorageService implements StorageService {
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
-                throw new ApiException(ErrorCode.NOT_FOUND, "Could not read file: " + storageKey);
+                throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
             }
         } catch (MalformedURLException e) {
-            throw new ApiException(ErrorCode.NOT_FOUND, "Could not read file: " + storageKey);
+            throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
         }
     }
 
@@ -87,7 +87,8 @@ public class LocalStorageService implements StorageService {
             Path file = rootLocation.resolve(storageKey).normalize();
             Files.deleteIfExists(file);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.INTERNAL_ERROR, "Failed to delete file.");
+            throw new RuntimeException("Failed to delete file.");
         }
     }
 }
+

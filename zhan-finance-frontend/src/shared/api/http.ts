@@ -7,13 +7,24 @@ interface ApiEnvelope<T> {
   timestamp: string;
 }
 
+export interface ApiErrorDetail {
+  field: string;
+  error: string;
+}
+
 export class ApiError extends Error {
   status: number;
+  code?: string;
+  details?: ApiErrorDetail[];
+  requestId?: string;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, code?: string, details?: ApiErrorDetail[], requestId?: string) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
+    this.details = details;
+    this.requestId = requestId;
   }
 }
 
@@ -48,15 +59,28 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
 
   if (!response.ok) {
     let errorMessage = `Request failed with status ${response.status}`;
+    let code: string | undefined;
+    let details: ApiErrorDetail[] | undefined;
+    let requestId: string | undefined;
+
     try {
       const body = await response.json();
       if (body && body.message) {
         errorMessage = body.message;
       }
+      if (body && body.code) {
+        code = body.code;
+      }
+      if (body && Array.isArray(body.details)) {
+        details = body.details;
+      }
+      if (body && body.requestId) {
+        requestId = body.requestId;
+      }
     } catch (_) {
       // Ignore JSON parse error for error responses
     }
-    throw new ApiError(errorMessage, response.status);
+    throw new ApiError(errorMessage, response.status, code, details, requestId);
   }
 
   const body = (await response.json()) as ApiEnvelope<T>;
@@ -108,14 +132,30 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
   });
 
   if (!response.ok) {
-    let errorMessage = `Request failed with status ${response.status}`;
+    let errorMessage = `Download failed with status ${response.status}`;
+    let code: string | undefined;
+    let details: ApiErrorDetail[] | undefined;
+    let requestId: string | undefined;
+
     try {
-      const body = await response.json();
+      const text = await response.text();
+      const body = JSON.parse(text);
       if (body && body.message) {
         errorMessage = body.message;
       }
-    } catch (_) {}
-    throw new ApiError(errorMessage, response.status);
+      if (body && body.code) {
+        code = body.code;
+      }
+      if (body && Array.isArray(body.details)) {
+        details = body.details;
+      }
+      if (body && body.requestId) {
+        requestId = body.requestId;
+      }
+    } catch (_) {
+      // ignore
+    }
+    throw new ApiError(errorMessage, response.status, code, details, requestId);
   }
 
   return response.blob();

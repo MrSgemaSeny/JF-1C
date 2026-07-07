@@ -25,7 +25,7 @@ public class CrmAccessService {
 
     public void assertCanReadClient(User actor, User client) {
         if (!canReadClient(actor, client)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Client profile access denied");
+            throw new org.springframework.security.access.AccessDeniedException("Client profile access denied");
         }
     }
 
@@ -44,7 +44,7 @@ public class CrmAccessService {
 
     public void assertCanReadTask(User actor, Task task) {
         if (!canReadTask(actor, task)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Task access denied");
+            throw new org.springframework.security.access.AccessDeniedException("Task access denied");
         }
     }
 
@@ -60,7 +60,7 @@ public class CrmAccessService {
 
     public void assertCanCreateTaskFor(User actor, User client) {
         if (!canCreateTaskFor(actor, client)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Task creation denied for this client");
+            throw new org.springframework.security.access.AccessDeniedException("Task creation denied for this client");
         }
     }
 
@@ -79,7 +79,7 @@ public class CrmAccessService {
 
     public void assertCanUpdateTaskStatus(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.TaskStatus newStatus) {
         if (!canUpdateTaskStatus(actor, task, newStatus)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Task status update denied");
+            throw new org.springframework.security.access.AccessDeniedException("Task status update denied");
         }
     }
 
@@ -98,7 +98,7 @@ public class CrmAccessService {
 
     public void assertCanUpdateTaskDetails(User actor, Task task) {
         if (!canUpdateTaskDetails(actor, task)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Task details update denied");
+            throw new org.springframework.security.access.AccessDeniedException("Task details update denied");
         }
     }
 
@@ -108,7 +108,7 @@ public class CrmAccessService {
 
     public void assertCanAssignClient(User actor) {
         if (!canAssignClient(actor)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Assigning client denied");
+            throw new org.springframework.security.access.AccessDeniedException("Assigning client denied");
         }
     }
 
@@ -118,7 +118,7 @@ public class CrmAccessService {
 
     public void assertCanAssignTask(User actor) {
         if (!canAssignTask(actor)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Assigning task denied");
+            throw new org.springframework.security.access.AccessDeniedException("Assigning task denied");
         }
     }
 
@@ -132,3 +132,4 @@ public class CrmAccessService {
         return client.getAssignedEmployee() != null && sameUser(employee, client.getAssignedEmployee());
     }
 }
+

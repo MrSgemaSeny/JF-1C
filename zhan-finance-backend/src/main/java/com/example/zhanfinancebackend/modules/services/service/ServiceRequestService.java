@@ -56,17 +56,17 @@ public class ServiceRequestService {
     public ServiceRequestDto createRequest(ServiceRequestCreateRequest request, User client) {
         // 1. Найти услугу
         ServiceEntity service = serviceRepository.findById(request.serviceId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Услуга не найдена"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Услуга не найдена"));
 
         if (!service.getIsActive()) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Услуга временно недоступна");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Услуга временно недоступна");
         }
 
         // 2. Определить ответственного сотрудника (балансировщик)
         User assignedEmp = client.getAssignedEmployee();
         if (assignedEmp == null) {
             assignedEmp = userRepository.findLeastLoadedEmployee()
-                    .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_ERROR, "Нет доступных сотрудников для обработки запроса"));
+                    .orElseThrow(() -> new RuntimeException("Нет доступных сотрудников для обработки запроса"));
         }
 
         // 3. Создать запрос на услугу
@@ -135,7 +135,7 @@ public class ServiceRequestService {
     public ServiceRequestDto getRequestByTaskId(Long taskId) {
         return serviceRequestRepository.findByLinkedTaskId(taskId)
                 .map(this::mapToDto)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Service request not found for task ID: " + taskId));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Service request not found for task ID: " + taskId));
     }
 
     private String buildTaskDescription(User client, ServiceEntity service, String message, java.time.LocalDate preferredContactDate) {
@@ -166,3 +166,4 @@ public class ServiceRequestService {
         );
     }
 }
+

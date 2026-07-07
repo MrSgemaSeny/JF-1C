@@ -56,19 +56,19 @@ public class DocumentService {
     @Transactional
     public DocumentDto uploadDocument(Long targetUserId, Long taskId, MultipartFile file, User actor) {
         User targetUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Target user not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Target user not found"));
 
         documentAccessService.assertCanCreateFor(actor, targetUser);
 
         String contentType = file.getContentType();
         if (contentType == null) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "File type not recognized");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("File type not recognized");
         }
         
         // Relaxing content type checks to allow common image formats and standard documents
         // For production, maybe use a more robust detection like Apache Tika.
         if (contentType.contains("exe") || contentType.contains("javascript")) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Executable files are not allowed");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Executable files are not allowed");
         }
 
         String storageKey = storageService.store(file);
@@ -84,7 +84,7 @@ public class DocumentService {
 
         if (taskId != null) {
             Task task = taskRepository.findById(taskId)
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Task not found"));
+                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Task not found"));
             document.setTask(task);
         }
 
@@ -120,7 +120,7 @@ public class DocumentService {
     @Transactional(readOnly = true)
     public List<DocumentDto> getUserDocuments(Long targetUserId, User actor) {
         User targetUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Target user not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Target user not found"));
 
         // If you can create for them, you can generally read their list
         documentAccessService.assertCanCreateFor(actor, targetUser);
@@ -150,7 +150,7 @@ public class DocumentService {
         // Technically anyone who can read the task should be able to read its documents.
         // For simplicity, we just fetch them. Ideally we check task access here.
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Task not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Task not found"));
         
         // Assert can read task user
         documentAccessService.assertCanCreateFor(actor, task.getClient());
@@ -182,7 +182,7 @@ public class DocumentService {
     @Transactional(readOnly = true)
     public Document getDocumentWithAccessCheck(Long documentId, User actor) {
         Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Document not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Document not found"));
 
         documentAccessService.assertCanRead(actor, document);
         return document;
@@ -191,7 +191,7 @@ public class DocumentService {
     @Transactional
     public void deleteDocument(Long documentId, User actor) {
         Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Document not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Document not found"));
 
         documentAccessService.assertCanWrite(actor, document);
         
@@ -213,3 +213,4 @@ public class DocumentService {
         );
     }
 }
+

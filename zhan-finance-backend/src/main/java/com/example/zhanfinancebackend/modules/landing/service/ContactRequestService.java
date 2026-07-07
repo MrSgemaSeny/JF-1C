@@ -57,7 +57,7 @@ public class ContactRequestService {
 
     private ContactRequest get(Long id) {
         return contactRequestRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Contact request not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Contact request not found"));
     }
 
     private ContactRequestDto toDto(ContactRequest contactRequest) {
@@ -73,3 +73,4 @@ public class ContactRequestService {
         );
     }
 }
+

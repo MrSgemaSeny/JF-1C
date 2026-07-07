@@ -50,9 +50,9 @@ public class ChatService {
         validateAccess(currentUserId, receiverId);
 
         User sender = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Sender not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Sender not found"));
         User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Receiver not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Receiver not found"));
 
         ChatMessage message = new ChatMessage(sender, receiver, request.content());
         ChatMessage saved = chatMessageRepository.save(message);
@@ -84,7 +84,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatContactDto> getContacts(Long currentUserId) {
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
 
         List<User> usersToInclude = new ArrayList<>();
 
@@ -125,9 +125,9 @@ public class ChatService {
 
     private void validateAccess(Long currentUserId, Long otherUserId) {
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
         User otherUser = userRepository.findById(otherUserId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Other user not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Other user not found"));
 
         if (currentUser.getRole() == Role.ADMIN) {
             return; // Admin can chat with anyone
@@ -138,7 +138,7 @@ public class ChatService {
                 return; // Clients can chat with admins
             }
             if (currentUser.getAssignedEmployee() == null || !currentUser.getAssignedEmployee().getId().equals(otherUserId)) {
-                throw new ApiException(ErrorCode.FORBIDDEN, "Client can only chat with their assigned employee or admins");
+                throw new org.springframework.security.access.AccessDeniedException("Client can only chat with their assigned employee or admins");
             }
         } else if (currentUser.getRole() == Role.EMPLOYEE) {
             if (otherUser.getRole() == Role.ADMIN || otherUser.getRole() == Role.EMPLOYEE) {
@@ -146,10 +146,10 @@ public class ChatService {
             }
             if (otherUser.getRole() == Role.CLIENT) {
                 if (otherUser.getAssignedEmployee() == null || !otherUser.getAssignedEmployee().getId().equals(currentUserId)) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Employee can only chat with their assigned clients");
+                    throw new org.springframework.security.access.AccessDeniedException("Employee can only chat with their assigned clients");
                 }
             } else {
-                 throw new ApiException(ErrorCode.FORBIDDEN, "Employee cannot chat with this user");
+                 throw new org.springframework.security.access.AccessDeniedException("Employee cannot chat with this user");
             }
         }
     }
@@ -157,10 +157,10 @@ public class ChatService {
     @Transactional
     public void deleteMessage(Long currentUserId, Long messageId) {
         ChatMessage message = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Message not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Message not found"));
         
         if (!message.getSender().getId().equals(currentUserId)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "You can only delete your own messages");
+            throw new org.springframework.security.access.AccessDeniedException("You can only delete your own messages");
         }
         
         message.setDeleted(true);
@@ -179,3 +179,4 @@ public class ChatService {
         );
     }
 }
+

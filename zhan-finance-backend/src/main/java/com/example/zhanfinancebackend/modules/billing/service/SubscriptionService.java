@@ -60,7 +60,7 @@ public class SubscriptionService {
 
     private Subscription get(User user, Long id) {
         return subscriptionRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Subscription not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Subscription not found"));
     }
 
     private SubscriptionDto toDto(Subscription subscription) {
@@ -74,3 +74,4 @@ public class SubscriptionService {
         );
     }
 }
+

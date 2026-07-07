@@ -49,14 +49,14 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new ApiException(ErrorCode.CONFLICT, "Email is already registered");
+            throw new com.example.zhanfinancebackend.common.exception.ConflictException("Email is already registered");
         }
 
         Role assignedRole = request.role() != null ? request.role() : Role.CLIENT;
         boolean isEmployee = assignedRole == Role.EMPLOYEE;
         
         if (isEmployee) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Сотрудники могут регистрироваться только через Google-аккаунт.");
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Сотрудники могут регистрироваться только через Google-аккаунт.");
         }
 
         User user = new User(

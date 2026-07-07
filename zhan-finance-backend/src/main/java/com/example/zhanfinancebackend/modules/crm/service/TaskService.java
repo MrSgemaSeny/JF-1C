@@ -92,7 +92,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public Task getTaskEntity(Long id) {
         return taskRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Task not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Task not found"));
     }
 
     @Transactional(readOnly = true)
@@ -104,7 +104,7 @@ public class TaskService {
     @Transactional
     public TaskDto createTask(TaskCreateRequest request, User creator) {
         User client = userRepository.findById(request.clientId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Client not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
 
         accessService.assertCanCreateTaskFor(creator, client);
 
@@ -117,7 +117,7 @@ public class TaskService {
 
         if (request.assignedToId() != null) {
             User assignee = userRepository.findById(request.assignedToId())
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Assignee not found"));
+                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
             task.setAssignedTo(assignee);
         } else if (client.getAssignedEmployee() != null) {
             task.setAssignedTo(client.getAssignedEmployee());
@@ -155,7 +155,7 @@ public class TaskService {
     @Transactional
     public TaskDto requestTask(TaskRequestCreateRequest request, User client) {
         User managedClient = userRepository.findById(client.getId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Client not found"));
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
 
         Task task = new Task(request.title(), managedClient, managedClient);
         task.setDescription(request.description());
@@ -213,7 +213,7 @@ public class TaskService {
         User assignee = null;
         if (assigneeId != null) {
             assignee = userRepository.findById(assigneeId)
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Assignee not found"));
+                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
         }
         if (task.getAssignedTo() != assignee) {
             String assigneeName = assignee != null ? assignee.getFullName() : "Не назначен";
@@ -287,7 +287,7 @@ public class TaskService {
 
             if (dto.priority() != null) {
                 if (user.getRole() == Role.CLIENT && dto.priority() != task.getPriority()) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Client cannot change task priority");
+                    throw new org.springframework.security.access.AccessDeniedException("Client cannot change task priority");
                 }
                 task.setPriority(dto.priority());
             }
@@ -296,17 +296,17 @@ public class TaskService {
             if (dto.description() != null) task.setDescription(dto.description());
             if (dto.dueDate() != null) {
                 if (user.getRole() == Role.EMPLOYEE && !dto.dueDate().equals(task.getDueDate())) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Сотрудник не может изменять дедлайн задачи");
+                    throw new org.springframework.security.access.AccessDeniedException("Сотрудник не может изменять дедлайн задачи");
                 }
                 task.setDueDate(dto.dueDate());
             }
 
             if (dto.assignedToId() != null) {
                 if (user.getRole() == Role.CLIENT && (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(dto.assignedToId()))) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Client cannot assign tasks");
+                    throw new org.springframework.security.access.AccessDeniedException("Client cannot assign tasks");
                 }
                 User assignee = userRepository.findById(dto.assignedToId())
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Assignee not found"));
+                        .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
                 if (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(assignee.getId())) {
                     emailNotificationService.sendTaskAssignedEmail(assignee, task);
                 }

@@ -28,13 +28,13 @@ public class InvoiceAccessService {
 
     public void assertCanRead(User actor, Invoice invoice) {
         if (!canRead(actor, invoice)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Invoice access denied");
+            throw new org.springframework.security.access.AccessDeniedException("Invoice access denied");
         }
     }
 
     public void assertCanWrite(User actor, Invoice invoice) {
         if (!canWrite(actor, invoice)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Invoice mutation denied");
+            throw new org.springframework.security.access.AccessDeniedException("Invoice mutation denied");
         }
     }
 
@@ -46,7 +46,7 @@ public class InvoiceAccessService {
 
     public void assertCanCreateFor(User actor, User client) {
         if (!canCreateFor(actor, client)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, "Invoice creation denied");
+            throw new org.springframework.security.access.AccessDeniedException("Invoice creation denied");
         }
     }
 
@@ -58,3 +58,4 @@ public class InvoiceAccessService {
         return client.getAssignedEmployee() != null && sameUser(employee, client.getAssignedEmployee());
     }
 }
+

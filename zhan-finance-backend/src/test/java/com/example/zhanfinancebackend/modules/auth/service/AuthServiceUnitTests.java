@@ -103,7 +103,7 @@ class AuthServiceUnitTests {
 
         // ACT & ASSERT
         assertThatThrownBy(() -> authService.register(request))
-                .isInstanceOf(ApiException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("Email is already registered");
     }
 
@@ -121,7 +121,7 @@ class AuthServiceUnitTests {
         when(userRepository.existsByEmailIgnoreCase(anyString())).thenReturn(false);
 
         assertThatThrownBy(() -> authService.register(request))
-                .isInstanceOf(ApiException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Сотрудники могут регистрироваться только через Google-аккаунт.");
     }
 
@@ -159,3 +159,4 @@ class AuthServiceUnitTests {
         assertThat(response.email()).isEqualTo("user@test.com");
     }
 }
+

@@ -54,11 +54,11 @@ public class GoogleAuthService {
                     .build();
             idToken = verifier.verify(credential);
         } catch (IOException | java.security.GeneralSecurityException e) {
-            throw new ApiException(ErrorCode.UNAUTHORIZED, "Google authentication failed: " + e.getMessage());
+            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Google authentication failed: " + e.getMessage());
         }
 
         if (idToken == null) {
-            throw new ApiException(ErrorCode.UNAUTHORIZED, "Invalid Google token");
+            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Invalid Google token");
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
@@ -73,7 +73,7 @@ public class GoogleAuthService {
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
             if (!user.isEnabled()) {
-                throw new ApiException(ErrorCode.UNAUTHORIZED, "Аккаунт ещё не активирован администратором");
+                throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Аккаунт ещё не активирован администратором");
             }
             // Update avatar and provider if they login via Google
             boolean updated = false;
@@ -135,3 +135,4 @@ public class GoogleAuthService {
         );
     }
 }
+
