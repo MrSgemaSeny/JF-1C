@@ -47,7 +47,12 @@ public class SecurityConfig {
                                 "/api/contact-requests",
                                 "/api/services",
                                 "/api/services/highlighted",
-                                "/api/test-email"
+                                "/api/test-email",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
                         ).permitAll()
                         .requestMatchers("/api/internal/**").denyAll()
                         .anyRequest().authenticated()
