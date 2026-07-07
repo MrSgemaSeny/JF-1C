@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/crm/calendar")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
 public class CalendarController {
 
     private final CalendarService calendarService;

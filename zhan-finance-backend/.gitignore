@@ -38,3 +38,6 @@ out/
 
 ### Application Uploads ###
 /uploads/
+
+# Environment Variables
+.env
