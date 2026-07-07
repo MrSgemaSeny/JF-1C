@@ -52,7 +52,7 @@ public class ServiceController {
      * POST /api/services/request — Клиент запрашивает услугу
      */
     @PostMapping("/request")
-    @PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN', 'EMPLOYEE')")
     public ApiResponse<ServiceRequestDto> requestService(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody ServiceRequestCreateRequest request
@@ -66,7 +66,7 @@ public class ServiceController {
      * GET /api/services/requests/my — Мои запросы (для клиента)
      */
     @GetMapping("/requests/my")
-    @PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN', 'EMPLOYEE')")
     public ApiResponse<List<ServiceRequestDto>> getMyRequests(
             @AuthenticationPrincipal UserPrincipal principal
     ) {
