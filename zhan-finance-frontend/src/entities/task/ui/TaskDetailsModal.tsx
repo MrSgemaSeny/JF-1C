@@ -11,12 +11,13 @@ import { Edit2, Plus, Trash2, CheckSquare, Square, Loader2, Paperclip } from 'lu
 
 interface TaskDetailsModalProps {
   task: TaskDto;
-  onClose: () => void;
+  onClose?: () => void;
   onUpdateTask: (updatedTask: TaskDto) => void;
   userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
+  isModal?: boolean;
 }
 
-export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: TaskDetailsModalProps) {
+export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModal = true }: TaskDetailsModalProps) {
   const [activeTab, setActiveTab] = useState<'comments' | 'history' | 'documents'>('comments');
   const [comments, setComments] = useState<TaskCommentDto[]>([]);
   const [history, setHistory] = useState<TaskActivityDto[]>([]);
@@ -171,9 +172,9 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  const content = (
       <div 
-        className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden"
+        className={`bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden ${isModal ? 'max-w-4xl max-h-[90vh]' : 'h-full shadow-sm border border-gray-100'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -562,6 +563,13 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
           </div>
         </div>
       </div>
+  );
+
+  if (!isModal) return content;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+      {content}
     </div>
   );
 }

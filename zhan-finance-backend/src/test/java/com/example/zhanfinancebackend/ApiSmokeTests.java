@@ -32,8 +32,7 @@ class ApiSmokeTests {
     @Test
     void swaggerAndPublicContactRequestAreAvailable() throws Exception {
         mockMvc.perform(get("/v3/api-docs"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.info.title").value("Zhan Finance API"));
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(post("/api/contact-requests")
                         .contentType(MediaType.APPLICATION_JSON)

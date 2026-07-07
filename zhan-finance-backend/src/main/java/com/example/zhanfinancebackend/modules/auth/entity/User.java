@@ -3,6 +3,7 @@ package com.example.zhanfinancebackend.modules.auth.entity;
 import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -12,6 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "app_users")
+@EntityListeners({com.example.zhanfinancebackend.modules.audit.listener.AuditEntityListener.class})
 public class User extends BaseEntity {
 
     @Column(nullable = false, length = 120)

@@ -52,14 +52,18 @@ import { CompleteProfilePage } from '@/pages/auth/complete-profile/CompleteProfi
 import { CalendarPage } from '@/pages/dashboard/shared/calendar/CalendarPage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/shared/lib/queryClient';
+
 export function App() {
   const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   return (
     <GoogleOAuthProvider clientId="249161344734-j51fft6shbogf2clnrhofn3l0c1euihl.apps.googleusercontent.com">
-      <AuthProvider>
-        <NotificationProvider>
-        <BrowserRouter basename={routerBasename}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <NotificationProvider>
+          <BrowserRouter basename={routerBasename}>
           <ScrollToTop />
           <Routes>
             <Route element={<MainLayout />}>
@@ -135,6 +139,7 @@ export function App() {
         </BrowserRouter>
       </NotificationProvider>
     </AuthProvider>
+    </QueryClientProvider>
     </GoogleOAuthProvider>
   );
 }

@@ -41,7 +41,7 @@ class TaskServiceIntegrationTests {
     @Autowired
     private JwtService jwtService;
 
-    @org.springframework.boot.test.mock.mockito.MockBean
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
     private com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
 
     private String clientToken;
@@ -51,9 +51,6 @@ class TaskServiceIntegrationTests {
 
     @BeforeEach
     void setup() {
-        taskRepository.deleteAll();
-        userRepository.deleteAll();
-
         client = new User("Client User", "client@test.com", "encoded", Role.CLIENT);
         client = userRepository.save(client);
 

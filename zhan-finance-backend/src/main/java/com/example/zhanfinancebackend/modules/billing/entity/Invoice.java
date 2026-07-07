@@ -10,12 +10,15 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.EntityListeners;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "invoices")
+@EntityListeners({AuditingEntityListener.class, com.example.zhanfinancebackend.modules.audit.listener.AuditEntityListener.class})
 public class Invoice extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

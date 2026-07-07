@@ -3,6 +3,8 @@ package com.example.zhanfinancebackend.modules.crm.entity;
 import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import jakarta.persistence.*;
+import jakarta.persistence.EntityListeners;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "tasks")
+@EntityListeners({AuditingEntityListener.class, com.example.zhanfinancebackend.modules.audit.listener.AuditEntityListener.class})
 public class Task extends BaseEntity {
 
     @Column(nullable = false)
