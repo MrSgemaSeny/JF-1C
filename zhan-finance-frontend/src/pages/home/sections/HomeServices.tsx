@@ -9,6 +9,7 @@ import { useApiData } from '@/shared/hooks/useApiData';
 import { fetchHighlightedServices, requestService } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
+import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
 
 export function HomeServices() {
@@ -68,7 +69,6 @@ export function HomeServices() {
       });
       setSuccessMessage(`Ваш запрос на услугу «${service.title}» принят! Мы свяжемся с вами в ближайшее время.`);
       setSelectedService(null);
-      setTimeout(() => setSuccessMessage(null), 5000);
     } catch {
       alert('Ошибка при отправке запроса. Попробуйте позже.');
     } finally {
@@ -177,6 +177,13 @@ export function HomeServices() {
           initialPreferredDate={restoredDate}
         />
       )}
+
+      <SuccessModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage(null)}
+        title="Заявка принята!"
+        message={successMessage || ''}
+      />
     </Section>
   );
 }

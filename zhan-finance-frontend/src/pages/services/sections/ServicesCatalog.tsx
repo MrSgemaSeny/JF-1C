@@ -7,6 +7,7 @@ import { useApiData } from '@/shared/hooks/useApiData';
 import { fetchServices, requestService } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
+import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ROUTES } from '@/shared/config/routes';
 
@@ -74,7 +75,6 @@ export function ServicesCatalog() {
       });
       setSuccessMessage(`Запрос на услугу «${service.title}» отправлен!`);
       setActive(null);
-      setTimeout(() => setSuccessMessage(null), 5000);
     } catch {
       alert('Ошибка при отправке запроса. Попробуйте позже.');
     } finally {
@@ -157,6 +157,13 @@ export function ServicesCatalog() {
           initialPreferredDate={restoredDate}
         />
       )}
+
+      <SuccessModal
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage(null)}
+        title="Заявка принята!"
+        message={successMessage || ''}
+      />
     </>
   );
 }
