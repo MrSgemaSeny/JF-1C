@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
@@ -19,6 +19,7 @@ export function ServicesCatalog() {
   const [restoredDate, setRestoredDate] = useState('');
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Восстанавливаем заявку из sessionStorage при логине
   useEffect(() => {
@@ -57,10 +58,10 @@ export function ServicesCatalog() {
         serviceId: service.id,
         message,
         preferredDate,
-        returnUrl: window.location.pathname, // Откуда пришли
+        returnUrl: location.pathname, // Откуда пришли
       };
       sessionStorage.setItem('pendingServiceOrder', JSON.stringify(pendingOrder));
-      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(window.location.pathname)}`);
+      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(location.pathname)}`);
       return;
     }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 import { ROUTES } from '@/shared/config/routes';
@@ -18,6 +18,7 @@ export function HomeServices() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [restoredMessage, setRestoredMessage] = useState('');
   const [restoredDate, setRestoredDate] = useState('');
 
@@ -51,10 +52,10 @@ export function HomeServices() {
         serviceId: service.id,
         message,
         preferredDate,
-        returnUrl: window.location.pathname, // Откуда пришли
+        returnUrl: location.pathname, // Откуда пришли
       };
       sessionStorage.setItem('pendingServiceOrder', JSON.stringify(pendingOrder));
-      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(window.location.pathname)}`);
+      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(location.pathname)}`);
       return;
     }
 
