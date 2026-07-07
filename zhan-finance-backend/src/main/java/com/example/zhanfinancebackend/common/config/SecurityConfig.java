@@ -17,6 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+import com.example.zhanfinancebackend.common.exception.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Configuration
 @EnableMethodSecurity
@@ -38,7 +43,17 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized\",\"data\":null}");
+                            response.setCharacterEncoding("UTF-8");
+                            ErrorResponse errorResponse = new ErrorResponse(
+                                    401,
+                                    "UNAUTHORIZED",
+                                    "Unauthorized",
+                                    request.getRequestURI(),
+                                    UUID.randomUUID().toString()
+                            );
+                            ObjectMapper mapper = new ObjectMapper();
+                            mapper.findAndRegisterModules(); // Support LocalDateTime
+                            response.getWriter().write(mapper.writeValueAsString(errorResponse));
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
