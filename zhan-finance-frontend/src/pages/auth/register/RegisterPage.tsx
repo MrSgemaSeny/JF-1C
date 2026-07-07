@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { ApiError } from '@/shared/api/http';
@@ -9,6 +9,7 @@ import { GoogleLogin } from '@react-oauth/google';
 export function RegisterPage() {
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [role, setRole] = useState<'CLIENT' | 'EMPLOYEE'>('CLIENT');
   const [fullName, setFullName] = useState('');
@@ -30,7 +31,8 @@ export function RegisterPage() {
         } else if (result.isNewUser && role === 'CLIENT') {
           navigate(ROUTES.COMPLETE_PROFILE);
         } else {
-          navigate(ROUTES.PROFILE);
+          const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
+          navigate(returnUrl, { replace: true });
         }
       }
     } catch (err) {
@@ -65,7 +67,8 @@ export function RegisterPage() {
       if (result.isPendingApproval) {
         setSuccessMessage('Заявка на регистрацию отправлена! Администратор проверит ваши данные.');
       } else {
-        navigate(ROUTES.PROFILE);
+        const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
+        navigate(returnUrl, { replace: true });
       }
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Не удалось зарегистрироваться. Попробуйте снова.');
@@ -257,7 +260,7 @@ export function RegisterPage() {
 
         <p className="text-center text-sm text-brand-green/70 mt-6">
           Уже есть аккаунт?{' '}
-          <Link to={ROUTES.LOGIN} className="font-bold text-brand-green hover:underline">
+          <Link to={`${ROUTES.LOGIN}${searchParams.get('from') ? `?from=${encodeURIComponent(searchParams.get('from')!)}` : ''}`} className="font-bold text-brand-green hover:underline">
             Войти
           </Link>
         </p>

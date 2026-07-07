@@ -15,8 +15,34 @@ export function ServicesCatalog() {
   const [active, setActive] = useState<ServiceDto | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [restoredMessage, setRestoredMessage] = useState('');
+  const [restoredDate, setRestoredDate] = useState('');
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Восстанавливаем заявку из sessionStorage при логине
+  useEffect(() => {
+    if (!user) return; // Юзер не авторизован, ничего не делаем
+
+    const pending = sessionStorage.getItem('pendingServiceOrder');
+    if (!pending) return; // Нет отложенной заявки
+
+    try {
+      const order = JSON.parse(pending);
+      if (services) {
+        const service = services.find((s) => s.id === order.serviceId);
+        if (service) {
+          setActive(service);
+          setRestoredMessage(order.message || '');
+          setRestoredDate(order.preferredDate || '');
+          sessionStorage.removeItem('pendingServiceOrder');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to restore pending order:', error);
+      sessionStorage.removeItem('pendingServiceOrder');
+    }
+  }, [user, services]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setActive(null); };
@@ -27,7 +53,14 @@ export function ServicesCatalog() {
 
   const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string) => {
     if (!user) {
-      navigate(ROUTES.LOGIN);
+      const pendingOrder = {
+        serviceId: service.id,
+        message,
+        preferredDate,
+        returnUrl: window.location.pathname, // Откуда пришли
+      };
+      sessionStorage.setItem('pendingServiceOrder', JSON.stringify(pendingOrder));
+      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
@@ -78,8 +111,12 @@ export function ServicesCatalog() {
                 viewport={{ once: true }}
                 role="button"
                 tabIndex={0}
-                onClick={() => setActive(s)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(s); } }}
+                onClick={() => {
+                  setActive(s);
+                  setRestoredMessage('');
+                  setRestoredDate('');
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(s); setRestoredMessage(''); setRestoredDate(''); } }}
                 className="flex gap-6 bg-white rounded-2xl p-6 items-start shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-green border border-brand-green/20 hover:border-brand-green/60 transition-colors"
               >
                 <div className="flex-1">
@@ -115,6 +152,8 @@ export function ServicesCatalog() {
           onRequest={handleRequestService}
           isSubmitting={isSubmitting}
           isLoggedIn={!!user}
+          initialMessage={restoredMessage}
+          initialPreferredDate={restoredDate}
         />
       )}
     </>

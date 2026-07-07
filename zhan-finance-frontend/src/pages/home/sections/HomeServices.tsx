@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,10 +18,43 @@ export function HomeServices() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [restoredMessage, setRestoredMessage] = useState('');
+  const [restoredDate, setRestoredDate] = useState('');
+
+  // Восстанавливаем заявку из sessionStorage при логине
+  useEffect(() => {
+    if (!user) return; // Юзер не авторизован, ничего не делаем
+
+    const pending = sessionStorage.getItem('pendingServiceOrder');
+    if (!pending) return; // Нет отложенной заявки
+
+    try {
+      const order = JSON.parse(pending);
+      if (services) {
+        const service = services.find((s) => s.id === order.serviceId);
+        if (service) {
+          setSelectedService(service);
+          setRestoredMessage(order.message || '');
+          setRestoredDate(order.preferredDate || '');
+          sessionStorage.removeItem('pendingServiceOrder');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to restore pending order:', error);
+      sessionStorage.removeItem('pendingServiceOrder');
+    }
+  }, [user, services]);
 
   const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string) => {
     if (!user) {
-      navigate(ROUTES.LOGIN);
+      const pendingOrder = {
+        serviceId: service.id,
+        message,
+        preferredDate,
+        returnUrl: window.location.pathname, // Откуда пришли
+      };
+      sessionStorage.setItem('pendingServiceOrder', JSON.stringify(pendingOrder));
+      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
@@ -90,7 +123,11 @@ export function HomeServices() {
                 transition={{ duration: 0.6, delay: i * 0.1 }}
                 viewport={{ once: true }}
                 className="bg-brand-beige/20 p-8 rounded-[32px] border border-brand-green/5 hover:border-brand-green/20 hover:bg-brand-beige transition-all group flex flex-col cursor-pointer"
-                onClick={() => setSelectedService(service)}
+                onClick={() => {
+                  setSelectedService(service);
+                  setRestoredMessage('');
+                  setRestoredDate('');
+                }}
               >
                 <h3 className="text-2xl font-black uppercase text-brand-green mb-4 leading-tight">
                   {service.title}
@@ -135,6 +172,8 @@ export function HomeServices() {
           onRequest={handleRequestService}
           isSubmitting={isSubmitting}
           isLoggedIn={!!user}
+          initialMessage={restoredMessage}
+          initialPreferredDate={restoredDate}
         />
       )}
     </Section>

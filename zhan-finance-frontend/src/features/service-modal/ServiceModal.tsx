@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
@@ -9,11 +9,19 @@ interface ServiceModalProps {
   onRequest?: (service: ServiceDto, message?: string, preferredDate?: string) => Promise<void>;
   isSubmitting?: boolean;
   isLoggedIn?: boolean;
+  initialMessage?: string;
+  initialPreferredDate?: string;
 }
 
-export function ServiceModal({ item, onClose, onRequest, isSubmitting = false, isLoggedIn = false }: ServiceModalProps) {
-  const [message, setMessage] = useState('');
-  const [preferredDate, setPreferredDate] = useState('');
+export function ServiceModal({ item, onClose, onRequest, isSubmitting = false, isLoggedIn = false, initialMessage = '', initialPreferredDate = '' }: ServiceModalProps) {
+  const [message, setMessage] = useState(initialMessage);
+  const [preferredDate, setPreferredDate] = useState(initialPreferredDate);
+  
+  // Синхронизация с props (когда восстанавливаем из sessionStorage)
+  useEffect(() => {
+    setMessage(initialMessage);
+    setPreferredDate(initialPreferredDate);
+  }, [initialMessage, initialPreferredDate]);
 
   const handleRequest = () => {
     onRequest?.(item, message || undefined, preferredDate || undefined);
@@ -73,7 +81,7 @@ export function ServiceModal({ item, onClose, onRequest, isSubmitting = false, i
               <p className="text-brand-green/70 text-sm">
                 {isLoggedIn
                   ? 'Опишите вашу задачу или нажмите «Заказать услугу», и мы свяжемся с вами.'
-                  : 'Войдите в систему, чтобы заказать услугу.'}
+                  : 'Заполните данные ниже. Для завершения отправки потребуется войти в систему.'}
               </p>
 
               {onRequest && (

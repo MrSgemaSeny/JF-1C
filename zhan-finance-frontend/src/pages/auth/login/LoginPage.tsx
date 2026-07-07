@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { ApiError } from '@/shared/api/http';
@@ -9,6 +9,7 @@ import { GoogleLogin } from '@react-oauth/google';
 export function LoginPage() {
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +25,8 @@ export function LoginPage() {
         } else if (result.isNewUser) {
           navigate(ROUTES.COMPLETE_PROFILE);
         } else {
-          navigate(ROUTES.PROFILE);
+          const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
+          navigate(returnUrl, { replace: true });
         }
       }
     } catch (err) {
@@ -38,7 +40,8 @@ export function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(email, password);
-      navigate(ROUTES.PROFILE);
+      const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
+      navigate(returnUrl, { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Не удалось войти. Попробуйте снова.');
     } finally {
@@ -125,7 +128,7 @@ export function LoginPage() {
 
         <p className="text-center text-sm text-brand-green/70 mt-6">
           Нет аккаунта?{' '}
-          <Link to={ROUTES.REGISTER} className="font-bold text-brand-green hover:underline">
+          <Link to={`${ROUTES.REGISTER}${searchParams.get('from') ? `?from=${encodeURIComponent(searchParams.get('from')!)}` : ''}`} className="font-bold text-brand-green hover:underline">
             Зарегистрироваться
           </Link>
         </p>
