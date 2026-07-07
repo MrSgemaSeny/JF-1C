@@ -4,6 +4,7 @@ import { apiRequest } from '@/shared/api/http';
 export function useContactForm() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +20,7 @@ export function useContactForm() {
         body: JSON.stringify({
           name,
           phone,
+          message,
           source: 'frontend'
         })
       });
@@ -35,6 +37,8 @@ export function useContactForm() {
     setName,
     phone,
     setPhone,
+    message,
+    setMessage,
     submitted,
     loading,
     error,
