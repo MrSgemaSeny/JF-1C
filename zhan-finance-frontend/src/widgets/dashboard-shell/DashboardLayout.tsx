@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { Menu } from 'lucide-react';
 import { GlobalSearch } from '@/widgets/search/GlobalSearch';
+import { NotificationBell } from './NotificationBell';
 
 export function DashboardLayout() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -39,6 +40,9 @@ export function DashboardLayout() {
           {/* Desktop Topbar */}
           <div className="hidden lg:flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white z-10">
             <GlobalSearch />
+            <div className="flex items-center gap-4 pl-4 ml-auto">
+              <NotificationBell />
+            </div>
           </div>
           
           <div className="flex-1 flex flex-col min-h-0 p-4 md:p-8">

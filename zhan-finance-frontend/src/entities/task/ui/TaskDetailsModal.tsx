@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, MessageSquare, Activity, Clock, Tag, User as UserIcon, XCircle, ArrowUpRight, Check, Calendar, CheckCircle2, ChevronRight, Hash, PlayCircle, FileText, Download } from 'lucide-react';
 import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '../model/types';
 import { getTaskComments, addTaskComment, getTaskHistory } from '../api/taskApi';
+import { fetchServiceRequestByTaskId } from '@/entities/service/api/servicesApi';
 import { getTaskDocuments, downloadDocument, uploadDocument } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { StatusBadge, PriorityBadge } from '@/shared/ui/Badge';
@@ -22,6 +23,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [serviceRequest, setServiceRequest] = useState<any>(null);
 
   // Edit states
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -56,7 +58,18 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
     fetchComments();
     fetchHistory();
     fetchDocuments();
+    fetchServiceReq();
   }, [task.id]);
+
+  const fetchServiceReq = async () => {
+    try {
+      const data = await fetchServiceRequestByTaskId(task.id);
+      setServiceRequest(data);
+    } catch (error) {
+      // It's normal for a task to not have a linked service
+      console.log('No linked service found for task', task.id);
+    }
+  };
 
   const fetchDocuments = async () => {
     try {
@@ -271,6 +284,36 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole }: Task
                 </div>
               )}
             </div>
+
+            {/* Linked Service */}
+            {serviceRequest && (
+              <div className="mb-8">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <Hash size={16} /> Связанная услуга
+                </h3>
+                <div className="bg-brand-green/5 border border-brand-green/20 rounded-xl p-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-start">
+                      <span className="text-sm font-semibold text-gray-900">{serviceRequest.serviceTitle}</span>
+                      <span className="text-xs px-2 py-1 bg-white rounded border border-gray-100 font-medium text-gray-600">
+                        {serviceRequest.status}
+                      </span>
+                    </div>
+                    {serviceRequest.preferredContactDate && (
+                      <div className="flex items-center gap-1.5 text-sm text-gray-600">
+                        <Calendar size={14} className="text-gray-400" />
+                        Желаемая дата связи: {new Date(serviceRequest.preferredContactDate).toLocaleDateString()}
+                      </div>
+                    )}
+                    {serviceRequest.clientMessage && (
+                      <div className="mt-2 text-sm text-gray-700 bg-white p-3 rounded border border-gray-100 whitespace-pre-wrap">
+                        {serviceRequest.clientMessage}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Documents / Attachments */}
             <div className="mb-8 group">

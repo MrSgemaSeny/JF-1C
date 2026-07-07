@@ -34,6 +34,7 @@ export const ROUTES = {
   CLIENT_DOCUMENTS: '/client/documents',
   CLIENT_CHAT: '/client/chat',
   CLIENT_CALENDAR: '/client/calendar',
+  CLIENT_SERVICES: '/client/services',
   
   // Learner Routes
   LEARNER_COURSES: '/courses',

@@ -47,6 +47,7 @@ import { TaskDetailsPage } from '@/pages/task-details/TaskDetailsPage';
 import { ClientOverviewPage } from '@/pages/dashboard/client/ClientOverviewPage';
 import { ClientDocumentsPage } from '@/pages/dashboard/client/ClientDocumentsPage';
 import { ClientChatPage } from '@/pages/dashboard/client/ClientChatPage';
+import { ClientServicesPage } from '@/pages/dashboard/client/ClientServicesPage';
 import { CompleteProfilePage } from '@/pages/auth/complete-profile/CompleteProfilePage';
 import { CalendarPage } from '@/pages/dashboard/shared/calendar/CalendarPage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -112,6 +113,7 @@ export function App() {
                 <Route path={ROUTES.CLIENT_CHAT} element={<ClientChatPage />} />
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
                 <Route path={ROUTES.CLIENT_CALENDAR} element={<CalendarPage />} />
+                <Route path={ROUTES.CLIENT_SERVICES} element={<ClientServicesPage />} />
               </Route>
 
               {/* Learner Routes */}

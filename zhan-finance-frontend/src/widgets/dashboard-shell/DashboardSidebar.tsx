@@ -36,6 +36,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Archive (Cancelled)': <XCircle size={16} />,
   'Documents':           <FileText size={16} />,
   'My Requests':         <Briefcase size={16} />,
+  'Services':            <Briefcase size={16} />,
   'Courses':             <BookOpen size={16} />,
   'Learners':            <Users size={16} />,
   'Settings':            <Settings size={16} />,

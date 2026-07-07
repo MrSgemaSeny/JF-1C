@@ -41,6 +41,9 @@ class TaskServiceIntegrationTests {
     @Autowired
     private JwtService jwtService;
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
+
     private String clientToken;
     private String employeeToken;
     private User client;
