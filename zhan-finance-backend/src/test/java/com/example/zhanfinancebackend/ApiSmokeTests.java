@@ -32,7 +32,7 @@ class ApiSmokeTests {
     @Test
     void swaggerAndPublicContactRequestAreAvailable() throws Exception {
         mockMvc.perform(get("/v3/api-docs"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/contact-requests")
                         .contentType(MediaType.APPLICATION_JSON)
