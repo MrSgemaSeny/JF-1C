@@ -12,6 +12,8 @@ export interface ApiErrorDetail {
   error: string;
 }
 
+import { toast } from '@/shared/ui/Toast/ToastContext';
+
 export class ApiError extends Error {
   status: number;
   code?: string;
@@ -52,10 +54,16 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
     ...init?.headers
   };
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers
+    });
+  } catch (err) {
+    toast.error('Connection failed. Check your internet connection.', { duration: 5000 });
+    throw new ApiError('Connection failed', 0);
+  }
 
   if (!response.ok) {
     let errorMessage = `Request failed with status ${response.status}`;
@@ -80,6 +88,11 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
     } catch (_) {
       // Ignore JSON parse error for error responses
     }
+
+    if (response.status === 403) {
+      toast.error("You don't have access to this resource", { duration: 5000 });
+    }
+
     throw new ApiError(errorMessage, response.status, code, details, requestId);
   }
 
@@ -111,9 +124,15 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
           refreshPromise = null;
         });
       }
-      const newToken = await refreshPromise;
-      if (newToken) {
-        return await rawRequest<T>(path, init, newToken);
+      const refreshedToken = await refreshPromise;
+      if (refreshedToken) {
+        return await rawRequest<T>(path, init, refreshedToken);
+      } else {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        toast.warning('Session expired, please login again', { duration: 5000 });
+        window.location.href = '/login';
+        throw error;
       }
     }
     throw error;
@@ -126,10 +145,16 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
     ...init?.headers
   };
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers
+    });
+  } catch (err) {
+    toast.error('Connection failed. Check your internet connection.', { duration: 5000 });
+    throw new ApiError('Connection failed', 0);
+  }
 
   if (!response.ok) {
     let errorMessage = `Download failed with status ${response.status}`;
@@ -155,6 +180,11 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
     } catch (_) {
       // ignore
     }
+
+    if (response.status === 403) {
+      toast.error("You don't have access to this resource", { duration: 5000 });
+    }
+
     throw new ApiError(errorMessage, response.status, code, details, requestId);
   }
 
@@ -172,13 +202,33 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
           refreshPromise = null;
         });
       }
-      const newToken = await refreshPromise;
-      if (newToken) {
-        return await rawDownload(path, init, newToken);
+      const refreshedToken = await refreshPromise;
+      if (refreshedToken) {
+        return await rawDownload(path, init, refreshedToken);
+      } else {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        toast.warning('Session expired, please login again', { duration: 5000 });
+        window.location.href = '/login';
+        throw error;
       }
     }
     throw error;
   }
+}
+
+export function extractValidationErrors(error: unknown): Record<string, string> {
+  if (error instanceof ApiError && error.code === 'VALIDATION_ERROR' && error.details) {
+    return error.details.reduce((acc, detail) => {
+      if (acc[detail.field]) {
+        acc[detail.field] += `, ${detail.error}`;
+      } else {
+        acc[detail.field] = detail.error;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+  }
+  return {};
 }
 
 export { API_BASE_URL, getAccessToken };

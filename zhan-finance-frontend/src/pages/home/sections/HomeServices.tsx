@@ -11,6 +11,8 @@ import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
+import { toast } from '@/shared/ui/Toast/ToastContext';
+import { ApiError } from '@/shared/api/http';
 
 export function HomeServices() {
   const { data: services, isLoading } = useApiData(fetchHighlightedServices);
@@ -69,8 +71,8 @@ export function HomeServices() {
       });
       setSuccessMessage(`Ваш запрос на услугу «${service.title}» принят! Мы свяжемся с вами в ближайшее время.`);
       setSelectedService(null);
-    } catch {
-      alert('Ошибка при отправке запроса. Попробуйте позже.');
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Ошибка при отправке запроса. Попробуйте позже.');
     } finally {
       setIsSubmitting(false);
     }

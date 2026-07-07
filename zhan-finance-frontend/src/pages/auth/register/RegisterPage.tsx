@@ -1,10 +1,12 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, User, Mail, Lock, Phone, Building2 } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
-import { ApiError } from '@/shared/api/http';
+import { ApiError, extractValidationErrors } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import { Input } from '@/shared/ui/Input/Input';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 export function RegisterPage() {
   const { register, loginWithGoogle } = useAuth();
@@ -18,7 +20,8 @@ export function RegisterPage() {
   const [phone, setPhone] = useState('');
   const [companyName, setCompanyName] = useState('');
   
-  const [error, setError] = useState<string | null>(null);
+  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -29,27 +32,30 @@ export function RegisterPage() {
         if (result.isPendingApproval) {
           setSuccessMessage('Заявка на регистрацию отправлена! Администратор проверит ваши данные.');
         } else if (result.isNewUser && role === 'CLIENT') {
+          toast.success('Успешная регистрация!');
           navigate(ROUTES.COMPLETE_PROFILE);
         } else {
+          toast.success('Успешный вход!');
           const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
           navigate(returnUrl, { replace: true });
         }
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Не удалось зарегистрироваться через Google.');
+      toast.error(err instanceof ApiError ? err.message : 'Не удалось зарегистрироваться через Google.');
     }
   };
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    setError(null);
+    setGlobalError(null);
+    setValidationErrors({});
 
     if (password.length < 8) {
-      setError('Пароль должен содержать минимум 8 символов');
+      setValidationErrors({ password: 'Пароль должен содержать минимум 8 символов' });
       return;
     }
     if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
-      setError('Пароль должен содержать хотя бы одну букву и одну цифру');
+      setValidationErrors({ password: 'Пароль должен содержать хотя бы одну букву и одну цифру' });
       return;
     }
 
@@ -67,11 +73,17 @@ export function RegisterPage() {
       if (result.isPendingApproval) {
         setSuccessMessage('Заявка на регистрацию отправлена! Администратор проверит ваши данные.');
       } else {
+        toast.success('Успешный вход!');
         const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
         navigate(returnUrl, { replace: true });
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Не удалось зарегистрироваться. Попробуйте снова.');
+      const fieldErrors = extractValidationErrors(err);
+      if (Object.keys(fieldErrors).length > 0) {
+        setValidationErrors(fieldErrors);
+      } else {
+        setGlobalError(err instanceof ApiError ? err.message : 'Не удалось зарегистрироваться. Попробуйте снова.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -140,96 +152,92 @@ export function RegisterPage() {
 
         {role === 'CLIENT' ? (
           <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-bold text-brand-green mb-1.5">Имя</label>
-              <input
-                id="fullName"
-                type="text"
-                required
-                autoComplete="off"
-                maxLength={120}
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-                placeholder="Имя Фамилия"
-              />
-            </div>
+            <Input
+              id="fullName"
+              type="text"
+              label="Имя"
+              required
+              autoComplete="off"
+              maxLength={120}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              disabled={isSubmitting}
+              error={validationErrors.fullName}
+              icon={<User className="w-5 h-5" />}
+              placeholder="Имя Фамилия"
+            />
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-bold text-brand-green mb-1.5">Email</label>
-              <input
-                id="email"
-                type="email"
-                required
-                autoComplete="off"
-                maxLength={160}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-                placeholder="example@gmail.com"
-              />
-            </div>
+            <Input
+              id="email"
+              type="email"
+              label="Email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSubmitting}
+              error={validationErrors.email}
+              icon={<Mail className="w-5 h-5" />}
+              placeholder="example@gmail.com"
+            />
 
-            <div>
-              <label htmlFor="phone" className="block text-sm font-bold text-brand-green mb-1.5">Телефон</label>
-              <input
-                id="phone"
-                type="text"
-                autoComplete="off"
-                maxLength={32}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-                placeholder="+7 (777) 000-00-00"
-              />
-            </div>
+            <Input
+              id="phone"
+              type="tel"
+              label="Телефон"
+              autoComplete="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              disabled={isSubmitting}
+              error={validationErrors.phone}
+              icon={<Phone className="w-5 h-5" />}
+              placeholder="+7 (999) 000-00-00"
+            />
 
-            <div>
-              <label htmlFor="companyName" className="block text-sm font-bold text-brand-green mb-1.5">Название ИП/ТОО <span className="font-normal text-brand-green/50">(необязательно)</span></label>
-              <input
-                id="companyName"
-                type="text"
-                autoComplete="off"
-                maxLength={255}
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-                placeholder="ТОО Zhan Finance"
-              />
-            </div>
+            <Input
+              id="companyName"
+              type="text"
+              label="Название компании"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              disabled={isSubmitting}
+              error={validationErrors.companyName}
+              icon={<Building2 className="w-5 h-5" />}
+              placeholder="OOO Пример"
+            />
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-bold text-brand-green mb-1.5">Пароль</label>
-              <input
-                id="password"
-                type="password"
-                required
-                autoComplete="new-password"
-                minLength={8}
-                maxLength={120}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-                placeholder="Минимум 8 символов, буквы и цифры"
-              />
-            </div>
+            <Input
+              id="password"
+              type="password"
+              label="Пароль"
+              required
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isSubmitting}
+              error={validationErrors.password}
+              icon={<Lock className="w-5 h-5" />}
+              placeholder="••••••••"
+              hint="Минимум 8 символов, хотя бы одна буква и одна цифра"
+            />
 
-            {error && (
+            {globalError && (
               <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-                {error}
+                {globalError}
               </p>
             )}
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
-              {isSubmitting ? 'Обработка...' : 'Зарегистрироваться'}
+              {isSubmitting ? 'Отправка...' : 'Зарегистрироваться'}
               {!isSubmitting && <ArrowRight className="w-4 h-4" />}
             </button>
           </form>
         ) : (
+
           <div className="bg-brand-green/5 border border-brand-green/10 rounded-xl p-6 text-center space-y-4">
             <p className="text-sm text-brand-green/80 leading-relaxed font-medium">
               Для корректной работы корпоративной почты и системы уведомлений, сотрудники могут регистрироваться только через <b>Google Аккаунт</b>.
@@ -251,7 +259,7 @@ export function RegisterPage() {
           <div className="flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => setError('Ошибка авторизации Google')}
+              onError={() => toast.error('Ошибка авторизации Google')}
               use_fedcm_for_prompt={false}
               itp_support={true}
             />

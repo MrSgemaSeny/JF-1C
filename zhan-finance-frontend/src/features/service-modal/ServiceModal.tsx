@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
+import { Input } from '@/shared/ui/Input/Input';
+import { Textarea } from '@/shared/ui/Input/Textarea';
 
 interface ServiceModalProps {
   item: ServiceDto;
@@ -86,25 +88,20 @@ export function ServiceModal({ item, onClose, onRequest, isSubmitting = false, i
 
               {onRequest && (
                 <>
-                  <textarea
+                  <Textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Опишите вашу задачу (необязательно)..."
-                    rows={3}
-                    className="w-full rounded-2xl border border-brand-green/15 bg-white px-4 py-3 text-sm text-brand-green placeholder:text-brand-green/40 focus:outline-none focus:ring-2 focus:ring-brand-green/30 resize-none"
+                    label="Комментарий"
                   />
-                  <div>
-                    <label className="block text-sm font-semibold text-brand-green mb-1 ml-2">
-                      Желаемая дата связи (опционально)
-                    </label>
-                    <input
-                      type="date"
-                      value={preferredDate}
-                      onChange={(e) => setPreferredDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full rounded-full border border-brand-green/15 bg-white px-4 py-3 text-sm text-brand-green placeholder:text-brand-green/40 focus:outline-none focus:ring-2 focus:ring-brand-green/30"
-                    />
-                  </div>
+                  <Input
+                    id="preferredDate"
+                    type="date"
+                    value={preferredDate}
+                    onChange={(e) => setPreferredDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    label="Желаемая дата связи (опционально)"
+                  />
                   <button
                     onClick={handleRequest}
                     disabled={isSubmitting}

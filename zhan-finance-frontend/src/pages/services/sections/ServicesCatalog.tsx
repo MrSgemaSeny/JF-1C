@@ -10,12 +10,13 @@ import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ROUTES } from '@/shared/config/routes';
+import { toast } from '@/shared/ui/Toast/ToastContext';
+import { ApiError } from '@/shared/api/http';
 
 export function ServicesCatalog() {
   const { data: services, isLoading } = useApiData(fetchServices);
   const [active, setActive] = useState<ServiceDto | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [restoredMessage, setRestoredMessage] = useState('');
   const [restoredDate, setRestoredDate] = useState('');
   const { user } = useAuth();
@@ -73,10 +74,10 @@ export function ServicesCatalog() {
         message,
         preferredContactDate: preferredDate 
       });
-      setSuccessMessage(`Запрос на услугу «${service.title}» отправлен!`);
+      toast.success(`Запрос на услугу «${service.title}» отправлен!`);
       setActive(null);
-    } catch {
-      alert('Ошибка при отправке запроса. Попробуйте позже.');
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : 'Ошибка при отправке запроса. Попробуйте позже.');
     } finally {
       setIsSubmitting(false);
     }
@@ -85,16 +86,6 @@ export function ServicesCatalog() {
   return (
     <>
       <Section id="services-list" className="bg-brand-green pt-28 pb-12">
-        {/* Success banner */}
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 rounded-2xl bg-green-50 border border-green-200 p-4 text-green-800 font-medium text-center"
-          >
-            ✅ {successMessage}
-          </motion.div>
-        )}
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -158,12 +149,6 @@ export function ServicesCatalog() {
         />
       )}
 
-      <SuccessModal
-        isOpen={!!successMessage}
-        onClose={() => setSuccessMessage(null)}
-        title="Заявка принята!"
-        message={successMessage || ''}
-      />
     </>
   );
 }

@@ -1,10 +1,12 @@
 import { useState, FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Mail, Lock } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
-import { ApiError } from '@/shared/api/http';
+import { ApiError, extractValidationErrors } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import { Input } from '@/shared/ui/Input/Input';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 export function LoginPage() {
   const { login, loginWithGoogle } = useAuth();
@@ -13,7 +15,8 @@ export function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
@@ -21,29 +24,38 @@ export function LoginPage() {
       if (credentialResponse.credential) {
         const result = await loginWithGoogle(credentialResponse.credential);
         if (result.isPendingApproval) {
-          setError('Ваш аккаунт ожидает подтверждения администратора.');
+          toast.warning('Ваш аккаунт ожидает подтверждения администратора.');
         } else if (result.isNewUser) {
+          toast.success('Успешная регистрация!');
           navigate(ROUTES.COMPLETE_PROFILE);
         } else {
+          toast.success('Успешный вход!');
           const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
           navigate(returnUrl, { replace: true });
         }
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Не удалось войти через Google.');
+      toast.error(err instanceof ApiError ? err.message : 'Не удалось войти через Google.');
     }
   };
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    setError(null);
+    setGlobalError(null);
+    setValidationErrors({});
     setIsSubmitting(true);
     try {
       await login(email, password);
+      toast.success('Успешный вход!');
       const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
       navigate(returnUrl, { replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Не удалось войти. Попробуйте снова.');
+      const fieldErrors = extractValidationErrors(err);
+      if (Object.keys(fieldErrors).length > 0) {
+        setValidationErrors(fieldErrors);
+      } else {
+        setGlobalError(err instanceof ApiError ? err.message : 'Не удалось войти. Попробуйте снова.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -63,37 +75,37 @@ export function LoginPage() {
         <p className="text-brand-green/70 mb-8">Войдите, чтобы открыть личный кабинет.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-bold text-brand-green mb-1.5">Email</label>
-            <input
-              id="email"
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="example@gmail.com"
-            />
-          </div>
+          <Input
+            id="email"
+            type="email"
+            label="Email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isSubmitting}
+            error={validationErrors.email}
+            icon={<Mail className="w-5 h-5" />}
+            placeholder="example@gmail.com"
+          />
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-bold text-brand-green mb-1.5">Пароль</label>
-            <input
-              id="password"
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="••••••••"
-            />
-          </div>
+          <Input
+            id="password"
+            type="password"
+            label="Пароль"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isSubmitting}
+            error={validationErrors.password}
+            icon={<Lock className="w-5 h-5" />}
+            placeholder="••••••••"
+          />
 
-          {error && (
+          {globalError && (
             <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-              {error}
+              {globalError}
             </p>
           )}
 
@@ -119,7 +131,7 @@ export function LoginPage() {
           <div className="mt-6 flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => setError('Ошибка авторизации Google')}
+              onError={() => toast.error('Ошибка авторизации Google')}
               use_fedcm_for_prompt={false}
               itp_support={true}
             />
