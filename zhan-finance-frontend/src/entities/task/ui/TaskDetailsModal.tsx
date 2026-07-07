@@ -171,7 +171,6 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
     onUpdateTask({ ...task, subtasks: newSubtasks });
   };
 
-  return (
   const content = (
       <div 
         className={`bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden ${isModal ? 'max-w-4xl max-h-[90vh]' : 'h-full shadow-sm border border-gray-100'}`}
