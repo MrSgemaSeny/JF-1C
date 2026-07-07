@@ -11,22 +11,8 @@ import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { useAuth } from '@/features/auth/AuthContext';
 
-const mockServices: ServiceDto[] = [
-  { id: 1, title: 'Бухгалтерский аутсорсинг', description: 'Полное ведение бухгалтерии для вашего бизнеса.', price: 'от 50 000 ₸', imageUrl: null, isHighlighted: true, features: [], createdAt: new Date().toISOString() },
-  { id: 2, title: 'Налоговый консалтинг', description: 'Оптимизация налогов и консультации по законодательству.', price: 'от 20 000 ₸', imageUrl: null, isHighlighted: true, features: [], createdAt: new Date().toISOString() },
-  { id: 3, title: 'Кадровый учет', description: 'Ведение кадрового делопроизводства в полном объеме.', price: 'от 30 000 ₸', imageUrl: null, isHighlighted: true, features: [], createdAt: new Date().toISOString() },
-  { id: 4, title: 'Регистрация ИП/ТОО', description: 'Помощь в открытии бизнеса под ключ без хлопот.', price: 'от 15 000 ₸', imageUrl: null, isHighlighted: true, features: [], createdAt: new Date().toISOString() },
-  { id: 5, title: 'Восстановление учета', description: 'Восстановление запущенного или некорректного бухучета.', price: 'от 100 000 ₸', imageUrl: null, isHighlighted: true, features: [], createdAt: new Date().toISOString() },
-  { id: 6, title: 'Аудит', description: 'Независимая проверка финансовой отчетности компании.', price: 'от 150 000 ₸', imageUrl: null, isHighlighted: true, features: [], createdAt: new Date().toISOString() }
-];
-
 export function HomeServices() {
-  const shouldUseMock = import.meta.env.VITE_USE_MOCK_SERVICES === 'true';
-  const apiData = useApiData(fetchHighlightedServices);
-  // TODO: удалить shouldUseMock или переключить переменную окружения когда будут реальные услуги в БД
-  const { data: services, isLoading } = shouldUseMock 
-    ? { data: mockServices, isLoading: false } 
-    : apiData;
+  const { data: services, isLoading } = useApiData(fetchHighlightedServices);
   const [selectedService, setSelectedService] = useState<ServiceDto | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
