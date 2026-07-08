@@ -1,5 +1,6 @@
 package com.example.zhanfinancebackend.common.config;
 
+import com.example.zhanfinancebackend.modules.auth.security.AuthRateLimitFilter;
 import com.example.zhanfinancebackend.modules.auth.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             JwtAuthenticationFilter jwtAuthenticationFilter,
+            AuthRateLimitFilter authRateLimitFilter,
             AuthenticationProvider authenticationProvider,
             CorsConfigurationSource corsConfigurationSource
     ) throws Exception {
@@ -62,17 +64,19 @@ public class SecurityConfig {
                                 "/api/contact-requests",
                                 "/api/services",
                                 "/api/services/highlighted",
-                                "/api/test-email",
+                                "/api/test-email"
+                        ).permitAll()
+                        .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
-                                "/webjars/**",
-                                "/uploads/**"
-                        ).permitAll()
+                                "/webjars/**"
+                        ).hasRole("ADMIN")
                         .requestMatchers("/api/internal/**").denyAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

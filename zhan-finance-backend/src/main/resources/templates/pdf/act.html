@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Акт выполненных работ (оказанных услуг)</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+            color: #000;
+            line-height: 1.3;
+            margin: 0;
+            padding: 10px;
+        }
+        .appendix {
+            text-align: right;
+            font-size: 8px;
+            margin-bottom: 15px;
+        }
+        .title-block {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .title-block h2 {
+            font-size: 14px;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+        }
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .meta-table td {
+            border: 1px solid #000;
+            padding: 5px;
+            vertical-align: top;
+        }
+        .main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .main-table th, .main-table td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+        }
+        .main-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .main-table td.left {
+            text-align: left;
+        }
+        .main-table td.right {
+            text-align: right;
+        }
+        .footer-note {
+            margin-top: 15px;
+            font-size: 9px;
+        }
+        .signatures-table {
+            width: 100%;
+            margin-top: 50px;
+            border-collapse: collapse;
+        }
+        .signatures-table td {
+            width: 45%;
+            vertical-align: top;
+        }
+        .sig-line {
+            border-top: 1px solid #000;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="appendix">
+        Приложение 50<br/>
+        к приказу Министра финансов Республики Казахстан<br/>
+        от 20 декабря 2012 года № 562
+    </div>
+
+    <div class="title-block">
+        <h2>АКТ ВЫПОЛНЕННЫХ РАБОТ (ОКАЗАННЫХ УСЛУГ)*</h2>
+        <div>№ <span th:text="${invoice.id}">000</span> от <span th:text="${#temporals.format(invoice.createdAt, 'dd.MM.yyyy')}">01.01.2026</span> г.</div>
+    </div>
+
+    <table class="meta-table">
+        <tr>
+            <td style="width: 50%;">
+                <strong>Исполнитель:</strong><br/>
+                ТОО "Zhan Finance", БИН 123456789012, г. Алматы, ул. Абая, 10
+            </td>
+            <td style="width: 50%;">
+                <strong>Заказчик:</strong><br/>
+                <span th:text="${invoice.user.username}">Имя Клиента</span>, БИН/ИИН: 987654321098
+            </td>
+        </tr>
+    </table>
+
+    <table class="main-table">
+        <thead>
+            <tr>
+                <th style="width: 30px;">№</th>
+                <th>Наименование работ (услуг)</th>
+                <th style="width: 80px;">Дата выполнения</th>
+                <th style="width: 60px;">Ед. изм.</th>
+                <th style="width: 60px;">Количество</th>
+                <th style="width: 90px;">Цена (Тенге)</th>
+                <th style="width: 100px;">Стоимость (Тенге)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td class="left" th:text="${invoice.title}">Бухгалтерские услуги за отчетный период</td>
+                <td th:text="${#temporals.format(invoice.createdAt, 'dd.MM.yyyy')}">01.01.2026</td>
+                <td>услуга</td>
+                <td>1</td>
+                <td class="right" th:text="${#numbers.formatDecimal(invoice.amount, 1, 'WHITESPACE', 2, 'POINT')}">10 000.00</td>
+                <td class="right" th:text="${#numbers.formatDecimal(invoice.amount, 1, 'WHITESPACE', 2, 'POINT')}">10 000.00</td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td colspan="6" class="right">Итого:</td>
+                <td class="right" th:text="${#numbers.formatDecimal(invoice.amount, 1, 'WHITESPACE', 2, 'POINT')}">10 000.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer-note">
+        * Применяется для оформления приемки-передачи выполненных работ (оказанных услуг).
+    </div>
+
+    <table class="signatures-table">
+        <tr>
+            <td>
+                <strong>Сдал (Исполнитель):</strong>
+                <div class="sig-line">М.П. / ФИО, подпись, должность</div>
+            </td>
+            <td style="width: 10%;"></td>
+            <td>
+                <strong>Принял (Заказчик):</strong>
+                <div class="sig-line">М.П. / ФИО, подпись, должность</div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

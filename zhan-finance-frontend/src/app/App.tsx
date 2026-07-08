@@ -28,6 +28,9 @@ import { AdminCoursesPage } from '@/pages/dashboard/admin/AdminCoursesPage';
 import { AdminCourseEditPage } from '@/pages/dashboard/admin/AdminCourseEditPage';
 import { AdminLessonEditPage } from '@/pages/dashboard/admin/AdminLessonEditPage';
 import { AdminLearnersPage } from '@/pages/dashboard/admin/AdminLearnersPage';
+import { AdminInvoicesPage } from '@/pages/dashboard/admin/billing/AdminInvoicesPage';
+import { AdminSubscriptionsPage } from '@/pages/dashboard/admin/billing/AdminSubscriptionsPage';
+import { AdminAuditLogPage } from '@/pages/dashboard/admin/AdminAuditLogPage';
 
 // Learner
 import { LearnerCoursesPage } from '@/pages/dashboard/learner/LearnerCoursesPage';
@@ -98,6 +101,9 @@ export function App() {
                 <Route path={ROUTES.ADMIN_COURSES_EDIT} element={<AdminCourseEditPage />} />
                 <Route path={ROUTES.ADMIN_LESSON_EDIT} element={<AdminLessonEditPage />} />
                 <Route path={ROUTES.ADMIN_LEARNERS} element={<AdminLearnersPage />} />
+                <Route path={ROUTES.ADMIN_INVOICES} element={<AdminInvoicesPage />} />
+                <Route path={ROUTES.ADMIN_SUBSCRIPTIONS} element={<AdminSubscriptionsPage />} />
+                <Route path={ROUTES.ADMIN_AUDIT_LOGS} element={<AdminAuditLogPage />} />
               </Route>
 
               {/* Employee Routes */}

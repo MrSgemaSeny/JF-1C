@@ -46,17 +46,46 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    String authHeader = accessor.getFirstNativeHeader("Authorization");
-                    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                if (accessor != null) {
+                    if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                        String authHeader = accessor.getFirstNativeHeader("Authorization");
+                        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                            throw new IllegalArgumentException("Unauthorized: Missing or invalid Authorization header");
+                        }
                         String token = authHeader.substring(7);
                         String username = jwtService.extractUsernameIfValidAccessToken(token);
-                        if (username != null) {
-                            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                            if (jwtService.isTokenValid(token, userDetails.getUsername())) {
-                                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                        userDetails, null, userDetails.getAuthorities());
-                                accessor.setUser(authentication);
+                        if (username == null) {
+                            throw new IllegalArgumentException("Unauthorized: Invalid token");
+                        }
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                        if (!jwtService.isTokenValid(token, userDetails.getUsername())) {
+                            throw new IllegalArgumentException("Unauthorized: Invalid token");
+                        }
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        accessor.setUser(authentication);
+                    } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) || StompCommand.SEND.equals(accessor.getCommand())) {
+                        java.security.Principal principal = accessor.getUser();
+                        if (principal == null) {
+                            throw new IllegalArgumentException("Unauthorized: WebSocket connection requires authentication");
+                        }
+                        String destination = accessor.getDestination();
+                        if (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) && destination != null && destination.startsWith("/topic/chat/")) {
+                            String[] parts = destination.split("/");
+                            if (parts.length >= 4) {
+                                String targetUserIdStr = parts[3];
+                                if (principal instanceof UsernamePasswordAuthenticationToken auth) {
+                                    Object p = auth.getPrincipal();
+                                    if (p instanceof com.example.zhanfinancebackend.modules.auth.security.UserPrincipal) {
+                                        com.example.zhanfinancebackend.modules.auth.security.UserPrincipal userPrincipal = 
+                                            (com.example.zhanfinancebackend.modules.auth.security.UserPrincipal) p;
+                                        boolean isAdminOrEmployee = userPrincipal.getAuthorities().stream()
+                                                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_EMPLOYEE"));
+                                        if (!isAdminOrEmployee && !String.valueOf(userPrincipal.getId()).equals(targetUserIdStr)) {
+                                            throw new IllegalArgumentException("Forbidden");
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

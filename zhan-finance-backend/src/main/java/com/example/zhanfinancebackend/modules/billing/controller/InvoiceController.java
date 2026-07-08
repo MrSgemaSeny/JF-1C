@@ -4,7 +4,12 @@ import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.billing.dto.InvoiceDto;
 import com.example.zhanfinancebackend.modules.billing.service.InvoiceService;
+import com.example.zhanfinancebackend.modules.billing.service.PdfGeneratorService;
+import com.example.zhanfinancebackend.modules.billing.entity.Invoice;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,15 +22,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private final PdfGeneratorService pdfGeneratorService;
 
-    public InvoiceController(InvoiceService invoiceService) {
+    public InvoiceController(InvoiceService invoiceService, PdfGeneratorService pdfGeneratorService) {
         this.invoiceService = invoiceService;
+        this.pdfGeneratorService = pdfGeneratorService;
+    }
+
+    @GetMapping("/{id}/pdf")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ResponseEntity<byte[]> downloadPdf(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        Invoice invoice = invoiceService.getInvoiceForPdf(principal.getUser(), id);
+        Map<String, Object> data = new HashMap<>();
+        data.put("invoice", invoice);
+        
+        byte[] pdfBytes = pdfGeneratorService.generatePdf("pdf/invoice", data);
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"invoice_" + id + ".pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
+    }
+
+    @GetMapping("/{id}/act-pdf")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ResponseEntity<byte[]> downloadActPdf(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        Invoice invoice = invoiceService.getInvoiceForPdf(principal.getUser(), id);
+        Map<String, Object> data = new HashMap<>();
+        data.put("invoice", invoice);
+        
+        byte[] pdfBytes = pdfGeneratorService.generatePdf("pdf/act", data);
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"act_" + id + ".pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 
     @GetMapping

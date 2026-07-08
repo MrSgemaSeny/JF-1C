@@ -23,6 +23,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.TaskActivity;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
+import com.example.zhanfinancebackend.modules.audit.service.AuditService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,13 +40,22 @@ public class TaskService {
     private final CrmAccessService accessService;
     private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
     private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
+    private final AuditService auditService;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository, CrmAccessService accessService, com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService, com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService) {
+    public TaskService(
+            TaskRepository taskRepository,
+            UserRepository userRepository,
+            CrmAccessService accessService,
+            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService,
+            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService,
+            AuditService auditService
+    ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.accessService = accessService;
         this.notificationService = notificationService;
         this.emailNotificationService = emailNotificationService;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -134,6 +144,7 @@ public class TaskService {
         }
         
         Task savedTask = taskRepository.save(task);
+        auditService.logAction("CREATE", "Task", savedTask.getId(), "Task created: " + savedTask.getTitle());
 
         if (creator.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT && client.getId().equals(savedTask.getClient().getId())) {
             notificationService.createNotification(
@@ -163,6 +174,7 @@ public class TaskService {
         task.setDueDate(request.dueDate());
 
         Task savedTask = taskRepository.save(task);
+        auditService.logAction("CREATE", "Task", savedTask.getId(), "Client requested task: " + savedTask.getTitle());
 
         User employee = managedClient.getAssignedEmployee();
         if (employee != null) {
@@ -179,6 +191,7 @@ public class TaskService {
         if (task.getStatus() != status) {
             String oldStatus = task.getStatus().name();
             logActivity(task, user, "Изменил статус с " + oldStatus + " на " + status);
+            auditService.logAction("UPDATE_STATUS", "Task", task.getId(), "Status changed from " + oldStatus + " to " + status);
             
             // Notify the other party
             if (user.getRole() == Role.CLIENT) {
@@ -216,8 +229,10 @@ public class TaskService {
                     .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
         }
         if (task.getAssignedTo() != assignee) {
+            String oldAssigneeName = task.getAssignedTo() != null ? task.getAssignedTo().getFullName() : "None";
             String assigneeName = assignee != null ? assignee.getFullName() : "Не назначен";
             logActivity(task, user, "Назначил исполнителя: " + assigneeName);
+            auditService.logAction("UPDATE_ASSIGNEE", "Task", task.getId(), "Assignee changed from " + oldAssigneeName + " to " + assigneeName);
         }
         task.setAssignedTo(assignee);
         Task savedTask = taskRepository.save(task);
@@ -237,6 +252,7 @@ public class TaskService {
 
         for (TaskDto dto : request.updates()) {
             Task task;
+            boolean isNew = false;
             if (dto.id() != null && dto.id() > 1000000000000L) {
                 // Создаем новую задачу, так как ID сгенерирован на фронтенде
                 User client = user; // fallback
@@ -248,9 +264,35 @@ public class TaskService {
                 if (dto.priority() != null) task.setPriority(dto.priority());
                 if (dto.status() != null) task.setStatus(dto.status());
                 task = taskRepository.save(task);
+                isNew = true;
+                auditService.logAction("CREATE", "Task", task.getId(), "Task created via batch: " + task.getTitle());
             } else {
                 task = getTaskEntity(dto.id());
                 accessService.assertCanUpdateTaskDetails(user, task);
+            }
+
+            StringBuilder changes = new StringBuilder();
+            if (!isNew) {
+                if (dto.status() != null && dto.status() != task.getStatus()) {
+                    changes.append("Status changed from ").append(task.getStatus()).append(" to ").append(dto.status()).append("; ");
+                }
+                if (dto.priority() != null && dto.priority() != task.getPriority()) {
+                    changes.append("Priority changed from ").append(task.getPriority()).append(" to ").append(dto.priority()).append("; ");
+                }
+                if (dto.title() != null && !dto.title().equals(task.getTitle())) {
+                    changes.append("Title changed from '").append(task.getTitle()).append("' to '").append(dto.title()).append("'; ");
+                }
+                if (dto.description() != null && !dto.description().equals(task.getDescription())) {
+                    changes.append("Description changed; ");
+                }
+                if (dto.dueDate() != null && !dto.dueDate().equals(task.getDueDate())) {
+                    changes.append("Due date changed from ").append(task.getDueDate()).append(" to ").append(dto.dueDate()).append("; ");
+                }
+                if (dto.assignedToId() != null) {
+                    if (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(dto.assignedToId())) {
+                        changes.append("Assignee changed; ");
+                    }
+                }
             }
 
             if (dto.status() != null && dto.status() != task.getStatus()) {
@@ -357,9 +399,9 @@ public class TaskService {
                 task.setTags(dto.tags());
             }
 
-            // Логгируем просто факт пакетного обновления (если что-то реально менялось можно добавить сложную логику)
-            // Пока оставим без логирования каждой мелкой правки при batch-апдейте, 
-            // иначе лог будет заспамлен перетягиванием карточек.
+            if (changes.length() > 0) {
+                auditService.logAction("UPDATE", "Task", task.getId(), changes.toString());
+            }
 
             result.add(mapToDto(taskRepository.save(task)));
         }
@@ -400,6 +442,7 @@ public class TaskService {
     @Transactional
     public void deleteTask(Long taskId) {
         Task task = getTaskEntity(taskId);
+        auditService.logAction("DELETE", "Task", task.getId(), "Task deleted: " + task.getTitle());
         taskRepository.delete(task);
     }
 

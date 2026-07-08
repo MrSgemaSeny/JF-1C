@@ -18,6 +18,9 @@ import {
   CalendarDays,
   X,
   BookOpen,
+  CreditCard,
+  RefreshCw,
+  History,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { API_BASE_URL } from '@/shared/api/http';
@@ -39,6 +42,9 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Services':            <Briefcase size={16} />,
   'Courses':             <BookOpen size={16} />,
   'Learners':            <Users size={16} />,
+  'Invoices':            <CreditCard size={16} />,
+  'Subscriptions':       <RefreshCw size={16} />,
+  'Audit Logs':          <History size={16} />,
   'Settings':            <Settings size={16} />,
   'Notifications':       <Bell size={16} />,
 };

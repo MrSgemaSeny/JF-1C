@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Счет на оплату</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.4;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-table td {
+            padding: 6px;
+            vertical-align: top;
+        }
+        .info-table .label {
+            font-weight: bold;
+            width: 150px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .items-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .items-table .num-col {
+            text-align: right;
+        }
+        .total-section {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        .total-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .total-table td {
+            padding: 6px;
+        }
+        .total-table .bold {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .signatures {
+            margin-top: 80px;
+            width: 100%;
+        }
+        .signatures td {
+            width: 50%;
+            padding-top: 50px;
+            border-top: 1px solid #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Счет на оплату № <span th:text="${invoice.id}">000</span></h1>
+        <div>от <span th:text="${#temporals.format(invoice.createdAt, 'dd.MM.yyyy')}">01.01.2026</span> г.</div>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td class="label">Поставщик:</td>
+            <td><strong>ТОО "Zhan Finance"</strong><br/>БИН: 123456789012, г. Алматы, ул. Абая, 10</td>
+        </tr>
+        <tr>
+            <td class="label">Покупатель:</td>
+            <td>
+                <strong th:text="${invoice.user.username}">Имя Клиента</strong><br/>
+                <span>Email: </span><span th:text="${invoice.user.email}">client@email.com</span>
+            </td>
+        </tr>
+    </table>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">№</th>
+                <th>Наименование услуги</th>
+                <th style="width: 100px;" class="num-col">Сумма (Тенге)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td th:text="${invoice.title}">Абонентское бухгалтерское обслуживание</td>
+                <td class="num-col" th:text="${#numbers.formatDecimal(invoice.amount, 1, 'WHITESPACE', 2, 'POINT')}">10 000.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        <table class="total-table">
+            <tr>
+                <td class="bold">Итого к оплате:</td>
+                <td class="bold num-col" th:text="${#numbers.formatDecimal(invoice.amount, 1, 'WHITESPACE', 2, 'POINT')} + ' тг.'">10 000.00 тг.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <table class="signatures" style="margin-top: 100px;">
+        <tr>
+            <td style="border-top: 1px solid #333; width: 45%;">Выписал (ТОО "Zhan Finance")</td>
+            <td style="width: 10%; border: none;"></td>
+            <td style="border-top: 1px solid #333; width: 45%;">Получил (Покупатель)</td>
+        </tr>
+    </table>
+</body>
+</html>

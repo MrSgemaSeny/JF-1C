@@ -19,6 +19,9 @@ export const ROUTES = {
   ADMIN_COURSES_EDIT: '/admin/courses/:id/edit',
   ADMIN_LESSON_EDIT: '/admin/courses/:courseId/lessons/:lessonId/edit',
   ADMIN_LEARNERS: '/admin/learners',
+  ADMIN_INVOICES: '/admin/invoices',
+  ADMIN_SUBSCRIPTIONS: '/admin/subscriptions',
+  ADMIN_AUDIT_LOGS: '/admin/audit-logs',
 
   // Shared Dashboard Routes
   SETTINGS: '/settings',

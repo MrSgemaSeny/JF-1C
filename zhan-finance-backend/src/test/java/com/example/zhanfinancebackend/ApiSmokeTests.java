@@ -30,9 +30,9 @@ class ApiSmokeTests {
     private ObjectMapper objectMapper;
 
     @Test
-    void swaggerAndPublicContactRequestAreAvailable() throws Exception {
+    void publicContactRequestIsAvailable() throws Exception {
         mockMvc.perform(get("/v3/api-docs"))
-                .andExpect(status().isOk());
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(post("/api/contact-requests")
                         .contentType(MediaType.APPLICATION_JSON)
