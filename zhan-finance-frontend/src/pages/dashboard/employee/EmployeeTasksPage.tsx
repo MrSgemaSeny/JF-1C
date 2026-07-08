@@ -1,24 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
-import { getTasks, batchUpdateTasks } from '@/entities/task/api/taskApi';
+import { useEffect, useRef } from 'react';
+import { useTasksQuery, useBatchUpdateTasksMutation } from '@/entities/task/api/taskQueries';
 import type { TaskDto } from '@/entities/task/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
 import { TaskGridBoard, type TaskGridBoardRef } from '@/widgets/task-board/TaskGridBoard';
 import { Empty } from '@/shared/ui/Empty';
+import { Spinner } from '@/shared/ui/Spinner';
 import { Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 
 export function EmployeeTasksPage() {
   const { user } = useAuth();
-  const [tasks, setTasks] = useState<TaskDto[]>([]);
+  const { data: tasks = [], isLoading } = useTasksQuery({ assignedToId: user?.userId }, !!user?.userId);
+  const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
   const boardRef = useRef<TaskGridBoardRef>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const taskIdParam = searchParams.get('taskId');
-
-  useEffect(() => {
-    if (user?.userId) {
-      loadTasks();
-    }
-  }, [user?.userId]);
 
   useEffect(() => {
     if (taskIdParam && tasks.length > 0 && boardRef.current) {
@@ -27,20 +23,9 @@ export function EmployeeTasksPage() {
     }
   }, [taskIdParam, tasks, setSearchParams]);
 
-  const loadTasks = () => {
-    if (user?.userId) {
-      getTasks({ assignedToId: user.userId }).then(data => {
-        setTasks(data);
-      }).catch(e => {
-        console.error("Failed to load tasks", e);
-      });
-    }
-  };
-
   const handleBatchSave = async (allTasks: TaskDto[]) => {
     try {
-      await batchUpdateTasks(allTasks);
-      loadTasks(); 
+      await batchUpdate(allTasks);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to update tasks');
     }

@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
-import { getTasks, batchUpdateTasks } from '@/entities/task/api/taskApi';
-import { useApiData } from '@/shared/hooks/useApiData';
+import { useEffect, useRef } from 'react';
+import { useTasksQuery, useBatchUpdateTasksMutation } from '@/entities/task/api/taskQueries';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
 import type { TaskDto } from '@/entities/task/model/types';
@@ -9,7 +8,8 @@ import { Plus, Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 
 export function AdminTasksPage() {
-  const { data: tasks, isLoading, error, refetch: fetchTasks } = useApiData(getTasks);
+  const { data: tasks, isLoading, error } = useTasksQuery();
+  const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
   const boardRef = useRef<TaskGridBoardRef>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const taskIdParam = searchParams.get('taskId');
@@ -25,8 +25,7 @@ export function AdminTasksPage() {
 
   const handleBatchSave = async (allTasks: TaskDto[]) => {
     try {
-      await batchUpdateTasks(allTasks);
-      fetchTasks();
+      await batchUpdate(allTasks);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to update tasks');
     }

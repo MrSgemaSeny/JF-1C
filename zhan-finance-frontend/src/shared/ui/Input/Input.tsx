@@ -38,7 +38,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {(label || maxLength) && (
           <div className="flex items-center justify-between">
             {label && (
-              <label className="text-sm font-semibold text-brand-green/90">
+              <label htmlFor={props.id} className="text-sm font-semibold text-brand-green/90">
                 {label}
                 {required && <span className="text-red-500 ml-1">*</span>}
               </label>

@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
-import { useQuery } from '@tanstack/react-query';
-import { getTask } from '@/entities/task/api/taskApi';
+import { useTaskQuery } from '@/entities/task/api/taskQueries';
 import { useAuth } from '@/features/auth/AuthContext';
 import type { TaskDto } from '@/entities/task/model/types';
 
@@ -11,11 +10,7 @@ export function TaskDetailsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { data: task, isLoading, error, refetch } = useQuery({
-    queryKey: ['task', id],
-    queryFn: () => getTask(Number(id)),
-    enabled: !!id,
-  });
+  const { data: task, isLoading, error, refetch } = useTaskQuery(Number(id), !!id);
 
   if (!id) return null;
 

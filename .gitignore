@@ -41,3 +41,10 @@ zhan-finance-backend/uploads/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Archives and Logs
+*.zip
+*logs*.txt
+test-*.json
+fly_logs*
+prod_logs*
