@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Phone, Mail, MessageCircle } from 'lucide-react';
 import type { TaskDto } from '@/entities/task/model/types';
 import type { EmployeeDto } from '@/entities/employee/model/types';
+import { getSecureImageUrl } from '@/shared/api/http';
 
 interface TaskKanbanCardProps {
   task: TaskDto;
@@ -148,12 +149,23 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
         <div className="flex items-center gap-2">
           <span className="text-[12px] text-gray-400">{dateStr}</span>
           {task.assignedTo && (
-            <div 
-              className="w-5 h-5 rounded-full bg-brand-accent text-white flex items-center justify-center text-[10px] font-bold"
-              title={task.assignedTo.fullName}
-            >
-              {task.assignedTo.fullName.charAt(0).toUpperCase()}
-            </div>
+            <>
+              {task.assignedTo.avatarUrl ? (
+                <img 
+                  src={getSecureImageUrl(task.assignedTo.avatarUrl)}
+                  alt={task.assignedTo.fullName}
+                  className="w-5 h-5 rounded-full object-cover"
+                  title={task.assignedTo.fullName}
+                />
+              ) : (
+                <div 
+                  className="w-5 h-5 rounded-full bg-brand-accent text-white flex items-center justify-center text-[10px] font-bold"
+                  title={task.assignedTo.fullName}
+                >
+                  {task.assignedTo.fullName.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -40,6 +40,7 @@ export interface EmployeeInfoDto {
   id: number;
   fullName: string;
   email: string;
+  avatarUrl?: string;
 }
 
 export type SubtaskStatus = 'NEW' | 'IN_PROGRESS' | 'DONE';

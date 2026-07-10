@@ -410,7 +410,7 @@ public class TaskService {
 
     private EmployeeInfoDto mapUserToEmployeeInfoDto(User user) {
         if (user == null) return null;
-        return new EmployeeInfoDto(user.getId(), user.getFullName(), user.getEmail());
+        return new EmployeeInfoDto(user.getId(), user.getFullName(), user.getEmail(), user.getAvatarUrl());
     }
 
     private TaskCommentDto mapCommentToDto(TaskComment comment) {
