@@ -128,8 +128,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
       if (refreshedToken) {
         return await rawRequest<T>(path, init, refreshedToken);
       } else {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('zhan_finance_auth');
         toast.warning('Session expired, please login again', { duration: 5000 });
         window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;
@@ -206,8 +205,7 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
       if (refreshedToken) {
         return await rawDownload(path, init, refreshedToken);
       } else {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('zhan_finance_auth');
         toast.warning('Session expired, please login again', { duration: 5000 });
         window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;

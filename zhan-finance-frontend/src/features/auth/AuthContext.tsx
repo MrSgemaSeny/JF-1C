@@ -69,8 +69,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  // Configure HTTP client with current token and refresh logic
-  useEffect(() => {
+  // Configure HTTP client with current token and refresh logic synchronously
+  useMemo(() => {
     configureAuth(
       () => user?.accessToken ?? null,
       async () => {
