@@ -22,7 +22,7 @@ public class Pipeline extends BaseEntity {
     @OrderBy("orderIndex ASC")
     private List<Stage> stages = new ArrayList<>();
 
-    protected Pipeline() {}
+    public Pipeline() {}
 
     public Pipeline(String name) {
         this.name = name;

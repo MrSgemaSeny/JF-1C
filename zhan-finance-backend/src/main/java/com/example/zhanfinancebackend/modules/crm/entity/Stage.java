@@ -19,7 +19,7 @@ public class Stage extends BaseEntity {
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
 
-    @Column(length = 7)
+    @Column(length = 64)
     private String color;
 
     @Enumerated(EnumType.STRING)
@@ -29,7 +29,7 @@ public class Stage extends BaseEntity {
     @Column(name = "is_default", nullable = false)
     private boolean isDefault = false;
 
-    protected Stage() {}
+    public Stage() {}
 
     public Stage(Pipeline pipeline, String name, Integer orderIndex, String color, StageType type) {
         this.pipeline = pipeline;

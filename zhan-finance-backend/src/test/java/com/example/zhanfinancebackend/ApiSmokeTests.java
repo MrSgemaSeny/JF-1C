@@ -208,6 +208,18 @@ class ApiSmokeTests {
                         .header("Authorization", "Bearer " + clientToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("Need help with integration"));
+
+        // Employee can fetch pipelines
+        JsonNode empAuth = register("employee_smoke@example.com");
+        String empToken = empAuth.get("accessToken").asText();
+
+        mockMvc.perform(get("/api/crm/pipelines")
+                        .header("Authorization", "Bearer " + empToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].name").isNotEmpty())
+                .andExpect(jsonPath("$.data[0].stages").isArray())
+                .andExpect(jsonPath("$.data[0].stages[0].name").isNotEmpty());
     }
 
     @Test
