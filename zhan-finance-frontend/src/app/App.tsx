@@ -11,6 +11,7 @@ const LoginPage = lazy(() => import('@/pages/auth/login/LoginPage').then(m => ({
 const RegisterPage = lazy(() => import('@/pages/auth/register/RegisterPage').then(m => ({ default: m.RegisterPage })));
 import { AuthProvider } from '@/features/auth/AuthContext';
 import { NotificationProvider } from '@/features/notifications/NotificationContext';
+import { ChatNotificationProvider } from '@/features/chat/ChatNotificationContext';
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
 import { RoleProtectedRoute } from '@/features/auth/RoleProtectedRoute';
 import { DashboardLayout } from '@/widgets/dashboard-shell/DashboardLayout';
@@ -69,6 +70,7 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <NotificationProvider>
+          <ChatNotificationProvider>
           <BrowserRouter basename={routerBasename}>
           <ScrollToTop />
           <ErrorBoundary>
@@ -150,6 +152,7 @@ export function App() {
           </Suspense>
           </ErrorBoundary>
         </BrowserRouter>
+        </ChatNotificationProvider>
       </NotificationProvider>
     </AuthProvider>
     </QueryClientProvider>

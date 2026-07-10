@@ -106,7 +106,13 @@ public class GlobalSearchService {
 
     private List<LessonDto> searchLessons(User user, String query) {
         return lessonRepository.searchLessons(query).stream()
-            .filter(l -> user.getRole() == Role.ADMIN || (l.getCourse() != null && l.getCourse().isPublished()))
+            .filter(l -> {
+                if (user.getRole() == Role.ADMIN) return true;
+                if (l.getChapter() != null && l.getChapter().getCourse() != null) {
+                    return l.getChapter().getCourse().getStatus() == com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED;
+                }
+                return false;
+            })
             .map(this::mapToLessonDto)
             .collect(Collectors.toList());
     }
@@ -117,7 +123,7 @@ public class GlobalSearchService {
         dto.setTitle(c.getTitle());
         dto.setDescription(c.getDescription());
         dto.setThumbnail(c.getThumbnail());
-        dto.setPublished(c.isPublished());
+        dto.setStatus(c.getStatus());
         if (c.getCreatedAt() != null) {
             dto.setCreatedAt(java.time.LocalDateTime.ofInstant(c.getCreatedAt(), java.time.ZoneId.systemDefault()));
         }
@@ -128,7 +134,7 @@ public class GlobalSearchService {
     private LessonDto mapToLessonDto(Lesson l) {
         LessonDto dto = new LessonDto();
         dto.setId(l.getId());
-        if (l.getCourse() != null) dto.setSectionId(l.getCourse().getId());
+        if (l.getChapter() != null) dto.setChapterId(l.getChapter().getId());
         dto.setTitle(l.getTitle());
         dto.setDescription(l.getDescription());
         dto.setType(l.getType());

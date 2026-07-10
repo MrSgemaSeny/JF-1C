@@ -9,9 +9,10 @@ interface TaskKanbanCardProps {
   task: TaskDto;
   onClick: () => void;
   userRole: string;
+  onOpenChat?: (clientId: number, clientName: string) => void;
 }
 
-export function TaskKanbanCard({ task, onClick, userRole }: TaskKanbanCardProps) {
+export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -67,22 +68,75 @@ export function TaskKanbanCard({ task, onClick, userRole }: TaskKanbanCardProps)
         <span className="text-[13px] text-gray-500">
           {amountStr} {currencyStr}
         </span>
-        <div className="flex gap-1.5 text-blue-400">
-          <Phone size={14} />
-          <Mail size={14} />
-          <MessageCircle size={14} className="text-gray-300" />
+        <div className="flex gap-1.5">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (task.client?.phone) {
+                window.open(`tel:${task.client.phone}`);
+              }
+            }}
+            className={`p-0.5 rounded transition-colors ${
+              task.client?.phone
+                ? 'text-blue-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
+                : 'text-gray-300 cursor-default'
+            }`}
+            title={task.client?.phone ? `Позвонить: ${task.client.phone}` : 'Телефон не указан'}
+          >
+            <Phone size={14} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (task.client?.email) {
+                window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(task.client.email)}`, '_blank');
+              }
+            }}
+            className={`p-0.5 rounded transition-colors ${
+              task.client?.email
+                ? 'text-blue-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
+                : 'text-gray-300 cursor-default'
+            }`}
+            title={task.client?.email ? `Написать: ${task.client.email}` : 'Email не указан'}
+          >
+            <Mail size={14} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (task.client && onOpenChat) {
+                onOpenChat(task.client.id, task.client.fullName);
+              }
+            }}
+            className={`p-0.5 rounded transition-colors ${
+              task.client && onOpenChat
+                ? 'text-blue-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
+                : 'text-gray-300 cursor-default'
+            }`}
+            title={task.client ? `Чат с ${task.client.fullName}` : 'Клиент не указан'}
+          >
+            <MessageCircle size={14} />
+          </button>
         </div>
       </div>
 
       {/* Client Name */}
       {task.client && (
-        <span className="text-[13px] text-blue-600 hover:underline">
+        <span
+          className="text-[13px] text-blue-600 hover:underline cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onOpenChat) {
+              onOpenChat(task.client!.id, task.client!.fullName);
+            }
+          }}
+        >
           {task.client.fullName}
         </span>
       )}
       {!task.client && (
-        <span className="text-[13px] text-blue-600 hover:underline">
-          Без имени
+        <span className="text-[13px] text-gray-400">
+          Без клиента
         </span>
       )}
 

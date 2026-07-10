@@ -44,39 +44,7 @@ public class LearnerCourseController {
 
     @GetMapping("/lessons/{id}/file")
     public ResponseEntity<org.springframework.core.io.support.ResourceRegion> streamLessonFile(@PathVariable Long id, @RequestHeader HttpHeaders headers) throws IOException {
-        Lesson lesson = lessonService.getLessonById(id);
-        if (!lesson.getCourse().isPublished()) {
-            return ResponseEntity.status(403).build();
-        }
-        if (lesson.getFilePath() == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Resource resource = storageService.loadAsResource(lesson.getFilePath());
-        if (resource == null || !resource.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        long fileLength = resource.contentLength();
-        HttpRange range = headers.getRange().isEmpty() ? null : headers.getRange().get(0);
-
-        long start = 0;
-        long end = fileLength - 1;
-        long rangeLength = fileLength;
-
-        if (range != null) {
-            start = range.getRangeStart(fileLength);
-            end = range.getRangeEnd(fileLength);
-            rangeLength = end - start + 1;
-        }
-
-        org.springframework.core.io.support.ResourceRegion region = new org.springframework.core.io.support.ResourceRegion(resource, start, rangeLength);
-
-        return ResponseEntity.status(range != null ? 206 : 200)
-                .contentType(MediaType.parseMediaType(lesson.getContentType() != null ? lesson.getContentType() : "application/octet-stream"))
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(rangeLength))
-                .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileLength)
-                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
-                .body(region);
+        // TODO: Phase 2 - Implement file streaming from LessonBlock
+        return ResponseEntity.notFound().build();
     }
 }

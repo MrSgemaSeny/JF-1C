@@ -32,6 +32,7 @@ export interface ClientInfoDto {
   id: number;
   fullName: string;
   email: string;
+  phone?: string;
   companyName?: string;
 }
 

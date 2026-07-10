@@ -1,0 +1,62 @@
+package com.example.zhanfinancebackend.modules.courses.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DatabaseMigrationRunner {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void runMigration() {
+        try {
+            // Check if chapters table exists and is empty
+            Integer chaptersCount = jdbcTemplate.queryForObject("SELECT count(*) FROM chapters", Integer.class);
+            if (chaptersCount != null && chaptersCount == 0) {
+                System.out.println("Executing manual data migration for Courses Phase 1...");
+                
+                // 1. Create a default chapter for each existing course
+                jdbcTemplate.execute("INSERT INTO chapters (course_id, title, order_index, created_at, updated_at) " +
+                                     "SELECT DISTINCT id, 'Основной модуль', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP FROM courses");
+                
+                // 2. Link existing lessons to the newly created chapters
+                // using course_id from lessons, but wait, course_id is not dropped because Hibernate ddl-auto update doesn't drop!
+                try {
+                    jdbcTemplate.execute("UPDATE lessons SET chapter_id = (SELECT c.id FROM chapters c WHERE c.course_id = lessons.course_id LIMIT 1) WHERE chapter_id IS NULL");
+                } catch (Exception e) {
+                    System.err.println("Could not update chapter_id using course_id (maybe it was dropped or data missing): " + e.getMessage());
+                }
+                
+                // 3. Migrate old lesson content/file to lesson_blocks
+                try {
+                    jdbcTemplate.execute("INSERT INTO lesson_blocks (lesson_id, type, order_index, content, created_at, updated_at) " +
+                            "SELECT id, " +
+                            "       CASE " +
+                            "           WHEN type = 'VIDEO' THEN 'VIDEO' " +
+                            "           WHEN type = 'DOCUMENT' THEN 'FILE' " +
+                            "           ELSE 'TEXT' " +
+                            "       END, " +
+                            "       0, " +
+                            "       CASE " +
+                            "           WHEN file_path IS NOT NULL THEN CONCAT('{\"url\":\"', file_path, '\", \"name\":\"', COALESCE(file_name, 'file'), '\"}') " +
+                            "           ELSE content " +
+                            "       END, " +
+                            "       CURRENT_TIMESTAMP, CURRENT_TIMESTAMP " +
+                            "FROM lessons " +
+                            "WHERE (file_path IS NOT NULL OR content IS NOT NULL) AND id NOT IN (SELECT lesson_id FROM lesson_blocks)");
+                } catch (Exception e) {
+                     System.err.println("Could not migrate lesson_blocks: " + e.getMessage());
+                }
+
+                System.out.println("Manual data migration completed successfully!");
+            }
+        } catch (Exception e) {
+            System.err.println("Manual data migration skipped or failed: " + e.getMessage());
+        }
+    }
+}

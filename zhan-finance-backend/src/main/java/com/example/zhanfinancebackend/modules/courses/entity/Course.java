@@ -26,9 +26,9 @@ public class Course extends BaseEntity {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-    @JsonProperty("isPublished")
-    @Column(name = "is_published", nullable = false)
-    private boolean isPublished = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32, columnDefinition = "VARCHAR(32) DEFAULT 'DRAFT'")
+    private CourseStatus status = CourseStatus.DRAFT;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,5 +37,5 @@ public class Course extends BaseEntity {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
-    private List<Lesson> lessons = new ArrayList<>();
+    private List<Chapter> chapters = new ArrayList<>();
 }

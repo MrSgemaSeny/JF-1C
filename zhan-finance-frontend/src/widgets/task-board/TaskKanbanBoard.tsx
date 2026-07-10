@@ -1,4 +1,4 @@
-import React, { useMemo, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, useCallback } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -20,6 +20,7 @@ import { useUpdateTaskStage } from '@/entities/task/api/taskQueries';
 import { Spinner } from '@/shared/ui/Spinner';
 import { getTask } from '@/entities/task/api/taskApi';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
+import { ChatDrawer } from '@/widgets/chat/ChatDrawer';
 
 interface TaskKanbanBoardProps {
   initialTasks: TaskDto[];
@@ -32,9 +33,11 @@ export interface TaskKanbanBoardRef {
 }
 
 export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardProps>(({ initialTasks, userRole }, ref) => {
-  const [tasks, setTasks] = useState<TaskDto[]>(initialTasks);
+  const [columns, setColumns] = useState<Record<string, TaskDto[]>>({});
   const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
   const [selectedTaskForModal, setSelectedTaskForModal] = useState<TaskDto | null>(null);
+  const [chatClientId, setChatClientId] = useState<number | null>(null);
+  const [chatClientName, setChatClientName] = useState<string>('');
 
   const { data: pipelines, isLoading: isLoadingPipelines } = usePipelinesQuery();
   const { mutateAsync: updateTaskStage } = useUpdateTaskStage();
@@ -42,13 +45,50 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   const pipeline = pipelines?.[0]; // Default to first pipeline for now
   const stages = pipeline?.stages || [];
 
+  // Sync state with initialTasks when NOT dragging
+  const isDragging = activeTask !== null;
+  useEffect(() => {
+    if (!stages.length || isDragging) return;
+
+    const nextCols: Record<string, TaskDto[]> = {};
+    stages.forEach(stage => {
+      nextCols[`stage-${stage.id}`] = [];
+    });
+    
+    if (stages.length > 0) {
+      const defaultStageKey = `stage-${stages[0].id}`;
+      initialTasks.forEach(task => {
+        const stageKey = task.stageId ? `stage-${task.stageId}` : task.stage?.id ? `stage-${task.stage.id}` : defaultStageKey;
+        if (nextCols[stageKey]) {
+          nextCols[stageKey].push(task);
+        } else {
+          nextCols[defaultStageKey].push(task);
+        }
+      });
+    }
+    setColumns(nextCols);
+  }, [stages, initialTasks, isDragging]);
+
   useImperativeHandle(ref, () => ({
     createNewTask: (task: TaskDto) => {
-      setTasks(prev => [task, ...prev]);
+      if (!stages.length) return;
+      const defaultStageKey = `stage-${stages[0].id}`;
+      const taskStageKey = task.stageId ? `stage-${task.stageId}` : defaultStageKey;
+      setColumns(prev => {
+        const next = { ...prev };
+        const key = next[taskStageKey] ? taskStageKey : defaultStageKey;
+        next[key] = [task, ...(next[key] || [])];
+        return next;
+      });
       setSelectedTaskForModal(task);
     },
     openTaskModal: async (taskId: number) => {
-      const existing = tasks.find(t => t.id === taskId);
+      let existing: TaskDto | undefined;
+      for (const col of Object.values(columns)) {
+        existing = col.find(t => t.id === taskId);
+        if (existing) break;
+      }
+      
       if (existing) {
         setSelectedTaskForModal(existing);
       } else {
@@ -74,95 +114,129 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     })
   );
 
-  const columns = useMemo(() => {
-    if (!stages.length) return [];
-    
-    // Create map of columns
-    const cols = stages.map(stage => ({
-      stage,
-      tasks: tasks.filter(t => t.stageId === stage.id || t.stage?.id === stage.id),
-    }));
-
-    // Tasks without stage go to first column
-    const noStageTasks = tasks.filter(t => !t.stageId && !t.stage);
-    if (noStageTasks.length > 0 && cols.length > 0) {
-      cols[0].tasks.push(...noStageTasks);
+  const findContainer = (id: string | number) => {
+    if (typeof id === 'string' && id.startsWith('stage-')) {
+      return id;
     }
-    
-    return cols;
-  }, [stages, tasks]);
+    for (const [key, tasks] of Object.entries(columns)) {
+      if (tasks.find(t => t.id === id)) {
+        return key;
+      }
+    }
+    return null;
+  };
+
+  const [activeTaskInitialStageId, setActiveTaskInitialStageId] = useState<number | null>(null);
 
   const onDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const task = tasks.find(t => t.id === active.id);
-    if (task) setActiveTask(task);
+    const container = findContainer(active.id);
+    if (container) {
+      const task = columns[container].find(t => t.id === active.id);
+      if (task) {
+        setActiveTask(task);
+        setActiveTaskInitialStageId(task.stageId || task.stage?.id || null);
+      }
+    }
   };
 
   const onDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
 
-    const activeId = active.id;
-    const overId = over.id;
+    const activeContainer = findContainer(active.id);
+    const overContainer = findContainer(over.id);
 
-    if (activeId === overId) return;
-
-    const isActiveTask = active.data.current?.type === 'Task';
-    const isOverTask = over.data.current?.type === 'Task';
-    const isOverColumn = over.data.current?.type === 'Column';
-
-    if (!isActiveTask) return;
-
-    // Dropping a Task over another Task
-    if (isActiveTask && isOverTask) {
-      setTasks(prev => {
-        const activeIndex = prev.findIndex(t => t.id === activeId);
-        const overIndex = prev.findIndex(t => t.id === overId);
-        
-        if (prev[activeIndex].stageId !== prev[overIndex].stageId) {
-          const newTasks = [...prev];
-          newTasks[activeIndex].stageId = prev[overIndex].stageId;
-          return arrayMove(newTasks, activeIndex, overIndex);
-        }
-        
-        return arrayMove(prev, activeIndex, overIndex);
-      });
+    if (!activeContainer || !overContainer || activeContainer === overContainer) {
+      return;
     }
 
-    // Dropping a Task over an empty Column
-    if (isActiveTask && isOverColumn) {
-      setTasks(prev => {
-        const activeIndex = prev.findIndex(t => t.id === activeId);
-        const newTasks = [...prev];
-        newTasks[activeIndex].stageId = overId as number;
-        return arrayMove(newTasks, activeIndex, activeIndex);
-      });
-    }
+    setColumns((prev) => {
+      const activeItems = prev[activeContainer];
+      const overItems = prev[overContainer];
+
+      const activeIndex = activeItems.findIndex(t => t.id === active.id);
+      const overIndex = over.id.toString().startsWith('stage-')
+        ? overItems.length
+        : overItems.findIndex(t => t.id === over.id);
+
+      const newActive = [...activeItems];
+      const newOver = [...overItems];
+      const [item] = newActive.splice(activeIndex, 1);
+      
+      // Optimitically update stageId so it renders correctly
+      const stageIdStr = overContainer.replace('stage-', '');
+      item.stageId = parseInt(stageIdStr, 10);
+      
+      newOver.splice(overIndex >= 0 ? overIndex : overItems.length, 0, item);
+
+      return {
+        ...prev,
+        [activeContainer]: newActive,
+        [overContainer]: newOver,
+      };
+    });
   };
 
   const onDragEnd = async (event: DragEndEvent) => {
-    setActiveTask(null);
     const { active, over } = event;
+    const currentActiveTask = activeTask;
+    setActiveTask(null);
+    
     if (!over) return;
 
-    const activeId = active.id;
-    
-    // Find task to check its new stage
-    const task = tasks.find(t => t.id === activeId);
+    const activeContainer = findContainer(active.id);
+    const overContainer = findContainer(over.id);
+
+    if (!activeContainer || !overContainer) return;
+
+    // Handle reordering within the same column
+    if (activeContainer === overContainer) {
+      const activeIndex = columns[activeContainer].findIndex(t => t.id === active.id);
+      const overIndex = columns[overContainer].findIndex(t => t.id === over.id);
+
+      if (activeIndex !== overIndex) {
+        setColumns(prev => ({
+          ...prev,
+          [activeContainer]: arrayMove(prev[activeContainer], activeIndex, overIndex)
+        }));
+      }
+    }
+
+    // Check if stage actually changed from its initial state
+    const task = columns[overContainer].find(t => t.id === active.id);
     if (task && task.stageId) {
-      // Find original task to see if stage changed
-      const originalTask = initialTasks.find(t => t.id === activeId);
-      const originalStageId = originalTask?.stageId || originalTask?.stage?.id;
-      
-      if (task.stageId !== originalStageId) {
+      if (task.stageId !== activeTaskInitialStageId) {
         try {
           await updateTaskStage({ id: task.id, stageId: task.stageId });
         } catch (e) {
           console.error("Failed to update task stage", e);
-          // Optional: Revert task back to original stage in UI
         }
       }
     }
+    setActiveTaskInitialStageId(null);
+  };
+
+  const handleUpdateTask = (updatedTask: TaskDto) => {
+    setColumns(prev => {
+      const next = { ...prev };
+      let found = false;
+      for (const key of Object.keys(next)) {
+        const idx = next[key].findIndex(t => t.id === updatedTask.id);
+        if (idx !== -1) {
+          next[key][idx] = updatedTask;
+          found = true;
+          // check if stage changed
+          const expectedKey = updatedTask.stageId ? `stage-${updatedTask.stageId}` : key;
+          if (expectedKey !== key && next[expectedKey]) {
+            next[key] = next[key].filter(t => t.id !== updatedTask.id);
+            next[expectedKey] = [updatedTask, ...next[expectedKey]];
+          }
+          break;
+        }
+      }
+      return next;
+    });
   };
 
   if (isLoadingPipelines) {
@@ -173,8 +247,9 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     return <div className="p-8 text-center text-gray-500">Воронки не настроены</div>;
   }
 
-  const handleUpdateTask = (updatedTask: TaskDto) => {
-    setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
+  const handleOpenChat = (clientId: number, clientName: string) => {
+    setChatClientId(clientId);
+    setChatClientName(clientName);
   };
 
   return (
@@ -187,13 +262,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
           onDragOver={onDragOver}
           onDragEnd={onDragEnd}
         >
-          {columns.map(col => (
+          {stages.map(stage => (
             <TaskKanbanColumn
-              key={col.stage.id}
-              stage={col.stage}
-              tasks={col.tasks}
+              key={stage.id}
+              stage={stage}
+              tasks={columns[`stage-${stage.id}`] || []}
               onTaskClick={(id) => ref && 'current' in ref && ref.current?.openTaskModal(id)}
               userRole={userRole}
+              onOpenChat={handleOpenChat}
             />
           ))}
 
@@ -216,6 +292,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
           userRole={userRole}
         />
       )}
+
+      <ChatDrawer
+        isOpen={chatClientId !== null}
+        onClose={() => setChatClientId(null)}
+        otherUserId={chatClientId}
+        otherUserName={chatClientName}
+      />
     </div>
   );
 });
+

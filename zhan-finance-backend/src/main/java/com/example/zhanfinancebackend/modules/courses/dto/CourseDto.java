@@ -11,8 +11,8 @@ public class CourseDto {
     private String title;
     private String description;
     private String thumbnail;
-    private boolean isPublished;
+    private com.example.zhanfinancebackend.modules.courses.entity.CourseStatus status;
     private Long createdById;
     private LocalDateTime createdAt;
-    private List<LessonDto> lessons = new ArrayList<>();
+    private List<ChapterDto> chapters = new ArrayList<>();
 }

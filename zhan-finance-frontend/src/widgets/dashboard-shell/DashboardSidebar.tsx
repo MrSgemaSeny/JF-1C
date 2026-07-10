@@ -24,6 +24,7 @@ import {
   User,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
+import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { API_BASE_URL, getSecureImageUrl } from '@/shared/api/http';
 import { twMerge } from 'tailwind-merge';
 
@@ -75,6 +76,7 @@ export function DashboardSidebar({
   const { user, logout } = useAuth();
   const location = useLocation();
   const { unreadCount } = useNotifications();
+  const { unreadChatCount } = useChatNotifications();
 
   if (!user) return null;
 
@@ -154,8 +156,14 @@ export function DashboardSidebar({
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}
+
+                    {item.label === 'Chat' && unreadChatCount > 0 && (
+                      <span className="flex items-center justify-center min-w-[20px] h-5 px-1 text-[10px] font-bold text-white bg-red-500 rounded-full shadow-sm shrink-0">
+                        {unreadChatCount > 99 ? '99+' : unreadChatCount}
+                      </span>
+                    )}
                     
-                    {isActive && item.label !== 'Notifications' && (
+                    {isActive && item.label !== 'Notifications' && item.label !== 'Chat' && (
                       <ChevronRight size={14} className="opacity-50 shrink-0" />
                     )}
                   </>
@@ -163,6 +171,9 @@ export function DashboardSidebar({
 
                 {/* Always show dot indicator if collapsed and has notifications */}
                 {isDesktopCollapsed && item.label === 'Notifications' && unreadCount > 0 && (
+                  <span className="absolute top-2.5 right-2 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+                {isDesktopCollapsed && item.label === 'Chat' && unreadChatCount > 0 && (
                   <span className="absolute top-2.5 right-2 w-2 h-2 bg-red-500 rounded-full" />
                 )}
               </Link>

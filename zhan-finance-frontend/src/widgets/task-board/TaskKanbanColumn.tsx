@@ -13,11 +13,12 @@ interface TaskKanbanColumnProps {
   tasks: TaskDto[];
   onTaskClick: (taskId: number) => void;
   userRole: string;
+  onOpenChat?: (clientId: number, clientName: string) => void;
 }
 
-export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole }: TaskKanbanColumnProps) {
+export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenChat }: TaskKanbanColumnProps) {
   const { setNodeRef } = useDroppable({
-    id: stage.id,
+    id: `stage-${stage.id}`,
     data: {
       type: 'Column',
       stage,
@@ -77,7 +78,8 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole }: TaskKa
               key={task.id} 
               task={task} 
               onClick={() => onTaskClick(task.id)} 
-              userRole={userRole} 
+              userRole={userRole}
+              onOpenChat={onOpenChat}
             />
           ))}
         </SortableContext>

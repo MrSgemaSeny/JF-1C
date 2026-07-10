@@ -26,7 +26,7 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public List<Course> getPublishedCourses() {
-        List<Course> courses = courseRepository.findAllByIsPublishedTrue();
+        List<Course> courses = courseRepository.findAllByStatus(com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED);
         courses.forEach(this::initializeCourse);
         return courses;
     }
@@ -43,7 +43,7 @@ public class CourseService {
     @Transactional(readOnly = true)
     public Course getPublishedCourseById(Long id) {
         Course course = getCourseById(id);
-        if (!course.isPublished()) {
+        if (course.getStatus() != com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.FORBIDDEN, "Course is not published");
         }
@@ -51,8 +51,8 @@ public class CourseService {
     }
 
     private void initializeCourse(Course course) {
-        if (course.getLessons() != null) {
-            course.getLessons().size();
+        if (course.getChapters() != null) {
+            course.getChapters().size();
         }
     }
 
@@ -62,7 +62,7 @@ public class CourseService {
         course.setTitle(title);
         course.setDescription(description);
         course.setThumbnail(thumbnail);
-        course.setPublished(isPublished);
+        course.setStatus(isPublished ? com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED : com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.DRAFT);
         course.setCreatedBy(admin);
         course = courseRepository.save(course);
         initializeCourse(course);
@@ -75,7 +75,7 @@ public class CourseService {
         if (title != null) course.setTitle(title);
         if (description != null) course.setDescription(description);
         if (thumbnail != null) course.setThumbnail(thumbnail);
-        course.setPublished(isPublished);
+        course.setStatus(isPublished ? com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED : com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.DRAFT);
         return courseRepository.save(course);
     }
 

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { X, Send, User } from 'lucide-react';
 import { getChatHistory, sendChatMessage, markChatAsRead, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -15,6 +16,7 @@ interface ChatDrawerProps {
 
 export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: ChatDrawerProps) {
   const { user } = useAuth();
+  const { refreshUnreadChatCount } = useChatNotifications();
   const [messages, setMessages] = useState<ChatMessageDto[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +35,9 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
   useEffect(() => {
     if (isOpen && otherUserId) {
       loadInitialHistory();
-      markChatAsRead(otherUserId).catch(console.error);
+      markChatAsRead(otherUserId)
+        .then(() => refreshUnreadChatCount())
+        .catch(console.error);
     } else {
       setMessages([]);
       lastMessageIdRef.current = 0;
@@ -49,7 +53,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
     
     if (isOpen && otherUserId && user) {
       // 1. Setup Stomp client
-      const token = localStorage.getItem('token');
+      const token = user.accessToken;
       stompClient = new Client({
         webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws?token=${token}`),
         connectHeaders: {
@@ -73,7 +77,9 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
                  if (chatMessage.id > lastMessageIdRef.current) {
                    lastMessageIdRef.current = chatMessage.id;
                  }
-                 markChatAsRead(otherUserId).catch(console.error);
+                 markChatAsRead(otherUserId)
+                   .then(() => refreshUnreadChatCount())
+                   .catch(console.error);
               }
             }
           });

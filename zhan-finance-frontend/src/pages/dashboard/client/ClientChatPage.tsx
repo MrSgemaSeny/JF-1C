@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Send, User, Search, UserCheck, Shield, MessageCircle, Trash2, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getChatContacts, getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, ChatContactDto, ChatMessageDto } from '@/entities/chat/api/chatApi';
+import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getSecureImageUrl } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -11,6 +12,7 @@ import { twMerge } from 'tailwind-merge';
 
 export function ClientChatPage() {
   const { user } = useAuth();
+  const { refreshUnreadChatCount } = useChatNotifications();
   
   // Contacts state
   const [contacts, setContacts] = useState<ChatContactDto[]>([]);
@@ -53,7 +55,9 @@ export function ClientChatPage() {
       setMessages([]);
       lastMessageIdRef.current = 0;
       loadChatHistory(selectedContact.id);
-      markChatAsRead(selectedContact.id).catch(console.error);
+      markChatAsRead(selectedContact.id)
+        .then(() => refreshUnreadChatCount())
+        .catch(console.error);
       setContacts(prev => prev.map(c => c.id === selectedContact.id ? { ...c, unreadCount: 0 } : c));
     }
   }, [selectedContact?.id]);
@@ -125,7 +129,9 @@ export function ClientChatPage() {
                  if (chatMessage.id > lastMessageIdRef.current) {
                    lastMessageIdRef.current = chatMessage.id;
                  }
-                 markChatAsRead(selectedContactIdRef.current).catch(console.error);
+                 markChatAsRead(selectedContactIdRef.current)
+                   .then(() => refreshUnreadChatCount())
+                   .catch(console.error);
               }
             }
           });

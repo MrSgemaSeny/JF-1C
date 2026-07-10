@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "lessons")
@@ -15,8 +17,8 @@ public class Lesson extends BaseEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
+    @JoinColumn(name = "chapter_id")
+    private Chapter chapter;
 
     @Column(nullable = false)
     private String title;
@@ -24,25 +26,20 @@ public class Lesson extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private LessonType type;
 
-    @Column(name = "file_path")
-    private String filePath;
-
-    @Column(name = "file_name")
-    private String fileName;
-
-    @Column(name = "content_type", length = 100)
-    private String contentType;
-
-    @Column(name = "file_size")
-    private Long fileSize;
-
     @Column(name = "order_index", nullable = false)
     private int orderIndex = 0;
+
+    @Column(name = "duration_minutes")
+    private int durationMinutes = 0;
+
+    @Column(name = "is_preview", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isPreview = false;
+
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderIndex ASC")
+    private List<LessonBlock> blocks = new ArrayList<>();
 }

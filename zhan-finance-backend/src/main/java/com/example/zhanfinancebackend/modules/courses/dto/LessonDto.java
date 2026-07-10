@@ -6,13 +6,12 @@ import lombok.Data;
 @Data
 public class LessonDto {
     private Long id;
-    private Long sectionId;
+    private Long chapterId;
     private String title;
     private String description;
-    private String content;
     private LessonType type;
-    private String fileName;
-    private String contentType;
-    private Long fileSize;
     private int orderIndex;
+    private int durationMinutes;
+    private boolean isPreview;
+    private java.util.List<LessonBlockDto> blocks = new java.util.ArrayList<>();
 }

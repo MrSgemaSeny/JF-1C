@@ -14,12 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class LessonService {
 
     private final LessonRepository lessonRepository;
-    private final CourseRepository courseRepository;
+    private final com.example.zhanfinancebackend.modules.courses.repository.ChapterRepository chapterRepository;
     private final StorageService storageService;
 
-    public LessonService(LessonRepository lessonRepository, CourseRepository courseRepository, StorageService storageService) {
+    public LessonService(LessonRepository lessonRepository, com.example.zhanfinancebackend.modules.courses.repository.ChapterRepository chapterRepository, StorageService storageService) {
         this.lessonRepository = lessonRepository;
-        this.courseRepository = courseRepository;
+        this.chapterRepository = chapterRepository;
         this.storageService = storageService;
     }
 
@@ -30,27 +30,23 @@ public class LessonService {
     }
 
     @Transactional
-    public Lesson createLesson(Long courseId, String title, String description, LessonType type, int orderIndex, MultipartFile file) {
-        Course course = courseRepository.findById(courseId)
+    public Lesson createLesson(Long chapterId, String title, String description, LessonType type, int orderIndex, MultipartFile file) {
+        com.example.zhanfinancebackend.modules.courses.entity.Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Chapter not found"));
 
         Lesson lesson = new Lesson();
-        lesson.setCourse(course);
+        lesson.setChapter(chapter);
         lesson.setTitle(title);
         lesson.setDescription(description);
         lesson.setType(type);
         lesson.setOrderIndex(orderIndex);
 
         if (file != null && !file.isEmpty()) {
-            String filePath = storageService.store(file);
-            lesson.setFilePath(filePath);
-            lesson.setFileName(file.getOriginalFilename());
-            lesson.setContentType(file.getContentType());
-            lesson.setFileSize(file.getSize());
+            // TODO: Phase 2 - Implement LessonBlock upload
         }
 
-        course.getLessons().add(lesson);
+        chapter.getLessons().add(lesson);
         return lessonRepository.save(lesson);
     }
 
@@ -59,18 +55,10 @@ public class LessonService {
         Lesson lesson = getLessonById(id);
         if (title != null) lesson.setTitle(title);
         if (description != null) lesson.setDescription(description);
-        if (content != null) lesson.setContent(content);
         if (orderIndex != null) lesson.setOrderIndex(orderIndex);
 
         if (file != null && !file.isEmpty()) {
-            if (lesson.getFilePath() != null) {
-                storageService.delete(lesson.getFilePath());
-            }
-            String filePath = storageService.store(file);
-            lesson.setFilePath(filePath);
-            lesson.setFileName(file.getOriginalFilename());
-            lesson.setContentType(file.getContentType());
-            lesson.setFileSize(file.getSize());
+            // TODO: Phase 2 - Implement LessonBlock upload
         }
 
         return lessonRepository.save(lesson);
@@ -79,9 +67,7 @@ public class LessonService {
     @Transactional
     public void deleteLesson(Long id) {
         Lesson lesson = getLessonById(id);
-        if (lesson.getFilePath() != null) {
-            storageService.delete(lesson.getFilePath());
-        }
+        // TODO: Phase 2 - delete files from LessonBlocks
         lessonRepository.deleteById(id);
     }
 }
