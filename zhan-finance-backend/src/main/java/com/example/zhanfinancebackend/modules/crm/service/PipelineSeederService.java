@@ -1,0 +1,69 @@
+package com.example.zhanfinancebackend.modules.crm.service;
+
+import com.example.zhanfinancebackend.modules.crm.entity.Pipeline;
+import com.example.zhanfinancebackend.modules.crm.entity.Stage;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+import com.example.zhanfinancebackend.modules.crm.repository.PipelineRepository;
+import com.example.zhanfinancebackend.modules.crm.repository.StageRepository;
+import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class PipelineSeederService {
+
+    private final PipelineRepository pipelineRepository;
+    private final StageRepository stageRepository;
+    private final TaskRepository taskRepository;
+
+    public PipelineSeederService(PipelineRepository pipelineRepository, StageRepository stageRepository, TaskRepository taskRepository) {
+        this.pipelineRepository = pipelineRepository;
+        this.stageRepository = stageRepository;
+        this.taskRepository = taskRepository;
+    }
+
+    @PostConstruct
+    @Transactional
+    public void seedData() {
+        if (pipelineRepository.count() == 0) {
+            Pipeline defaultPipeline = new Pipeline();
+            defaultPipeline.setName("Общая воронка");
+            defaultPipeline.setDefault(true);
+            
+            defaultPipeline = pipelineRepository.save(defaultPipeline);
+
+            List<Stage> savedStages = stageRepository.saveAll(List.of(
+                    createStage(defaultPipeline, "Новый", 0, StageType.OPEN, true, "var(--color-stage-new)"),
+                    createStage(defaultPipeline, "Сбор документов", 1, StageType.OPEN, false, "var(--color-stage-docs)"),
+                    createStage(defaultPipeline, "Предоплата", 2, StageType.OPEN, false, "var(--color-stage-prepay)"),
+                    createStage(defaultPipeline, "В работе", 3, StageType.OPEN, false, "var(--color-stage-active)"),
+                    createStage(defaultPipeline, "Счет выставлен", 4, StageType.OPEN, false, "var(--color-stage-invoice)"),
+                    createStage(defaultPipeline, "Успешно завершено", 5, StageType.WON, false, "var(--color-brand-green)"),
+                    createStage(defaultPipeline, "Отменен", 6, StageType.LOST, false, "var(--color-stage-lost)")
+            ));
+            
+            // Назначаем задачам без стадии дефолтную стадию "Новый"
+            Stage defaultStage = savedStages.get(0);
+            taskRepository.findAll().forEach(task -> {
+                if (task.getStage() == null) {
+                    task.setStage(defaultStage);
+                    taskRepository.save(task);
+                }
+            });
+        }
+    }
+
+    private Stage createStage(Pipeline pipeline, String name, int orderIndex, StageType type, boolean isDefault, String color) {
+        Stage stage = new Stage();
+        stage.setPipeline(pipeline);
+        stage.setName(name);
+        stage.setOrderIndex(orderIndex);
+        stage.setType(type);
+        stage.setDefault(isDefault);
+        stage.setColor(color);
+        return stage;
+    }
+}
