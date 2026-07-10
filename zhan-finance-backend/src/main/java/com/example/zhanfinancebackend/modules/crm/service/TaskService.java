@@ -188,7 +188,6 @@ public class TaskService {
         Task task = new Task(request.title(), managedClient, managedClient);
         task.setDescription(request.description());
         task.setDueDate(request.dueDate());
-        task.setPriority(com.example.zhanfinancebackend.modules.crm.entity.TaskPriority.MEDIUM);
 
         Pipeline pipeline = pipelineRepository.findByIsDefaultTrue()
                 .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default pipeline not found"));
