@@ -93,7 +93,7 @@ export function GlobalSearch() {
                     >
                       <span className="font-medium text-gray-900 truncate leading-relaxed pb-0.5">{task.title}</span>
                       <span className="text-xs text-gray-500">
-                        {task.client?.fullName} • {task.status}
+                        {task.client?.fullName} • {task.stage?.name}
                       </span>
                     </button>
                   ))}

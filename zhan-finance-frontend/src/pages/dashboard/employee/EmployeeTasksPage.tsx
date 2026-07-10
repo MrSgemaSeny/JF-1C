@@ -64,7 +64,7 @@ export function EmployeeTasksPage() {
         <Empty label="No tasks assigned to you" />
       ) : (
         <TaskGridBoard 
-          initialTasks={tasks.filter(t => t.status !== 'DONE' && t.status !== 'CANCELLED')} 
+          initialTasks={tasks} 
           onBatchSave={handleBatchSave}
           userRole="EMPLOYEE"
         />

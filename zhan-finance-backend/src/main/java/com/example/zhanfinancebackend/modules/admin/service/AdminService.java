@@ -78,7 +78,7 @@ public class AdminService {
                 .map(u -> {
                     int activeTasks = (int) allTasks.stream()
                             .filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(u.getId()))
-                            .filter(t -> t.getStatus() != com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE)
+                            .filter(t -> t.getStage() == null || t.getStage().getType() != com.example.zhanfinancebackend.modules.crm.entity.StageType.WON)
                             .count();
                     return new com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto(u.getId(), u.getFullName(), u.getEmail(), activeTasks);
                 })
@@ -93,7 +93,7 @@ public class AdminService {
         long tasksCount = allTasks.size();
         
         java.util.Map<String, Long> tasksByStatus = allTasks.stream()
-                .collect(java.util.stream.Collectors.groupingBy(t -> t.getStatus().name(), java.util.stream.Collectors.counting()));
+                .collect(java.util.stream.Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", java.util.stream.Collectors.counting()));
                 
         return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count(), java.util.Collections.emptyList());
     }

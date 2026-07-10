@@ -2,7 +2,7 @@ package com.example.zhanfinancebackend.modules.crm.repository;
 
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
-import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,19 +12,19 @@ import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy")
+    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s")
     List<Task> findAllWithDetails();
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy where t.client.id = :clientId or t.createdBy.id = :clientId")
+    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s where t.client.id = :clientId or t.createdBy.id = :clientId")
     List<Task> findAllByClientWithDetails(@Param("clientId") Long clientId);
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy where c.assignedEmployee = :employee or t.assignedTo = :employee")
+    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s where c.assignedEmployee = :employee or t.assignedTo = :employee")
     List<Task> findAllByEmployeeWithDetails(@Param("employee") User employee);
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy where t.id = :id")
+    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s where t.id = :id")
     Optional<Task> findByIdWithDetails(@Param("id") Long id);
 
-    @Query("select t from Task t left join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy " +
+    @Query("select t from Task t left join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s " +
            "where (c.id = :userId or t.assignedTo.id = :userId or t.createdBy.id = :userId) " +
            "and t.dueDate >= :startDate and t.dueDate <= :endDate")
     List<Task> findTasksForCalendar(
@@ -33,14 +33,14 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("endDate") java.time.LocalDate endDate
     );
 
-    @Query("select t from Task t join fetch t.client c left join fetch t.assignedTo left join fetch t.createdBy " +
-           "where t.dueDate = :dueDate and t.status not in :excludedStatuses")
-    List<Task> findByDueDateAndStatusNotIn(
+    @Query("select t from Task t join fetch t.client c left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s " +
+           "where t.dueDate = :dueDate and s.type not in :excludedTypes")
+    List<Task> findByDueDateAndStageTypeNotIn(
             @Param("dueDate") java.time.LocalDate dueDate, 
-            @Param("excludedStatuses") List<TaskStatus> excludedStatuses
+            @Param("excludedTypes") List<StageType> excludedTypes
     );
 
-    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.subtasks " +
+    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.subtasks " +
            "where lower(t.title) like lower(concat('%', :query, '%')) or lower(t.description) like lower(concat('%', :query, '%'))")
     List<Task> searchTasks(@Param("query") String query);
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getTasks, requestTask, reviewTaskDecision } from '@/entities/task/api/taskApi';
-import type { TaskDto, TaskStatus } from '@/entities/task/model/types';
+import { getTasks, requestTask } from '@/entities/task/api/taskApi';
+import type { TaskDto, StageDto } from '@/entities/task/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { MiniCalendarWidget } from '../shared/calendar/MiniCalendarWidget';
@@ -10,13 +10,20 @@ import { Plus, MessageSquare, Clock, CheckCircle2, AlertCircle, ArrowUpRight } f
 import { twMerge } from 'tailwind-merge';
 
 // Mapping internal statuses to client-friendly statuses
-const CLIENT_STATUS_MAP: Record<TaskStatus, { label: string; color: string; icon: React.ReactNode }> = {
+const CLIENT_STATUS_MAP: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   NEW: { label: 'В очереди', color: 'bg-gray-100 text-gray-700 border-gray-200', icon: <Clock size={14} /> },
   IN_PROGRESS: { label: 'В работе', color: 'bg-blue-50 text-blue-700 border-blue-200', icon: <Clock size={14} /> },
   ON_REVIEW: { label: 'Ждет подтверждения', color: 'bg-orange-50 text-orange-700 border-orange-200', icon: <AlertCircle size={14} /> },
   DONE: { label: 'Завершено', color: 'bg-brand-green/10 text-brand-green border-brand-green/20', icon: <CheckCircle2 size={14} /> },
   CANCELLED: { label: 'Отменено', color: 'bg-red-50 text-red-700 border-red-200', icon: <AlertCircle size={14} /> },
 };
+
+function getClientStatus(stage?: StageDto) {
+  if (!stage) return CLIENT_STATUS_MAP.NEW;
+  if (stage.type === 'WON') return CLIENT_STATUS_MAP.DONE;
+  if (stage.type === 'LOST') return CLIENT_STATUS_MAP.CANCELLED;
+  return { label: stage.name, color: 'bg-blue-50 text-blue-700 border-blue-200', icon: <Clock size={14} /> };
+}
 
 export function ClientOverviewPage() {
   const { user } = useAuth();
@@ -96,15 +103,15 @@ export function ClientOverviewPage() {
 
   // Stats calculations
   const stats = {
-    active: tasks.filter((t) => t.status === 'NEW' || t.status === 'IN_PROGRESS').length,
-    onReview: tasks.filter((t) => t.status === 'ON_REVIEW').length,
-    completed: tasks.filter((t) => t.status === 'DONE').length,
+    active: tasks.filter((t) => t.stage?.type === 'OPEN').length,
+    onReview: 0,
+    completed: tasks.filter((t) => t.stage?.type === 'WON').length,
   };
 
   // Filter tasks
   const displayedTasks = tasks.filter(t => {
-    if (activeTab === 'ACTIVE') return t.status !== 'DONE' && t.status !== 'CANCELLED';
-    return t.status === 'DONE' || t.status === 'CANCELLED';
+    if (activeTab === 'ACTIVE') return t.stage?.type === 'OPEN';
+    return t.stage?.type === 'WON' || t.stage?.type === 'LOST';
   });
 
   if (isLoading && tasks.length === 0) {
@@ -227,7 +234,7 @@ export function ClientOverviewPage() {
                 </div>
               ) : (
                 displayedTasks.map((task) => {
-                  const clientStatus = CLIENT_STATUS_MAP[task.status];
+                  const clientStatus = getClientStatus(task.stage);
                   return (
                     <div 
                       key={task.id}

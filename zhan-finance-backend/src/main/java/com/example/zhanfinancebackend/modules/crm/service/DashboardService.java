@@ -40,7 +40,7 @@ public class DashboardService {
         long tasksCount = allTasks.size();
         
         Map<String, Long> tasksByStatus = allTasks.stream()
-                .collect(Collectors.groupingBy(t -> t.getStatus().name(), Collectors.counting()));
+                .collect(Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", Collectors.counting()));
                 
         List<User> employees = userRepository.findAllByRole(Role.EMPLOYEE);
         java.time.LocalDate today = java.time.LocalDate.now();
@@ -55,9 +55,9 @@ public class DashboardService {
                                           (t.getAssignedTo() == null && t.getClient() != null && t.getClient().getAssignedEmployee() != null && t.getClient().getAssignedEmployee().getId().equals(emp.getId()));
                 
                 if (isAssignedToEmp) {
-                    if (t.getStatus() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE) {
+                    if (t.getStage() != null && t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON) {
                         done++;
-                    } else if (t.getStatus() == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.CANCELLED) {
+                    } else if (t.getStage() != null && t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
                         // ignore cancelled
                     } else {
                         active++;
@@ -90,7 +90,7 @@ public class DashboardService {
         long tasksCount = employeeTasks.size();
         
         Map<String, Long> tasksByStatus = employeeTasks.stream()
-                .collect(Collectors.groupingBy(t -> t.getStatus().name(), Collectors.counting()));
+                .collect(Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", Collectors.counting()));
                 
         return new EmployeeDashboardDto(clientsCount, tasksCount, tasksByStatus);
     }
@@ -102,7 +102,7 @@ public class DashboardService {
         long tasksCount = clientTasks.size();
         
         Map<String, Long> tasksByStatus = clientTasks.stream()
-                .collect(Collectors.groupingBy(t -> t.getStatus().name(), Collectors.counting()));
+                .collect(Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", Collectors.counting()));
                 
         return new ClientDashboardDto(tasksCount, tasksByStatus);
     }

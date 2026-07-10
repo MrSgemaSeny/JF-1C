@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { TaskCard } from '@/entities/task/ui/TaskCard';
-import type { TaskDto, TaskStatus, TaskPriority } from '@/entities/task/model/types';
+import type { TaskDto, TaskPriority } from '@/entities/task/model/types';
 import { TaskSaveButton } from '@/features/task/ui/TaskSaveButton';
 import { Filter, ArrowUpDown, X } from 'lucide-react';
 import { getEmployees } from '@/entities/employee/api/employeeApi';
@@ -22,13 +22,8 @@ export interface TaskGridBoardRef {
 
 type SortOption = 'newest' | 'oldest' | 'deadline_asc' | 'deadline_desc' | 'priority';
 
-const STATUS_OPTIONS: { value: TaskStatus | 'ALL'; label: string }[] = [
-  { value: 'ALL', label: 'Все статусы' },
-  { value: 'NEW', label: 'Новые' },
-  { value: 'IN_PROGRESS', label: 'В процессе' },
-  { value: 'ON_REVIEW', label: 'На проверке' },
-  { value: 'DONE', label: 'Готово' },
-  { value: 'CANCELLED', label: 'Отменено' },
+const STATUS_OPTIONS: { value: string; label: string }[] = [
+  { value: 'ALL', label: 'Все стадии' },
 ];
 
 const PRIORITY_OPTIONS: { value: TaskPriority | 'ALL'; label: string }[] = [
@@ -63,7 +58,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
   const { data: employees } = useApiData(userRole === 'ADMIN' ? getEmployees : async () => []);
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState<TaskStatus | 'ALL'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'ALL'>('ALL');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
 
@@ -111,7 +106,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
 
     // Filter by status
     if (statusFilter !== 'ALL') {
-      result = result.filter(t => t.status === statusFilter);
+      // result = result.filter(t => t.stageId?.toString() === statusFilter);
     }
 
     // Filter by priority
@@ -241,7 +236,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
         
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as TaskStatus | 'ALL')}
+          onChange={(e) => setStatusFilter(e.target.value)}
           className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:border-brand-green focus:outline-none cursor-pointer"
         >
           {STATUS_OPTIONS.map(opt => (

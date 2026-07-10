@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { TaskDto, SubtaskDto, TaskStatus } from '../model/types';
+import type { TaskDto, SubtaskDto } from '../model/types';
 import { PriorityBadge, StatusBadge } from '@/shared/ui/Badge';
 import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown, MessageSquare, Trash2, X, Paperclip, Loader2 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
@@ -15,24 +15,6 @@ interface TaskCardProps {
   onDeleteTask?: (taskId: number) => void;
   userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
   employees?: EmployeeDto[] | null;
-}
-
-const ALL_STATUSES: TaskStatus[] = ['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'];
-
-function computeTaskStatus(subtasks: SubtaskDto[] | undefined, currentStatus: TaskStatus): TaskStatus | null {
-  if (!subtasks || subtasks.length === 0) return null;
-
-  const allNew = subtasks.every(st => st.status === 'NEW');
-  if (allNew) return 'NEW';
-
-  const allDone = subtasks.every(st => st.status === 'DONE');
-  if (allDone) {
-    if (currentStatus === 'NEW') return 'IN_PROGRESS';
-    return null; // Не переводим автоматически в DONE, пользователь должен "Сдать задачу"
-  }
-
-  // Any subtask IN_PROGRESS or DONE (but not all DONE) → IN_PROGRESS
-  return 'IN_PROGRESS';
 }
 
 function formatDueDate(dateStr: string): string {
@@ -103,10 +85,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
   }, [isStatusDropdownOpen]);
 
   const applyAutoStatus = (updatedTask: TaskDto): TaskDto => {
-    const autoStatus = computeTaskStatus(updatedTask.subtasks, task.status);
-    if (autoStatus !== null && autoStatus !== updatedTask.status) {
-      return { ...updatedTask, status: autoStatus };
-    }
+    // Stage logic disabled for now
     return updatedTask;
   };
 
@@ -167,12 +146,9 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
     setEditingSubtaskId(newSubtask.id);
   };
 
-  const handleStatusSelect = (e: React.MouseEvent, newStatus: TaskStatus) => {
+  const handleStatusSelect = (e: React.MouseEvent, newStatus: string) => {
     e.stopPropagation();
     setIsStatusDropdownOpen(false);
-    if (newStatus !== task.status) {
-      onUpdateTask({ ...task, status: newStatus });
-    }
   };
 
   const handleDueDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -392,108 +368,19 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
         </div>
       )}
 
-      {/* Status badge with admin dropdown */}
-      <div className="relative mb-3" ref={statusDropdownRef}>
+      {/* Status badge */}
+      <div className="mb-3">
         <div
-          onClick={(e) => {
-            if (userRole === 'ADMIN') {
-              e.stopPropagation();
-              setIsStatusDropdownOpen(prev => !prev);
-            }
-          }}
           className={twMerge(
             'inline-flex items-center gap-1 rounded-full pr-1',
-            userRole === 'ADMIN' && 'cursor-pointer hover:bg-gray-50'
           )}
-          title={userRole === 'ADMIN' ? 'Click to change status' : undefined}
         >
-          <StatusBadge status={task.status} />
-          {userRole === 'ADMIN' && (
-            <ChevronDown size={14} className="text-gray-400" />
-          )}
+          <StatusBadge stage={task.stage} />
         </div>
-
-        {isStatusDropdownOpen && userRole === 'ADMIN' && (
-          <div className="absolute left-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[140px]">
-            {ALL_STATUSES.map(s => (
-              <button
-                key={s}
-                onClick={(e) => handleStatusSelect(e, s)}
-                className={twMerge(
-                  'w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors',
-                  s === task.status && 'font-semibold bg-gray-50'
-                )}
-              >
-                <StatusBadge status={s} />
-              </button>
-            ))}
-            {onDeleteTask && userRole === 'ADMIN' && (
-              <>
-                <div className="my-1 border-t border-gray-100"></div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsStatusDropdownOpen(false);
-                    onDeleteTask(task.id);
-                  }}
-                  className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1.5"
-                >
-                  <Trash2 size={12} />
-                  Удалить задачу
-                </button>
-              </>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Action buttons */}
-      {(userRole === 'EMPLOYEE' || userRole === 'ADMIN') && task.status !== 'ON_REVIEW' && task.status !== 'DONE' && task.status !== 'CANCELLED' && allSubtasksDone && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onUpdateTask({ ...task, status: 'ON_REVIEW' });
-          }}
-          className="mt-3 w-full py-1.5 bg-brand-green/10 text-brand-green font-medium rounded-lg text-xs hover:bg-brand-green/20 transition-colors border border-brand-green/20"
-        >
-          Сдать задачу
-        </button>
-      )}
+      {/* Action buttons disabled during stage migration */}
 
-      {userRole === 'ADMIN' && task.status === 'ON_REVIEW' && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onUpdateTask({ ...task, status: 'DONE' });
-          }}
-          className="mt-3 w-full py-1.5 bg-brand-green text-white font-medium rounded-lg text-xs hover:bg-brand-green/90 transition-colors shadow-sm"
-        >
-          Подтвердить
-        </button>
-      )}
-
-      {userRole === 'CLIENT' && task.status === 'ON_REVIEW' && (
-        <div className="mt-3 flex gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onUpdateTask({ ...task, status: 'DONE' });
-            }}
-            className="flex-1 py-1.5 bg-brand-green text-white font-medium rounded-lg text-xs hover:bg-brand-green/90 transition-colors shadow-sm"
-          >
-            Принять работу
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onUpdateTask({ ...task, status: 'IN_PROGRESS' });
-            }}
-            className="flex-1 py-1.5 bg-red-100 text-red-600 font-medium rounded-lg text-xs hover:bg-red-200 transition-colors"
-          >
-            На доработку
-          </button>
-        </div>
-      )}
 
       {/* Footer: Priority + dates */}
       <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">

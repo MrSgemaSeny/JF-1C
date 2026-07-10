@@ -5,6 +5,11 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.auth.security.JwtService;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
+import com.example.zhanfinancebackend.modules.crm.entity.Pipeline;
+import com.example.zhanfinancebackend.modules.crm.entity.Stage;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+import com.example.zhanfinancebackend.modules.crm.repository.PipelineRepository;
+import com.example.zhanfinancebackend.modules.crm.repository.StageRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +46,12 @@ class TaskServiceIntegrationTests {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private PipelineRepository pipelineRepository;
+
+    @Autowired
+    private StageRepository stageRepository;
+
     @org.springframework.test.context.bean.override.mockito.MockitoBean
     private com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
 
@@ -59,6 +70,15 @@ class TaskServiceIntegrationTests {
 
         clientToken = jwtService.generateAccessToken(client);
         employeeToken = jwtService.generateAccessToken(employee);
+
+        // Ensure default pipeline exists
+        Pipeline pipeline = new Pipeline("Default");
+        pipeline.setDefault(true);
+        pipeline = pipelineRepository.save(pipeline);
+        Stage openStage = new Stage(pipeline, "NEW", 0, null, StageType.OPEN);
+        openStage.setDefault(true);
+        stageRepository.save(openStage);
+        stageRepository.save(new Stage(pipeline, "DONE", 1, null, StageType.WON));
     }
 
     @Test
@@ -75,7 +95,7 @@ class TaskServiceIntegrationTests {
                             }
                             """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.status").value("NEW"))
+                .andExpect(jsonPath("$.data.stage.type").value("OPEN"))
                 .andReturn();
 
         long taskId = objectMapper
@@ -91,24 +111,25 @@ class TaskServiceIntegrationTests {
                 .andExpect(jsonPath("$.data.assignedTo.id").value(employee.getId()));
 
         // STEP 3: Employee completes
+        Stage doneStage = stageRepository.findAll().stream().filter(s -> s.getType() == StageType.WON).findFirst().orElseThrow();
         mockMvc.perform(
-                patch("/api/crm/tasks/{id}/status", taskId)
+                patch("/api/crm/tasks/{id}/stage", taskId)
                         .header("Authorization", "Bearer " + employeeToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                             {
-                                "status": "DONE"
+                                "stageId": %d
                             }
-                            """))
+                            """.formatted(doneStage.getId())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.status").value("DONE"));
+                .andExpect(jsonPath("$.data.stage.type").value("WON"));
 
         // STEP 4: Verify client sees updated task
         mockMvc.perform(
                 get("/api/crm/tasks/{id}", taskId)
                         .header("Authorization", "Bearer " + clientToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.status").value("DONE"))
+                .andExpect(jsonPath("$.data.stage.type").value("WON"))
                 .andExpect(jsonPath("$.data.assignedTo.email").value("emp@test.com"));
     }
 
@@ -118,7 +139,8 @@ class TaskServiceIntegrationTests {
         anotherClient = userRepository.save(anotherClient);
 
         Task task = new Task("Secret task", anotherClient, anotherClient);
-        task.setStatus(com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.NEW);
+        Stage newStage = stageRepository.findAll().stream().filter(s -> s.getType() == StageType.OPEN).findFirst().orElseThrow();
+        task.setStage(newStage);
         task = taskRepository.save(task);
 
         mockMvc.perform(

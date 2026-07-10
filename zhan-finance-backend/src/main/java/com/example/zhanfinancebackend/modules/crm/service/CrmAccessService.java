@@ -64,7 +64,7 @@ public class CrmAccessService {
         }
     }
 
-    public boolean canUpdateTaskStatus(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.TaskStatus newStatus) {
+    public boolean canUpdateTaskStage(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.Stage newStage) {
         if (actor.getRole() == Role.ADMIN) {
             return true;
         }
@@ -72,14 +72,14 @@ public class CrmAccessService {
             return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
         }
         if (actor.getRole() == Role.CLIENT) {
-            return sameUser(actor, task.getClient()) && newStatus == com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE;
+            return sameUser(actor, task.getClient()) && newStage != null && newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON;
         }
         return false;
     }
 
-    public void assertCanUpdateTaskStatus(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.TaskStatus newStatus) {
-        if (!canUpdateTaskStatus(actor, task, newStatus)) {
-            throw new org.springframework.security.access.AccessDeniedException("Task status update denied");
+    public void assertCanUpdateTaskStage(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.Stage newStage) {
+        if (!canUpdateTaskStage(actor, task, newStage)) {
+            throw new org.springframework.security.access.AccessDeniedException("Task stage update denied");
         }
     }
 

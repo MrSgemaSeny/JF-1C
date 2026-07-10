@@ -7,7 +7,7 @@ import com.example.zhanfinancebackend.modules.crm.dto.CalendarEventCreateRequest
 import com.example.zhanfinancebackend.modules.crm.dto.CalendarEventDto;
 import com.example.zhanfinancebackend.modules.crm.entity.CalendarEvent;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
-import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import com.example.zhanfinancebackend.modules.crm.repository.CalendarEventRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class CalendarService {
                     task.getTitle(),
                     task.getDescription(),
                     "RED", // High priority color by default, or map based on priority
-                    task.getStatus() == TaskStatus.DONE
+                    task.getStage() != null && task.getStage().getType() == StageType.WON
             ));
         }
 

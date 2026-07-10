@@ -3,11 +3,11 @@ import {
   getTasks,
   getTask,
   batchUpdateTasks,
-  updateTaskStatus,
+  updateTaskStage,
   createTask,
   assignTask,
 } from './taskApi';
-import type { TaskDto, TaskFilter, TaskStatus, TaskCreateRequest } from '../model/types';
+import type { TaskDto, TaskFilter, StageDto, TaskCreateRequest } from '../model/types';
 
 export const TASK_QUERY_KEYS = {
   all: ['tasks'] as const,
@@ -44,14 +44,13 @@ export function useBatchUpdateTasksMutation() {
   });
 }
 
-export function useUpdateTaskStatusMutation() {
+export function useUpdateTaskStage() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: ({ id, status }: { id: number; status: TaskStatus }) => updateTaskStatus(id, status),
-    onSuccess: (data, variables) => {
+    mutationFn: ({ id, stageId }: { id: number; stageId: number }) => updateTaskStage(id, stageId),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
-      queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.detail(variables.id) });
+      queryClient.setQueryData(TASK_QUERY_KEYS.detail(data.id), data);
     },
   });
 }

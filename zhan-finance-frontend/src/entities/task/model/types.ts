@@ -1,7 +1,24 @@
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 
-// Зеркалит backend DTO
-export type TaskStatus = 'NEW' | 'IN_PROGRESS' | 'ON_REVIEW' | 'DONE' | 'CANCELLED';
+export type StageType = 'OPEN' | 'WON' | 'LOST';
+
+export interface StageDto {
+  id: number;
+  pipelineId: number;
+  name: string;
+  orderIndex: number;
+  color?: string;
+  type: StageType;
+  isDefault: boolean;
+}
+
+export interface PipelineDto {
+  id: number;
+  name: string;
+  isDefault: boolean;
+  stages: StageDto[];
+}
+
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 export interface UserDto {
@@ -58,7 +75,13 @@ export interface TaskDto {
   client?: ClientInfoDto;
   assignedToId?: number;
   assignedTo?: EmployeeInfoDto;
-  status: TaskStatus;
+  stageId?: number;
+  stage?: StageDto;
+  amount?: number;
+  currency?: string;
+  source?: string;
+  closedAt?: string;
+  lostReason?: string;
   priority: TaskPriority;
   dueDate?: string;
   subtasks?: SubtaskDto[];
@@ -93,7 +116,7 @@ export interface TaskRequestCreateRequest {
 }
 
 export interface TaskFilter {
-  status?: TaskStatus;
+  stageId?: number;
   clientId?: number;
   assignedToId?: number;
 }
@@ -101,8 +124,12 @@ export interface TaskFilter {
 export interface TaskBatchUpdateRequest {
   updates: {
     id: number;
-    status?: TaskStatus;
+    stageId?: number;
     tags?: string[];
-    // Можно добавить другие поля для обновления, если нужно
+    priority?: TaskPriority;
+    title?: string;
+    description?: string;
+    dueDate?: string;
+    assignedToId?: number;
   }[];
 }

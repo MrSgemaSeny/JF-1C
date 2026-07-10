@@ -36,7 +36,6 @@ export function AdminTasksPage() {
     const newTask: TaskDto = {
       id: now,
       title: 'New Task',
-      status: 'NEW',
       priority: 'MEDIUM',
       subtasks: [
         { id: now + 1, taskId: now, title: 'First step', status: 'NEW', createdAt: new Date().toISOString() }
@@ -93,7 +92,7 @@ export function AdminTasksPage() {
       ) : (
         <TaskGridBoard 
           ref={boardRef}
-          initialTasks={tasks.filter(t => t.status !== 'DONE' && t.status !== 'CANCELLED')} 
+          initialTasks={tasks.filter(t => t.stage?.type === 'OPEN')} 
           onBatchSave={handleBatchSave}
           userRole="ADMIN"
         />

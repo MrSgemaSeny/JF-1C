@@ -1,7 +1,7 @@
 package com.example.zhanfinancebackend.modules.notifications.service;
 
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
-import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +31,10 @@ public class DeadlineAlertScheduler {
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
         
-        List<TaskStatus> excludedStatuses = List.of(TaskStatus.DONE, TaskStatus.ON_REVIEW, TaskStatus.CANCELLED);
+        List<StageType> excludedTypes = List.of(StageType.WON, StageType.LOST);
         
-        List<Task> dueToday = taskRepository.findByDueDateAndStatusNotIn(today, excludedStatuses);
-        List<Task> dueTomorrow = taskRepository.findByDueDateAndStatusNotIn(tomorrow, excludedStatuses);
+        List<Task> dueToday = taskRepository.findByDueDateAndStageTypeNotIn(today, excludedTypes);
+        List<Task> dueTomorrow = taskRepository.findByDueDateAndStageTypeNotIn(tomorrow, excludedTypes);
         
         log.info("Found {} tasks due today, {} tasks due tomorrow.", dueToday.size(), dueTomorrow.size());
         

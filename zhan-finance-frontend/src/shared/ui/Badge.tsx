@@ -1,12 +1,4 @@
-import type { TaskStatus, TaskPriority } from '@/entities/task/model/types';
-
-const statusColors: Record<TaskStatus, string> = {
-  'NEW': 'bg-gray-100 text-gray-800',
-  'IN_PROGRESS': 'bg-yellow-100 text-yellow-800',
-  'ON_REVIEW': 'bg-blue-100 text-blue-800',
-  'DONE': 'bg-green-100 text-green-800',
-  'CANCELLED': 'bg-red-100 text-red-800',
-};
+import type { StageDto, TaskPriority } from '@/entities/task/model/types';
 
 const priorityColors: Record<TaskPriority, string> = {
   'LOW': 'bg-gray-50 text-gray-600',
@@ -15,10 +7,14 @@ const priorityColors: Record<TaskPriority, string> = {
   'URGENT': 'bg-red-50 text-red-600',
 };
 
-export function StatusBadge({ status }: { status: TaskStatus }) {
+export function StatusBadge({ stage }: { stage?: StageDto }) {
+  if (!stage) return <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Нет стадии</span>;
   return (
-    <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColors[status]}`}>
-      {status}
+    <span 
+      className="px-2 py-1 text-xs font-medium rounded-full text-white"
+      style={{ backgroundColor: stage.color || '#3b82f6' }}
+    >
+      {stage.name}
     </span>
   );
 }

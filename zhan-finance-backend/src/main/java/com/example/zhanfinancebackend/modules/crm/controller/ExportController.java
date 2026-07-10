@@ -38,12 +38,12 @@ public class ExportController {
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(required = false) Long clientId,
             @RequestParam(required = false) Long assignedToId,
-            @RequestParam(required = false) String status
+            @RequestParam(required = false) Long stageId
     ) {
         User user = principal.getUser();
 
         List<TaskDto> tasks = user.getRole() == Role.ADMIN
-                ? taskService.getAllTasks(clientId, assignedToId, status)
+                ? taskService.getAllTasks(clientId, assignedToId, stageId)
                 : taskService.getTasksForEmployee(user);
 
         String csv = buildCsv(tasks);
@@ -84,7 +84,7 @@ public class ExportController {
                     t.description(),
                     t.client() != null ? t.client().fullName() : "",
                     t.assignedTo() != null ? t.assignedTo().fullName() : "Не назначен",
-                    translateStatus(t.status() != null ? t.status().name() : null),
+                    t.stage() != null ? t.stage().name() : "Нет стадии",
                     translatePriority(t.priority() != null ? t.priority().name() : null),
                     t.dueDate() != null ? t.dueDate().format(DATE_FMT) : "",
                     t.createdAt() != null ? t.createdAt().format(DATETIME_FMT) : ""
@@ -121,18 +121,6 @@ public class ExportController {
     }
 
     // ── Локализация значений ─────────────────────────────────────────────────
-
-    private String translateStatus(String status) {
-        if (status == null) return "";
-        return switch (status) {
-            case "NEW"         -> "Новая";
-            case "IN_PROGRESS" -> "В работе";
-            case "ON_REVIEW"   -> "На проверке";
-            case "DONE"        -> "Готово";
-            case "CANCELLED"   -> "Отменена";
-            default            -> status;
-        };
-    }
 
     private String translatePriority(String priority) {
         if (priority == null) return "";

@@ -7,7 +7,7 @@ import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskCreateRequest;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskDto;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskRequestCreateRequest;
-import com.example.zhanfinancebackend.modules.crm.dto.TaskStatusUpdateRequest;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskStageUpdateRequest;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.crm.service.CrmAccessService;
 import com.example.zhanfinancebackend.modules.crm.service.TaskService;
@@ -36,13 +36,13 @@ public class TaskController {
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(required = false) Long clientId,
             @RequestParam(required = false) Long assignedToId,
-            @RequestParam(required = false) String status
+            @RequestParam(required = false) Long stageId
     ) {
         User user = principal.getUser();
 
         if (user.getRole() == Role.ADMIN) {
             // Админ может видеть все задачи, с опциональными фильтрами
-            return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, status));
+            return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, stageId));
         }
 
         if (user.getRole() == Role.EMPLOYEE) {
@@ -85,16 +85,14 @@ public class TaskController {
         return ApiResponse.success(taskService.requestTask(request, principal.getUser()));
     }
 
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{id}/stage")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ApiResponse<TaskDto> updateStatus(
+    public ApiResponse<TaskDto> updateStage(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
-            @Valid @RequestBody TaskStatusUpdateRequest request
+            @Valid @RequestBody TaskStageUpdateRequest request
     ) {
-        Task task = taskService.getTaskEntity(id);
-        accessService.assertCanUpdateTaskStatus(principal.getUser(), task, request.status());
-        return ApiResponse.success(taskService.updateTaskStatus(id, request.status(), principal.getUser()));
+        return ApiResponse.success(taskService.updateTaskStage(id, request.stageId(), principal.getUser()));
     }
 
     @PatchMapping("/{id}/assign")
@@ -162,29 +160,5 @@ public class TaskController {
         return ApiResponse.success(taskService.getTaskHistory(id, principal.getUser()));
     }
 
-    /**
-     * PATCH /api/crm/tasks/{id}/review-decision
-     * Только для CLIENT: принять (DONE) или вернуть на доработку (IN_PROGRESS) задачу со статусом ON_REVIEW.
-     */
-    @PatchMapping("/{id}/review-decision")
-    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
-    public ApiResponse<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> reviewDecision(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable Long id,
-            @RequestBody java.util.Map<String, String> body
-    ) {
-        String decision = body.get("decision"); // "ACCEPT" or "REJECT"
-        com.example.zhanfinancebackend.modules.crm.entity.TaskStatus newStatus;
-        if ("ACCEPT".equals(decision)) {
-            newStatus = com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.DONE;
-        } else if ("REJECT".equals(decision)) {
-            newStatus = com.example.zhanfinancebackend.modules.crm.entity.TaskStatus.IN_PROGRESS;
-        } else {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(
-                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST,
-                    "decision должен быть ACCEPT или REJECT"
-            );
-        }
-        return ApiResponse.success(taskService.updateTaskStatus(id, newStatus, principal.getUser()));
-    }
+
 }

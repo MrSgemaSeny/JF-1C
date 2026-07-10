@@ -21,7 +21,7 @@ export function AdminArchiveCancelledPage() {
 
   if (isLoading) return <Spinner />;
 
-  const cancelledTasks = tasks?.filter(t => t.status === 'CANCELLED') || [];
+  const cancelledTasks = tasks?.filter(t => t.stage?.type === 'LOST') || [];
 
   return (
     <div>

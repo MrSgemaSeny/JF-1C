@@ -1,9 +1,9 @@
 import { apiRequest, apiDownload } from '@/shared/api/http';
-import type { TaskDto, TaskCreateRequest, TaskRequestCreateRequest, TaskStatus, TaskFilter } from '../model/types';
+import type { TaskDto, TaskCreateRequest, TaskRequestCreateRequest, TaskFilter } from '../model/types';
 
 export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
   const query = new URLSearchParams();
-  if (filter?.status) query.append('status', filter.status);
+  if (filter?.stageId) query.append('stageId', filter.stageId.toString());
   if (filter?.clientId) query.append('clientId', filter.clientId.toString());
   if (filter?.assignedToId) query.append('assignedToId', filter.assignedToId.toString());
   
@@ -13,14 +13,13 @@ export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
 
 export async function exportTasksCsv(filter?: TaskFilter): Promise<Blob> {
   const query = new URLSearchParams();
-  if (filter?.status) query.append('status', filter.status);
+  if (filter?.stageId) query.append('stageId', filter.stageId.toString());
   if (filter?.clientId) query.append('clientId', filter.clientId.toString());
   if (filter?.assignedToId) query.append('assignedToId', filter.assignedToId.toString());
   
   const queryString = query.toString() ? `?${query.toString()}` : '';
   return apiDownload(`/api/crm/export/tasks${queryString}`);
 }
-
 
 export async function getTask(id: number): Promise<TaskDto> {
   return apiRequest<TaskDto>(`/api/crm/tasks/${id}`);
@@ -40,10 +39,10 @@ export async function requestTask(request: TaskRequestCreateRequest): Promise<Ta
   });
 }
 
-export async function updateTaskStatus(id: number, status: TaskStatus): Promise<TaskDto> {
-  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/status`, {
+export async function updateTaskStage(id: number, stageId: number): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/stage`, {
     method: 'PATCH',
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ stageId }),
   });
 }
 
@@ -82,11 +81,4 @@ export async function addTaskComment(taskId: number, text: string): Promise<Task
 
 export async function getTaskHistory(taskId: number): Promise<TaskActivityDto[]> {
   return apiRequest<TaskActivityDto[]>(`/api/crm/tasks/${taskId}/history`);
-}
-
-export async function reviewTaskDecision(taskId: number, decision: 'ACCEPT' | 'REJECT'): Promise<TaskDto> {
-  return apiRequest<TaskDto>(`/api/crm/tasks/${taskId}/review-decision`, {
-    method: 'PATCH',
-    body: JSON.stringify({ decision }),
-  });
 }

@@ -186,7 +186,6 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   {task.title}
                 </h2>
               )}
-              <StatusBadge status={task.status} />
               <PriorityBadge priority={task.priority} />
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-500">

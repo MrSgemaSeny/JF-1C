@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.EntityListeners;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +30,25 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "assigned_to_id")
     private User assignedTo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stage_id", nullable = false)
+    private Stage stage;
+
+    @Column(precision = 19, scale = 4)
+    private BigDecimal amount;
+
+    @Column(length = 3)
+    private String currency;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 32)
-    private TaskStatus status = TaskStatus.NEW;
+    @Column(length = 32)
+    private LeadSource source;
+
+    @Column(name = "closed_at")
+    private LocalDate closedAt;
+
+    @Column(name = "lost_reason", columnDefinition = "TEXT")
+    private String lostReason;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
@@ -107,14 +124,53 @@ public class Task extends BaseEntity {
         this.assignedTo = assignedTo;
     }
 
-    public TaskStatus getStatus() {
-        return status;
+    public Stage getStage() {
+        return stage;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public LeadSource getSource() {
+        return source;
+    }
+
+    public void setSource(LeadSource source) {
+        this.source = source;
+    }
+
+    public LocalDate getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(LocalDate closedAt) {
+        this.closedAt = closedAt;
+    }
+
+    public String getLostReason() {
+        return lostReason;
+    }
+
+    public void setLostReason(String lostReason) {
+        this.lostReason = lostReason;
+    }
     public TaskPriority getPriority() {
         return priority;
     }
