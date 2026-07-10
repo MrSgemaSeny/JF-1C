@@ -48,3 +48,6 @@ Thumbs.db
 test-*.json
 fly_logs*
 prod_logs*
+
+# Obsidian
+markdowns_obsidian/
