@@ -72,7 +72,7 @@ export function TaskCreateModal({ onClose, onCreated }: TaskCreateModalProps) {
         createdTask = await requestTask({
           title,
           description: description || undefined,
-          clientId: user.id,
+          clientId: user.userId,
           dueDate: dueDate || undefined,
           subtasks: subtaskReqs.length > 0 ? subtaskReqs : undefined,
           serviceIds: selectedServiceIds.length > 0 ? selectedServiceIds : undefined
@@ -81,7 +81,7 @@ export function TaskCreateModal({ onClose, onCreated }: TaskCreateModalProps) {
         createdTask = await createTask({
           title,
           description: description || undefined,
-          clientId: user.id, // simplified for admin creating for themselves, would need client selector normally
+          clientId: user.userId, // simplified for admin creating for themselves, would need client selector normally
           dueDate: dueDate || undefined,
           subtasks: subtaskReqs.length > 0 ? subtaskReqs : undefined,
           serviceIds: selectedServiceIds.length > 0 ? selectedServiceIds : undefined

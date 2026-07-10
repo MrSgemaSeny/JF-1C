@@ -180,7 +180,7 @@ export function ClientOverviewPage() {
               onClose={() => setShowForm(false)} 
               onCreated={() => {
                 setShowForm(false);
-                loadTasks();
+                fetchTasks();
               }} 
             />
           )}

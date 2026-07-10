@@ -1,3 +1,5 @@
+import type { ServiceDto } from '@/entities/service/api/servicesApi';
+
 // Зеркалит backend DTO
 export type TaskStatus = 'NEW' | 'IN_PROGRESS' | 'ON_REVIEW' | 'DONE' | 'CANCELLED';
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
@@ -62,6 +64,7 @@ export interface TaskDto {
   subtasks?: SubtaskDto[];
   tags?: string[];
   serviceIds?: number[];
+  services?: ServiceDto[];
   comments?: TaskCommentDto[];
   history?: TaskActivityDto[];
   createdBy: UserDto;

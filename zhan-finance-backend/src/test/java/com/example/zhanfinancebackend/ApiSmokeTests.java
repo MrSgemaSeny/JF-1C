@@ -104,12 +104,12 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.fullName").value("Smoke Updated"));
 
         long invoiceId = createInvoice(accessToken);
-        mockMvc.perform(get("/api/invoices")
+        mockMvc.perform(get("/api/billing/invoices")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title").value("Smoke invoice"));
 
-        mockMvc.perform(put("/api/invoices/{id}", invoiceId)
+        mockMvc.perform(put("/api/billing/invoices/{id}", invoiceId)
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -123,17 +123,17 @@ class ApiSmokeTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("ISSUED"));
 
-        mockMvc.perform(delete("/api/invoices/{id}", invoiceId)
+        mockMvc.perform(delete("/api/billing/invoices/{id}", invoiceId)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
 
         long subscriptionId = createSubscription(accessToken);
-        mockMvc.perform(get("/api/subscriptions")
+        mockMvc.perform(get("/api/billing/subscriptions")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].planName").value("Business"));
 
-        mockMvc.perform(put("/api/subscriptions/{id}", subscriptionId)
+        mockMvc.perform(put("/api/billing/subscriptions/{id}", subscriptionId)
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -148,7 +148,7 @@ class ApiSmokeTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("PAUSED"));
 
-        mockMvc.perform(delete("/api/subscriptions/{id}", subscriptionId)
+        mockMvc.perform(delete("/api/billing/subscriptions/{id}", subscriptionId)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
     }
@@ -210,7 +210,7 @@ class ApiSmokeTests {
     }
 
     private long createInvoice(String accessToken) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/invoices")
+        MvcResult result = mockMvc.perform(post("/api/billing/invoices")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -227,7 +227,7 @@ class ApiSmokeTests {
     }
 
     private long createSubscription(String accessToken) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/subscriptions")
+        MvcResult result = mockMvc.perform(post("/api/billing/subscriptions")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

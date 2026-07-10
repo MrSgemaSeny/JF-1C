@@ -6,8 +6,9 @@ import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 import { ROUTES } from '@/shared/config/routes';
 import { useApiData } from '@/shared/hooks/useApiData';
-import { fetchHighlightedServices, requestService } from '@/entities/service/api/servicesApi';
+import { fetchHighlightedServices } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
+import { requestTask } from '@/entities/task/api/taskApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -64,10 +65,12 @@ export function HomeServices() {
 
     setIsSubmitting(true);
     try {
-      await requestService({ 
-        serviceId: service.id, 
-        message,
-        preferredContactDate: preferredDate 
+      await requestTask({ 
+        clientId: user.userId,
+        title: `Заказ услуги: ${service.title}`,
+        description: message,
+        dueDate: preferredDate,
+        serviceIds: [service.id]
       });
       setSuccessMessage(`Ваш запрос на услугу «${service.title}» принят! Мы свяжемся с вами в ближайшее время.`);
       setSelectedService(null);

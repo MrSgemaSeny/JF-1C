@@ -4,8 +4,9 @@ import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
 import { useApiData } from '@/shared/hooks/useApiData';
-import { fetchServices, requestService } from '@/entities/service/api/servicesApi';
+import { fetchServices } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
+import { requestTask } from '@/entities/task/api/taskApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -69,10 +70,12 @@ export function ServicesCatalog() {
 
     setIsSubmitting(true);
     try {
-      await requestService({ 
-        serviceId: service.id, 
-        message,
-        preferredContactDate: preferredDate 
+      await requestTask({ 
+        clientId: user.userId,
+        title: `Заказ услуги: ${service.title}`,
+        description: message,
+        dueDate: preferredDate,
+        serviceIds: [service.id]
       });
       toast.success(`Запрос на услугу «${service.title}» отправлен!`);
       setActive(null);

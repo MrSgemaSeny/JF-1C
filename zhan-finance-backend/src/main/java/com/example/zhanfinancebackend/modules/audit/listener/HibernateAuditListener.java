@@ -24,7 +24,7 @@ import java.util.Set;
 public class HibernateAuditListener implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(HibernateAuditListener.class);
-    private static final Set<String> AUDITED_ENTITIES = Set.of("User", "Invoice", "Task", "Subscription", "ServiceRequest");
+    private static final Set<String> AUDITED_ENTITIES = Set.of("User", "Invoice", "Task", "Subscription");
 
     private final AuditService auditService;
     private final ObjectMapper objectMapper;

@@ -1,23 +1,19 @@
 import { useEffect, useState } from 'react';
-import { fetchServices, requestService, fetchMyServiceRequests } from '@/entities/service/api/servicesApi';
-import type { ServiceDto, ServiceRequestDto } from '@/entities/service/api/servicesApi';
+import { fetchServices } from '@/entities/service/api/servicesApi';
+import type { ServiceDto } from '@/entities/service/api/servicesApi';
+import { requestTask } from '@/entities/task/api/taskApi';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { clsx } from 'clsx';
 import { Briefcase, Calendar, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  NEW: { label: 'Новый', color: 'bg-blue-100 text-blue-800', icon: Clock },
-  IN_PROGRESS: { label: 'В работе', color: 'bg-yellow-100 text-yellow-800', icon: Briefcase },
-  COMPLETED: { label: 'Выполнено', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  CANCELED: { label: 'Отменено', color: 'bg-red-100 text-red-800', icon: XCircle },
-};
+
 
 export function ClientServicesPage() {
   const { user } = useAuth();
   
   const [services, setServices] = useState<ServiceDto[]>([]);
-  const [requests, setRequests] = useState<ServiceRequestDto[]>([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -38,12 +34,8 @@ export function ClientServicesPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const [servicesData, requestsData] = await Promise.all([
-        fetchServices(),
-        fetchMyServiceRequests()
-      ]);
+      const servicesData = await fetchServices();
       setServices(servicesData);
-      setRequests(requestsData);
     } catch (err) {
       setError('Не удалось загрузить данные об услугах');
       console.error(err);
@@ -58,10 +50,12 @@ export function ClientServicesPage() {
 
     setIsSubmitting(true);
     try {
-      await requestService({
-        serviceId: selectedService.id,
-        message,
-        preferredContactDate: preferredDate || undefined
+      await requestTask({
+        clientId: user!.userId,
+        title: `Заказ услуги: ${selectedService.title}`,
+        description: message,
+        dueDate: preferredDate || undefined,
+        serviceIds: [selectedService.id]
       });
       setSuccessMessage(`Ваш запрос на услугу «${selectedService.title}» принят!`);
       setSelectedService(null);
@@ -133,64 +127,6 @@ export function ClientServicesPage() {
         </div>
       </div>
 
-      {/* Service Request History */}
-      <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-4">История запросов</h2>
-        <div className="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden">
-          {requests.length === 0 ? (
-            <div className="text-center py-12 px-4">
-              <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-gray-900 font-medium mb-1">Нет запросов</h3>
-              <p className="text-gray-500 text-sm">Вы еще не заказывали услуги</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead>
-                  <tr className="bg-gray-50/50 border-b border-gray-100">
-                    <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Услуга</th>
-                    <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Статус</th>
-                    <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Дата запроса</th>
-                    <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Желаемая дата связи</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {requests.map(req => {
-                    const statusConfig = STATUS_CONFIG[req.status] || { label: req.status, color: 'bg-gray-100 text-gray-800', icon: Clock };
-                    const StatusIcon = statusConfig.icon;
-                    return (
-                      <tr key={req.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4">
-                          <span className="font-medium text-gray-900">{req.serviceTitle}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={clsx("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold", statusConfig.color)}>
-                            <StatusIcon className="w-3.5 h-3.5" />
-                            {statusConfig.label}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          {new Date(req.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4">
-                          {req.preferredContactDate ? (
-                            <span className="flex items-center gap-1.5 text-gray-700">
-                              <Calendar className="w-4 h-4 text-gray-400" />
-                              {new Date(req.preferredContactDate).toLocaleDateString()}
-                            </span>
-                          ) : (
-                            <span className="text-gray-400">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Request Modal */}
       {selectedService && (

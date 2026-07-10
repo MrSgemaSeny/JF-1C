@@ -3,6 +3,7 @@ package com.example.zhanfinancebackend.modules.crm.dto;
 import com.example.zhanfinancebackend.modules.auth.dto.UserDto;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskStatus;
+import com.example.zhanfinancebackend.modules.services.dto.ServiceDto;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -24,6 +25,7 @@ public record TaskDto(
         ZonedDateTime updatedAt,
         List<SubtaskDto> subtasks,
         List<String> tags,
-        List<Long> serviceIds
+        List<Long> serviceIds,
+        List<ServiceDto> services
 ) {
 }

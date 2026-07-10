@@ -26,8 +26,8 @@ public class Invoice extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_request_id")
-    private com.example.zhanfinancebackend.modules.services.entity.ServiceRequest serviceRequest;
+    @JoinColumn(name = "task_id")
+    private com.example.zhanfinancebackend.modules.crm.entity.Task task;
 
     @Column(nullable = false, length = 160)
     private String title;
@@ -56,12 +56,12 @@ public class Invoice extends BaseEntity {
         return user;
     }
 
-    public com.example.zhanfinancebackend.modules.services.entity.ServiceRequest getServiceRequest() {
-        return serviceRequest;
+    public com.example.zhanfinancebackend.modules.crm.entity.Task getTask() {
+        return task;
     }
 
-    public void setServiceRequest(com.example.zhanfinancebackend.modules.services.entity.ServiceRequest serviceRequest) {
-        this.serviceRequest = serviceRequest;
+    public void setTask(com.example.zhanfinancebackend.modules.crm.entity.Task task) {
+        this.task = task;
     }
 
     public String getTitle() {

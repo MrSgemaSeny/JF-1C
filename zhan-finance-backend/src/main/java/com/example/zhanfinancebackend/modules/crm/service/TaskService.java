@@ -492,7 +492,17 @@ public class TaskService {
                 task.getUpdatedAt() != null ? task.getUpdatedAt().atZone(ZoneOffset.UTC) : null,
                 task.getSubtasks() != null ? task.getSubtasks().stream().map(this::mapSubtaskToDto).toList() : List.of(),
                 task.getTags() != null ? new java.util.ArrayList<>(task.getTags()) : List.of(),
-                task.getServices() != null ? task.getServices().stream().map(com.example.zhanfinancebackend.common.audit.BaseEntity::getId).toList() : List.of()
+                task.getServices() != null ? task.getServices().stream().map(com.example.zhanfinancebackend.common.audit.BaseEntity::getId).toList() : List.of(),
+                task.getServices() != null ? task.getServices().stream().map(s -> new com.example.zhanfinancebackend.modules.services.dto.ServiceDto(
+                        s.getId(),
+                        s.getTitle(),
+                        s.getDescription(),
+                        s.getPrice(),
+                        s.getImageUrl(),
+                        s.getIsHighlighted(),
+                        s.getFeatures() != null ? new java.util.ArrayList<>(s.getFeatures()) : List.of(),
+                        s.getCreatedAt() != null ? s.getCreatedAt().atZone(java.time.ZoneOffset.UTC) : null
+                )).toList() : List.of()
         );
     }
 
