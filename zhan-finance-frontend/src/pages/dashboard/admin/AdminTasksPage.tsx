@@ -3,14 +3,15 @@ import { useTasksQuery, useBatchUpdateTasksMutation } from '@/entities/task/api/
 import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
 import type { TaskDto } from '@/entities/task/model/types';
-import { TaskGridBoard, type TaskGridBoardRef } from '@/widgets/task-board/TaskGridBoard';
+import { TaskKanbanBoard } from '@/widgets/task-board/TaskKanbanBoard';
+import type { TaskKanbanBoardRef } from '@/widgets/task-board/TaskKanbanBoard';
 import { Plus, Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { exportTasksCsv } from '@/entities/task/api/taskApi';
 export function AdminTasksPage() {
   const { data: tasks, isLoading, error } = useTasksQuery();
   const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
-  const boardRef = useRef<TaskGridBoardRef>(null);
+  const boardRef = useRef<TaskKanbanBoardRef>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const taskIdParam = searchParams.get('taskId');
 
@@ -87,13 +88,12 @@ export function AdminTasksPage() {
       </div>
 
       {!tasks?.length ? (
-        <Empty label="No tasks found" />
+        <Empty label="Нет задач в системе" />
       ) : (
-        <TaskGridBoard 
-          ref={boardRef}
-          initialTasks={tasks.filter(t => t.stage?.type === 'OPEN')} 
-          onBatchSave={handleBatchSave}
+        <TaskKanbanBoard 
+          initialTasks={tasks}
           userRole="ADMIN"
+          ref={boardRef}
         />
       )}
     </div>

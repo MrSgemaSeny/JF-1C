@@ -6,6 +6,13 @@
   --color-brand-beige: #F5F5DC;
   --color-brand-text: #00562D;
   --color-brand-accent: #4a7c59;
+  
+  --color-stage-new: #0EA5E9;
+  --color-stage-docs: #8B5CF6;
+  --color-stage-prepay: #F59E0B;
+  --color-stage-active: #10B981;
+  --color-stage-invoice: #F97316;
+  --color-stage-lost: #EF4444;
 }
 
 @layer base {

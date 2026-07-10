@@ -3,6 +3,7 @@ import { useTasksQuery, useBatchUpdateTasksMutation } from '@/entities/task/api/
 import type { TaskDto } from '@/entities/task/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
 import { TaskGridBoard, type TaskGridBoardRef } from '@/widgets/task-board/TaskGridBoard';
+import { TaskKanbanBoard } from '@/widgets/task-board/TaskKanbanBoard';
 import { Empty } from '@/shared/ui/Empty';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Download } from 'lucide-react';
@@ -63,10 +64,10 @@ export function EmployeeTasksPage() {
       {!tasks.length ? (
         <Empty label="No tasks assigned to you" />
       ) : (
-        <TaskGridBoard 
-          initialTasks={tasks} 
-          onBatchSave={handleBatchSave}
+        <TaskKanbanBoard 
+          initialTasks={tasks}
           userRole="EMPLOYEE"
+          ref={boardRef}
         />
       )}
     </div>
