@@ -31,7 +31,7 @@ public class Task extends BaseEntity {
     private User assignedTo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stage_id", nullable = false)
+    @JoinColumn(name = "stage_id")
     private Stage stage;
 
     @Column(precision = 19, scale = 4)
