@@ -36,7 +36,6 @@ export function AdminTasksPage() {
     const newTask: TaskDto = {
       id: now,
       title: 'New Task',
-      priority: 'MEDIUM',
       subtasks: [
         { id: now + 1, taskId: now, title: 'First step', status: 'NEW', createdAt: new Date().toISOString() }
       ],

@@ -1,6 +1,6 @@
 package com.example.zhanfinancebackend.modules.crm.dto;
 
-import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,7 +12,6 @@ public record TaskCreateRequest(
         String description,
         @NotNull Long clientId,
         Long assignedToId,
-        TaskPriority priority,
         LocalDate dueDate,
         List<SubtaskCreateRequest> subtasks,
         List<Long> serviceIds

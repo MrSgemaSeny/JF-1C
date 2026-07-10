@@ -71,7 +71,6 @@ public class ExportController {
                 "Клиент",
                 "Исполнитель",
                 "Статус",
-                "Приоритет",
                 "Дедлайн",
                 "Дата создания"
         );
@@ -85,7 +84,6 @@ public class ExportController {
                     t.client() != null ? t.client().fullName() : "",
                     t.assignedTo() != null ? t.assignedTo().fullName() : "Не назначен",
                     t.stage() != null ? t.stage().name() : "Нет стадии",
-                    translatePriority(t.priority() != null ? t.priority().name() : null),
                     t.dueDate() != null ? t.dueDate().format(DATE_FMT) : "",
                     t.createdAt() != null ? t.createdAt().format(DATETIME_FMT) : ""
             );
@@ -122,15 +120,6 @@ public class ExportController {
 
     // ── Локализация значений ─────────────────────────────────────────────────
 
-    private String translatePriority(String priority) {
-        if (priority == null) return "";
-        return switch (priority) {
-            case "LOW"    -> "Низкий";
-            case "MEDIUM" -> "Средний";
-            case "HIGH"   -> "Высокий";
-            case "URGENT" -> "Срочный";
-            default       -> priority;
-        };
-    }
+
 }
 //test

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { TaskCard } from '@/entities/task/ui/TaskCard';
-import type { TaskDto, TaskPriority } from '@/entities/task/model/types';
+import type { TaskDto } from '@/entities/task/model/types';
 import { TaskSaveButton } from '@/features/task/ui/TaskSaveButton';
 import { Filter, ArrowUpDown, X } from 'lucide-react';
 import { getEmployees } from '@/entities/employee/api/employeeApi';
@@ -20,34 +20,23 @@ export interface TaskGridBoardRef {
   openTaskModal: (taskId: number) => void;
 }
 
-type SortOption = 'newest' | 'oldest' | 'deadline_asc' | 'deadline_desc' | 'priority';
+type SortOption = 'newest' | 'oldest' | 'deadline_asc' | 'deadline_desc';
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: 'ALL', label: 'Все стадии' },
 ];
 
-const PRIORITY_OPTIONS: { value: TaskPriority | 'ALL'; label: string }[] = [
-  { value: 'ALL', label: 'Все приоритеты' },
-  { value: 'URGENT', label: 'Срочный' },
-  { value: 'HIGH', label: 'Высокий' },
-  { value: 'MEDIUM', label: 'Средний' },
-  { value: 'LOW', label: 'Низкий' },
-];
+
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'newest', label: 'Новые первыми' },
   { value: 'oldest', label: 'Старые первыми' },
   { value: 'deadline_asc', label: 'Дедлайн ↑' },
   { value: 'deadline_desc', label: 'Дедлайн ↓' },
-  { value: 'priority', label: 'По приоритету' },
+  
 ];
 
-const PRIORITY_WEIGHT: Record<TaskPriority, number> = {
-  URGENT: 0,
-  HIGH: 1,
-  MEDIUM: 2,
-  LOW: 3,
-};
+
 
 export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({ initialTasks, onBatchSave, userRole }, ref) => {
   const [tasks, setTasks] = useState<TaskDto[]>(initialTasks);
@@ -59,7 +48,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'ALL'>('ALL');
+  
   const [sortBy, setSortBy] = useState<SortOption>('newest');
 
   useImperativeHandle(ref, () => ({
@@ -110,9 +99,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
     }
 
     // Filter by priority
-    if (priorityFilter !== 'ALL') {
-      result = result.filter(t => t.priority === priorityFilter);
-    }
+    
 
     // Sort
     result.sort((a, b) => {
@@ -133,17 +120,16 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
           if (!b.dueDate) return -1;
           return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
         }
-        case 'priority':
-          return PRIORITY_WEIGHT[a.priority] - PRIORITY_WEIGHT[b.priority];
+        
         default:
           return 0;
       }
     });
 
     return result;
-  }, [tasks, statusFilter, priorityFilter, sortBy]);
+  }, [tasks, statusFilter, sortBy]);
 
-  const hasActiveFilters = statusFilter !== 'ALL' || priorityFilter !== 'ALL';
+  const hasActiveFilters = statusFilter !== 'ALL';
 
   // 1. Prevent closing tab
   useEffect(() => {
@@ -224,7 +210,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
 
   const clearFilters = () => {
     setStatusFilter('ALL');
-    setPriorityFilter('ALL');
+    
     setSortBy('newest');
   };
 
@@ -244,15 +230,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
           ))}
         </select>
 
-        <select
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value as TaskPriority | 'ALL')}
-          className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:border-brand-green focus:outline-none cursor-pointer"
-        >
-          {PRIORITY_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+        
 
         <div className="flex items-center gap-1.5">
           <ArrowUpDown size={14} className="text-gray-400" />

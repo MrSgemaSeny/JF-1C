@@ -4,7 +4,7 @@ import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '..
 import { getTaskComments, addTaskComment, getTaskHistory } from '../api/taskApi';
 import { getTaskDocuments, downloadDocument, uploadDocument } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
-import { StatusBadge, PriorityBadge } from '@/shared/ui/Badge';
+import { StatusBadge } from '@/shared/ui/Badge';
 import { twMerge } from 'tailwind-merge';
 import { Edit2, Plus, Trash2, CheckSquare, Square, Loader2, Paperclip } from 'lucide-react';
 
@@ -186,7 +186,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   {task.title}
                 </h2>
               )}
-              <PriorityBadge priority={task.priority} />
+              
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-500">
               {task.client && (

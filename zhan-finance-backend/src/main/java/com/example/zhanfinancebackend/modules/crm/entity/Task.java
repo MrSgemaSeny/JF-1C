@@ -50,10 +50,6 @@ public class Task extends BaseEntity {
     @Column(name = "lost_reason", columnDefinition = "TEXT")
     private String lostReason;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 16)
-    private TaskPriority priority = TaskPriority.MEDIUM;
-
     @Column(name = "due_date")
     private LocalDate dueDate;
 
@@ -170,13 +166,6 @@ public class Task extends BaseEntity {
 
     public void setLostReason(String lostReason) {
         this.lostReason = lostReason;
-    }
-    public TaskPriority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(TaskPriority priority) {
-        this.priority = priority;
     }
 
     public LocalDate getDueDate() {

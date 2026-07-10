@@ -1,7 +1,7 @@
 package com.example.zhanfinancebackend.modules.crm.dto;
 
 import com.example.zhanfinancebackend.modules.auth.dto.UserDto;
-import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
+
 import com.example.zhanfinancebackend.modules.services.dto.ServiceDto;
 
 import java.time.LocalDate;
@@ -26,7 +26,6 @@ public record TaskDto(
         LeadSource source,
         LocalDate closedAt,
         String lostReason,
-        TaskPriority priority,
         LocalDate dueDate,
         UserDto createdBy,
         ZonedDateTime createdAt,

@@ -71,14 +71,15 @@ class TaskServiceIntegrationTests {
         clientToken = jwtService.generateAccessToken(client);
         employeeToken = jwtService.generateAccessToken(employee);
 
-        // Ensure default pipeline exists
-        Pipeline pipeline = new Pipeline("Default");
-        pipeline.setDefault(true);
-        pipeline = pipelineRepository.save(pipeline);
-        Stage openStage = new Stage(pipeline, "NEW", 0, null, StageType.OPEN);
-        openStage.setDefault(true);
-        stageRepository.save(openStage);
-        stageRepository.save(new Stage(pipeline, "DONE", 1, null, StageType.WON));
+        if (pipelineRepository.findByIsDefaultTrue().isEmpty()) {
+            Pipeline pipeline = new Pipeline("Default");
+            pipeline.setDefault(true);
+            pipeline = pipelineRepository.save(pipeline);
+            Stage openStage = new Stage(pipeline, "NEW", 0, null, StageType.OPEN);
+            openStage.setDefault(true);
+            stageRepository.save(openStage);
+            stageRepository.save(new Stage(pipeline, "DONE", 1, null, StageType.WON));
+        }
     }
 
     @Test

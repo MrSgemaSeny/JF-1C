@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { TaskDto, SubtaskDto } from '../model/types';
-import { PriorityBadge, StatusBadge } from '@/shared/ui/Badge';
+import { StatusBadge } from '@/shared/ui/Badge';
 import { Square, CheckSquare, Clock, ArrowUpRight, Calendar, CalendarClock, Plus, ChevronDown, MessageSquare, Trash2, X, Paperclip, Loader2 } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { uploadDocument } from '@/entities/document/api/documentApi';
@@ -384,7 +384,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
 
       {/* Footer: Priority + dates */}
       <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">
-        <PriorityBadge priority={task.priority} />
+        
 
         <div className="flex items-center gap-3">
           {/* Comments count */}

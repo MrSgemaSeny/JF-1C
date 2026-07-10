@@ -21,7 +21,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.Subtask;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskComment;
 import com.example.zhanfinancebackend.modules.crm.entity.TaskActivity;
-import com.example.zhanfinancebackend.modules.crm.entity.TaskPriority;
+
 import com.example.zhanfinancebackend.modules.crm.entity.Stage;
 import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import com.example.zhanfinancebackend.modules.crm.entity.Pipeline;
@@ -125,9 +125,7 @@ public class TaskService {
 
         Task task = new Task(request.title(), client, creator);
         task.setDescription(request.description());
-        if (request.priority() != null) {
-            task.setPriority(request.priority());
-        }
+
         task.setDueDate(request.dueDate());
 
         Pipeline pipeline = pipelineRepository.findByIsDefaultTrue()
@@ -357,7 +355,6 @@ public class TaskService {
                 task.getSource(),
                 task.getClosedAt(),
                 task.getLostReason(),
-                task.getPriority(),
                 task.getDueDate(),
                 mapUserToDto(task.getCreatedBy()),
                 task.getCreatedAt() != null ? task.getCreatedAt().atZone(ZoneOffset.UTC) : null,

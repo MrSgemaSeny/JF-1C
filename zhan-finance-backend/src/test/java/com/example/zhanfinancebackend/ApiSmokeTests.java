@@ -11,6 +11,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import com.example.zhanfinancebackend.modules.crm.entity.Pipeline;
+import com.example.zhanfinancebackend.modules.crm.entity.Stage;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+import com.example.zhanfinancebackend.modules.crm.repository.PipelineRepository;
+import com.example.zhanfinancebackend.modules.crm.repository.StageRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -28,6 +34,27 @@ class ApiSmokeTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PipelineRepository pipelineRepository;
+
+    @Autowired
+    private StageRepository stageRepository;
+
+    @BeforeEach
+    void setup() {
+        if (pipelineRepository.findByIsDefaultTrue().isEmpty()) {
+            Pipeline pipeline = new Pipeline("Default");
+            pipeline.setDefault(true);
+            pipeline = pipelineRepository.save(pipeline);
+            
+            Stage openStage = new Stage(pipeline, "NEW", 0, null, StageType.OPEN);
+            openStage.setDefault(true);
+            stageRepository.save(openStage);
+            
+            stageRepository.save(new Stage(pipeline, "DONE", 1, null, StageType.WON));
+        }
+    }
 
     @Test
     void publicContactRequestIsAvailable() throws Exception {
@@ -169,7 +196,7 @@ class ApiSmokeTests {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.status").value("NEW"))
+                .andExpect(jsonPath("$.data.stage.type").value("OPEN"))
                 .andExpect(jsonPath("$.data.client.email").value("client_smoke@example.com"))
                 .andReturn();
                 

@@ -19,7 +19,7 @@ export interface PipelineDto {
   stages: StageDto[];
 }
 
-export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
 
 export interface UserDto {
   id: number;
@@ -82,7 +82,6 @@ export interface TaskDto {
   source?: string;
   closedAt?: string;
   lostReason?: string;
-  priority: TaskPriority;
   dueDate?: string;
   subtasks?: SubtaskDto[];
   tags?: string[];
