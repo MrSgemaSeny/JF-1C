@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +58,10 @@ class TaskServiceIntegrationTests {
 
     private String clientToken;
     private String employeeToken;
+    private String adminToken;
     private User client;
     private User employee;
+    private User admin;
 
     @BeforeEach
     void setup() {
@@ -68,8 +71,12 @@ class TaskServiceIntegrationTests {
         employee = new User("Employee", "emp@test.com", "encoded", Role.EMPLOYEE);
         employee = userRepository.save(employee);
 
+        admin = new User("Admin", "admin2@test.com", "encoded", Role.ADMIN);
+        admin = userRepository.save(admin);
+
         clientToken = jwtService.generateAccessToken(client);
         employeeToken = jwtService.generateAccessToken(employee);
+        adminToken = jwtService.generateAccessToken(admin);
 
         if (pipelineRepository.findByIsDefaultTrue().isEmpty()) {
             Pipeline pipeline = new Pipeline("Default");
@@ -163,5 +170,18 @@ class TaskServiceIntegrationTests {
                             """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void deleteTask_ShouldDeleteTask() throws Exception {
+        Task task = new Task("Task to delete", client, client);
+        task.setStage(stageRepository.findAll().get(0));
+        task = taskRepository.save(task);
+
+        mockMvc.perform(delete("/api/crm/tasks/{id}", task.getId())
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
+
+        assertThat(taskRepository.findById(task.getId())).isEmpty();
     }
 }
