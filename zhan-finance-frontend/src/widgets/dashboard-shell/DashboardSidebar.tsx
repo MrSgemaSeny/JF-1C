@@ -21,9 +21,10 @@ import {
   CreditCard,
   RefreshCw,
   History,
+  User,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
-import { API_BASE_URL } from '@/shared/api/http';
+import { API_BASE_URL, getSecureImageUrl } from '@/shared/api/http';
 import { twMerge } from 'tailwind-merge';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
@@ -49,10 +50,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Notifications':       <Bell size={16} />,
 };
 
-function getInitials(email?: string): string {
-  if (!email) return '?';
-  return email.charAt(0).toUpperCase();
-}
+
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: 'Администратор',
@@ -178,12 +176,12 @@ export function DashboardSidebar({
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-green to-green-600 flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
               {user.avatarUrl ? (
                 <img 
-                  src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}${user.avatarUrl}`} 
+                  src={getSecureImageUrl(user.avatarUrl)}
                   alt="Avatar" 
                   className="w-full h-full object-cover" 
                 />
               ) : (
-                <span className="text-white text-sm font-bold">{getInitials(user.fullName || user.email)}</span>
+                <User size={20} className="text-white" />
               )}
             </div>
             {!isDesktopCollapsed && (

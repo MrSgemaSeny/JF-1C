@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 import { DashboardSidebar } from './DashboardSidebar';
 import { Menu } from 'lucide-react';
 import { GlobalSearch } from '@/widgets/search/GlobalSearch';
@@ -46,7 +47,9 @@ export function DashboardLayout() {
           </div>
           
           <div className="flex-1 flex flex-col min-h-0 p-4 md:p-8">
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </div>
         </main>
       </div>

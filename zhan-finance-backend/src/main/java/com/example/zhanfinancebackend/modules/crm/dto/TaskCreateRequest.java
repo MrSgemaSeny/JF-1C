@@ -14,6 +14,7 @@ public record TaskCreateRequest(
         Long assignedToId,
         TaskPriority priority,
         LocalDate dueDate,
-        List<SubtaskCreateRequest> subtasks
+        List<SubtaskCreateRequest> subtasks,
+        List<Long> serviceIds
 ) {
 }

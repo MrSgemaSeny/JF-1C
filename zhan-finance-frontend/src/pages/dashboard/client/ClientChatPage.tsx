@@ -3,6 +3,7 @@ import { Send, User, Search, UserCheck, Shield, MessageCircle, Trash2, ChevronLe
 import { motion } from 'framer-motion';
 import { getChatContacts, getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, ChatContactDto, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useAuth } from '@/features/auth/AuthContext';
+import { getSecureImageUrl } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -244,7 +245,7 @@ export function ClientChatPage() {
                     {contact.role === 'ADMIN' ? <Shield className="w-5 h-5 absolute z-0" /> : <UserCheck className="w-5 h-5 absolute z-0" />}
                     {contact.avatarUrl && (
                       <img 
-                        src={contact.avatarUrl} 
+                        src={getSecureImageUrl(contact.avatarUrl)}
                         alt="" 
                         className="w-full h-full object-cover relative z-10" 
                         onError={(e) => e.currentTarget.style.display = 'none'} 
@@ -308,7 +309,7 @@ export function ClientChatPage() {
                   {selectedContact.role === 'ADMIN' ? <Shield className="w-5 h-5 absolute z-0" /> : <UserCheck className="w-5 h-5 absolute z-0" />}
                   {selectedContact.avatarUrl && (
                     <img 
-                      src={selectedContact.avatarUrl} 
+                      src={getSecureImageUrl(selectedContact.avatarUrl)} 
                       alt="" 
                       className="w-full h-full object-cover relative z-10" 
                       onError={(e) => e.currentTarget.style.display = 'none'} 

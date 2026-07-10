@@ -131,7 +131,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         toast.warning('Session expired, please login again', { duration: 5000 });
-        window.location.href = '/login';
+        window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;
       }
     }
@@ -209,7 +209,7 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         toast.warning('Session expired, please login again', { duration: 5000 });
-        window.location.href = '/login';
+        window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;
       }
     }
@@ -229,6 +229,14 @@ export function extractValidationErrors(error: unknown): Record<string, string> 
     }, {} as Record<string, string>);
   }
   return {};
+}
+
+export function getSecureImageUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith('http')) return url;
+  const token = getAccessToken();
+  const separator = url.includes('?') ? '&' : '?';
+  return token ? `${API_BASE_URL}${url}${separator}token=${token}` : `${API_BASE_URL}${url}`;
 }
 
 export { API_BASE_URL, getAccessToken };

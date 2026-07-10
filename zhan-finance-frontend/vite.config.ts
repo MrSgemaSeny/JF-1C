@@ -26,6 +26,11 @@ export default defineConfig({
       '/uploads': {
         target: 'http://localhost:8080',
         changeOrigin: true
+      },
+      '/ws': {
+        target: 'http://localhost:8080',
+        ws: true,
+        changeOrigin: true
       }
     }
   },
@@ -38,6 +43,33 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('framer-motion')) {
+            return 'vendor-framer-motion';
+          }
+          if (id.includes('/pages/dashboard/admin/')) {
+            return 'chunk-admin';
+          }
+          if (id.includes('/pages/dashboard/employee/')) {
+            return 'chunk-employee';
+          }
+          if (id.includes('/pages/dashboard/client/')) {
+            return 'chunk-client';
+          }
+          if (id.includes('/pages/dashboard/learner/')) {
+            return 'chunk-learner';
+          }
+          if (id.includes('/pages/home/') || id.includes('/pages/about/') || id.includes('/pages/services/') || id.includes('/pages/auth/')) {
+            return 'chunk-public';
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        }
+      }
+    }
   },
   test: {
     environment: 'jsdom',

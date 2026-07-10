@@ -41,6 +41,7 @@ public class TaskService {
     private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
     private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
     private final AuditService auditService;
+    private final com.example.zhanfinancebackend.modules.services.repository.ServiceRepository serviceRepository;
 
     public TaskService(
             TaskRepository taskRepository,
@@ -48,7 +49,8 @@ public class TaskService {
             CrmAccessService accessService,
             com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService,
             com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService,
-            AuditService auditService
+            AuditService auditService,
+            com.example.zhanfinancebackend.modules.services.repository.ServiceRepository serviceRepository
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -56,6 +58,7 @@ public class TaskService {
         this.notificationService = notificationService;
         this.emailNotificationService = emailNotificationService;
         this.auditService = auditService;
+        this.serviceRepository = serviceRepository;
     }
 
     @Transactional(readOnly = true)
@@ -143,6 +146,11 @@ public class TaskService {
             }
         }
         
+        if (request.serviceIds() != null && !request.serviceIds().isEmpty()) {
+            List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services = serviceRepository.findAllById(request.serviceIds());
+            task.setServices(services);
+        }
+
         Task savedTask = taskRepository.save(task);
         auditService.logAction("CREATE", "Task", savedTask.getId(), "Task created: " + savedTask.getTitle());
 
@@ -172,6 +180,21 @@ public class TaskService {
         task.setDescription(request.description());
         task.setStatus(TaskStatus.NEW);
         task.setDueDate(request.dueDate());
+
+        if (request.subtasks() != null) {
+            for (SubtaskCreateRequest stReq : request.subtasks()) {
+                Subtask subtask = new Subtask(task, stReq.title());
+                if (stReq.status() != null) {
+                    subtask.setStatus(stReq.status());
+                }
+                task.addSubtask(subtask);
+            }
+        }
+
+        if (request.serviceIds() != null && !request.serviceIds().isEmpty()) {
+            List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services = serviceRepository.findAllById(request.serviceIds());
+            task.setServices(services);
+        }
 
         Task savedTask = taskRepository.save(task);
         auditService.logAction("CREATE", "Task", savedTask.getId(), "Client requested task: " + savedTask.getTitle());
@@ -468,7 +491,8 @@ public class TaskService {
                 task.getCreatedAt() != null ? task.getCreatedAt().atZone(ZoneOffset.UTC) : null,
                 task.getUpdatedAt() != null ? task.getUpdatedAt().atZone(ZoneOffset.UTC) : null,
                 task.getSubtasks() != null ? task.getSubtasks().stream().map(this::mapSubtaskToDto).toList() : List.of(),
-                task.getTags() != null ? new java.util.ArrayList<>(task.getTags()) : List.of()
+                task.getTags() != null ? new java.util.ArrayList<>(task.getTags()) : List.of(),
+                task.getServices() != null ? task.getServices().stream().map(com.example.zhanfinancebackend.common.audit.BaseEntity::getId).toList() : List.of()
         );
     }
 

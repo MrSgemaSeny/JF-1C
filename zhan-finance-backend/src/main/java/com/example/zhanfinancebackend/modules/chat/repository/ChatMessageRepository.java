@@ -33,6 +33,10 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     
     int countBySenderIdAndReceiverIdAndIsReadFalse(Long senderId, Long receiverId);
     
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("UPDATE ChatMessage m SET m.isRead = true WHERE m.receiver.id = :receiverId AND m.sender.id = :senderId AND m.isRead = false")
+    void markMessagesAsRead(@Param("receiverId") Long receiverId, @Param("senderId") Long senderId);
+    
     @Query(value = "SELECT * FROM chat_messages WHERE " +
            "((sender_id = :userId1 AND receiver_id = :userId2) OR " +
            "(sender_id = :userId2 AND receiver_id = :userId1)) " +

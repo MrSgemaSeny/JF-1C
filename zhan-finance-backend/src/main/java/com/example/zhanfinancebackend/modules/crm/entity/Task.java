@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "tasks")
-@EntityListeners({AuditingEntityListener.class, com.example.zhanfinancebackend.modules.audit.listener.AuditEntityListener.class})
+@EntityListeners(AuditingEntityListener.class)
 public class Task extends BaseEntity {
 
     @Column(nullable = false)
@@ -51,6 +51,14 @@ public class Task extends BaseEntity {
     @CollectionTable(name = "task_tags", joinColumns = @JoinColumn(name = "task_id"))
     @Column(name = "tag")
     private List<String> tags = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "task_services",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services = new ArrayList<>();
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskComment> comments = new ArrayList<>();
@@ -196,5 +204,16 @@ public class Task extends BaseEntity {
     public void addActivity(TaskActivity activity) {
         history.add(activity);
         activity.setTask(this);
+    }
+
+    public List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> getServices() {
+        return services;
+    }
+
+    public void setServices(List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services) {
+        this.services.clear();
+        if (services != null) {
+            this.services.addAll(services);
+        }
     }
 }

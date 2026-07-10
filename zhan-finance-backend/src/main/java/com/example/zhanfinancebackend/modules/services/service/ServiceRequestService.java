@@ -89,7 +89,9 @@ public class ServiceRequestService {
                 taskTitle,
                 taskDescription,
                 null, // clientId
-                null  // dueDate
+                null, // dueDate
+                null, // subtasks
+                null  // serviceIds
         );
         TaskDto taskDto = taskService.requestTask(taskRequest, client);
 

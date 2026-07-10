@@ -54,6 +54,8 @@ public class EmailNotificationService {
             
             mailSender.send(message);
             log.info("Sent email to: {}", to);
+        } catch (org.springframework.mail.MailAuthenticationException e) {
+            log.warn("Mocking email to {}. (SMTP authentication failed - skipping real email)", to);
         } catch (jakarta.mail.MessagingException e) {
             log.error("Failed to send email to: {}", to, e);
         } catch (Exception e) {

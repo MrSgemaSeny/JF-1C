@@ -33,15 +33,14 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getAllEmployees() {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
                 .map(this::mapToEmployeeDto)
                 .toList();
     }
 
     public List<EmployeeDto> getPendingEmployees() {
-        return userRepository.findAll().stream()
-                .filter(u -> (u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN) && !u.isEnabled())
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
+                .filter(u -> !u.isEnabled())
                 .map(this::mapToEmployeeDto)
                 .toList();
     }
@@ -60,16 +59,14 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getAssignedEmployees() {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
                 .filter(emp -> userRepository.countByAssignedEmployee(emp) > 0)
                 .map(this::mapToEmployeeDto)
                 .toList();
     }
 
     public List<EmployeeDto> getUnassignedEmployees() {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
                 .filter(emp -> userRepository.countByAssignedEmployee(emp) == 0)
                 .map(this::mapToEmployeeDto)
                 .toList();
@@ -77,8 +74,7 @@ public class AdminService {
 
     public List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto> getEmployeeWorkloads() {
         java.util.List<com.example.zhanfinancebackend.modules.crm.entity.Task> allTasks = taskRepository.findAll();
-        return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.EMPLOYEE || u.getRole() == Role.ADMIN)
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
                 .map(u -> {
                     int activeTasks = (int) allTasks.stream()
                             .filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(u.getId()))
@@ -124,8 +120,7 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getAllLearners() {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.LEARNER)
+        return userRepository.findAllByRole(Role.LEARNER).stream()
                 .map(this::mapToEmployeeDto)
                 .toList();
     }

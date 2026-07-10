@@ -173,7 +173,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
 
   const content = (
       <div 
-        className={`bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden ${isModal ? 'max-w-4xl max-h-[90vh]' : 'h-full shadow-sm border border-gray-100'}`}
+        className={`bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden ${isModal ? 'max-w-6xl max-h-[90vh]' : 'h-full shadow-sm border border-gray-100'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -232,7 +232,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
         {/* Body */}
         <div className="flex flex-1 overflow-hidden">
           {/* Left Column: Details */}
-          <div className="w-1/2 p-6 overflow-y-auto border-r border-gray-100">
+          <div className="w-[60%] p-8 overflow-y-auto border-r border-gray-100">
             {/* Description */}
             <div className="mb-8 group">
               <div className="flex items-center justify-between mb-2">
@@ -463,7 +463,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
           </div>
 
           {/* Right Column: Comments & History */}
-          <div className="w-1/2 flex flex-col bg-gray-50/50">
+          <div className="w-[40%] flex flex-col bg-gray-50/50">
             {/* Tabs */}
             <div className="flex border-b border-gray-200 px-6 pt-4 gap-6">
               <button

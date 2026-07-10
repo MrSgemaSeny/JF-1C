@@ -61,7 +61,7 @@ export function GlobalSearch() {
         <input
           type="text"
           placeholder="Поиск по задачам, клиентам, курсам..."
-          className="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-lg focus:bg-white focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition-all"
+          className="w-full pl-10 pr-4 pt-2 pb-2.5 leading-relaxed bg-gray-100 border-transparent rounded-lg focus:bg-white focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition-all"
           value={query}
           onChange={e => {
             setQuery(e.target.value);
@@ -91,7 +91,7 @@ export function GlobalSearch() {
                       onClick={() => handleSelectTask(task.id)}
                       className="w-full text-left px-4 py-2 hover:bg-gray-50 flex flex-col"
                     >
-                      <span className="font-medium text-gray-900 truncate">{task.title}</span>
+                      <span className="font-medium text-gray-900 truncate leading-relaxed pb-0.5">{task.title}</span>
                       <span className="text-xs text-gray-500">
                         {task.client?.fullName} • {task.status}
                       </span>
@@ -110,7 +110,7 @@ export function GlobalSearch() {
                       onClick={() => handleSelectCourse(course.id)}
                       className="w-full text-left px-4 py-2 hover:bg-gray-50 flex flex-col"
                     >
-                      <span className="font-medium text-gray-900 truncate">{course.title}</span>
+                      <span className="font-medium text-gray-900 truncate leading-relaxed pb-0.5">{course.title}</span>
                       <span className="text-xs text-gray-500">
                         {course.isPublished ? 'Опубликован' : 'Черновик'}
                       </span>
@@ -129,7 +129,7 @@ export function GlobalSearch() {
                       onClick={() => handleSelectLesson(lesson.sectionId, lesson.id)}
                       className="w-full text-left px-4 py-2 hover:bg-gray-50 flex flex-col"
                     >
-                      <span className="font-medium text-gray-900 truncate">{lesson.title}</span>
+                      <span className="font-medium text-gray-900 truncate leading-relaxed pb-0.5">{lesson.title}</span>
                       <span className="text-xs text-gray-500">
                         Тип: {lesson.type}
                       </span>
@@ -144,7 +144,7 @@ export function GlobalSearch() {
                   </div>
                   {results.users.map(user => (
                     <div key={user.id} className="px-4 py-2 hover:bg-gray-50 flex flex-col">
-                      <span className="font-medium text-gray-900 truncate">{user.fullName}</span>
+                      <span className="font-medium text-gray-900 truncate leading-relaxed pb-0.5">{user.fullName}</span>
                       <span className="text-xs text-gray-500">{user.email} • {user.role}</span>
                     </div>
                   ))}

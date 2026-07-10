@@ -6,6 +6,7 @@ import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.billing.dto.InvoiceDto;
 import com.example.zhanfinancebackend.modules.billing.entity.Invoice;
 import com.example.zhanfinancebackend.modules.billing.repository.InvoiceRepository;
+import com.example.zhanfinancebackend.modules.audit.service.AuditService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,9 @@ public class InvoiceServiceTest {
     @Mock
     private InvoiceAccessService invoiceAccessService;
 
+    @Mock
+    private AuditService auditService;
+
     @InjectMocks
     private InvoiceService invoiceService;
 
@@ -49,6 +53,7 @@ public class InvoiceServiceTest {
         client = mock(User.class);
         lenient().when(client.getId()).thenReturn(2L);
         lenient().when(client.getRole()).thenReturn(Role.CLIENT);
+        lenient().when(client.getEmail()).thenReturn("client@example.com");
     }
 
     @Test

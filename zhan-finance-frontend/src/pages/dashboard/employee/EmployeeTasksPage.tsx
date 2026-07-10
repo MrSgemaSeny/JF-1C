@@ -7,7 +7,7 @@ import { Empty } from '@/shared/ui/Empty';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-
+import { exportTasksCsv } from '@/entities/task/api/taskApi';
 export function EmployeeTasksPage() {
   const { user } = useAuth();
   const { data: tasks = [], isLoading } = useTasksQuery({ assignedToId: user?.userId }, !!user?.userId);
@@ -33,7 +33,7 @@ export function EmployeeTasksPage() {
 
   const handleExport = async () => {
     try {
-      const blob = await import('@/entities/task/api/taskApi').then(m => m.exportTasksCsv());
+      const blob = await exportTasksCsv();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

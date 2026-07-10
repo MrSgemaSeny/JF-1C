@@ -24,7 +24,11 @@ public class AuditService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void logAction(String action, String entityName, Long entityId, String details) {
-        Long userId = getCurrentUserId();
+        logAction(action, entityName, entityId, getCurrentUserId(), details);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void logAction(String action, String entityName, Long entityId, Long userId, String details) {
 
         AuditLog log = AuditLog.builder()
                 .action(action)
@@ -36,6 +40,7 @@ public class AuditService {
         
         auditLogRepository.save(log);
     }
+
 
     private Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

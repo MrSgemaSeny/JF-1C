@@ -14,16 +14,18 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
 @Service
-@Primary
+@ConditionalOnProperty(name = "app.storage.type", havingValue = "db", matchIfMissing = true)
 public class DatabaseStorageService implements StorageService {
 
     private final StoredFileRepository storedFileRepository;
     private final LocalStorageService localStorageService;
 
-    public DatabaseStorageService(StoredFileRepository storedFileRepository, LocalStorageService localStorageService) {
+    public DatabaseStorageService(StoredFileRepository storedFileRepository, org.springframework.beans.factory.ObjectProvider<LocalStorageService> localStorageServiceProvider) {
         this.storedFileRepository = storedFileRepository;
-        this.localStorageService = localStorageService;
+        this.localStorageService = localStorageServiceProvider.getIfAvailable();
     }
 
     @Override
@@ -63,15 +65,18 @@ public class DatabaseStorageService implements StorageService {
             };
         }
         
-        try {
-            return localStorageService.loadAsResource(storageKey);
-        } catch (Exception e) {
+        if (localStorageService != null) {
             try {
-                return localStorageService.loadAsResource("avatars/" + storageKey);
-            } catch (Exception ex) {
-                throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+                return localStorageService.loadAsResource(storageKey);
+            } catch (Exception e) {
+                try {
+                    return localStorageService.loadAsResource("avatars/" + storageKey);
+                } catch (Exception ex) {
+                    throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+                }
             }
         }
+        throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
     }
 
     @Override

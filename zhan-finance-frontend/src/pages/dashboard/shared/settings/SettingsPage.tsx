@@ -3,7 +3,7 @@ import { Camera, Lock, User, Save, Upload, Shield, Building2, Phone } from 'luci
 import { useAuth } from '@/features/auth/AuthContext';
 import { getMyProfile, updateMyProfile, updateMyPassword, uploadAvatar, UserProfileDto } from '@/entities/user/api/userApi';
 import { Spinner } from '@/shared/ui/Spinner';
-import { API_BASE_URL } from '@/shared/api/http';
+import { API_BASE_URL, getSecureImageUrl } from '@/shared/api/http';
 
 export function SettingsPage() {
   const { user, setUser } = useAuth();
@@ -156,7 +156,7 @@ export function SettingsPage() {
                 <div className="w-32 h-32 rounded-full overflow-hidden bg-white border-4 border-white shadow-lg relative ring-4 ring-brand-green/10">
                   {profile.avatarUrl ? (
                     <img
-                      src={profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `${API_BASE_URL}${profile.avatarUrl}`}
+                      src={getSecureImageUrl(profile.avatarUrl)}
                       alt={profile.fullName}
                       className="w-full h-full object-cover"
                     />

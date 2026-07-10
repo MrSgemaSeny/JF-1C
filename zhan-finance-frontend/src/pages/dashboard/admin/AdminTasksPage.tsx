@@ -6,7 +6,7 @@ import type { TaskDto } from '@/entities/task/model/types';
 import { TaskGridBoard, type TaskGridBoardRef } from '@/widgets/task-board/TaskGridBoard';
 import { Plus, Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-
+import { exportTasksCsv } from '@/entities/task/api/taskApi';
 export function AdminTasksPage() {
   const { data: tasks, isLoading, error } = useTasksQuery();
   const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
@@ -50,7 +50,7 @@ export function AdminTasksPage() {
 
   const handleExport = async () => {
     try {
-      const blob = await import('@/entities/task/api/taskApi').then(m => m.exportTasksCsv());
+      const blob = await exportTasksCsv();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

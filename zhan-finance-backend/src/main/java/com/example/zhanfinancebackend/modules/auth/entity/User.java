@@ -13,7 +13,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "app_users")
-@EntityListeners({com.example.zhanfinancebackend.modules.audit.listener.AuditEntityListener.class})
 public class User extends BaseEntity {
 
     @Column(nullable = false, length = 120)

@@ -23,6 +23,7 @@ public record TaskDto(
         ZonedDateTime createdAt,
         ZonedDateTime updatedAt,
         List<SubtaskDto> subtasks,
-        List<String> tags
+        List<String> tags,
+        List<Long> serviceIds
 ) {
 }

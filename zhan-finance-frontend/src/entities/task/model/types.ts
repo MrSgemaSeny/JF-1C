@@ -61,6 +61,7 @@ export interface TaskDto {
   dueDate?: string;
   subtasks?: SubtaskDto[];
   tags?: string[];
+  serviceIds?: number[];
   comments?: TaskCommentDto[];
   history?: TaskActivityDto[];
   createdBy: UserDto;
@@ -75,6 +76,8 @@ export interface TaskCreateRequest {
   assignedToId?: number;
   priority?: TaskPriority;
   dueDate?: string;
+  subtasks?: { title: string; status?: string }[];
+  serviceIds?: number[];
 }
 
 export interface TaskRequestCreateRequest {
@@ -82,6 +85,8 @@ export interface TaskRequestCreateRequest {
   description?: string;
   clientId: number;
   dueDate?: string;
+  subtasks?: { title: string; status?: string }[];
+  serviceIds?: number[];
 }
 
 export interface TaskFilter {

@@ -1,4 +1,4 @@
-package com.example.zhanfinancebackend.config;
+package com.example.zhanfinancebackend.modules.chat.config;
 
 import com.example.zhanfinancebackend.modules.auth.security.CustomUserDetailsService;
 import com.example.zhanfinancebackend.modules.auth.security.JwtService;
@@ -23,6 +23,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:*}")
+    private String[] allowedOrigins;
 
     public WebSocketConfig(JwtService jwtService, CustomUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
@@ -37,7 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(allowedOrigins).withSockJS();
     }
 
     @Override

@@ -67,18 +67,7 @@ public class ChatService {
     
     @Transactional
     public void markAsRead(Long currentUserId, Long senderId) {
-        // Mark all messages sent by senderId to currentUserId as read
-        List<ChatMessage> messages = chatMessageRepository.findChatHistoryFull(currentUserId, senderId);
-        boolean updated = false;
-        for (ChatMessage msg : messages) {
-            if (msg.getReceiver().getId().equals(currentUserId) && !msg.isRead()) {
-                msg.setRead(true);
-                updated = true;
-            }
-        }
-        if (updated) {
-            chatMessageRepository.saveAll(messages);
-        }
+        chatMessageRepository.markMessagesAsRead(currentUserId, senderId);
     }
     
     @Transactional(readOnly = true)

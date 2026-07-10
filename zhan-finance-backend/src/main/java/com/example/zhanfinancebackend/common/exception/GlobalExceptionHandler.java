@@ -51,9 +51,26 @@ public class GlobalExceptionHandler {
 
     // --- 401 Unauthorized ---
     
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException exception, HttpServletRequest request) {
-        return buildResponse(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", exception, request);
+    @ExceptionHandler({UnauthorizedException.class, org.springframework.security.core.AuthenticationException.class})
+    public ResponseEntity<ErrorResponse> handleUnauthorized(Exception exception, HttpServletRequest request) {
+        String message = exception.getMessage();
+        if (exception instanceof org.springframework.security.authentication.BadCredentialsException) {
+            message = "Неверный email или пароль";
+        } else if (exception instanceof org.springframework.security.core.userdetails.UsernameNotFoundException) {
+            message = "Пользователь не найден";
+        }
+        
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Error 401: {}", requestId, exception.getMessage());
+        
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "UNAUTHORIZED",
+                message != null ? message : "Unauthorized",
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     // --- 403 Forbidden ---

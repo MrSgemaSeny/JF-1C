@@ -4,7 +4,7 @@ import type { TaskDto, TaskStatus, TaskPriority } from '@/entities/task/model/ty
 import { TaskSaveButton } from '@/features/task/ui/TaskSaveButton';
 import { Filter, ArrowUpDown, X } from 'lucide-react';
 import { getEmployees } from '@/entities/employee/api/employeeApi';
-import { deleteTask } from '@/entities/task/api/taskApi';
+import { deleteTask, getTask } from '@/entities/task/api/taskApi';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useApiData } from '@/shared/hooks/useApiData';
@@ -79,7 +79,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
         setSelectedTaskForModal(existing);
       } else {
         try {
-          const { getTask } = await import('@/entities/task/api/taskApi');
+          // static getTask import is used instead
           const fetched = await getTask(taskId);
           setSelectedTaskForModal(fetched);
         } catch (e) {

@@ -31,7 +31,7 @@ public class DeadlineAlertScheduler {
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
         
-        List<TaskStatus> excludedStatuses = List.of(TaskStatus.DONE, TaskStatus.ON_REVIEW);
+        List<TaskStatus> excludedStatuses = List.of(TaskStatus.DONE, TaskStatus.ON_REVIEW, TaskStatus.CANCELLED);
         
         List<Task> dueToday = taskRepository.findByDueDateAndStatusNotIn(today, excludedStatuses);
         List<Task> dueTomorrow = taskRepository.findByDueDateAndStatusNotIn(tomorrow, excludedStatuses);
