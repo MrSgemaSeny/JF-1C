@@ -4,13 +4,13 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { createTask, requestTask } from '@/entities/task/api/taskApi';
 import { fetchServices, ServiceDto } from '@/entities/service/api/servicesApi';
 import { uploadDocument } from '@/entities/document/api/documentApi';
-
 interface TaskCreateModalProps {
   onClose: () => void;
   onCreated: () => void;
+  initialServiceId?: number;
 }
 
-export function TaskCreateModal({ onClose, onCreated }: TaskCreateModalProps) {
+export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCreateModalProps) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -18,7 +18,7 @@ export function TaskCreateModal({ onClose, onCreated }: TaskCreateModalProps) {
   
   // Services
   const [availableServices, setAvailableServices] = useState<ServiceDto[]>([]);
-  const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
+  const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>(initialServiceId ? [initialServiceId] : []);
   
   // Subtasks
   const [subtasks, setSubtasks] = useState<{ title: string; id: number }[]>([]);

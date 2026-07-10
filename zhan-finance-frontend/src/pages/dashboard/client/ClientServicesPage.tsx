@@ -6,8 +6,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { clsx } from 'clsx';
 import { Briefcase, Calendar, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
-
-
+import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
 
 export function ClientServicesPage() {
   const { user } = useAuth();
@@ -130,64 +129,16 @@ export function ClientServicesPage() {
 
       {/* Request Modal */}
       {selectedService && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900">Запрос услуги</h3>
-              <button onClick={() => setSelectedService(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
-                <XCircle className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={handleRequestService} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-1">Выбранная услуга</label>
-                <div className="p-3 bg-gray-50 rounded-lg text-sm text-gray-800 font-medium border border-gray-100">
-                  {selectedService.title}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-1">Желаемая дата связи</label>
-                <input
-                  type="date"
-                  value={preferredDate}
-                  onChange={e => setPreferredDate(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-1">Комментарий (необязательно)</label>
-                <textarea
-                  value={message}
-                  onChange={e => setMessage(e.target.value)}
-                  rows={3}
-                  placeholder="Опишите вашу ситуацию..."
-                  className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all resize-none"
-                />
-              </div>
-
-              <div className="pt-2 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setSelectedService(null)}
-                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1 px-4 py-2.5 bg-brand-green text-white font-semibold rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 flex justify-center items-center"
-                >
-                  {isSubmitting ? <Spinner size="sm" className="text-white" /> : 'Отправить запрос'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <TaskCreateModal 
+          initialServiceId={selectedService.id}
+          onClose={() => setSelectedService(null)}
+          onCreated={() => {
+            setSelectedService(null);
+            setSuccessMessage(`Ваш запрос на услугу «${selectedService.title}» принят!`);
+            loadData();
+            setTimeout(() => setSuccessMessage(null), 5000);
+          }}
+        />
       )}
     </div>
   );

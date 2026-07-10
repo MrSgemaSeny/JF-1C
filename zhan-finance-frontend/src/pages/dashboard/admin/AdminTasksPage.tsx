@@ -87,15 +87,11 @@ export function AdminTasksPage() {
         </div>
       </div>
 
-      {!tasks?.length ? (
-        <Empty label="Нет задач в системе" />
-      ) : (
-        <TaskKanbanBoard 
-          initialTasks={tasks}
-          userRole="ADMIN"
-          ref={boardRef}
-        />
-      )}
+      <TaskKanbanBoard 
+        initialTasks={tasks || []}
+        userRole="ADMIN"
+        ref={boardRef}
+      />
     </div>
   );
 }

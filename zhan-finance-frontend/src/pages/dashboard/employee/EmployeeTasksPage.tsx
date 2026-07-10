@@ -61,15 +61,11 @@ export function EmployeeTasksPage() {
         </button>
       </div>
       
-      {!tasks.length ? (
-        <Empty label="No tasks assigned to you" />
-      ) : (
-        <TaskKanbanBoard 
-          initialTasks={tasks}
-          userRole="EMPLOYEE"
-          ref={boardRef}
-        />
-      )}
+      <TaskKanbanBoard 
+        initialTasks={tasks || []}
+        userRole="EMPLOYEE"
+        ref={boardRef}
+      />
     </div>
   );
 }

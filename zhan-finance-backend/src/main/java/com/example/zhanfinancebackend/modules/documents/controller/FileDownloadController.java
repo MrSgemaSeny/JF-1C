@@ -18,7 +18,7 @@ public class FileDownloadController {
         this.storageService = storageService;
     }
 
-    @GetMapping("/uploads/{storageKey}")
+    @GetMapping("/uploads/{storageKey:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String storageKey) {
         Resource resource = storageService.loadAsResource(storageKey);
         
@@ -38,8 +38,13 @@ public class FileDownloadController {
                 .body(resource);
     }
     
-    @GetMapping("/uploads/avatars/{storageKey}")
+    @GetMapping("/uploads/avatars/{storageKey:.+}")
     public ResponseEntity<Resource> downloadAvatar(@PathVariable String storageKey) {
-        return downloadFile(storageKey);
+        try {
+            return downloadFile("avatars/" + storageKey);
+        } catch (Exception e) {
+            // Fallback for avatars that were uploaded directly to the root uploads folder
+            return downloadFile(storageKey);
+        }
     }
 }

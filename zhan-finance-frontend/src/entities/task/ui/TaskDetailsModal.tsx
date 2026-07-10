@@ -160,7 +160,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
 
   const content = (
       <div 
-        className={`bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden ${isModal ? 'max-w-6xl max-h-[90vh]' : 'h-full shadow-sm border border-gray-100'}`}
+        className={`bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden ${isModal ? 'max-w-[1400px] w-[95vw] h-[90vh]' : 'h-full shadow-sm border border-gray-100'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

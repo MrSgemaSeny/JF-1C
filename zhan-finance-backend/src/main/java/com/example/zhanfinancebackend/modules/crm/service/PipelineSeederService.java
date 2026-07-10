@@ -28,13 +28,18 @@ public class PipelineSeederService {
     @PostConstruct
     @Transactional
     public void seedData() {
+        Pipeline defaultPipeline;
         if (pipelineRepository.count() == 0) {
-            Pipeline defaultPipeline = new Pipeline();
+            defaultPipeline = new Pipeline();
             defaultPipeline.setName("Общая воронка");
             defaultPipeline.setDefault(true);
-            
             defaultPipeline = pipelineRepository.save(defaultPipeline);
+        } else {
+            defaultPipeline = pipelineRepository.findByIsDefaultTrue()
+                .orElseGet(() -> pipelineRepository.findAll().stream().findFirst().orElse(null));
+        }
 
+        if (defaultPipeline != null && stageRepository.count() == 0) {
             List<Stage> savedStages = stageRepository.saveAll(List.of(
                     createStage(defaultPipeline, "Новый", 0, StageType.OPEN, true, "var(--color-stage-new)"),
                     createStage(defaultPipeline, "Сбор документов", 1, StageType.OPEN, false, "var(--color-stage-docs)"),
