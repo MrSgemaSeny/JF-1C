@@ -59,6 +59,18 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
     fetchDocuments();
   }, [task.id]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    if (isModal) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isModal, onClose]);
+
   const fetchDocuments = async () => {
     try {
       const data = await getTaskDocuments(task.id);
