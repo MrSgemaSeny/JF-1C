@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CourseSettingsTab } from './components/CourseSettingsTab';
 import { CourseCurriculumTab } from './components/CourseCurriculumTab';
-import { LessonEditorDrawer } from './components/LessonEditorDrawer';
+import { LessonEditorFullScreen } from './components/LessonEditorFullScreen';
 
 export function AdminCourseEditPage() {
   const { t } = useTranslation(['common']);
@@ -77,7 +77,7 @@ export function AdminCourseEditPage() {
   };
 
   return (
-    <div className="p-6 w-full max-w-5xl mx-auto space-y-6">
+    <div className="p-6 w-full max-w-5xl mx-auto space-y-6 relative">
       <button 
         onClick={() => navigate(ROUTES.ADMIN_COURSES)}
         className="flex items-center text-gray-500 hover:text-gray-900 transition-colors mb-4"
@@ -166,8 +166,8 @@ export function AdminCourseEditPage() {
         </div>
       )}
 
-      {/* Lesson Drawer */}
-      <LessonEditorDrawer 
+      {/* Full-Screen Lesson Editor */}
+      <LessonEditorFullScreen 
         lesson={editingLesson} 
         onClose={() => setEditingLesson(null)} 
         onSaved={() => {
