@@ -51,7 +51,7 @@ export function EmployeeTasksPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Tasks</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Мой Канбан</h1>
         <button 
           onClick={handleExport}
           className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-sm"
