@@ -12,26 +12,9 @@ import java.util.List;
 public class CourseService {
 
     private final CourseRepository courseRepository;
-    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
-    public CourseService(CourseRepository courseRepository, org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
+    public CourseService(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @jakarta.annotation.PostConstruct
-    public void dropOldColumns() {
-        try {
-            jdbcTemplate.execute("ALTER TABLE courses DROP COLUMN IF EXISTS is_published CASCADE;");
-            jdbcTemplate.execute("ALTER TABLE lessons DROP COLUMN IF EXISTS course_id CASCADE;");
-            jdbcTemplate.execute("ALTER TABLE lessons DROP COLUMN IF EXISTS content CASCADE;");
-            jdbcTemplate.execute("ALTER TABLE lessons DROP COLUMN IF EXISTS file_path CASCADE;");
-            jdbcTemplate.execute("ALTER TABLE lessons DROP COLUMN IF EXISTS file_name CASCADE;");
-            jdbcTemplate.execute("ALTER TABLE lessons DROP COLUMN IF EXISTS content_type CASCADE;");
-            jdbcTemplate.execute("ALTER TABLE lessons DROP COLUMN IF EXISTS file_size CASCADE;");
-        } catch (Exception e) {
-            // Ignore
-        }
     }
 
     @Transactional(readOnly = true)
