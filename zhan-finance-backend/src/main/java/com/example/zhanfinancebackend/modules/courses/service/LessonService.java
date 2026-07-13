@@ -26,10 +26,15 @@ public class LessonService {
         this.storageService = storageService;
     }
 
+    @Transactional(readOnly = true)
     public Lesson getLessonById(Long id) {
-        return lessonRepository.findById(id)
+        Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Lesson not found"));
+        if (lesson.getBlocks() != null) {
+            lesson.getBlocks().size();
+        }
+        return lesson;
     }
 
     @Transactional
