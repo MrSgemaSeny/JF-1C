@@ -44,6 +44,15 @@ public class UserController {
         return ApiResponse.success(null);
     }
 
+    @PatchMapping("/me/locale")
+    public ApiResponse<Void> updateLocale(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody java.util.Map<String, String> request
+    ) {
+        userService.updateLocale(principal.getId(), request.get("locale"));
+        return ApiResponse.success(null);
+    }
+
     @PostMapping(value = "/me/avatar", consumes = "multipart/form-data")
     public ApiResponse<UserProfileDto> uploadAvatar(
             @AuthenticationPrincipal UserPrincipal principal,

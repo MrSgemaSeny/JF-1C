@@ -6,6 +6,7 @@ public record UserDto(
         Long id,
         String fullName,
         String email,
-        Role role
+        Role role,
+        String locale
 ) {
 }

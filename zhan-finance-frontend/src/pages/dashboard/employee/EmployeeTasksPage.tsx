@@ -9,7 +9,10 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { exportTasksCsv } from '@/entities/task/api/taskApi';
+import { useTranslation } from 'react-i18next';
+
 export function EmployeeTasksPage() {
+  const { t } = useTranslation(['common']);
   const { user } = useAuth();
   const { data: tasks = [], isLoading } = useTasksQuery({ assignedToId: user?.userId }, !!user?.userId);
   const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
@@ -28,7 +31,7 @@ export function EmployeeTasksPage() {
     try {
       await batchUpdate(allTasks);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update tasks');
+      alert(err instanceof Error ? err.message : t('employeeTasks.updateError'));
     }
   };
 
@@ -44,20 +47,20 @@ export function EmployeeTasksPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err) {
-      alert('Failed to export tasks');
+      alert(t('employeeTasks.exportError'));
     }
   };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Мои задачи</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('employeeTasks.title')}</h1>
         <button 
           onClick={handleExport}
           className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-sm"
         >
           <Download size={18} />
-          <span>Export CSV</span>
+          <span>{t('employeeTasks.exportCsv')}</span>
         </button>
       </div>
       

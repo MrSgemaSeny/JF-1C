@@ -131,7 +131,8 @@ public class GoogleAuthService {
                 user.getRole(),
                 isNewUser,
                 user.getAvatarUrl(),
-                user.getAuthProvider()
+                user.getAuthProvider(),
+                user.getLocale()
         );
     }
 }

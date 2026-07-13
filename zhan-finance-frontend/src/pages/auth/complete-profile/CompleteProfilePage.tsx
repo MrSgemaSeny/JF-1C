@@ -5,8 +5,10 @@ import { ROUTES } from '@/shared/config/routes';
 import { ApiError } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
 import { updateMyProfile } from '@/entities/user/api/userApi';
+import { useTranslation } from 'react-i18next';
 
 export function CompleteProfilePage() {
+  const { t } = useTranslation(['common']);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ export function CompleteProfilePage() {
       });
       navigate(ROUTES.PROFILE);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Не удалось сохранить данные.');
+      setError(err instanceof ApiError ? err.message : t('auth.completeProfile.saveError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -50,17 +52,17 @@ export function CompleteProfilePage() {
 
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-5 h-5 text-brand-green" />
-          <h1 className="text-3xl font-black uppercase text-brand-green">Добро пожаловать!</h1>
+          <h1 className="text-3xl font-black uppercase text-brand-green">{t('auth.completeProfile.title')}</h1>
         </div>
         <p className="text-brand-green/70 mb-8 leading-relaxed">
-          Аккаунт создан через Google. Дополните профиль — это займёт 30 секунд. Всё это необязательно.
+          {t('auth.completeProfile.subtitle')}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="phone" className="block text-sm font-bold text-brand-green mb-1.5 flex items-center gap-1.5">
               <Phone className="w-3.5 h-3.5" />
-              Телефон
+              {t('auth.completeProfile.phoneLabel')}
             </label>
             <input
               id="phone"
@@ -70,14 +72,14 @@ export function CompleteProfilePage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="+7 (777) 000-00-00"
+              placeholder={t('auth.completeProfile.phonePlaceholder')}
             />
           </div>
 
           <div>
             <label htmlFor="companyName" className="block text-sm font-bold text-brand-green mb-1.5 flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5" />
-              Название ИП / ТОО (можно оставить пустым)
+              {t('auth.completeProfile.companyLabel')}
             </label>
             <input
               id="companyName"
@@ -87,7 +89,7 @@ export function CompleteProfilePage() {
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-brand-green/15 focus:outline-none focus:ring-2 focus:ring-brand-green/30 text-brand-green"
-              placeholder="ТОО Zhan Finance"
+              placeholder={t('auth.completeProfile.companyPlaceholder')}
             />
           </div>
 
@@ -102,7 +104,7 @@ export function CompleteProfilePage() {
             disabled={isSubmitting}
             className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Сохраняем...' : 'Сохранить и продолжить'}
+            {isSubmitting ? t('auth.completeProfile.saving') : t('auth.completeProfile.saveBtn')}
             {!isSubmitting && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>
@@ -112,7 +114,7 @@ export function CompleteProfilePage() {
           onClick={handleSkip}
           className="w-full mt-3 py-2.5 text-sm font-bold text-brand-green/50 hover:text-brand-green/80 transition-colors"
         >
-          Пропустить →
+          {t('auth.completeProfile.skip')}
         </button>
       </div>
     </div>

@@ -4,8 +4,10 @@ import { searchGlobal, GlobalSearchResponse } from '@/shared/api/searchApi';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export function GlobalSearch() {
+  const { t } = useTranslation(['common']);
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<GlobalSearchResponse | null>(null);
@@ -60,7 +62,7 @@ export function GlobalSearch() {
         <Search className="absolute left-3 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder="Поиск по задачам, клиентам, курсам..."
+          placeholder={t('search.placeholder')}
           className="w-full pl-10 pr-4 pt-2 pb-2.5 leading-relaxed bg-gray-100 border-transparent rounded-lg focus:bg-white focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition-all"
           value={query}
           onChange={e => {

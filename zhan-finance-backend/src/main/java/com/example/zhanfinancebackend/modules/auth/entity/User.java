@@ -38,6 +38,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private boolean enabled = true;
 
+    @Column(nullable = false, length = 10, columnDefinition = "varchar(10) default 'ru'")
+    private String locale = "ru";
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_employee_id")
     private User assignedEmployee;
@@ -98,6 +101,14 @@ public class User extends BaseEntity {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
     public String getAvatarUrl() {

@@ -108,7 +108,8 @@ public class AuthService {
                 user.getRole(),
                 false,
                 user.getAvatarUrl(),
-                user.getAuthProvider()
+                user.getAuthProvider(),
+                user.getLocale()
         );
     }
 }

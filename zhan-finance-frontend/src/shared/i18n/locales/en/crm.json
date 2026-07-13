@@ -1,0 +1,30 @@
+{
+  "taskPool": {
+    "title": "Task Pool",
+    "empty": "No available tasks",
+    "actions": {
+      "take": "Take task",
+      "drop": "Drop task",
+      "assign": "Assign"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "IN_PROGRESS": "In Progress",
+      "DONE": "Done",
+      "CANCELLED": "Cancelled"
+    },
+    "columns": {
+      "title": "Title",
+      "client": "Client",
+      "status": "Status",
+      "created": "Created",
+      "assignee": "Assignee",
+      "actions": "Actions"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "count_one": "{{count}} task",
+    "count_other": "{{count}} tasks"
+  }
+}

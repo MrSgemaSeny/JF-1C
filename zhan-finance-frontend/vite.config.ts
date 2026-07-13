@@ -9,13 +9,7 @@ export default defineConfig({
   base: '/JF-1C/',
   plugins: [
     react(), 
-    tailwindcss(),
-    {
-      name: 'copy-index-to-404',
-      closeBundle() {
-        fs.copyFileSync('dist/index.html', 'dist/404.html')
-      }
-    }
+    tailwindcss()
   ],
   server: {
     proxy: {

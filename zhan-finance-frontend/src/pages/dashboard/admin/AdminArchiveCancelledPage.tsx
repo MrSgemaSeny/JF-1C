@@ -5,8 +5,10 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
 import type { TaskDto } from '@/entities/task/model/types';
 import { TaskGridBoard, type TaskGridBoardRef } from '@/widgets/task-board/TaskGridBoard';
+import { useTranslation } from 'react-i18next';
 
 export function AdminArchiveCancelledPage() {
+  const { t } = useTranslation(['common']);
   const { data: tasks, isLoading, refetch: fetchTasks } = useApiData(getTasks);
   const boardRef = useRef<TaskGridBoardRef>(null);
 
@@ -15,7 +17,7 @@ export function AdminArchiveCancelledPage() {
       await batchUpdateTasks(allTasks);
       fetchTasks();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update tasks');
+      alert(err instanceof Error ? err.message : t('adminArchive.updateError'));
     }
   };
 
@@ -26,11 +28,11 @@ export function AdminArchiveCancelledPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Архив: Отмененные задачи</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('adminArchive.cancelledTitle')}</h1>
       </div>
 
       {!cancelledTasks.length ? (
-        <Empty label="Нет отмененных задач" />
+        <Empty label={t('adminArchive.noCancelled')} />
       ) : (
         <TaskGridBoard 
           ref={boardRef}

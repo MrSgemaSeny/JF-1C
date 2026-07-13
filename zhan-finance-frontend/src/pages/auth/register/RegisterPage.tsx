@@ -7,12 +7,14 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { useTranslation } from 'react-i18next';
 
 interface RegisterPageProps {
   isEmployeeRoute?: boolean;
 }
 
 export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
+  const { t } = useTranslation(['common']);
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -34,18 +36,18 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
       if (credentialResponse.credential) {
         const result = await loginWithGoogle(credentialResponse.credential, role);
         if (result.isPendingApproval) {
-          setSuccessMessage('Заявка на регистрацию отправлена! Администратор проверит ваши данные.');
+          setSuccessMessage(t('auth.register.pendingApproval'));
         } else if (result.isNewUser && role === 'CLIENT') {
-          toast.success('Успешная регистрация!');
+          toast.success(t('auth.register.success'));
           navigate(ROUTES.COMPLETE_PROFILE);
         } else {
-          toast.success('Успешный вход!');
+          toast.success(t('auth.register.loginSuccess'));
           const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
           navigate(returnUrl, { replace: true });
         }
       }
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Не удалось зарегистрироваться через Google.');
+      toast.error(err instanceof ApiError ? err.message : t('auth.register.googleError'));
     }
   };
 
@@ -55,11 +57,11 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
     setValidationErrors({});
 
     if (password.length < 8) {
-      setValidationErrors({ password: 'Пароль должен содержать минимум 8 символов' });
+      setValidationErrors({ password: t('auth.register.passwordLengthError') });
       return;
     }
     if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
-      setValidationErrors({ password: 'Пароль должен содержать хотя бы одну букву и одну цифру' });
+      setValidationErrors({ password: t('auth.register.passwordFormatError') });
       return;
     }
 
@@ -75,9 +77,9 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
       });
 
       if (result.isPendingApproval) {
-        setSuccessMessage('Заявка на регистрацию отправлена! Администратор проверит ваши данные.');
+        setSuccessMessage(t('auth.register.pendingApproval'));
       } else {
-        toast.success('Успешный вход!');
+        toast.success(t('auth.register.loginSuccess'));
         const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
         navigate(returnUrl, { replace: true });
       }
@@ -86,7 +88,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
       if (Object.keys(fieldErrors).length > 0) {
         setValidationErrors(fieldErrors);
       } else {
-        setGlobalError(err instanceof ApiError ? err.message : 'Не удалось зарегистрироваться. Попробуйте снова.');
+        setGlobalError(err instanceof ApiError ? err.message : t('auth.register.registerError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -100,7 +102,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           <div className="mx-auto w-16 h-16 bg-brand-green/10 rounded-full flex items-center justify-center mb-6">
             <CheckCircle2 className="w-8 h-8 text-brand-green" />
           </div>
-          <h2 className="text-2xl font-black uppercase text-brand-green mb-4">Заявка отправлена</h2>
+          <h2 className="text-2xl font-black uppercase text-brand-green mb-4">{t('auth.register.submittedTitle')}</h2>
           <p className="text-brand-green/70 mb-8 leading-relaxed">
             {successMessage}
           </p>
@@ -108,7 +110,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
             to={ROUTES.HOME}
             className="inline-flex items-center justify-center py-3.5 px-8 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all"
           >
-            На главную
+            {t('auth.register.homeLink')}
           </Link>
         </div>
       </div>
@@ -125,8 +127,8 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           <span className="font-black text-xl uppercase tracking-wide text-brand-green">Zhan Finance</span>
         </Link>
 
-        <h1 className="text-3xl font-black uppercase text-brand-green mb-2">Регистрация</h1>
-        <p className="text-brand-green/70 mb-6">Создайте аккаунт, чтобы открыть личный кабинет.</p>
+        <h1 className="text-3xl font-black uppercase text-brand-green mb-2">{t('auth.register.title')}</h1>
+        <p className="text-brand-green/70 mb-6">{t('auth.register.subtitle')}</p>
 
 
 
@@ -134,7 +136,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           <Input
             id="fullName"
             type="text"
-            label="Имя"
+            label={t('auth.register.nameLabel')}
             required
             autoComplete="off"
             maxLength={120}
@@ -143,7 +145,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
             disabled={isSubmitting}
             error={validationErrors.fullName}
             icon={<User className="w-5 h-5" />}
-            placeholder="Имя Фамилия"
+            placeholder={t('auth.register.namePlaceholder')}
           />
 
           <Input
@@ -165,7 +167,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
               <Input
                 id="phone"
                 type="tel"
-                label="Телефон"
+                label={t('auth.register.phoneLabel')}
                 autoComplete="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -178,7 +180,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
               <Input
                 id="companyName"
                 type="text"
-                label="Название компании"
+                label={t('auth.register.companyLabel')}
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 disabled={isSubmitting}
@@ -192,7 +194,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           <Input
             id="password"
             type="password"
-            label="Пароль"
+            label={t('auth.register.passwordLabel')}
             required
             autoComplete="new-password"
             value={password}
@@ -201,7 +203,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
             error={validationErrors.password}
             icon={<Lock className="w-5 h-5" />}
             placeholder="••••••••"
-            hint="Минимум 8 символов, хотя бы одна буква и одна цифра"
+            hint={t('auth.register.passwordHint')}
           />
 
           {globalError && (
@@ -215,7 +217,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
             disabled={isSubmitting}
             className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
           >
-            {isSubmitting ? 'Отправка...' : 'Зарегистрироваться'}
+            {isSubmitting ? t('auth.register.registering') : t('auth.register.registerBtn')}
             {!isSubmitting && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>
@@ -226,13 +228,13 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
               <div className="w-full border-t border-brand-green/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-brand-green/50">или</span>
+              <span className="px-2 bg-white text-brand-green/50">{t('auth.login.or')}</span>
             </div>
           </div>
           <div className="flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => toast.error('Ошибка авторизации Google')}
+              onError={() => toast.error(t('auth.login.googleAuthError'))}
               use_fedcm_for_prompt={false}
               itp_support={true}
             />
@@ -240,9 +242,9 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
         </div>
 
         <p className="text-center text-sm text-brand-green/70 mt-6">
-          Уже есть аккаунт?{' '}
+          {t('auth.register.hasAccount')}{' '}
           <Link to={`${ROUTES.LOGIN}${searchParams.get('from') ? `?from=${encodeURIComponent(searchParams.get('from')!)}` : ''}`} className="font-bold text-brand-green hover:underline">
-            Войти
+            {t('auth.register.loginLink')}
           </Link>
         </p>
       </div>

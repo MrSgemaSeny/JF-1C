@@ -7,8 +7,10 @@ import { Button } from '@/shared/ui/Button';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 export function AdminSubscriptionsPage() {
+  const { t } = useTranslation(['common']);
   const { data: subscriptions, isLoading, error, refetch } = useApiData<SubscriptionDto[]>(billingApi.getSubscriptions);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -25,25 +27,25 @@ export function AdminSubscriptionsPage() {
       <Section>
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Subscriptions</h1>
-            <p className="text-gray-500 text-sm">Manage client subscriptions</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('adminSubscriptions.title')}</h1>
+            <p className="text-gray-500 text-sm">{t('adminSubscriptions.subtitle')}</p>
           </div>
-          <Button onClick={() => setIsModalOpen(true)}>Create Subscription</Button>
+          <Button onClick={() => setIsModalOpen(true)}>{t('adminSubscriptions.createBtn')}</Button>
         </div>
 
         {!subscriptions || subscriptions.length === 0 ? (
-          <Empty label="No subscriptions found" />
+          <Empty label={t('adminSubscriptions.noSubscriptions')} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="p-3 text-sm font-medium text-gray-500">ID</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Plan Name</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Monthly Price</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Status</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Starts At</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Ends At</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminSubscriptions.planName')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminSubscriptions.monthlyPrice')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminSubscriptions.status')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminSubscriptions.startsAt')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminSubscriptions.endsAt')}</th>
                 </tr>
               </thead>
               <tbody>

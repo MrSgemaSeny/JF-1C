@@ -73,7 +73,8 @@ public class UserService {
                 user.getAvatarUrl(),
                 user.getAuthProvider(),
                 assignedEmployeeId,
-                assignedEmployeeName
+                assignedEmployeeName,
+                user.getLocale()
         );
     }
 
@@ -99,6 +100,15 @@ public class UserService {
         }
 
         return getMyProfile(userId);
+    }
+
+    @Transactional
+    public void updateLocale(Long userId, String locale) {
+        if (locale == null || locale.isBlank() || locale.length() > 10) return;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+        user.setLocale(locale);
+        userRepository.save(user);
     }
 
     @Transactional

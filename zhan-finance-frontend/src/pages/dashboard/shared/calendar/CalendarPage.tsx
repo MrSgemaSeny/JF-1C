@@ -4,11 +4,9 @@ import { getCalendarEvents, createCalendarEvent, deleteCalendarEvent, CalendarEv
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 
-const MONTH_NAMES = [
-  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-];
-const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+import { useTranslation } from 'react-i18next';
+
+// Colors remain hardcoded but can be translated later if needed, they are not primarily shown in the UI here.
 const COLORS = [
   { value: 'BLUE', label: 'Синий', bg: 'bg-blue-100', text: 'text-blue-800' },
   { value: 'RED', label: 'Красный (Дедлайн)', bg: 'bg-red-100', text: 'text-red-800' },
@@ -19,6 +17,7 @@ const COLORS = [
 
 export function CalendarPage() {
   const { user } = useAuth();
+  const { t } = useTranslation(['common']);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [events, setEvents] = useState<CalendarEventDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,9 +98,13 @@ export function CalendarPage() {
 
   const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year: number, month: number) => {
-    let day = new Date(year, month, 1).getDay();
-    return day === 0 ? 6 : day - 1; // Convert Sunday=0 to Monday=0
+    let day = new Date(year, month, 1).getDay() - 1;
+    if (day === -1) day = 6;
+    return day;
   };
+
+  const MONTH_NAMES = t('calendarPage.months', { returnObjects: true }) as string[];
+  const DAY_NAMES = t('calendarPage.daysShort', { returnObjects: true }) as string[];
 
   const renderMonth = (monthIndex: number) => {
     const daysInMonth = getDaysInMonth(currentYear, monthIndex);
@@ -175,11 +178,11 @@ export function CalendarPage() {
 
   return (
     <div className="h-full flex flex-col max-w-[1600px] mx-auto p-6">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Налоговый календарь</h1>
-          <p className="text-sm text-gray-500 mt-1">Отслеживайте дедлайны и планируйте задачи</p>
-        </div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{t('calendarPage.title')}</h1>
+            <p className="text-gray-500 mt-1">{t('calendarPage.subtitle')}</p>
+          </div>
         
         <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
           <button onClick={handlePrevYear} className="p-1 hover:bg-gray-100 rounded-lg text-gray-600 transition-colors">

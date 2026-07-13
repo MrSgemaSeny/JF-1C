@@ -9,9 +9,11 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { twMerge } from 'tailwind-merge';
+import { useTranslation } from 'react-i18next';
 
 export function EmployeeChatPage() {
   const { user } = useAuth();
+  const { t } = useTranslation(['common']);
   
   // Contacts state
   const [contacts, setContacts] = useState<ChatContactDto[]>([]);
@@ -201,7 +203,7 @@ export function EmployeeChatPage() {
   const handleDeleteMessage = async (msgId: number) => {
     try {
       await deleteChatMessage(msgId);
-      setMessages(prev => prev.map(m => m.id === msgId ? { ...m, isDeleted: true, content: 'Пользователь удалил сообщение' } : m));
+      setMessages(prev => prev.map(m => m.id === msgId ? { ...m, isDeleted: true, content: t('employeeChat.messageDeleted') } : m));
     } catch (error) {
       console.error(error);
     }
@@ -227,12 +229,12 @@ export function EmployeeChatPage() {
         selectedContact ? "hidden md:flex" : "flex"
       )}>
         <div className="p-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Чаты</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">{t('employeeChat.title')}</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Поиск..." 
+              placeholder={t('employeeChat.search')} 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none transition-all"
@@ -244,7 +246,7 @@ export function EmployeeChatPage() {
           {isLoadingContacts ? (
             <div className="flex justify-center p-8"><Spinner className="w-6 h-6 text-brand-green" /></div>
           ) : filteredContacts.length === 0 ? (
-            <div className="text-center text-gray-400 p-8 text-sm">Нет контактов</div>
+            <div className="text-center text-gray-400 p-8 text-sm">{t('employeeChat.noContacts')}</div>
           ) : (
             filteredContacts.map(contact => (
               <motion.button
@@ -286,11 +288,11 @@ export function EmployeeChatPage() {
                   </div>
                   <div className="flex justify-between items-center gap-2">
                     <p className={`text-xs truncate ${contact.unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                      {contact.lastMessage ? contact.lastMessage.content : (contact.role === 'CLIENT' ? 'Клиент' : 'Коллега')}
+                      {contact.lastMessage ? contact.lastMessage.content : (contact.role === 'CLIENT' ? t('employeeChat.client') : t('employeeChat.colleague'))}
                     </p>
                     {contact.role !== 'CLIENT' && (
                       <span className="px-1.5 py-0.5 bg-brand-green/10 text-brand-green text-[9px] rounded uppercase font-bold tracking-wider">
-                        Коллега
+                        {t('employeeChat.colleague')}
                       </span>
                     )}
                   </div>
@@ -313,7 +315,7 @@ export function EmployeeChatPage() {
               <button 
                 onClick={() => setSelectedContact(null)}
                 className="md:hidden mr-3 p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Назад к контактам"
+                title={t('employeeChat.backToContacts')}
               >
                 <ChevronLeft size={24} />
               </button>
@@ -334,7 +336,7 @@ export function EmployeeChatPage() {
                 <div>
                   <h3 className="font-bold text-gray-900">{selectedContact.fullName}</h3>
                   <p className="text-xs text-brand-green font-medium">
-                    {selectedContact.role === 'CLIENT' ? 'Клиент' : 'Коллега'}
+                    {selectedContact.role === 'CLIENT' ? t('employeeChat.client') : t('employeeChat.colleague')}
                   </p>
                 </div>
               </div>
@@ -348,8 +350,8 @@ export function EmployeeChatPage() {
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2">
-                  <p className="text-sm">Нет сообщений</p>
-                  <p className="text-xs">Напишите первое сообщение!</p>
+                  <p className="text-sm">{t('employeeChat.noMessages')}</p>
+                  <p className="text-xs">{t('employeeChat.writeFirst')}</p>
                 </div>
               ) : (
                 messages.map((msg, idx) => {
@@ -376,7 +378,7 @@ export function EmployeeChatPage() {
                           <button 
                             onClick={() => handleDeleteMessage(msg.id)}
                             className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all shrink-0"
-                            title="Удалить сообщение"
+                            title={t('employeeChat.deleteMessage')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -407,7 +409,7 @@ export function EmployeeChatPage() {
                       handleSend(e);
                     }
                   }}
-                  placeholder="Введите сообщение..."
+                  placeholder={t('employeeChat.placeholder')}
                   className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none focus:ring-0 resize-none text-sm px-3 py-2.5"
                   rows={1}
                 />
@@ -424,8 +426,8 @@ export function EmployeeChatPage() {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gray-50/30">
             <MessageCircle className="w-16 h-16 mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-600">Выберите чат</p>
-            <p className="text-sm">Выберите коллегу или клиента для общения</p>
+            <p className="text-lg font-medium text-gray-600">{t('employeeChat.selectChat')}</p>
+            <p className="text-sm">{t('employeeChat.selectChatDesc')}</p>
           </div>
         )}
       </div>

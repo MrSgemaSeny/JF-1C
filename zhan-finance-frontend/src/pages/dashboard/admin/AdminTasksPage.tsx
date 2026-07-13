@@ -8,7 +8,10 @@ import type { TaskKanbanBoardRef } from '@/widgets/task-board/TaskKanbanBoard';
 import { Plus, Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { exportTasksCsv } from '@/entities/task/api/taskApi';
+import { useTranslation } from 'react-i18next';
+
 export function AdminTasksPage() {
+  const { t } = useTranslation(['common']);
   const { data: tasks, isLoading, error } = useTasksQuery();
   const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
   const boardRef = useRef<TaskKanbanBoardRef>(null);
@@ -28,7 +31,7 @@ export function AdminTasksPage() {
     try {
       await batchUpdate(allTasks);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update tasks');
+      alert(err instanceof Error ? err.message : t('adminTasks.updateError'));
     }
   };
 
@@ -36,9 +39,9 @@ export function AdminTasksPage() {
     const now = Date.now();
     const newTask: TaskDto = {
       id: now,
-      title: 'New Task',
+      title: t('adminTasks.newTask'),
       subtasks: [
-        { id: now + 1, taskId: now, title: 'First step', status: 'NEW', createdAt: new Date().toISOString() }
+        { id: now + 1, taskId: now, title: t('adminTasks.firstStep'), status: 'NEW', createdAt: new Date().toISOString() }
       ],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -59,7 +62,7 @@ export function AdminTasksPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err) {
-      alert('Failed to export tasks');
+      alert(t('adminTasks.exportError'));
     }
   };
 
@@ -68,21 +71,21 @@ export function AdminTasksPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Список задач</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('adminTasks.title')}</h1>
         <div className="flex gap-3">
           <button 
             onClick={handleExport}
             className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-sm"
           >
             <Download size={18} />
-            <span>Export CSV</span>
+            <span>{t('adminTasks.exportCSV')}</span>
           </button>
           <button 
             onClick={handleCreateTask}
             className="flex items-center gap-2 bg-brand-green text-white px-4 py-2 rounded-lg font-medium hover:bg-brand-accent transition-colors shadow-sm"
           >
             <Plus size={18} />
-            <span>New Task</span>
+            <span>{t('adminTasks.newTaskBtn')}</span>
           </button>
         </div>
       </div>

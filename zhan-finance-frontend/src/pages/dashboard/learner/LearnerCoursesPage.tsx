@@ -4,8 +4,10 @@ import { BookOpen, ChevronRight } from 'lucide-react';
 import { CourseDto, getPublishedCourses } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
 import { Spinner } from '@/shared/ui/Spinner';
+import { useTranslation } from 'react-i18next';
 
 export function LearnerCoursesPage() {
+  const { t } = useTranslation(['common']);
   const [courses, setCourses] = useState<CourseDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -22,8 +24,8 @@ export function LearnerCoursesPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Мои курсы</h1>
-        <p className="text-sm text-gray-500 mt-1">Выберите курс, чтобы начать обучение</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('learnerCourses.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('learnerCourses.subtitle')}</p>
       </div>
 
       {/* Loading */}
@@ -37,8 +39,8 @@ export function LearnerCoursesPage() {
       {!isLoading && courses.length === 0 && (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm py-16 text-center">
           <BookOpen size={36} className="text-gray-200 mx-auto mb-3" />
-          <p className="text-sm font-medium text-gray-900 mb-1">Курсов пока нет</p>
-          <p className="text-xs text-gray-400">Как только появятся материалы — они отобразятся здесь</p>
+          <p className="text-sm font-medium text-gray-900 mb-1">{t('learnerCourses.noCourses')}</p>
+          <p className="text-xs text-gray-400">{t('learnerCourses.noCoursesSubtext')}</p>
         </div>
       )}
 
@@ -77,7 +79,7 @@ export function LearnerCoursesPage() {
                   </p>
                 )}
                 <div className="flex items-center gap-1 text-sm font-medium text-brand-green mt-auto">
-                  Начать курс
+                  {t('learnerCourses.startCourse')}
                   <ChevronRight size={14} />
                 </div>
               </div>

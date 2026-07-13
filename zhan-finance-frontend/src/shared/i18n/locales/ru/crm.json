@@ -1,0 +1,32 @@
+{
+  "taskPool": {
+    "title": "Пул задач",
+    "empty": "Нет свободных задач",
+    "actions": {
+      "take": "Взять в работу",
+      "drop": "Отказаться от задачи",
+      "assign": "Назначить"
+    },
+    "status": {
+      "PENDING": "Ожидает",
+      "IN_PROGRESS": "В работе",
+      "DONE": "Завершено",
+      "CANCELLED": "Отменено"
+    },
+    "columns": {
+      "title": "Название",
+      "client": "Клиент",
+      "status": "Статус",
+      "created": "Создано",
+      "assignee": "Исполнитель",
+      "actions": "Действия"
+    }
+  },
+  "tasks": {
+    "title": "Задачи",
+    "count_one": "{{count}} задача",
+    "count_few": "{{count}} задачи",
+    "count_many": "{{count}} задач",
+    "count_other": "{{count}} задач"
+  }
+}

@@ -10,8 +10,10 @@ import type { EmployeeDto } from '@/entities/employee/model/types';
 import type { TaskDto } from '@/entities/task/model/types';
 import { assignTask } from '@/entities/task/api/taskApi';
 import { ChevronDown, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 function CustomAssignDropdown({ employees, disabled, onAssign, assigningTaskId, taskId }: any) {
+  const { t } = useTranslation(['common']);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -33,7 +35,7 @@ function CustomAssignDropdown({ employees, disabled, onAssign, assigningTaskId, 
         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
         className="inline-flex items-center justify-between w-40 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-green/20 disabled:opacity-50 transition-all shadow-sm"
       >
-        {assigningTaskId === taskId ? 'Назначение...' : 'Назначить'}
+        {assigningTaskId === taskId ? t('taskPool.actions.assigning', 'Назначение...') : t('taskPool.actions.assign', 'Назначить')}
         <ChevronDown size={16} className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -41,7 +43,7 @@ function CustomAssignDropdown({ employees, disabled, onAssign, assigningTaskId, 
         <div className="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-hidden">
           <div className="py-1 max-h-64 overflow-y-auto custom-scrollbar">
             {employees.length === 0 ? (
-              <div className="px-4 py-3 text-sm text-gray-500">Нет доступных сотрудников</div>
+              <div className="px-4 py-3 text-sm text-gray-500">{t('taskPool.noEmployees', 'Нет доступных сотрудников')}</div>
             ) : (
               employees.map((emp: EmployeeDto) => (
                 <button
@@ -66,6 +68,7 @@ function CustomAssignDropdown({ employees, disabled, onAssign, assigningTaskId, 
 }
 
 export function TaskPoolPage() {
+  const { t } = useTranslation(['common']);
   const { user } = useAuth();
   const { data: tasks, isLoading, error, refetch } = useApiData(() => getTasks({ unassigned: true }));
   const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
@@ -118,10 +121,10 @@ export function TaskPoolPage() {
           <div className="p-2 bg-brand-green/10 text-brand-green rounded-xl">
             <Users size={24} />
           </div>
-          Пул задач
+          {t('taskPool.title')}
         </h1>
         <p className="text-gray-500">
-          Свободные задачи, ожидающие назначения. {user?.role === 'EMPLOYEE' ? 'Вы можете взять любую задачу в работу.' : 'Назначьте задачу сотруднику.'}
+          {user?.role === 'EMPLOYEE' ? t('taskPool.description.employee', 'Свободные задачи, ожидающие назначения. Вы можете взять любую задачу в работу.') : t('taskPool.description.admin', 'Свободные задачи, ожидающие назначения. Назначьте задачу сотруднику.')}
         </p>
       </div>
 
@@ -130,9 +133,9 @@ export function TaskPoolPage() {
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 mb-4">
             <Inbox size={32} />
           </div>
-          <h3 className="text-lg font-bold text-gray-800 mb-2">Пул пуст</h3>
+          <h3 className="text-lg font-bold text-gray-800 mb-2">{t('taskPool.empty')}</h3>
           <p className="text-gray-500 max-w-sm">
-            Сейчас нет неназначенных задач. Все задачи находятся в работе.
+            {t('taskPool.emptyDescription', 'Сейчас нет неназначенных задач. Все задачи находятся в работе.')}
           </p>
         </div>
       ) : (
@@ -140,11 +143,11 @@ export function TaskPoolPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[40%]">Задача</th>
-                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Клиент</th>
-                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Статус</th>
-                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Создано</th>
-                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Действия</th>
+                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[40%]">{t('taskPool.columns.title')}</th>
+                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.client')}</th>
+                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.status')}</th>
+                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.created')}</th>
+                <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">{t('taskPool.columns.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -177,12 +180,12 @@ export function TaskPoolPage() {
                     <div className="flex items-center justify-end gap-3" onClick={e => e.stopPropagation()}>
                       {user?.role === 'EMPLOYEE' && (
                         <button
-                          title="Забрать задачу себе"
+                          title={t('taskPool.actions.take', 'Взять в работу')}
                           disabled={assigningTaskId === task.id}
                           onClick={(e) => handleAssign(e, task.id, user.userId)}
                           className="bg-brand-green text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-green/90 hover:shadow-md transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap"
                         >
-                          {assigningTaskId === task.id ? 'Назначение...' : 'Взять себе'}
+                          {assigningTaskId === task.id ? t('taskPool.actions.assigning', 'Назначение...') : t('taskPool.actions.take', 'Взять себе')}
                         </button>
                       )}
 

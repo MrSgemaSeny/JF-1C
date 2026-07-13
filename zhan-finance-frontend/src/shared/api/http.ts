@@ -1,3 +1,5 @@
+import i18n from '@/shared/i18n/i18n';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
 interface ApiEnvelope<T> {
@@ -51,6 +53,7 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
   const headers = {
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    'Accept-Language': i18n.language ?? 'ru',
     ...init?.headers
   };
 

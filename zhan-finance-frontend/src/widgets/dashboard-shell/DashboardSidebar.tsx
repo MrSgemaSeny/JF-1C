@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { navConfig } from './nav-config';
 import {
   LayoutDashboard,
@@ -35,8 +36,10 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Employees':           <UserCheck size={16} />,
   'Clients':             <Users size={16} />,
   'Список задач':        <ClipboardList size={16} />,
+  'Tasks':               <ClipboardList size={16} />,
   'Task Pool':           <Briefcase size={16} />,
   'Мои задачи':          <ClipboardList size={16} />,
+  'My Tasks':            <ClipboardList size={16} />,
   'My Clients':          <Users size={16} />,
   'Archive (Done)':      <Archive size={16} />,
   'Archive (Cancelled)': <XCircle size={16} />,
@@ -54,12 +57,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
 
 
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: 'Администратор',
-  EMPLOYEE: 'Сотрудник',
-  CLIENT: 'Клиент',
-  LEARNER: 'Обучающийся',
-};
+// Role labels are now handled via i18n
 
 interface DashboardSidebarProps {
   isMobileOpen: boolean;
@@ -76,6 +74,8 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { t } = useTranslation(['common']);
   const { unreadCount } = useNotifications();
   const { unreadChatCount } = useChatNotifications();
 
@@ -130,6 +130,35 @@ export function DashboardSidebar({
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             const icon = NAV_ICONS[item.label] ?? <ChevronRight size={16} />;
+            
+            let i18nKey = '';
+            switch (item.label) {
+              case 'Overview': i18nKey = 'nav.overview'; break;
+              case 'Courses': i18nKey = 'nav.courses'; break;
+              case 'Learners': i18nKey = 'nav.learners'; break;
+              case 'Chat': i18nKey = 'nav.chat'; break;
+              case 'Employees': i18nKey = 'nav.employees'; break;
+              case 'Clients': i18nKey = 'nav.clients'; break;
+              case 'My Clients': i18nKey = 'nav.clients'; break;
+              case 'Список задач': i18nKey = 'nav.tasks'; break;
+              case 'Tasks': i18nKey = 'nav.tasks'; break;
+              case 'Мои задачи': i18nKey = 'nav.tasks'; break;
+              case 'My Tasks': i18nKey = 'nav.tasks'; break;
+              case 'Task Pool': i18nKey = 'nav.taskPool'; break;
+              case 'Archive (Done)': i18nKey = 'nav.archiveDone'; break;
+              case 'Archive (Cancelled)': i18nKey = 'nav.archiveCancelled'; break;
+              case 'Invoices': i18nKey = 'nav.invoices'; break;
+              case 'Subscriptions': i18nKey = 'nav.subscriptions'; break;
+              case 'Audit Logs': i18nKey = 'nav.auditLogs'; break;
+              case 'Settings': i18nKey = 'nav.settings'; break;
+              case 'Notifications': i18nKey = 'nav.notifications'; break;
+              case 'Calendar': i18nKey = 'nav.calendar'; break;
+              case 'Documents': i18nKey = 'nav.documents'; break;
+              case 'Services': i18nKey = 'nav.services'; break;
+              default: i18nKey = item.label;
+            }
+            const translatedLabel = i18nKey.startsWith('nav.') ? t(i18nKey) : item.label;
+
             return (
               <Link
                 key={item.href}
@@ -142,7 +171,7 @@ export function DashboardSidebar({
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                   isDesktopCollapsed ? 'justify-center px-0' : ''
                 )}
-                title={isDesktopCollapsed ? item.label : undefined}
+                title={isDesktopCollapsed ? translatedLabel : undefined}
               >
                 <span className={twMerge("shrink-0", isActive ? 'text-white/90' : 'text-gray-400 group-hover:text-brand-green')}>
                   {icon}
@@ -150,7 +179,7 @@ export function DashboardSidebar({
                 
                 {!isDesktopCollapsed && (
                   <>
-                    <span className="flex-1 truncate">{item.label}</span>
+                    <span className="flex-1 truncate">{translatedLabel}</span>
                     
                     {item.label === 'Notifications' && unreadCount > 0 && (
                       <span className="flex items-center justify-center min-w-[20px] h-5 px-1 text-[10px] font-bold text-white bg-red-500 rounded-full shadow-sm shrink-0">
@@ -199,20 +228,20 @@ export function DashboardSidebar({
             {!isDesktopCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-800 truncate">{user.email}</p>
-                <p className="text-[11px] text-gray-400 mt-0.5 truncate">{ROLE_LABELS[user.role] ?? user.role}</p>
+                <p className="text-[11px] text-gray-400 mt-0.5 truncate">{t(`sidebar.roles.${user.role}`, { defaultValue: user.role })}</p>
               </div>
             )}
           </div>
           <button
             onClick={logout}
-            title={isDesktopCollapsed ? "Выйти" : undefined}
+            title={isDesktopCollapsed ? t('sidebar.logout') : undefined}
             className={twMerge(
               "flex items-center w-full rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors",
               isDesktopCollapsed ? "justify-center p-2" : "gap-2 px-3 py-2.5"
             )}
           >
             <LogOut size={16} />
-            {!isDesktopCollapsed && <span>Выйти</span>}
+            {!isDesktopCollapsed && <span>{t('sidebar.logout')}</span>}
           </button>
         </div>
       </aside>

@@ -6,8 +6,10 @@ import type { ClientDto } from '@/entities/client/model/types';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Upload, Download, Trash2, FileText, FileSpreadsheet, File as FileIcon } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 export function EmployeeDocumentsPage() {
+  const { t } = useTranslation(['common']);
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
   const [clients, setClients] = useState<ClientDto[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<number | ''>('');
@@ -32,7 +34,7 @@ export function EmployeeDocumentsPage() {
       setDocuments(docsData);
       setClients(clientsData);
     } catch (err) {
-      setError('Failed to load data');
+      setError(t('employeeDocuments.loadError'));
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -41,7 +43,7 @@ export function EmployeeDocumentsPage() {
 
   const processFileUpload = async (file: File) => {
     if (!selectedClientId) {
-      setError('Please select a client before uploading');
+      setError(t('employeeDocuments.selectClientError'));
       return;
     }
     
@@ -57,7 +59,7 @@ export function EmployeeDocumentsPage() {
         fileInputRef.current.value = '';
       }
     } catch (err) {
-      setError('Failed to upload document');
+      setError(t('employeeDocuments.uploadError'));
       console.error(err);
     } finally {
       setIsUploading(false);
@@ -97,19 +99,19 @@ export function EmployeeDocumentsPage() {
       await downloadDocument(doc.id, doc.fileName);
     } catch (err) {
       console.error('Failed to download', err);
-      alert('Failed to download document');
+      alert(t('employeeDocuments.downloadError'));
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this document?')) return;
+    if (!window.confirm(t('employeeDocuments.deleteConfirm'))) return;
     try {
       await deleteDocument(id);
       const docsData = await getAllDocuments();
       setDocuments(docsData);
     } catch (err) {
       console.error('Failed to delete', err);
-      alert('Failed to delete document');
+      alert(t('employeeDocuments.deleteError'));
     }
   };
 
@@ -133,20 +135,20 @@ export function EmployeeDocumentsPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Client Documents</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage documents across all your assigned clients</p>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('employeeDocuments.title')}</h1>
+        <p className="text-gray-500 text-sm mt-1">{t('employeeDocuments.subtitle')}</p>
       </div>
 
       {/* Upload Zone */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
         <div className="max-w-md">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Upload for Client</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('employeeDocuments.uploadLabel')}</label>
           <select
             value={selectedClientId}
             onChange={(e) => setSelectedClientId(e.target.value === '' ? '' : Number(e.target.value))}
             className="w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-green focus:ring-brand-green sm:text-sm py-2.5 px-3 border"
           >
-            <option value="">-- Select a client --</option>
+            <option value="">{t('employeeDocuments.selectClientOption')}</option>
             {clients.map(client => (
               <option key={client.id} value={client.user.id}>
                 {client.user.fullName} ({client.user.email})
@@ -181,7 +183,7 @@ export function EmployeeDocumentsPage() {
           {isUploading ? (
             <div className="flex flex-col items-center">
               <Spinner size="lg" />
-              <p className="mt-4 text-sm font-medium text-gray-900">Uploading document...</p>
+              <p className="mt-4 text-sm font-medium text-gray-900">{t('employeeDocuments.uploading')}</p>
             </div>
           ) : (
             <>
@@ -193,10 +195,10 @@ export function EmployeeDocumentsPage() {
                 <Upload className="w-6 h-6" />
               </div>
               <h3 className="text-base font-semibold text-gray-900 mb-1">
-                {!selectedClientId ? 'Select a client first' : isDragging ? 'Drop file here' : 'Click or drag a file to upload'}
+                {!selectedClientId ? t('employeeDocuments.selectClientFirst') : isDragging ? t('employeeDocuments.dropHere') : t('employeeDocuments.clickOrDrag')}
               </h3>
               <p className="text-gray-500 text-xs max-w-sm">
-                Supports PDF, Word, Excel, XML, and CSV files up to 20MB.
+                {t('employeeDocuments.supports')}
               </p>
             </>
           )}
@@ -221,20 +223,20 @@ export function EmployeeDocumentsPage() {
             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <FileIcon className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-gray-900 font-medium mb-1">No documents found</h3>
-            <p className="text-gray-500 text-sm">Upload documents to share them with clients</p>
+            <h3 className="text-gray-900 font-medium mb-1">{t('employeeDocuments.noDocs')}</h3>
+            <p className="text-gray-500 text-sm">{t('employeeDocuments.noDocsSubtext')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">File Name</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Client</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Type</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Size</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">Date</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">Actions</th>
+                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docName')}</th>
+                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docClient')}</th>
+                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docType')}</th>
+                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docSize')}</th>
+                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docDate')}</th>
+                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">{t('employeeDocuments.docActions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -255,7 +257,7 @@ export function EmployeeDocumentsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-gray-900 font-medium">{doc.clientName || 'Unknown Client'}</span>
+                          <span className="text-gray-900 font-medium">{doc.clientName || t('employeeDocuments.unknownClient')}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">

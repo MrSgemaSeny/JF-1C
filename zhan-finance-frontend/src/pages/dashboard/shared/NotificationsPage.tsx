@@ -3,9 +3,11 @@ import { useNotifications } from '@/features/notifications/NotificationContext';
 import { Bell, Check, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { Spinner } from '@/shared/ui/Spinner';
 import { twMerge } from 'tailwind-merge';
+import { useTranslation } from 'react-i18next';
 
 export function NotificationsPage() {
   const { notifications, loading, refresh, markAsRead, markAllAsRead, unreadCount } = useNotifications();
+  const { t } = useTranslation(['common']);
 
   useEffect(() => {
     refresh();
@@ -28,9 +30,9 @@ export function NotificationsPage() {
             <Bell size={24} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Notifications</h1>
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('notifications.title')}</h1>
             <p className="text-sm text-gray-500 mt-1">
-              You have {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}.
+              {t('notifications.unreadSubtitle', { count: unreadCount })}
             </p>
           </div>
         </div>
@@ -40,7 +42,7 @@ export function NotificationsPage() {
             className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-xl transition-colors"
           >
             <Check size={18} />
-            <span>Mark all as read</span>
+            <span>{t('notifications.markAllAsRead')}</span>
           </button>
         )}
       </div>
@@ -52,9 +54,9 @@ export function NotificationsPage() {
             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-4">
               <Bell size={32} />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">No notifications yet</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">{t('notifications.emptyTitle')}</h3>
             <p className="text-gray-500 max-w-sm">
-              When there's an update about your documents or tasks, it will appear here.
+              {t('notifications.emptySubtitle')}
             </p>
           </div>
         ) : (

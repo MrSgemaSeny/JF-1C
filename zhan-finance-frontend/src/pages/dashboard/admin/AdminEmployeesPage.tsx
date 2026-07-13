@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { getEmployees, getPendingEmployees, approveEmployee } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { Check, Clock, UserCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function AdminEmployeesPage() {
+  const { t } = useTranslation(['common']);
   const [activeTab, setActiveTab] = useState<'ACTIVE' | 'PENDING'>('ACTIVE');
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
   const [pendingEmployees, setPendingEmployees] = useState<EmployeeDto[]>([]);
@@ -30,13 +32,13 @@ export function AdminEmployeesPage() {
   }, []);
 
   async function handleApprove(id: number) {
-    if (!window.confirm('Одобрить этого сотрудника? Он получит доступ в систему.')) return;
+    if (!window.confirm(t('adminEmployees.approveConfirm'))) return;
     try {
       await approveEmployee(id);
       await loadData();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при одобрении сотрудника');
+      alert(t('adminEmployees.approveError'));
     }
   }
 
@@ -44,8 +46,8 @@ export function AdminEmployeesPage() {
     <div className="max-w-6xl mx-auto py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black uppercase text-brand-green tracking-tight">Сотрудники</h1>
-          <p className="text-gray-500 mt-1">Управление доступом персонала</p>
+          <h1 className="text-3xl font-black uppercase text-brand-green tracking-tight">{t('adminEmployees.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('adminEmployees.subtitle')}</p>
         </div>
       </div>
 
@@ -59,7 +61,7 @@ export function AdminEmployeesPage() {
           }`}
         >
           <UserCheck className="w-4 h-4" />
-          Активные ({employees.length})
+          {t('adminEmployees.active')} ({employees.length})
         </button>
         <button
           onClick={() => setActiveTab('PENDING')}
@@ -70,7 +72,7 @@ export function AdminEmployeesPage() {
           }`}
         >
           <Clock className="w-4 h-4" />
-          Заявки
+          {t('adminEmployees.pending')}
           {pendingEmployees.length > 0 && (
             <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-1">
               {pendingEmployees.length}
@@ -88,16 +90,16 @@ export function AdminEmployeesPage() {
               <thead className="bg-gray-50/50">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Сотрудник
+                    {t('adminEmployees.employee')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Email
+                    {t('adminEmployees.email')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Дата регистрации
+                    {t('adminEmployees.registrationDate')}
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Действия
+                    {t('adminEmployees.actions')}
                   </th>
                 </tr>
               </thead>
@@ -126,11 +128,11 @@ export function AdminEmployeesPage() {
                           className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-green/10 text-brand-green hover:bg-brand-green/20 rounded-lg text-sm font-bold transition-colors"
                         >
                           <Check className="w-4 h-4" />
-                          Одобрить
+                          {t('adminEmployees.approve')}
                         </button>
                       ) : (
                         <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                          Активен
+                          {t('adminEmployees.isActive')}
                         </span>
                       )}
                     </td>
@@ -140,7 +142,7 @@ export function AdminEmployeesPage() {
                 {(activeTab === 'ACTIVE' && employees.length === 0) || (activeTab === 'PENDING' && pendingEmployees.length === 0) ? (
                   <tr>
                     <td colSpan={4} className="px-6 py-12 text-center text-gray-400 text-sm">
-                      {activeTab === 'ACTIVE' ? 'Нет активных сотрудников' : 'Нет новых заявок'}
+                      {activeTab === 'ACTIVE' ? t('adminEmployees.noActive') : t('adminEmployees.noPending')}
                     </td>
                   </tr>
                 ) : null}

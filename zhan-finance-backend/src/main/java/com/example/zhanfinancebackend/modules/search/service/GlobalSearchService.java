@@ -81,7 +81,7 @@ public class GlobalSearchService {
     private List<UserDto> searchUsers(User user, String query) {
         return userRepository.searchUsers(query).stream()
                 .filter(u -> canAccessUser(user, u))
-                .map(u -> new UserDto(u.getId(), u.getFullName(), u.getEmail(), u.getRole()))
+                .map(u -> new UserDto(u.getId(), u.getFullName(), u.getEmail(), u.getRole(), u.getLocale()))
                 .collect(Collectors.toList());
     }
 

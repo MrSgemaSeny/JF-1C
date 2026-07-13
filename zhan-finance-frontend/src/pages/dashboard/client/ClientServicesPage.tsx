@@ -7,8 +7,10 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { clsx } from 'clsx';
 import { Briefcase, Calendar, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
+import { useTranslation } from 'react-i18next';
 
 export function ClientServicesPage() {
+  const { t } = useTranslation(['common']);
   const { user } = useAuth();
   
   const [services, setServices] = useState<ServiceDto[]>([]);
@@ -36,7 +38,7 @@ export function ClientServicesPage() {
       const servicesData = await fetchServices();
       setServices(servicesData);
     } catch (err) {
-      setError('Не удалось загрузить данные об услугах');
+      setError(t('clientServices.loadError'));
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -53,13 +55,11 @@ export function ClientServicesPage() {
         clientId: user!.userId,
         title: `Заказ услуги: ${selectedService.title}`,
         description: message,
-        dueDate: preferredDate || undefined,
+        dueDate: undefined,
         serviceIds: [selectedService.id]
       });
-      setSuccessMessage(`Ваш запрос на услугу «${selectedService.title}» принят!`);
+      setSuccessMessage(t('clientServices.requestSuccess'));
       setSelectedService(null);
-      setMessage('');
-      setPreferredDate('');
       await loadData();
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
@@ -81,8 +81,8 @@ export function ClientServicesPage() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Услуги</h1>
-        <p className="text-gray-500 text-sm mt-1">Каталог услуг и история ваших запросов</p>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('clientServices.title')}</h1>
+        <p className="text-gray-500 text-sm mt-1">{t('clientServices.subtitle')}</p>
       </div>
 
       {error && (
@@ -101,7 +101,7 @@ export function ClientServicesPage() {
 
       {/* Services Catalog */}
       <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Доступные услуги</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-4">{t('clientServices.availableServices')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map(service => (
             <div key={service.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
@@ -112,13 +112,13 @@ export function ClientServicesPage() {
               
               <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
                 <span className="font-bold text-gray-900">
-                  {service.price ? `${service.price} ₸` : 'По запросу'}
+                  {service.price ? `${service.price} ₸` : t('clientServices.onDemand')}
                 </span>
                 <button
                   onClick={() => setSelectedService(service)}
                   className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-lg transition-colors"
                 >
-                  Запросить
+                  {t('clientServices.requestBtn')}
                 </button>
               </div>
             </div>
@@ -134,7 +134,7 @@ export function ClientServicesPage() {
           onClose={() => setSelectedService(null)}
           onCreated={() => {
             setSelectedService(null);
-            setSuccessMessage(`Ваш запрос на услугу «${selectedService.title}» принят!`);
+            setSuccessMessage(t('clientServices.requestSuccess'));
             loadData();
             setTimeout(() => setSuccessMessage(null), 5000);
           }}

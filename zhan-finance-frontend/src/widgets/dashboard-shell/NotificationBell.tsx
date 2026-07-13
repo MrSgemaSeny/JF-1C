@@ -5,9 +5,11 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 import { clsx } from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { ru, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 export function NotificationBell() {
+  const { t, i18n } = useTranslation(['common']);
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -45,7 +47,7 @@ export function NotificationBell() {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in slide-in-from-top-2 duration-200">
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-            <h3 className="text-sm font-bold text-gray-900">Уведомления</h3>
+            <h3 className="text-sm font-bold text-gray-900">{t('notifications.title')}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
@@ -61,7 +63,7 @@ export function NotificationBell() {
             {recentNotifications.length === 0 ? (
               <div className="p-8 text-center flex flex-col items-center">
                 <Bell className="w-10 h-10 text-gray-200 mb-3" />
-                <p className="text-sm text-gray-500">Нет новых уведомлений</p>
+                <p className="text-sm text-gray-500">{t('notifications.empty')}</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-50">
@@ -87,7 +89,7 @@ export function NotificationBell() {
                           {notification.title}
                         </h4>
                         <span className="text-[10px] text-gray-400 whitespace-nowrap shrink-0">
-                          {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: ru })}
+                          {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: i18n.language === 'en' ? enUS : ru })}
                         </span>
                       </div>
                       <p className={clsx("text-xs line-clamp-2", !notification.read ? "text-gray-700" : "text-gray-500")}>
@@ -110,14 +112,13 @@ export function NotificationBell() {
           </div>
 
           <div className="p-2 border-t border-gray-100 bg-gray-50">
-            <Link
-              to={ROUTES.NOTIFICATIONS}
-              onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center w-full p-2 text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              Смотреть все уведомления
-              <ChevronRight size={14} className="ml-1 opacity-50" />
-            </Link>
+              <Link
+                to={ROUTES.NOTIFICATIONS}
+                onClick={() => setIsOpen(false)}
+                className="block text-center text-xs font-semibold text-gray-500 hover:text-brand-green transition-colors"
+              >
+                {t('notifications.viewAll')} <ChevronRight className="inline w-3 h-3 ml-0.5" />
+              </Link>
           </div>
         </div>
       )}

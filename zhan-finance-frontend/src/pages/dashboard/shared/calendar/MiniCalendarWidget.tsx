@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, X, Clock, AlignLeft, Tag } from 'lucide-react';
 import { getCalendarEvents, createCalendarEvent, deleteCalendarEvent, CalendarEventDto } from '@/entities/calendar/api/calendarApi';
-import { Plus, X, Clock, AlignLeft, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
+import { useTranslation } from 'react-i18next';
 
 const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const MONTH_NAMES = [
@@ -22,6 +22,7 @@ const COLORS = [
 
 export function MiniCalendarWidget() {
   const { user } = useAuth();
+  const { t } = useTranslation(['common']);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEventDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -161,9 +162,9 @@ export function MiniCalendarWidget() {
         <div>
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-brand-green" />
-            Календарь
+            {t('calendarWidget.title')}
           </h2>
-          <p className="text-sm text-gray-500 mt-1">Текущий месяц</p>
+          <p className="text-sm text-gray-500 mt-1">{t('calendarWidget.currentMonth')}</p>
         </div>
         
         <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg">
@@ -207,7 +208,7 @@ export function MiniCalendarWidget() {
           to={calendarLink}
           className="text-sm font-medium text-brand-green hover:text-brand-green/80 transition-colors flex items-center gap-1"
         >
-          Открыть полный календарь <ChevronRight className="w-4 h-4" />
+          {t('calendarWidget.openFull')} <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
 
@@ -217,7 +218,7 @@ export function MiniCalendarWidget() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h3 className="font-bold text-lg text-gray-900">
-                События на {new Date(selectedDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {t('calendarWidget.eventsOn')} {new Date(selectedDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
@@ -229,7 +230,7 @@ export function MiniCalendarWidget() {
               <div className="space-y-3 mb-8">
                 {events.filter(e => e.date === selectedDate).length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4 bg-white rounded-xl border border-dashed border-gray-200">
-                    На этот день нет запланированных событий
+                    {t('calendarWidget.noEvents')}
                   </p>
                 ) : (
                   events.filter(e => e.date === selectedDate).map(e => {

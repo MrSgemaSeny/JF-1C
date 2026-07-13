@@ -5,6 +5,7 @@ import { DashboardSidebar } from './DashboardSidebar';
 import { Menu } from 'lucide-react';
 import { GlobalSearch } from '@/widgets/search/GlobalSearch';
 import { NotificationBell } from './NotificationBell';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 
 export function DashboardLayout() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -42,6 +43,7 @@ export function DashboardLayout() {
           <div className="hidden lg:flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white z-10">
             <GlobalSearch />
             <div className="flex items-center gap-4 pl-4 ml-auto">
+              <LanguageSwitcher />
               <NotificationBell />
             </div>
           </div>

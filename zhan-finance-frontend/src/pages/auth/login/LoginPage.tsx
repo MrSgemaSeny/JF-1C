@@ -7,8 +7,10 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { useTranslation } from 'react-i18next';
 
 export function LoginPage() {
+  const { t } = useTranslation(['common']);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -24,18 +26,18 @@ export function LoginPage() {
       if (credentialResponse.credential) {
         const result = await loginWithGoogle(credentialResponse.credential);
         if (result.isPendingApproval) {
-          toast.warning('Ваш аккаунт ожидает подтверждения администратора.');
+          toast.warning(t('auth.login.pendingApproval'));
         } else if (result.isNewUser) {
-          toast.success('Успешная регистрация!');
+          toast.success(t('auth.login.registerSuccess'));
           navigate(ROUTES.COMPLETE_PROFILE);
         } else {
-          toast.success('Успешный вход!');
+          toast.success(t('auth.login.loginSuccess'));
           const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
           navigate(returnUrl, { replace: true });
         }
       }
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Не удалось войти через Google.');
+      toast.error(err instanceof ApiError ? err.message : t('auth.login.googleError'));
     }
   };
 
@@ -46,7 +48,7 @@ export function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(email, password);
-      toast.success('Успешный вход!');
+      toast.success(t('auth.login.loginSuccess'));
       const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
       navigate(returnUrl, { replace: true });
     } catch (err) {
@@ -54,7 +56,7 @@ export function LoginPage() {
       if (Object.keys(fieldErrors).length > 0) {
         setValidationErrors(fieldErrors);
       } else {
-        setGlobalError(err instanceof ApiError ? err.message : 'Не удалось войти. Попробуйте снова.');
+        setGlobalError(err instanceof ApiError ? err.message : t('auth.login.loginError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -71,8 +73,8 @@ export function LoginPage() {
           <span className="font-black text-xl uppercase tracking-wide text-brand-green">Zhan Finance</span>
         </Link>
 
-        <h1 className="text-3xl font-black uppercase text-brand-green mb-2">Вход</h1>
-        <p className="text-brand-green/70 mb-8">Войдите, чтобы открыть личный кабинет.</p>
+        <h1 className="text-3xl font-black uppercase text-brand-green mb-2">{t('auth.login.title')}</h1>
+        <p className="text-brand-green/70 mb-8">{t('auth.login.subtitle')}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
@@ -92,7 +94,7 @@ export function LoginPage() {
           <Input
             id="password"
             type="password"
-            label="Пароль"
+            label={t('auth.login.passwordLabel')}
             required
             autoComplete="current-password"
             value={password}
@@ -114,7 +116,7 @@ export function LoginPage() {
             disabled={isSubmitting}
             className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Входим...' : 'Войти'}
+            {isSubmitting ? t('auth.login.loggingIn') : t('auth.login.loginBtn')}
             {!isSubmitting && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>
@@ -125,13 +127,13 @@ export function LoginPage() {
               <div className="w-full border-t border-brand-green/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-brand-green/50">или</span>
+              <span className="px-2 bg-white text-brand-green/50">{t('auth.login.or')}</span>
             </div>
           </div>
           <div className="mt-6 flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => toast.error('Ошибка авторизации Google')}
+              onError={() => toast.error(t('auth.login.googleAuthError'))}
               use_fedcm_for_prompt={false}
               itp_support={true}
             />
@@ -139,9 +141,9 @@ export function LoginPage() {
         </div>
 
         <p className="text-center text-sm text-brand-green/70 mt-6">
-          Нет аккаунта?{' '}
+          {t('auth.login.noAccount')}{' '}
           <Link to={`${ROUTES.REGISTER}${searchParams.get('from') ? `?from=${encodeURIComponent(searchParams.get('from')!)}` : ''}`} className="font-bold text-brand-green hover:underline">
-            Зарегистрироваться
+            {t('auth.login.registerLink')}
           </Link>
         </p>
       </div>

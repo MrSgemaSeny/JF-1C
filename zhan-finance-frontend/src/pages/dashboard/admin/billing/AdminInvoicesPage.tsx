@@ -7,8 +7,10 @@ import { Button } from '@/shared/ui/Button';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 export function AdminInvoicesPage() {
+  const { t } = useTranslation(['common']);
   const { data: invoices, isLoading, error, refetch } = useApiData<InvoiceDto[]>(billingApi.getInvoices);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -25,25 +27,25 @@ export function AdminInvoicesPage() {
       <Section>
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-            <p className="text-gray-500 text-sm">Manage client invoices</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('adminInvoices.title')}</h1>
+            <p className="text-gray-500 text-sm">{t('adminInvoices.subtitle')}</p>
           </div>
-          <Button onClick={() => setIsModalOpen(true)}>Create Invoice</Button>
+          <Button onClick={() => setIsModalOpen(true)}>{t('adminInvoices.createBtn')}</Button>
         </div>
 
         {!invoices || invoices.length === 0 ? (
-          <Empty label="No invoices found" />
+          <Empty label={t('adminInvoices.noInvoices')} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="p-3 text-sm font-medium text-gray-500">ID</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Title</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Client ID</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Amount</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Status</th>
-                  <th className="p-3 text-sm font-medium text-gray-500">Due Date</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminInvoices.invoiceTitle')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminInvoices.clientId')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminInvoices.amount')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminInvoices.status')}</th>
+                  <th className="p-3 text-sm font-medium text-gray-500">{t('adminInvoices.dueDate')}</th>
                 </tr>
               </thead>
               <tbody>

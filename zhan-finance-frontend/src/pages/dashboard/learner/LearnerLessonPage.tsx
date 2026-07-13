@@ -4,6 +4,7 @@ import { ArrowLeft, FileText, Download, ChevronLeft, ChevronRight } from 'lucide
 import { CourseDto, LessonDto, getCourseById } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
 import { Spinner } from '@/shared/ui/Spinner';
+import { useTranslation } from 'react-i18next';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -12,6 +13,7 @@ function getFileUrl(lessonId: number) {
 }
 
 export function LearnerLessonPage() {
+  const { t } = useTranslation(['common']);
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
   const [course, setCourse] = useState<CourseDto | null>(null);
@@ -43,7 +45,7 @@ export function LearnerLessonPage() {
   if (!lesson || !course) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 text-center text-sm text-gray-500">
-        Урок не найден
+        {t('learnerLesson.notFound')}
       </div>
     );
   }
@@ -74,13 +76,13 @@ export function LearnerLessonPage() {
         className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors"
       >
         <ArrowLeft size={14} />
-        Вернуться к курсу
+        {t('learnerLesson.backToCourse')}
       </button>
 
       {/* Header */}
       <div>
         <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
-          Урок {currentIndex + 1} из {allLessons.length}
+          {t('learnerLesson.lessonLabel')} {currentIndex + 1} {t('learnerLesson.of')} {allLessons.length}
         </p>
         <h1 className="text-2xl font-bold text-gray-900">{lesson.title}</h1>
       </div>
@@ -103,7 +105,7 @@ export function LearnerLessonPage() {
         {/* Text content */}
         {lesson.content && (
           <div className="px-6 py-5 border-b border-gray-100">
-            <p className="text-sm font-semibold text-gray-700 mb-3">Описание</p>
+            <p className="text-sm font-semibold text-gray-700 mb-3">{t('learnerLesson.textLabel')}</p>
             <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
               {lesson.content}
             </div>
@@ -115,7 +117,7 @@ export function LearnerLessonPage() {
           <div className="px-6 py-5">
             <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
               <Download size={14} className="text-brand-green" />
-              Материал к уроку
+              {t('learnerLesson.downloadFile')}
             </p>
             <a
               href={fileUrl!}
@@ -128,9 +130,9 @@ export function LearnerLessonPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {lesson.fileName || 'Открыть файл'}
+                  {lesson.fileName || t('learnerLesson.attachedFile')}
                 </p>
-                <p className="text-xs text-gray-400 mt-0.5">Нажмите, чтобы открыть</p>
+                <p className="text-xs text-gray-400 mt-0.5">{t('learnerLesson.clickToDownload')}</p>
               </div>
               <ChevronRight size={16} className="text-gray-300 group-hover:text-brand-green transition-colors shrink-0" />
             </a>
@@ -140,7 +142,7 @@ export function LearnerLessonPage() {
         {/* Empty state */}
         {!lesson.content && !fileUrl && (
           <div className="px-6 py-10 text-center text-sm text-gray-400">
-            Дополнительных материалов нет
+            {t('learnerLesson.noContent')}
           </div>
         )}
 
@@ -157,7 +159,7 @@ export function LearnerLessonPage() {
               <ChevronLeft size={16} className="text-gray-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-gray-400 mb-0.5">Предыдущий</p>
+              <p className="text-xs text-gray-400 mb-0.5">{t('learnerLesson.previous')}</p>
               <p className="text-sm font-medium text-gray-900 truncate group-hover:text-brand-green transition-colors">
                 {prevLesson.title}
               </p>
@@ -173,7 +175,7 @@ export function LearnerLessonPage() {
             className="flex items-center justify-end gap-3 p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md transition-all text-right group"
           >
             <div className="min-w-0">
-              <p className="text-xs text-gray-400 mb-0.5">Следующий</p>
+              <p className="text-xs text-gray-400 mb-0.5">{t('learnerLesson.next')}</p>
               <p className="text-sm font-medium text-gray-900 truncate group-hover:text-brand-green transition-colors">
                 {nextLesson.title}
               </p>

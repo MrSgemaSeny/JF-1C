@@ -9,9 +9,11 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { twMerge } from 'tailwind-merge';
+import { useTranslation } from 'react-i18next';
 
 export function ClientChatPage() {
   const { user } = useAuth();
+  const { t } = useTranslation(['common']);
   const { refreshUnreadChatCount } = useChatNotifications();
   
   // Contacts state
@@ -216,12 +218,12 @@ export function ClientChatPage() {
         selectedContact ? "hidden md:flex" : "flex"
       )}>
         <div className="p-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Поддержка</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">{t('clientChat.sidebarTitle')}</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Поиск..." 
+              placeholder={t('search.placeholder').split(',')[0] + '...'} // Reusing search.placeholder partially or just use generic Search
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none transition-all"
@@ -248,14 +250,10 @@ export function ClientChatPage() {
                   <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-white overflow-hidden ${
                       contact.role === 'ADMIN' ? 'bg-indigo-500' : 'bg-brand-green/80'
                   }`}>
-                    {contact.role === 'ADMIN' ? <Shield className="w-5 h-5 absolute z-0" /> : <UserCheck className="w-5 h-5 absolute z-0" />}
-                    {contact.avatarUrl && (
-                      <img 
-                        src={getSecureImageUrl(contact.avatarUrl)}
-                        alt="" 
-                        className="w-full h-full object-cover relative z-10" 
-                        onError={(e) => e.currentTarget.style.display = 'none'} 
-                      />
+                    {contact.avatarUrl ? (
+                      <img src={getSecureImageUrl(contact.avatarUrl)} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      contact.role === 'ADMIN' ? <Shield size={20} /> : <UserCheck size={20} />
                     )}
                   </div>
                   {contact.unreadCount > 0 && (
@@ -265,9 +263,9 @@ export function ClientChatPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-baseline mb-0.5">
+                  <div className="flex justify-between items-center mb-1">
                     <p className="text-sm font-semibold text-gray-900 truncate pr-2">
-                      {contact.role === 'ADMIN' ? 'Zhan Finance (Админ)' : contact.fullName}
+                      {contact.fullName || contact.email}
                     </p>
                     {contact.lastMessage && (
                       <span className="text-[10px] text-gray-400 flex-shrink-0">
@@ -277,12 +275,12 @@ export function ClientChatPage() {
                   </div>
                   <div className="flex justify-between items-center gap-2">
                     <p className={`text-xs truncate ${contact.unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                      {contact.lastMessage ? contact.lastMessage.content : (contact.role === 'ADMIN' ? 'Поддержка' : 'Бухгалтер')}
+                      {contact.lastMessage ? contact.lastMessage.content : (contact.role === 'ADMIN' ? t('sidebar.roles.ADMIN') : t('sidebar.roles.EMPLOYEE'))}
                     </p>
                     <span className={`px-1.5 py-0.5 text-[9px] rounded uppercase font-bold tracking-wider ${
                       contact.role === 'ADMIN' ? 'bg-indigo-100 text-indigo-700' : 'bg-brand-green/10 text-brand-green'
                     }`}>
-                      {contact.role === 'ADMIN' ? 'Админ' : 'Бухгалтер'}
+                      {contact.role === 'ADMIN' ? t('clientChat.roles.ADMIN') : t('clientChat.roles.EMPLOYEE')}
                     </span>
                   </div>
                 </div>
@@ -304,31 +302,23 @@ export function ClientChatPage() {
               <button 
                 onClick={() => setSelectedContact(null)}
                 className="md:hidden mr-3 p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Назад к контактам"
+                title={t('common.back')}
               >
                 <ChevronLeft size={24} />
               </button>
               <div className="flex items-center gap-3">
-                <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-white overflow-hidden ${
-                  selectedContact.role === 'ADMIN' ? 'bg-indigo-500' : 'bg-brand-green/80'
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm overflow-hidden ${
+                    selectedContact.role === 'ADMIN' ? 'bg-indigo-500' : 'bg-brand-green/80'
                 }`}>
-                  {selectedContact.role === 'ADMIN' ? <Shield className="w-5 h-5 absolute z-0" /> : <UserCheck className="w-5 h-5 absolute z-0" />}
-                  {selectedContact.avatarUrl && (
-                    <img 
-                      src={getSecureImageUrl(selectedContact.avatarUrl)} 
-                      alt="" 
-                      className="w-full h-full object-cover relative z-10" 
-                      onError={(e) => e.currentTarget.style.display = 'none'} 
-                    />
+                  {selectedContact.avatarUrl ? (
+                    <img src={getSecureImageUrl(selectedContact.avatarUrl)} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    selectedContact.role === 'ADMIN' ? <Shield size={20} /> : <UserCheck size={20} />
                   )}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">
-                    {selectedContact.role === 'ADMIN' ? 'Zhan Finance (Админ)' : selectedContact.fullName}
-                  </h3>
-                  <p className="text-xs text-brand-green font-medium">
-                    {selectedContact.role === 'ADMIN' ? 'Служба поддержки' : 'Ваш бухгалтер'}
-                  </p>
+                  <h3 className="font-bold text-gray-900">{selectedContact.fullName || selectedContact.email}</h3>
+                  <p className="text-xs text-gray-500 font-medium">{selectedContact.role === 'ADMIN' ? t('sidebar.roles.ADMIN', { defaultValue: 'Admin' }) : t('sidebar.roles.EMPLOYEE', { defaultValue: 'Employee' })}</p>
                 </div>
               </div>
             </div>
@@ -341,8 +331,7 @@ export function ClientChatPage() {
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2">
-                  <p className="text-sm">Нет сообщений</p>
-                  <p className="text-xs">Напишите первое сообщение!</p>
+                  <p className="text-sm">{t('clientChat.noMessages')}</p>
                 </div>
               ) : (
                 messages.map((msg, idx) => {
@@ -367,11 +356,13 @@ export function ClientChatPage() {
                         </div>
                         {isMine && !msg.isDeleted && (
                           <button 
-                            onClick={() => handleDeleteMessage(msg.id)}
-                            className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all shrink-0"
-                            title="Удалить сообщение"
+                            onClick={() => {
+                              if (confirm(t('clientChat.deleteConfirm'))) handleDeleteMessage(msg.id);
+                            }}
+                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                            title={t('common.delete')}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 size={14} />
                           </button>
                         )}
                       </div>
@@ -400,7 +391,7 @@ export function ClientChatPage() {
                       handleSend(e);
                     }
                   }}
-                  placeholder="Введите сообщение..."
+                  placeholder={t('clientChat.inputPlaceholder')}
                   className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none focus:ring-0 resize-none text-sm px-3 py-2.5"
                   rows={1}
                 />
@@ -417,8 +408,8 @@ export function ClientChatPage() {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gray-50/30">
             <MessageCircle className="w-16 h-16 mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-600">Поддержка Zhan Finance</p>
-            <p className="text-sm">Выберите чат с администратором или вашим бухгалтером</p>
+            <p className="text-lg font-medium text-gray-600">{t('clientChat.placeholderTitle')}</p>
+            <p className="text-sm">{t('clientChat.placeholderSubtitle')}</p>
           </div>
         )}
       </div>

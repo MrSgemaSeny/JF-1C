@@ -13,5 +13,6 @@ public record UserProfileDto(
         String avatarUrl,
         AuthProvider authProvider,
         Long assignedEmployeeId,
-        String assignedEmployeeName
+        String assignedEmployeeName,
+        String locale
 ) {}

@@ -1,0 +1,2 @@
+ALTER TABLE app_users
+ADD COLUMN locale VARCHAR(10) DEFAULT 'ru';

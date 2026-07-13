@@ -121,6 +121,6 @@ public class ClientService {
 
     public UserDto mapUserToDto(User user) {
         if (user == null) return null;
-        return new UserDto(user.getId(), user.getFullName(), user.getEmail(), user.getRole());
+        return new UserDto(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getLocale());
     }
 }

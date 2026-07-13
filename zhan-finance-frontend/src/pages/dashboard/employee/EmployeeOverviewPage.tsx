@@ -3,6 +3,7 @@ import { apiRequest } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Users, ClipboardList, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { MiniCalendarWidget } from '../shared/calendar/MiniCalendarWidget';
+import { useTranslation } from 'react-i18next';
 
 interface EmployeeDashboardDto {
   totalClients: number;
@@ -14,17 +15,18 @@ async function getEmployeeDashboard(): Promise<EmployeeDashboardDto> {
   return apiRequest<EmployeeDashboardDto>('/api/crm/dashboard/employee');
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; textColor: string }> = {
-  NEW:         { label: 'Новые',        color: 'bg-gray-300',  textColor: 'text-gray-600' },
-  IN_PROGRESS: { label: 'В процессе',  color: 'bg-blue-500',  textColor: 'text-blue-600' },
-  ON_REVIEW:   { label: 'На проверке', color: 'bg-amber-500', textColor: 'text-amber-600' },
-  DONE:        { label: 'Готово',       color: 'bg-green-500', textColor: 'text-green-600' },
-  CANCELLED:   { label: 'Отменено',    color: 'bg-red-400',   textColor: 'text-red-500' },
-};
-
 export function EmployeeOverviewPage() {
+  const { t } = useTranslation(['common']);
   const [data, setData] = useState<EmployeeDashboardDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const STATUS_CONFIG: Record<string, { label: string; color: string; textColor: string }> = {
+    NEW:         { label: t('employeeOverview.status.NEW'),        color: 'bg-gray-300',  textColor: 'text-gray-600' },
+    IN_PROGRESS: { label: t('employeeOverview.status.IN_PROGRESS'),  color: 'bg-blue-500',  textColor: 'text-blue-600' },
+    ON_REVIEW:   { label: t('employeeOverview.status.ON_REVIEW'), color: 'bg-amber-500', textColor: 'text-amber-600' },
+    DONE:        { label: t('employeeOverview.status.DONE'),       color: 'bg-green-500', textColor: 'text-green-600' },
+    CANCELLED:   { label: t('employeeOverview.status.CANCELLED'),    color: 'bg-red-400',   textColor: 'text-red-500' },
+  };
 
   useEffect(() => {
     getEmployeeDashboard()
@@ -34,7 +36,7 @@ export function EmployeeOverviewPage() {
   }, []);
 
   if (isLoading) return <Spinner />;
-  if (!data) return <div className="p-6 text-red-500">Не удалось загрузить данные</div>;
+  if (!data) return <div className="p-6 text-red-500">{t('employeeOverview.loadError')}</div>;
 
   const activeTasks = (data.tasksByStatus['NEW'] ?? 0) + (data.tasksByStatus['IN_PROGRESS'] ?? 0);
   const onReviewTasks = data.tasksByStatus['ON_REVIEW'] ?? 0;
@@ -42,31 +44,31 @@ export function EmployeeOverviewPage() {
 
   const statCards = [
     {
-      label: 'Моих клиентов',
+      label: t('employeeOverview.statClients'),
       value: data.totalClients,
       icon: <Users size={22} className="text-blue-500" />,
       bg: 'bg-blue-50',
     },
     {
-      label: 'Всего задач',
+      label: t('employeeOverview.statTasks'),
       value: data.totalTasks,
       icon: <ClipboardList size={22} className="text-amber-500" />,
       bg: 'bg-amber-50',
     },
     {
-      label: 'Активных',
+      label: t('employeeOverview.statActive'),
       value: activeTasks,
       icon: <AlertCircle size={22} className="text-indigo-500" />,
       bg: 'bg-indigo-50',
     },
     {
-      label: 'На проверке',
+      label: t('employeeOverview.statReview'),
       value: onReviewTasks,
       icon: <Clock size={22} className="text-orange-500" />,
       bg: 'bg-orange-50',
     },
     {
-      label: 'Выполнено',
+      label: t('employeeOverview.statDone'),
       value: doneTasks,
       icon: <CheckCircle2 size={22} className="text-green-500" />,
       bg: 'bg-green-50',
@@ -76,8 +78,8 @@ export function EmployeeOverviewPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Мой дашборд</h1>
-        <p className="text-sm text-gray-500 mt-1">Статистика по вашей работе</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('employeeOverview.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('employeeOverview.subtitle')}</p>
       </div>
 
       {/* Stat cards */}
@@ -101,7 +103,7 @@ export function EmployeeOverviewPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Task status breakdown */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-6">Воронка задач</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-6">{t('employeeOverview.taskStats')}</h2>
             
             <div className="space-y-4">
               {['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'].map((status) => {

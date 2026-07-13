@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { apiRequest } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Users, UserCheck, ClipboardList, CheckCircle2, Clock, AlertCircle, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface EmployeeStatsDto {
   employeeId: number;
@@ -24,15 +25,16 @@ async function getAdminDashboard(): Promise<AdminDashboardDto> {
   return apiRequest<AdminDashboardDto>('/api/crm/dashboard/admin');
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  NEW:         { label: 'Новые',        color: 'bg-gray-400',   icon: <Clock size={14} /> },
-  IN_PROGRESS: { label: 'В процессе',  color: 'bg-blue-500',   icon: <AlertCircle size={14} /> },
-  ON_REVIEW:   { label: 'На проверке', color: 'bg-amber-500',  icon: <Clock size={14} /> },
-  DONE:        { label: 'Готово',       color: 'bg-green-500',  icon: <CheckCircle2 size={14} /> },
-  CANCELLED:   { label: 'Отменено',    color: 'bg-red-400',    icon: <XCircle size={14} /> },
+const STATUS_CONFIG: Record<string, { labelKey: string; color: string; icon: React.ReactNode }> = {
+  NEW:         { labelKey: 'adminDashboard.status.NEW',        color: 'bg-gray-400',   icon: <Clock size={14} /> },
+  IN_PROGRESS: { labelKey: 'adminDashboard.status.IN_PROGRESS', color: 'bg-blue-500',   icon: <AlertCircle size={14} /> },
+  ON_REVIEW:   { labelKey: 'adminDashboard.status.ON_REVIEW', color: 'bg-amber-500',  icon: <Clock size={14} /> },
+  DONE:        { labelKey: 'adminDashboard.status.DONE',       color: 'bg-green-500',  icon: <CheckCircle2 size={14} /> },
+  CANCELLED:   { labelKey: 'adminDashboard.status.CANCELLED',    color: 'bg-red-400',    icon: <XCircle size={14} /> },
 };
 
 export function AdminOverviewPage() {
+  const { t } = useTranslation(['common']);
   const [data, setData] = useState<AdminDashboardDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,29 +47,29 @@ export function AdminOverviewPage() {
 
   if (isLoading) return <Spinner />;
 
-  if (!data) return <div className="p-6 text-red-500">Не удалось загрузить данные</div>;
+  if (!data) return <div className="p-6 text-red-500">{t('adminDashboard.loadError')}</div>;
 
   const statCards = [
     {
-      label: 'Клиентов',
+      label: t('adminDashboard.totalClients'),
       value: data.totalClients,
       icon: <Users size={22} className="text-blue-500" />,
       bg: 'bg-blue-50',
     },
     {
-      label: 'Сотрудников',
+      label: t('adminDashboard.totalEmployees'),
       value: data.totalEmployees,
       icon: <UserCheck size={22} className="text-purple-500" />,
       bg: 'bg-purple-50',
     },
     {
-      label: 'Всего задач',
+      label: t('adminDashboard.totalTasks'),
       value: data.totalTasks,
       icon: <ClipboardList size={22} className="text-amber-500" />,
       bg: 'bg-amber-50',
     },
     {
-      label: 'Выполнено',
+      label: t('adminDashboard.doneTasks'),
       value: data.tasksByStatus['DONE'] ?? 0,
       icon: <CheckCircle2 size={22} className="text-green-500" />,
       bg: 'bg-green-50',
@@ -77,8 +79,8 @@ export function AdminOverviewPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Обзор</h1>
-        <p className="text-sm text-gray-500 mt-1">Общая статистика системы</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('adminDashboard.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('adminDashboard.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
@@ -100,17 +102,17 @@ export function AdminOverviewPage() {
       {/* Employee Workload */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-900">Рабочая нагрузка сотрудников</h2>
-          <p className="text-sm text-gray-500">Количество активных, просроченных и выполненных задач</p>
+          <h2 className="text-lg font-bold text-gray-900">{t('adminDashboard.workload')}</h2>
+          <p className="text-sm text-gray-500">{t('adminDashboard.workloadDesc')}</p>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Сотрудник</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">В работе</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Просрочено</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Выполнено</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.employee')}</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.inProgress')}</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.overdue')}</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.completed')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -139,7 +141,7 @@ export function AdminOverviewPage() {
               {data.employeeStats.length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-6 py-4 text-center text-gray-500 text-sm">
-                    Нет данных о сотрудниках
+                    {t('adminDashboard.noEmployees')}
                   </td>
                 </tr>
               )}
@@ -151,7 +153,7 @@ export function AdminOverviewPage() {
 
       {/* Task distribution */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-base font-semibold text-gray-800 mb-5">Задачи по статусам</h2>
+        <h2 className="text-base font-semibold text-gray-800 mb-5">{t('adminDashboard.tasksByStatus')}</h2>
         <div className="space-y-3">
           {(['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'] as const).map(status => {
             const cfg = STATUS_CONFIG[status];
@@ -161,7 +163,7 @@ export function AdminOverviewPage() {
               <div key={status} className="flex items-center gap-4">
                 <div className="flex items-center gap-2 w-28 md:w-36 flex-shrink-0">
                   <span className="text-gray-400">{cfg.icon}</span>
-                  <span className="text-sm font-medium text-gray-700">{cfg.label}</span>
+                  <span className="text-sm font-medium text-gray-700">{t(cfg.labelKey)}</span>
                 </div>
                 <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
@@ -179,15 +181,15 @@ export function AdminOverviewPage() {
 
       {/* Employee Productivity */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-base font-semibold text-gray-800 mb-5">Продуктивность сотрудников</h2>
+        <h2 className="text-base font-semibold text-gray-800 mb-5">{t('adminDashboard.productivity')}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead>
               <tr className="border-b border-gray-100 text-gray-500">
-                <th className="pb-3 font-medium">Сотрудник</th>
-                <th className="pb-3 font-medium text-center">Выполнено</th>
-                <th className="pb-3 font-medium text-center">В работе</th>
-                <th className="pb-3 font-medium text-center">Просрочено</th>
+                <th className="pb-3 font-medium">{t('adminDashboard.employee')}</th>
+                <th className="pb-3 font-medium text-center">{t('adminDashboard.completed')}</th>
+                <th className="pb-3 font-medium text-center">{t('adminDashboard.inProgress')}</th>
+                <th className="pb-3 font-medium text-center">{t('adminDashboard.overdue')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

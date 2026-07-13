@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Upload, File, Film } from 'lucide-react';
 import { CourseDto, LessonDto, getAdminCourseById, updateLesson } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
+import { useTranslation } from 'react-i18next';
 
 export function AdminLessonEditPage() {
+  const { t } = useTranslation(['common']);
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
 
@@ -42,7 +44,7 @@ export function AdminLessonEditPage() {
     setIsSaving(true);
     try {
       await updateLesson(lesson.id, title, undefined, content, undefined, file || undefined);
-      alert('Урок успешно сохранен!');
+      alert(t('adminLessonEdit.saveSuccess'));
       // Refresh lesson data to show new file
       const updatedCourse = await getAdminCourseById(Number(courseId));
       const updatedLesson = updatedCourse.lessons.find(l => l.id === Number(lessonId));
@@ -50,7 +52,7 @@ export function AdminLessonEditPage() {
       setFile(null); // Clear selected file after successful save
     } catch (e) {
       console.error(e);
-      alert('Ошибка при сохранении урока.');
+      alert(t('adminLessonEdit.saveError'));
     } finally {
       setIsSaving(false);
     }
@@ -62,7 +64,7 @@ export function AdminLessonEditPage() {
     }
   };
 
-  if (isLoading) return <div className="p-6">Загрузка...</div>;
+  if (isLoading) return <div className="p-6">{t('common.loading')}</div>;
 
   return (
     <div className="w-full h-screen flex flex-col bg-gray-50 overflow-hidden">
@@ -71,7 +73,7 @@ export function AdminLessonEditPage() {
           onClick={() => navigate(ROUTES.ADMIN_COURSES_EDIT.replace(':id', courseId!))}
           className="flex items-center text-gray-500 hover:text-gray-900 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Назад к курсу
+          <ArrowLeft className="w-4 h-4 mr-2" /> {t('adminLessonEdit.backToCourse')}
         </button>
 
         <div className="flex-1 max-w-2xl mx-8">
@@ -79,7 +81,7 @@ export function AdminLessonEditPage() {
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 className="text-2xl font-bold bg-transparent outline-none w-full border-b border-transparent focus:border-gray-300 transition-colors text-center"
-                placeholder="Название урока"
+                placeholder={t('adminLessonEdit.lessonNamePlaceholder')}
             />
         </div>
 
@@ -89,7 +91,7 @@ export function AdminLessonEditPage() {
           className="bg-brand-green text-white px-5 py-2 rounded-lg font-medium hover:bg-brand-green/90 flex items-center gap-2 transition-colors shrink-0 disabled:opacity-50 shadow-md"
         >
           <Save className="w-5 h-5" />
-          {isSaving ? 'Сохранение...' : 'Сохранить'}
+          {isSaving ? t('adminLessonEdit.saving') : t('adminLessonEdit.save')}
         </button>
       </div>
 
@@ -98,26 +100,26 @@ export function AdminLessonEditPage() {
             
             {/* Текстовая секция */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col">
-                <label className="text-gray-500 text-sm font-medium mb-3 uppercase tracking-wider">Основной текст урока</label>
+                <label className="text-gray-500 text-sm font-medium mb-3 uppercase tracking-wider">{t('adminLessonEdit.mainTextLabel')}</label>
                 <textarea
                     value={content}
                     onChange={e => setContent(e.target.value)}
-                    placeholder="Напишите здесь содержимое урока..."
+                    placeholder={t('adminLessonEdit.mainTextPlaceholder')}
                     className="w-full min-h-[400px] text-lg text-gray-800 outline-none resize-y placeholder-gray-300"
                 />
             </div>
 
             {/* Секция загрузки медиа */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <label className="text-gray-500 text-sm font-medium mb-3 uppercase tracking-wider block">Файл / Видео урока</label>
+                <label className="text-gray-500 text-sm font-medium mb-3 uppercase tracking-wider block">{t('adminLessonEdit.fileLabel')}</label>
                 
                 {lesson?.fileName && !file && (
                     <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-4">
                         {lesson.type === 'VIDEO' ? <Film className="w-8 h-8 text-blue-500" /> : <File className="w-8 h-8 text-gray-500" />}
                         <div>
-                            <p className="font-medium text-gray-900">Текущий файл: {lesson.fileName}</p>
+                            <p className="font-medium text-gray-900">{t('adminLessonEdit.currentFile')} {lesson.fileName}</p>
                             <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/courses/lessons/${lesson.id}/file`} target="_blank" rel="noreferrer" className="text-sm text-brand-green hover:underline">
-                                Скачать / Открыть
+                                {t('adminLessonEdit.downloadOpen')}
                             </a>
                         </div>
                     </div>
@@ -135,10 +137,10 @@ export function AdminLessonEditPage() {
                     />
                     <Upload className="w-10 h-10 text-gray-400 mb-3" />
                     <p className="text-gray-900 font-medium text-lg">
-                        {file ? file.name : 'Нажмите, чтобы загрузить видео или файл'}
+                        {file ? file.name : t('adminLessonEdit.uploadText')}
                     </p>
                     <p className="text-gray-500 text-sm mt-1">
-                        {file ? `Размер: ${(file.size / 1024 / 1024).toFixed(2)} MB` : 'Это заменит текущий файл, если он есть'}
+                        {file ? `${t('adminLessonEdit.size')} ${(file.size / 1024 / 1024).toFixed(2)} MB` : t('adminLessonEdit.uploadSubtext')}
                     </p>
                 </div>
             </div>

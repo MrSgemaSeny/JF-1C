@@ -12,5 +12,6 @@ public record AuthResponse(
         Role role,
         boolean isNewUser,
         String avatarUrl,
-        com.example.zhanfinancebackend.modules.auth.entity.AuthProvider authProvider
+        com.example.zhanfinancebackend.modules.auth.entity.AuthProvider authProvider,
+        String locale
 ) {}

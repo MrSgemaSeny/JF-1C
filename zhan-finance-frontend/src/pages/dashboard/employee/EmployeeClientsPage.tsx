@@ -3,8 +3,10 @@ import { getClients } from '@/entities/client/api/clientApi';
 import type { ClientDto } from '@/entities/client/model/types';
 import { MessageCircle } from 'lucide-react';
 import { ChatDrawer } from '@/widgets/chat/ChatDrawer';
+import { useTranslation } from 'react-i18next';
 
 export function EmployeeClientsPage() {
+  const { t } = useTranslation(['common']);
   const [clients, setClients] = useState<ClientDto[]>([]);
   const [chatClientId, setChatClientId] = useState<number | null>(null);
   const [chatClientName, setChatClientName] = useState<string>('');
@@ -15,15 +17,15 @@ export function EmployeeClientsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Clients</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('employeeClients.title')}</h1>
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Действия</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('employeeClients.name')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('employeeClients.email')}</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('employeeClients.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -40,7 +42,7 @@ export function EmployeeClientsPage() {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-green/10 text-brand-green rounded-lg hover:bg-brand-green hover:text-white transition-colors"
                     >
                       <MessageCircle className="w-4 h-4" />
-                      Чат
+                      {t('employeeClients.chat')}
                     </button>
                   </td>
                 </tr>
