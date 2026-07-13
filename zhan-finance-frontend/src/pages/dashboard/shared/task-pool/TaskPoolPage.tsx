@@ -120,28 +120,34 @@ export function TaskPoolPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
-                      {user?.role === 'ADMIN' ? (
-                        <select
-                          disabled={assigningTaskId === task.id}
-                          value=""
-                          onChange={(e) => handleAssign(e, task.id, e.target.value ? Number(e.target.value) : undefined)}
-                          className="text-sm border border-gray-200 rounded px-2 py-1 outline-none focus:border-brand-green bg-white disabled:opacity-50 min-w-[140px]"
-                        >
-                          <option value="" disabled>Назначить...</option>
-                          {employees.map(emp => (
-                            <option key={emp.id} value={emp.id}>{emp.fullName}</option>
-                          ))}
-                        </select>
-                      ) : null}
-
                       {(user?.role === 'EMPLOYEE' || user?.role === 'ADMIN') && (
                         <button
+                          title="Забрать задачу себе"
                           disabled={assigningTaskId === task.id}
                           onClick={(e) => handleAssign(e, task.id, user.userId)}
-                          className="bg-brand-green text-white px-3 py-1 rounded text-xs font-medium hover:bg-brand-green/90 transition-colors disabled:opacity-50 whitespace-nowrap"
+                          className="bg-brand-green text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-brand-green/90 hover:shadow-sm transition-all active:scale-95 disabled:opacity-50 whitespace-nowrap"
                         >
                           {assigningTaskId === task.id ? 'Назначение...' : 'Взять себе'}
                         </button>
+                      )}
+
+                      {user?.role === 'ADMIN' && (
+                        <div className="relative group">
+                          <select
+                            disabled={assigningTaskId === task.id}
+                            value=""
+                            onChange={(e) => handleAssign(e, task.id, e.target.value ? Number(e.target.value) : undefined)}
+                            className="text-xs font-medium bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200 rounded-lg px-3 py-1.5 cursor-pointer transition-all focus:ring-2 focus:ring-brand-green/20 outline-none appearance-none pr-8 min-w-[120px]"
+                            style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+                          >
+                            <option value="" disabled>Назначить...</option>
+                            <optgroup label="Сотрудники">
+                              {employees.map(emp => (
+                                <option key={emp.id} value={emp.id}>{emp.fullName}</option>
+                              ))}
+                            </optgroup>
+                          </select>
+                        </div>
                       )}
                     </div>
                   </td>
