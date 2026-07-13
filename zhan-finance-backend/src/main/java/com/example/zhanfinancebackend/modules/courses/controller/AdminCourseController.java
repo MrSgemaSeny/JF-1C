@@ -91,4 +91,31 @@ public class AdminCourseController {
         lessonService.deleteLesson(lessonId);
         return ApiResponse.success(null);
     }
+
+    @PostMapping("/lessons/{lessonId}/blocks")
+    public ApiResponse<com.example.zhanfinancebackend.modules.courses.entity.LessonBlock> addLessonBlock(
+            @PathVariable Long lessonId,
+            @RequestParam("type") com.example.zhanfinancebackend.modules.courses.entity.BlockType type,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        return ApiResponse.success(lessonService.addLessonBlock(lessonId, type, content, file));
+    }
+
+    @PostMapping("/{courseId}/chapters")
+    public ApiResponse<com.example.zhanfinancebackend.modules.courses.entity.Chapter> createChapter(
+            @PathVariable Long courseId,
+            @RequestParam("title") String title,
+            @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex) {
+        return ApiResponse.success(courseService.createChapter(courseId, title, orderIndex));
+    }
+
+    @PostMapping("/chapters/{chapterId}/lessons")
+    public ApiResponse<Lesson> createLessonForChapter(
+            @PathVariable Long chapterId,
+            @RequestParam("title") String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam("type") LessonType type,
+            @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex) {
+        return ApiResponse.success(lessonService.createLessonForChapter(chapterId, title, description, type, orderIndex));
+    }
 }

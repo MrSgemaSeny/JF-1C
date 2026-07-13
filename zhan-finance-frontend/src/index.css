@@ -36,3 +36,11 @@
     @apply bg-brand-beige/40 backdrop-blur-xl border border-brand-green/10;
   }
 }
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

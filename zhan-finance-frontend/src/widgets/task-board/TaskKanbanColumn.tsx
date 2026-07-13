@@ -44,7 +44,7 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
   const headerColor = stage.color || stageColors[stage.orderIndex % stageColors.length] || 'var(--color-brand-green)';
 
   return (
-    <div className="flex flex-col flex-shrink-0 w-[280px]">
+    <div className="flex flex-col flex-shrink-0 w-[85vw] md:w-[280px] snap-center">
       {/* Column Header */}
       <div 
         className="rounded-t-lg px-3 py-2 flex items-center justify-between text-white shadow-sm"

@@ -16,7 +16,11 @@ interface AdminDashboardDto {
   totalClients: number;
   totalEmployees: number;
   totalTasks: number;
+  wonTasks: number;
+  lostTasks: number;
+  avgCompletionDays: number;
   tasksByStatus: Record<string, number>;
+  tasksByLostReason: Record<string, number>;
   totalUsers: number;
   employeeStats: EmployeeStatsDto[];
 }
@@ -25,12 +29,14 @@ async function getAdminDashboard(): Promise<AdminDashboardDto> {
   return apiRequest<AdminDashboardDto>('/api/crm/dashboard/admin');
 }
 
-const STATUS_CONFIG: Record<string, { labelKey: string; color: string; icon: React.ReactNode }> = {
-  NEW:         { labelKey: 'adminDashboard.status.NEW',        color: 'bg-gray-400',   icon: <Clock size={14} /> },
-  IN_PROGRESS: { labelKey: 'adminDashboard.status.IN_PROGRESS', color: 'bg-blue-500',   icon: <AlertCircle size={14} /> },
-  ON_REVIEW:   { labelKey: 'adminDashboard.status.ON_REVIEW', color: 'bg-amber-500',  icon: <Clock size={14} /> },
-  DONE:        { labelKey: 'adminDashboard.status.DONE',       color: 'bg-green-500',  icon: <CheckCircle2 size={14} /> },
-  CANCELLED:   { labelKey: 'adminDashboard.status.CANCELLED',    color: 'bg-red-400',    icon: <XCircle size={14} /> },
+// We don't need STATUS_CONFIG anymore since we will use dynamic names and colors
+const getDynamicColor = (index: number) => {
+  const colors = [
+    'bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500',
+    'bg-rose-500', 'bg-orange-500', 'bg-amber-500', 'bg-emerald-500',
+    'bg-teal-500', 'bg-cyan-500'
+  ];
+  return colors[index % colors.length];
 };
 
 export function AdminOverviewPage() {
@@ -69,8 +75,8 @@ export function AdminOverviewPage() {
       bg: 'bg-amber-50',
     },
     {
-      label: t('adminDashboard.doneTasks'),
-      value: data.tasksByStatus['DONE'] ?? 0,
+      label: 'Завершено (Успешно)',
+      value: data.wonTasks,
       icon: <CheckCircle2 size={22} className="text-green-500" />,
       bg: 'bg-green-50',
     },
@@ -151,31 +157,83 @@ export function AdminOverviewPage() {
       </div>
 
 
-      {/* Task distribution */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-base font-semibold text-gray-800 mb-5">{t('adminDashboard.tasksByStatus')}</h2>
-        <div className="space-y-3">
-          {(['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'] as const).map(status => {
-            const cfg = STATUS_CONFIG[status];
-            const count = data.tasksByStatus[status] ?? 0;
-            const percent = data.totalTasks > 0 ? Math.round((count / data.totalTasks) * 100) : 0;
-            return (
-              <div key={status} className="flex items-center gap-4">
-                <div className="flex items-center gap-2 w-28 md:w-36 flex-shrink-0">
-                  <span className="text-gray-400">{cfg.icon}</span>
-                  <span className="text-sm font-medium text-gray-700">{t(cfg.labelKey)}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Task distribution */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-base font-semibold text-gray-800 mb-5">Задачи по стадиям</h2>
+          <div className="space-y-3">
+            {Object.entries(data.tasksByStatus).map(([statusName, count], index) => {
+              const percent = data.totalTasks > 0 ? Math.round((count / data.totalTasks) * 100) : 0;
+              const colorClass = getDynamicColor(index);
+              return (
+                <div key={statusName} className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 w-32 md:w-40 flex-shrink-0">
+                    <span className="text-gray-400"><ClipboardList size={14} /></span>
+                    <span className="text-sm font-medium text-gray-700 truncate" title={statusName}>{statusName}</span>
+                  </div>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${colorClass}`}
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700 w-8 text-right">{count}</span>
+                  <span className="text-xs text-gray-400 w-8">{percent}%</span>
                 </div>
-                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all ${cfg.color}`}
-                    style={{ width: `${percent}%` }}
-                  />
+              );
+            })}
+            {Object.keys(data.tasksByStatus).length === 0 && (
+              <div className="text-sm text-gray-500 text-center py-4">Нет задач</div>
+            )}
+          </div>
+        </div>
+
+        {/* Cancellation Analytics & Efficiency */}
+        <div className="space-y-5">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-center h-[140px]">
+             <h2 className="text-base font-semibold text-gray-800 mb-4">Конверсия и Эффективность</h2>
+             <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Win Rate</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {data.totalTasks > 0 ? Math.round((data.wonTasks / (data.wonTasks + data.lostTasks || 1)) * 100) : 0}%
+                  </p>
                 </div>
-                <span className="text-sm font-semibold text-gray-700 w-8 text-right">{count}</span>
-                <span className="text-xs text-gray-400 w-8">{percent}%</span>
-              </div>
-            );
-          })}
+                <div>
+                  <p className="text-sm text-gray-500">Среднее время закрытия</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {data.avgCompletionDays.toFixed(1)} <span className="text-sm font-medium text-gray-500">дн.</span>
+                  </p>
+                </div>
+             </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-base font-semibold text-gray-800 mb-5">Причины отказов</h2>
+            <div className="space-y-3">
+              {Object.entries(data.tasksByLostReason).sort((a, b) => b[1] - a[1]).map(([reason, count], index) => {
+                const percent = data.lostTasks > 0 ? Math.round((count / data.lostTasks) * 100) : 0;
+                return (
+                  <div key={reason} className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 w-32 md:w-40 flex-shrink-0">
+                      <span className="text-red-400"><XCircle size={14} /></span>
+                      <span className="text-sm font-medium text-gray-700 truncate" title={reason}>{reason}</span>
+                    </div>
+                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all bg-red-400"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-700 w-8 text-right">{count}</span>
+                  </div>
+                );
+              })}
+              {Object.keys(data.tasksByLostReason).length === 0 && (
+                <div className="text-sm text-gray-500 text-center py-4">Нет отмененных задач</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

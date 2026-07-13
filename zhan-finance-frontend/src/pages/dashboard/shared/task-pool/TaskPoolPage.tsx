@@ -140,8 +140,10 @@ export function TaskPoolPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-          <table className="w-full text-left border-collapse">
-            <thead>
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[40%]">{t('taskPool.columns.title')}</th>
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.client')}</th>
@@ -203,7 +205,70 @@ export function TaskPoolPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-gray-100">
+            {tasks.map((task: TaskDto) => (
+              <div 
+                key={task.id} 
+                onClick={() => setSelectedTask(task)}
+                className="p-4 hover:bg-brand-green/5 cursor-pointer transition-colors active:bg-brand-green/10"
+              >
+                <div className="flex justify-between items-start mb-2 gap-2">
+                  <div className="font-bold text-gray-900 line-clamp-2 leading-tight">
+                    {task.title}
+                  </div>
+                  {task.stage && <StatusBadge stage={task.stage} />}
+                </div>
+                
+                {task.description && (
+                  <div className="text-sm text-gray-500 line-clamp-2 mb-3 leading-snug">
+                    {task.description}
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                  <div className="flex flex-col">
+                    <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">{t('taskPool.columns.client')}</span>
+                    <span className="font-medium text-gray-700 truncate max-w-[140px]">
+                      {task.client ? task.client.fullName : <span className="italic text-gray-400">Не указан</span>}
+                    </span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">{t('taskPool.columns.created')}</span>
+                    <span className="font-medium">{new Date(task.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 w-full" onClick={e => e.stopPropagation()}>
+                  {user?.role === 'EMPLOYEE' && (
+                    <button
+                      disabled={assigningTaskId === task.id}
+                      onClick={(e) => handleAssign(e, task.id, user.userId)}
+                      className="w-full bg-brand-green text-white px-4 py-3 rounded-xl text-sm font-bold hover:bg-brand-green/90 transition-colors active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                    >
+                      {assigningTaskId === task.id ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                      {assigningTaskId === task.id ? t('taskPool.actions.assigning', 'Назначение...') : t('taskPool.actions.take', 'Взять себе')}
+                    </button>
+                  )}
+
+                  {user?.role === 'ADMIN' && (
+                    <div className="w-full">
+                      <CustomAssignDropdown
+                        taskId={task.id}
+                        assigningTaskId={assigningTaskId}
+                        employees={employees}
+                        disabled={assigningTaskId === task.id}
+                        onAssign={handleAssign}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -213,10 +278,9 @@ export function TaskPoolPage() {
           userRole={user!.role as any}
           onClose={() => setSelectedTask(null)}
           onUpdateTask={(updatedTask) => {
-            // Update local state or just refetch. In a pool, if it's assigned, it might leave the pool.
-            // A simple refetch is safest to keep the list accurate.
+            // Always refetch to ensure the list reflects any stage/detail changes
+            refetch();
             if (updatedTask.assignedToId) {
-              refetch();
               setSelectedTask(null); // Close modal if it's no longer in the pool (assigned to me or someone else)
             } else {
               setSelectedTask(updatedTask);

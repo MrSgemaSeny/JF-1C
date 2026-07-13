@@ -5,7 +5,7 @@ import { CourseDto, LessonDto, getCourseById } from '@/entities/course/api/cours
 import { ROUTES } from '@/shared/config/routes';
 import { Spinner } from '@/shared/ui/Spinner';
 import { useTranslation } from 'react-i18next';
-import i18n from '@/shared/i18n';
+import i18n from '@/shared/i18n/i18n';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -153,7 +153,7 @@ export function LearnerCourseDetailPage() {
     );
   }
 
-  const totalLessons = course.lessons.length;
+  const totalLessons = course.chapters.reduce((acc, chapter) => acc + chapter.lessons.length, 0);
 
   // ── render ───────────────────────────────────────────────────────────────
   return (
@@ -191,56 +191,36 @@ export function LearnerCourseDetailPage() {
         </div>
       </div>
 
-      {/* Lessons */}
-      {(
-        /* Fallback: курс без sections — плоский список уроков */
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 bg-gray-50 border-b border-gray-100">
-            <div className="flex items-center gap-2.5">
-              <BookOpen size={16} className="text-brand-green" />
-              <span className="text-sm font-semibold text-gray-700">{t('learnerCourseDetail.courseProgram')}</span>
+      {/* Chapters / Sections */}
+      <div className="space-y-4">
+        {course.chapters.length === 0 ? (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3.5 bg-gray-50 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <BookOpen size={16} className="text-brand-green" />
+                <span className="text-sm font-semibold text-gray-700">{t('learnerCourseDetail.courseProgram')}</span>
+              </div>
+              <span className="text-xs text-gray-400">0 {t('learnerCourseDetail.lessonsCountText')}</span>
             </div>
-            <span className="text-xs text-gray-400">{totalLessons} {t('learnerCourseDetail.lessonsCountText')}</span>
-          </div>
-
-          {totalLessons === 0 ? (
             <div className="px-5 py-12 text-center">
               <BookOpen size={32} className="text-gray-200 mx-auto mb-3" />
               <p className="text-sm font-medium text-gray-900 mb-1">{t('learnerCourseDetail.noLessonsTitle')}</p>
               <p className="text-xs text-gray-400">{t('learnerCourseDetail.noLessonsSubtext')}</p>
             </div>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {course.lessons.map((lesson) => {
-                const config = getLessonTypeConfig();
-                const cfg = config[lesson.type];
-                return (
-                  <li key={lesson.id}>
-                    <button
-                      onClick={() => handleLessonClick(lesson.id)}
-                      className="w-full flex items-center gap-3.5 px-5 py-3.5 hover:bg-gray-50 transition-colors text-left group"
-                    >
-                      <div
-                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${cfg.iconBg} ${cfg.iconColor}`}
-                      >
-                        {cfg.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{lesson.title}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">{cfg.label}</p>
-                      </div>
-                      <ChevronRight
-                        size={16}
-                        className="text-gray-300 group-hover:text-gray-500 transition-colors shrink-0"
-                      />
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      )}
+          </div>
+        ) : (
+          course.chapters.sort((a, b) => a.orderIndex - b.orderIndex).map((chapter, index) => (
+            <SectionCard
+              key={chapter.id}
+              sectionIndex={index + 1}
+              title={chapter.title}
+              lessons={chapter.lessons}
+              courseId={id!}
+              onNavigate={handleLessonClick}
+            />
+          ))
+        )}
+      </div>
 
     </div>
   );

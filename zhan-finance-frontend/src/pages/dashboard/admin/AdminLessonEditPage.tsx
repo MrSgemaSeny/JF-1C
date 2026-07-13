@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Upload, File, Film } from 'lucide-react';
-import { CourseDto, LessonDto, getAdminCourseById, updateLesson } from '@/entities/course/api/courseApi';
+import { CourseDto, LessonDto, getAdminCourseById, updateLesson, addLessonBlock } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
 import { useTranslation } from 'react-i18next';
 
@@ -25,12 +25,13 @@ export function AdminLessonEditPage() {
       getAdminCourseById(Number(courseId))
         .then((data) => {
           setCourse(data);
-          const found = data.lessons.find(l => l.id === Number(lessonId));
+          const found = data.chapters.flatMap(c => c.lessons).find(l => l.id === Number(lessonId));
           if (found) {
             setLesson(found);
             setTitle(found.title);
-            if (found.content) {
-              setContent(found.content);
+            const textBlock = found.blocks?.find(b => b.type === 'TEXT');
+            if (textBlock && textBlock.content) {
+              setContent(textBlock.content);
             }
           }
           setIsLoading(false);
@@ -43,11 +44,24 @@ export function AdminLessonEditPage() {
     if (!lesson) return;
     setIsSaving(true);
     try {
-      await updateLesson(lesson.id, title, undefined, content, undefined, file || undefined);
+      // First update the lesson title and basic properties
+      await updateLesson(lesson.id, title, undefined, undefined, undefined, undefined);
+
+      // Save the text content block
+      if (content.trim()) {
+        await addLessonBlock(lesson.id, 'TEXT', content);
+      }
+
+      // Save the file/video block if a file is attached
+      if (file) {
+        const fileType = file.type.startsWith('video/') ? 'VIDEO' : 'FILE';
+        await addLessonBlock(lesson.id, fileType, undefined, file);
+      }
+
       alert(t('adminLessonEdit.saveSuccess'));
       // Refresh lesson data to show new file
       const updatedCourse = await getAdminCourseById(Number(courseId));
-      const updatedLesson = updatedCourse.lessons.find(l => l.id === Number(lessonId));
+      const updatedLesson = updatedCourse.chapters.flatMap(c => c.lessons).find(l => l.id === Number(lessonId));
       if (updatedLesson) setLesson(updatedLesson);
       setFile(null); // Clear selected file after successful save
     } catch (e) {
@@ -65,6 +79,17 @@ export function AdminLessonEditPage() {
   };
 
   if (isLoading) return <div className="p-6">{t('common.loading')}</div>;
+
+  const currentFileBlock = lesson?.blocks?.find(b => b.type === 'VIDEO' || b.type === 'FILE');
+  let currentFileName = null;
+  if (currentFileBlock) {
+     try {
+       const parsed = JSON.parse(currentFileBlock.content);
+       currentFileName = parsed.name || 'File';
+     } catch (e) {
+       currentFileName = 'File';
+     }
+  }
 
   return (
     <div className="w-full h-screen flex flex-col bg-gray-50 overflow-hidden">
@@ -113,14 +138,11 @@ export function AdminLessonEditPage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="text-gray-500 text-sm font-medium mb-3 uppercase tracking-wider block">{t('adminLessonEdit.fileLabel')}</label>
                 
-                {lesson?.fileName && !file && (
+                {currentFileName && !file && (
                     <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200 flex items-center gap-4">
-                        {lesson.type === 'VIDEO' ? <Film className="w-8 h-8 text-blue-500" /> : <File className="w-8 h-8 text-gray-500" />}
+                        {lesson?.type === 'VIDEO' ? <Film className="w-8 h-8 text-blue-500" /> : <File className="w-8 h-8 text-gray-500" />}
                         <div>
-                            <p className="font-medium text-gray-900">{t('adminLessonEdit.currentFile')} {lesson.fileName}</p>
-                            <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/courses/lessons/${lesson.id}/file`} target="_blank" rel="noreferrer" className="text-sm text-brand-green hover:underline">
-                                {t('adminLessonEdit.downloadOpen')}
-                            </a>
+                            <p className="font-medium text-gray-900">{t('adminLessonEdit.currentFile')} {currentFileName}</p>
                         </div>
                     </div>
                 )}

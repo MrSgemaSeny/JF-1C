@@ -9,7 +9,7 @@ import type { EmployeeDto } from '../model/types';
  * - /api/crm/clients/{clientId}/employees - сотрудники assigned к клиенту
  */
 export async function getEmployees(): Promise<EmployeeDto[]> {
-  return apiRequest<EmployeeDto[]>('/api/admin/employees');
+  return apiRequest<EmployeeDto[]>('/api/crm/employees');
 }
 
 export async function getPendingEmployees(): Promise<EmployeeDto[]> {

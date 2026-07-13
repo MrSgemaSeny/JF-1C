@@ -28,6 +28,7 @@ export function AdminCoursesPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
@@ -43,8 +44,8 @@ export function AdminCoursesPage() {
                 <td className="px-6 py-4 text-sm text-gray-500">{course.id}</td>
                 <td className="px-6 py-4 font-medium text-gray-900">{course.title}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${course.isPublished ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                    {course.isPublished ? t('adminCourses.published') : t('adminCourses.draft')}
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${course.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                    {course.status === 'PUBLISHED' ? t('adminCourses.published') : t('adminCourses.draft')}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
@@ -65,6 +66,7 @@ export function AdminCoursesPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -42,6 +42,32 @@ public class DashboardService {
         Map<String, Long> tasksByStatus = allTasks.stream()
                 .collect(Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", Collectors.counting()));
                 
+        long wonTasks = 0;
+        long lostTasks = 0;
+        long totalCompletionDays = 0;
+        long completedTasksWithDates = 0;
+        Map<String, Long> tasksByLostReason = new java.util.HashMap<>();
+        
+        for (Task t : allTasks) {
+            if (t.getStage() != null) {
+                if (t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON) {
+                    wonTasks++;
+                    if (t.getClosedAt() != null && t.getCreatedAt() != null) {
+                        java.time.LocalDate createdDate = java.time.LocalDateTime.ofInstant(t.getCreatedAt(), java.time.ZoneId.systemDefault()).toLocalDate();
+                        long days = java.time.temporal.ChronoUnit.DAYS.between(createdDate, t.getClosedAt());
+                        totalCompletionDays += Math.max(0, days);
+                        completedTasksWithDates++;
+                    }
+                } else if (t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
+                    lostTasks++;
+                    String reason = t.getLostReason() != null && !t.getLostReason().isBlank() ? t.getLostReason() : "Не указана";
+                    tasksByLostReason.put(reason, tasksByLostReason.getOrDefault(reason, 0L) + 1);
+                }
+            }
+        }
+        
+        double avgCompletionDays = completedTasksWithDates > 0 ? (double) totalCompletionDays / completedTasksWithDates : 0;
+                
         List<User> employees = userRepository.findAllByRole(Role.EMPLOYEE);
         java.time.LocalDate today = java.time.LocalDate.now();
         
@@ -77,7 +103,7 @@ public class DashboardService {
             );
         }).collect(Collectors.toList());
                 
-        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, tasksByStatus, userRepository.count(), employeeStats);
+        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, wonTasks, lostTasks, avgCompletionDays, tasksByStatus, tasksByLostReason, userRepository.count(), employeeStats);
     }
 
     @Cacheable(value = "dashboard_employee", key = "#employee.id")

@@ -1,24 +1,42 @@
 import { apiRequest } from '@/shared/api/http';
 
+export interface LessonBlockDto {
+  id: number;
+  lessonId: number;
+  type: 'VIDEO' | 'TEXT' | 'FILE';
+  orderIndex: number;
+  content: string;
+}
+
+export interface LessonDto {
+  id: number;
+  chapterId: number;
+  title: string;
+  description: string;
+  type: 'VIDEO' | 'PRESENTATION' | 'DOCUMENT';
+  orderIndex: number;
+  durationMinutes: number;
+  isPreview: boolean;
+  blocks: LessonBlockDto[];
+}
+
+export interface ChapterDto {
+  id: number;
+  courseId: number;
+  title: string;
+  orderIndex: number;
+  lessons: LessonDto[];
+}
+
 export interface CourseDto {
   id: number;
   title: string;
   description: string;
   thumbnail?: string;
-  isPublished: boolean;
-  lessons: LessonDto[];
-}
-
-export interface LessonDto {
-  id: number;
-  title: string;
-  description: string;
-  content?: string;
-  type: 'VIDEO' | 'PRESENTATION' | 'DOCUMENT';
-  fileName?: string;
-  contentType?: string;
-  fileSize?: number;
-  orderIndex: number;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  createdById: number;
+  createdAt: string;
+  chapters: ChapterDto[];
 }
 
 // Learner API
@@ -109,6 +127,23 @@ export async function updateLesson(
 
   return await apiRequest<LessonDto>(`/api/admin/courses/lessons/${lessonId}`, {
     method: 'PUT',
+    body: formData
+  });
+}
+
+export async function addLessonBlock(
+  lessonId: number,
+  type: 'VIDEO' | 'TEXT' | 'FILE',
+  content?: string,
+  file?: File
+): Promise<LessonBlockDto> {
+  const formData = new FormData();
+  formData.append('type', type);
+  if (content !== undefined) formData.append('content', content);
+  if (file !== undefined) formData.append('file', file);
+
+  return await apiRequest<LessonBlockDto>(`/api/admin/courses/lessons/${lessonId}/blocks`, {
+    method: 'POST',
     body: formData
   });
 }

@@ -34,7 +34,7 @@ export function AdminCourseEditPage() {
         setCourse(data);
         setTitle(data.title);
         setDescription(data.description || '');
-        setIsPublished(data.isPublished);
+        setIsPublished(data.status === 'PUBLISHED');
       }).catch(console.error);
     }
   }, [isEditMode, id]);
@@ -165,7 +165,7 @@ export function AdminCourseEditPage() {
 
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <div className="divide-y divide-gray-100">
-              {course.lessons.map(lesson => (
+              {course.chapters.flatMap(c => c.lessons).map(lesson => (
                 <div key={lesson.id} className="px-4 py-4 flex justify-between items-center bg-white hover:bg-gray-50 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
@@ -173,7 +173,7 @@ export function AdminCourseEditPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-sm text-gray-900">{lesson.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{lesson.fileName || t('adminCourseEdit.textLesson')}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{t('adminCourseEdit.textLesson')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -193,7 +193,7 @@ export function AdminCourseEditPage() {
                   </div>
                 </div>
               ))}
-              {course.lessons.length === 0 && (
+              {course.chapters.flatMap(c => c.lessons).length === 0 && (
                 <div className="px-4 py-8 text-sm text-center text-gray-400 flex flex-col items-center justify-center">
                   <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
                     <FileText className="w-5 h-5 text-gray-300" />
