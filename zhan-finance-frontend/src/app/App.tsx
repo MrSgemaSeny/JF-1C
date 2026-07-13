@@ -47,8 +47,9 @@ const EmployeeClientsPage = lazy(() => import('@/pages/dashboard/employee/Employ
 const EmployeeTasksPage = lazy(() => import('@/pages/dashboard/employee/EmployeeTasksPage').then(m => ({ default: m.EmployeeTasksPage })));
 const EmployeeDocumentsPage = lazy(() => import('@/pages/dashboard/employee/EmployeeDocumentsPage').then(m => ({ default: m.EmployeeDocumentsPage })));
 
-// Shared Task Details
+// Shared Task Details & Pool
 const TaskDetailsPage = lazy(() => import('@/pages/task-details/TaskDetailsPage').then(m => ({ default: m.TaskDetailsPage })));
+const TaskPoolPage = lazy(() => import('@/pages/dashboard/shared/task-pool/TaskPoolPage').then(m => ({ default: m.TaskPoolPage })));
 
 // Client
 const ClientOverviewPage = lazy(() => import('@/pages/dashboard/client/ClientOverviewPage').then(m => ({ default: m.ClientOverviewPage })));
@@ -101,6 +102,7 @@ export function App() {
                 <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
                 <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
                 <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
+                <Route path="/admin/tasks/pool" element={<TaskPoolPage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />
                 <Route path={ROUTES.ADMIN_TASK_DETAILS} element={<TaskDetailsPage />} />
@@ -114,12 +116,12 @@ export function App() {
                 <Route path={ROUTES.ADMIN_AUDIT_LOGS} element={<AdminAuditLogPage />} />
               </Route>
 
-              {/* Employee Routes */}
               <Route element={<RoleProtectedRoute allow={['EMPLOYEE']} />}>
                 <Route path={ROUTES.EMPLOYEE} element={<EmployeeOverviewPage />} />
                 <Route path={ROUTES.EMPLOYEE_CHAT} element={<EmployeeChatPage />} />
                 <Route path={ROUTES.EMPLOYEE_CLIENTS} element={<EmployeeClientsPage />} />
                 <Route path={ROUTES.EMPLOYEE_TASKS} element={<EmployeeTasksPage />} />
+                <Route path="/employee/tasks/pool" element={<TaskPoolPage />} />
                 <Route path={ROUTES.EMPLOYEE_TASK_DETAILS} element={<TaskDetailsPage />} />
                 <Route path={ROUTES.EMPLOYEE_DOCUMENTS} element={<EmployeeDocumentsPage />} />
                 <Route path={ROUTES.EMPLOYEE_CALENDAR} element={<CalendarPage />} />

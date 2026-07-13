@@ -36,17 +36,22 @@ public class TaskController {
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(required = false) Long clientId,
             @RequestParam(required = false) Long assignedToId,
-            @RequestParam(required = false) Long stageId
+            @RequestParam(required = false) Long stageId,
+            @RequestParam(required = false) Boolean unassigned
     ) {
         User user = principal.getUser();
 
         if (user.getRole() == Role.ADMIN) {
             // Админ может видеть все задачи, с опциональными фильтрами
-            return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, stageId));
+            return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, stageId, unassigned));
         }
 
         if (user.getRole() == Role.EMPLOYEE) {
-            // Сотрудник видит только свои назначенные, опции фильтра игнорируются
+            // Сотрудник может запросить неназначенные задачи для пула
+            if (Boolean.TRUE.equals(unassigned)) {
+                return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, stageId, unassigned));
+            }
+            // Иначе видит только свои назначенные
             return ApiResponse.success(taskService.getTasksForEmployee(user));
         }
 

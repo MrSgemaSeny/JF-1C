@@ -78,13 +78,15 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<TaskDto> getAllTasks(Long clientId, Long assignedToId, Long stageId) {
+    public List<TaskDto> getAllTasks(Long clientId, Long assignedToId, Long stageId, Boolean unassigned) {
         Stream<Task> tasks = taskRepository.findAllWithDetails().stream();
 
         if (clientId != null) {
             tasks = tasks.filter(t -> t.getClient().getId().equals(clientId));
         }
-        if (assignedToId != null) {
+        if (unassigned != null && unassigned) {
+            tasks = tasks.filter(t -> t.getAssignedTo() == null);
+        } else if (assignedToId != null) {
             tasks = tasks.filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(assignedToId));
         }
         if (stageId != null) {

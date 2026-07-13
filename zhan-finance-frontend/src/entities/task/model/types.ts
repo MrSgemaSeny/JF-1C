@@ -120,6 +120,7 @@ export interface TaskFilter {
   stageId?: number;
   clientId?: number;
   assignedToId?: number;
+  unassigned?: boolean;
 }
 
 export interface TaskBatchUpdateRequest {

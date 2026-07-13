@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, MessageSquare, Activity, Clock, Tag, User as UserIcon, XCircle, ArrowUpRight, Check, Calendar, CheckCircle2, ChevronRight, Hash, PlayCircle, FileText, Download } from 'lucide-react';
 import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '../model/types';
-import { getTaskComments, addTaskComment, getTaskHistory } from '../api/taskApi';
+import { getTaskComments, addTaskComment, getTaskHistory, assignTask } from '../api/taskApi';
+import { getEmployees } from '@/entities/employee/api/employeeApi';
+import type { EmployeeDto } from '@/entities/employee/model/types';
+import { useAuth } from '@/features/auth/AuthContext';
+import { useTaskActions } from '../lib/useTaskActions';
 import { getTaskDocuments, downloadDocument, uploadDocument } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { StatusBadge } from '@/shared/ui/Badge';
@@ -17,12 +21,18 @@ interface TaskDetailsModalProps {
 }
 
 export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModal = true }: TaskDetailsModalProps) {
+  const { user } = useAuth();
+  const currentUser = user ? { id: user.userId, fullName: user.fullName, email: user.email, role: user.role } : null;
   const [activeTab, setActiveTab] = useState<'comments' | 'history' | 'documents'>('comments');
   const [comments, setComments] = useState<TaskCommentDto[]>([]);
   const [history, setHistory] = useState<TaskActivityDto[]>([]);
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
+  const [employees, setEmployees] = useState<EmployeeDto[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isAssigning, setIsAssigning] = useState(false);
+
+  const taskActions = currentUser ? useTaskActions(task, currentUser) : null;
 
   // Edit states
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -57,7 +67,10 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
     fetchComments();
     fetchHistory();
     fetchDocuments();
-  }, [task.id]);
+    if (taskActions?.canAssign) {
+      getEmployees().then(setEmployees).catch(console.error);
+    }
+  }, [task.id, taskActions?.canAssign]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -170,6 +183,21 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
     onUpdateTask({ ...task, subtasks: newSubtasks });
   };
 
+  const handleAssignTask = async (assigneeId: number | null) => {
+    if (!currentUser) return;
+    setIsAssigning(true);
+    try {
+      const updatedTask = await assignTask(task.id, assigneeId || undefined);
+      onUpdateTask(updatedTask);
+      fetchHistory(); // Refresh history to show assignment log
+    } catch (err) {
+      console.error('Failed to assign task:', err);
+      alert('Не удалось назначить задачу');
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
   const content = (
       <div 
         className={`bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden ${isModal ? 'max-w-[1400px] w-[95vw] h-[90vh]' : 'h-full shadow-sm border border-gray-100'}`}
@@ -207,11 +235,49 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   Клиент: {task.client.fullName}
                 </span>
               )}
-              {task.assignedTo && (
-                <span className="flex items-center gap-1">
-                  <UserIcon size={14} className="text-brand-green" />
-                  Исполнитель: {task.assignedTo.fullName}
-                </span>
+              {taskActions && (
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <UserIcon size={14} className={task.assignedTo ? "text-brand-green" : "text-gray-400"} />
+                    Исполнитель:
+                  </span>
+                  {taskActions.canAssign ? (
+                    <select
+                      disabled={isAssigning}
+                      value={task.assignedTo?.id || ''}
+                      onChange={(e) => handleAssignTask(e.target.value ? Number(e.target.value) : null)}
+                      className="text-sm border border-gray-200 rounded px-2 py-0.5 outline-none focus:border-brand-green bg-white disabled:opacity-50"
+                    >
+                      <option value="">Не назначен (Пул)</option>
+                      {employees.map(emp => (
+                        <option key={emp.id} value={emp.id}>{emp.fullName}</option>
+                      ))}
+                    </select>
+                  ) : task.assignedTo ? (
+                    <span className="font-medium text-gray-700">{task.assignedTo.fullName}</span>
+                  ) : (
+                    <span className="text-gray-400 italic">Не назначен (Пул)</span>
+                  )}
+
+                  {taskActions.canTake && (
+                    <button
+                      onClick={() => handleAssignTask(currentUser!.id)}
+                      disabled={isAssigning}
+                      className="ml-2 bg-brand-green text-white px-3 py-1 rounded text-xs font-medium hover:bg-brand-green/90 transition-colors disabled:opacity-50"
+                    >
+                      Взять в работу
+                    </button>
+                  )}
+                  {taskActions.canDrop && (
+                    <button
+                      onClick={() => handleAssignTask(null)}
+                      disabled={isAssigning}
+                      className="ml-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                    >
+                      Отказаться
+                    </button>
+                  )}
+                </div>
               )}
               <span className="flex items-center gap-1">
                 <Clock size={14} />

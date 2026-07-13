@@ -34,7 +34,7 @@ public class CrmAccessService {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
-            return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
+            return task.getAssignedTo() == null || assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
         }
         if (actor.getRole() == Role.CLIENT) {
             return sameUser(actor, task.getClient());

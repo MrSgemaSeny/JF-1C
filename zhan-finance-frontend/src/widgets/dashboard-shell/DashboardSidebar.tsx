@@ -35,6 +35,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Employees':           <UserCheck size={16} />,
   'Clients':             <Users size={16} />,
   'Tasks':               <ClipboardList size={16} />,
+  'Task Pool':           <Briefcase size={16} />,
   'My Tasks':            <ClipboardList size={16} />,
   'My Clients':          <Users size={16} />,
   'Archive (Done)':      <Archive size={16} />,

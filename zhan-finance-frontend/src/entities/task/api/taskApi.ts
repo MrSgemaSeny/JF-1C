@@ -6,6 +6,7 @@ export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
   if (filter?.stageId) query.append('stageId', filter.stageId.toString());
   if (filter?.clientId) query.append('clientId', filter.clientId.toString());
   if (filter?.assignedToId) query.append('assignedToId', filter.assignedToId.toString());
+  if (filter?.unassigned) query.append('unassigned', 'true');
   
   const queryString = query.toString() ? `?${query.toString()}` : '';
   return apiRequest<TaskDto[]>(`/api/crm/tasks${queryString}`);
