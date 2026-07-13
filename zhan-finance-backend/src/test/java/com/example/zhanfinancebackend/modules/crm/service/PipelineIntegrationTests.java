@@ -77,6 +77,7 @@ class PipelineIntegrationTests {
         mockMvc.perform(get("/api/crm/pipelines")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON))
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(1))))
                 .andExpect(jsonPath("$.data[*].name", hasItem("Test Pipeline")));
