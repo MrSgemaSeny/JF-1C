@@ -13,5 +13,6 @@ public class LessonDto {
     private int orderIndex;
     private int durationMinutes;
     private boolean isPreview;
-    private java.util.List<LessonBlockDto> blocks = new java.util.ArrayList<>();
+    private String content;
+    private String mediaUrl;
 }

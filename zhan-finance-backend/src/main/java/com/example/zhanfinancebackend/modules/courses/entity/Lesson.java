@@ -39,7 +39,9 @@ public class Lesson extends BaseEntity {
     @Column(name = "is_preview", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isPreview = false;
 
-    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("orderIndex ASC")
-    private List<LessonBlock> blocks = new ArrayList<>();
+    @Column(name = "media_url", length = 512)
+    private String mediaUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 }

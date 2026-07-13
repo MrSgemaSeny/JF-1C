@@ -1,13 +1,5 @@
 import { apiRequest } from '@/shared/api/http';
 
-export interface LessonBlockDto {
-  id: number;
-  lessonId: number;
-  type: 'VIDEO' | 'TEXT' | 'FILE';
-  orderIndex: number;
-  content: string;
-}
-
 export interface LessonDto {
   id: number;
   chapterId: number;
@@ -17,7 +9,8 @@ export interface LessonDto {
   orderIndex: number;
   durationMinutes: number;
   isPreview: boolean;
-  blocks: LessonBlockDto[];
+  content?: string;
+  mediaUrl?: string;
 }
 
 export interface ChapterDto {
@@ -164,36 +157,6 @@ export async function createLessonForChapter(
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
-  });
-}
-
-export async function addTextBlock(
-  lessonId: number,
-  content: string
-): Promise<LessonBlockDto> {
-  const formData = new URLSearchParams();
-  formData.append('type', 'TEXT');
-  formData.append('content', content);
-
-  return await apiRequest<LessonBlockDto>(`/api/admin/courses/lessons/${lessonId}/blocks`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: formData.toString()
-  });
-}
-
-export async function addMediaBlock(
-  lessonId: number,
-  type: 'VIDEO' | 'FILE',
-  file: File
-): Promise<LessonBlockDto> {
-  const formData = new FormData();
-  formData.append('type', type);
-  formData.append('file', file);
-
-  return await apiRequest<LessonBlockDto>(`/api/admin/courses/lessons/${lessonId}/blocks`, {
-    method: 'POST',
-    body: formData
   });
 }
 

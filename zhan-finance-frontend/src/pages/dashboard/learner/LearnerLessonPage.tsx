@@ -85,87 +85,30 @@ export function LearnerLessonPage() {
 
       {/* Content Blocks */}
       <div className="space-y-6">
-        {lesson.blocks?.sort((a, b) => a.orderIndex - b.orderIndex).map((block) => {
-          
-          if (block.type === 'VIDEO') {
-            // For video block, the content is expected to be either JSON {"url": "..."} or directly a URL string
-            let videoUrl = '';
-            try {
-               const parsed = JSON.parse(block.content);
-               videoUrl = parsed.url || parsed.videoUrl || '';
-            } catch (e) {
-               videoUrl = block.content;
-            }
+        {lesson.mediaUrl && (
+          <div className="bg-black rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+            <video
+              src={lesson.mediaUrl.startsWith('http') ? lesson.mediaUrl : `${API_BASE}${lesson.mediaUrl.startsWith('/') ? '' : '/'}${lesson.mediaUrl}`}
+              controls
+              controlsList="nodownload"
+              disablePictureInPicture
+              onContextMenu={(e) => e.preventDefault()}
+              className="w-full aspect-video"
+            />
+          </div>
+        )}
 
-            return (
-              <div key={block.id} className="bg-black rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                <video
-                  src={videoUrl}
-                  controls
-                  controlsList="nodownload"
-                  className="w-full aspect-video"
-                />
+        {lesson.content && (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-6 py-5">
+              <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+                {lesson.content}
               </div>
-            );
-          }
+            </div>
+          </div>
+        )}
 
-          if (block.type === 'TEXT') {
-            return (
-              <div key={block.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-5">
-                  <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-                    {block.content}
-                  </div>
-                </div>
-              </div>
-            );
-          }
-
-          if (block.type === 'FILE') {
-            let fileUrl = '';
-            let fileName = '';
-            try {
-               const parsed = JSON.parse(block.content);
-               fileUrl = parsed.url || '';
-               fileName = parsed.name || t('learnerLesson.attachedFile');
-            } catch (e) {
-               fileUrl = block.content;
-               fileName = t('learnerLesson.attachedFile');
-            }
-            
-            return (
-              <div key={block.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="px-6 py-5">
-                  <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
-                    <Download size={14} className="text-brand-green" />
-                    {t('learnerLesson.downloadFile')}
-                  </p>
-                  <a
-                    href={fileUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-brand-green/30 hover:bg-gray-50 transition-all group"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
-                      <FileText size={18} className="text-green-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {fileName}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5">{t('learnerLesson.clickToDownload')}</p>
-                    </div>
-                    <ChevronRight size={16} className="text-gray-300 group-hover:text-brand-green transition-colors shrink-0" />
-                  </a>
-                </div>
-              </div>
-            );
-          }
-
-          return null;
-        })}
-
-        {(!lesson.blocks || lesson.blocks.length === 0) && (
+        {!lesson.content && !lesson.mediaUrl && (
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-10 text-center text-sm text-gray-400">
             {t('learnerLesson.noContent')}
           </div>

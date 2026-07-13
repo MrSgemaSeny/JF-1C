@@ -56,11 +56,6 @@ public class CourseService {
             for (com.example.zhanfinancebackend.modules.courses.entity.Chapter chapter : course.getChapters()) {
                 if (chapter.getLessons() != null) {
                     chapter.getLessons().size();
-                    for (com.example.zhanfinancebackend.modules.courses.entity.Lesson lesson : chapter.getLessons()) {
-                        if (lesson.getBlocks() != null) {
-                            lesson.getBlocks().size();
-                        }
-                    }
                 }
             }
         }

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Upload, File, Film } from 'lucide-react';
-import { CourseDto, LessonDto, getAdminCourseById, updateLesson, addLessonBlock } from '@/entities/course/api/courseApi';
+import { CourseDto, LessonDto, getAdminCourseById, updateLesson } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
 import { useTranslation } from 'react-i18next';
 
@@ -29,10 +29,7 @@ export function AdminLessonEditPage() {
           if (found) {
             setLesson(found);
             setTitle(found.title);
-            const textBlock = found.blocks?.find(b => b.type === 'TEXT');
-            if (textBlock && textBlock.content) {
-              setContent(textBlock.content);
-            }
+            setContent(found.content || '');
           }
           setIsLoading(false);
         })
@@ -45,18 +42,7 @@ export function AdminLessonEditPage() {
     setIsSaving(true);
     try {
       // First update the lesson title and basic properties
-      await updateLesson(lesson.id, title, undefined, undefined, undefined, undefined);
-
-      // Save the text content block
-      if (content.trim()) {
-        await addLessonBlock(lesson.id, 'TEXT', content);
-      }
-
-      // Save the file/video block if a file is attached
-      if (file) {
-        const fileType = file.type.startsWith('video/') ? 'VIDEO' : 'FILE';
-        await addLessonBlock(lesson.id, fileType, undefined, file);
-      }
+      await updateLesson(lesson.id, title, undefined, content, undefined, file || undefined);
 
       alert(t('adminLessonEdit.saveSuccess'));
       // Refresh lesson data to show new file
@@ -80,15 +66,9 @@ export function AdminLessonEditPage() {
 
   if (isLoading) return <div className="p-6">{t('common.loading')}</div>;
 
-  const currentFileBlock = lesson?.blocks?.find(b => b.type === 'VIDEO' || b.type === 'FILE');
   let currentFileName = null;
-  if (currentFileBlock) {
-     try {
-       const parsed = JSON.parse(currentFileBlock.content);
-       currentFileName = parsed.name || 'File';
-     } catch (e) {
-       currentFileName = 'File';
-     }
+  if (lesson?.mediaUrl) {
+     currentFileName = lesson.mediaUrl.split('/').pop() || 'File';
   }
 
   return (

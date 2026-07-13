@@ -32,27 +32,6 @@ public class DatabaseMigrationRunner {
                     System.err.println("Could not update chapter_id using course_id (maybe it was dropped or data missing): " + e.getMessage());
                 }
                 
-                // 3. Migrate old lesson content/file to lesson_blocks
-                try {
-                    jdbcTemplate.execute("INSERT INTO lesson_blocks (lesson_id, type, order_index, content, created_at, updated_at) " +
-                            "SELECT id, " +
-                            "       CASE " +
-                            "           WHEN type = 'VIDEO' THEN 'VIDEO' " +
-                            "           WHEN type = 'DOCUMENT' THEN 'FILE' " +
-                            "           ELSE 'TEXT' " +
-                            "       END, " +
-                            "       0, " +
-                            "       CASE " +
-                            "           WHEN file_path IS NOT NULL THEN CONCAT('{\"url\":\"', file_path, '\", \"name\":\"', COALESCE(file_name, 'file'), '\"}') " +
-                            "           ELSE content " +
-                            "       END, " +
-                            "       CURRENT_TIMESTAMP, CURRENT_TIMESTAMP " +
-                            "FROM lessons " +
-                            "WHERE (file_path IS NOT NULL OR content IS NOT NULL) AND id NOT IN (SELECT lesson_id FROM lesson_blocks)");
-                } catch (Exception e) {
-                     System.err.println("Could not migrate lesson_blocks: " + e.getMessage());
-                }
-
                 System.out.println("Manual data migration completed successfully!");
             }
         } catch (Exception e) {

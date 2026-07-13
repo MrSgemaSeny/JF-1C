@@ -92,14 +92,6 @@ public class AdminCourseController {
         return ApiResponse.success(null);
     }
 
-    @PostMapping("/lessons/{lessonId}/blocks")
-    public ApiResponse<com.example.zhanfinancebackend.modules.courses.entity.LessonBlock> addLessonBlock(
-            @PathVariable Long lessonId,
-            @RequestParam("type") com.example.zhanfinancebackend.modules.courses.entity.BlockType type,
-            @RequestParam(value = "content", required = false) String content,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
-        return ApiResponse.success(lessonService.addLessonBlock(lessonId, type, content, file));
-    }
 
     @PostMapping("/{courseId}/chapters")
     public ApiResponse<com.example.zhanfinancebackend.modules.courses.entity.Chapter> createChapter(

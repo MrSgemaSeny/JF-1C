@@ -1,6 +1,5 @@
 package com.example.zhanfinancebackend.modules.courses.service;
 
-import com.example.zhanfinancebackend.modules.courses.entity.BlockType;
 import com.example.zhanfinancebackend.modules.courses.entity.Course;
 import com.example.zhanfinancebackend.modules.courses.entity.Lesson;
 import com.example.zhanfinancebackend.modules.courses.entity.LessonType;
@@ -31,9 +30,6 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Lesson not found"));
-        if (lesson.getBlocks() != null) {
-            lesson.getBlocks().size();
-        }
         return lesson;
     }
 
@@ -80,10 +76,12 @@ public class LessonService {
         Lesson lesson = getLessonById(id);
         if (title != null) lesson.setTitle(title);
         if (description != null) lesson.setDescription(description);
+        if (content != null) lesson.setContent(content);
         if (orderIndex != null) lesson.setOrderIndex(orderIndex);
 
         if (file != null && !file.isEmpty()) {
-            // TODO: Phase 2 - Implement LessonBlock upload
+            String filePath = storageService.store(file);
+            lesson.setMediaUrl("/uploads/" + filePath);
         }
 
         return lessonRepository.save(lesson);
@@ -92,33 +90,6 @@ public class LessonService {
     @Transactional
     public void deleteLesson(Long id) {
         Lesson lesson = getLessonById(id);
-        // TODO: Phase 2 - delete files from LessonBlocks
         lessonRepository.deleteById(id);
-    }
-
-    @Transactional
-    public com.example.zhanfinancebackend.modules.courses.entity.LessonBlock addLessonBlock(Long lessonId, com.example.zhanfinancebackend.modules.courses.entity.BlockType type, String content, MultipartFile file) {
-        Lesson lesson = getLessonById(lessonId);
-        com.example.zhanfinancebackend.modules.courses.entity.LessonBlock block = new com.example.zhanfinancebackend.modules.courses.entity.LessonBlock();
-        block.setLesson(lesson);
-        block.setType(type);
-        block.setOrderIndex(lesson.getBlocks() != null ? lesson.getBlocks().size() : 0);
-
-        if (file != null && !file.isEmpty()) {
-            String filePath = storageService.store(file);
-            String fileUrl = "/api/documents/files/" + filePath;
-            
-            if (type == com.example.zhanfinancebackend.modules.courses.entity.BlockType.VIDEO) {
-                block.setContent("{\"url\":\"" + fileUrl + "\"}");
-            } else if (type == com.example.zhanfinancebackend.modules.courses.entity.BlockType.FILE) {
-                block.setContent("{\"url\":\"" + fileUrl + "\",\"name\":\"" + file.getOriginalFilename() + "\"}");
-            }
-        } else {
-            block.setContent(content);
-        }
-
-        lesson.getBlocks().add(block);
-        lessonRepository.save(lesson);
-        return block;
     }
 }
