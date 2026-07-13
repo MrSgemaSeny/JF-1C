@@ -149,23 +149,18 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
         <div className="flex items-center gap-2">
           <span className="text-[12px] text-gray-400">{dateStr}</span>
           {task.assignedTo && (
-            <>
+            <div 
+              className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden"
+              title={task.assignedTo.fullName}
+            >
               {task.assignedTo.avatarUrl ? (
-                <img 
-                  src={getSecureImageUrl(task.assignedTo.avatarUrl)}
-                  alt={task.assignedTo.fullName}
-                  className="w-5 h-5 rounded-full object-cover"
-                  title={task.assignedTo.fullName}
-                />
+                <img src={getSecureImageUrl(task.assignedTo.avatarUrl)} alt={task.assignedTo.fullName} className="w-full h-full object-cover" />
               ) : (
-                <div 
-                  className="w-5 h-5 rounded-full bg-brand-accent text-white flex items-center justify-center text-[10px] font-bold"
-                  title={task.assignedTo.fullName}
-                >
+                <div className="w-full h-full bg-brand-accent text-white flex items-center justify-center">
                   {task.assignedTo.fullName.charAt(0).toUpperCase()}
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>

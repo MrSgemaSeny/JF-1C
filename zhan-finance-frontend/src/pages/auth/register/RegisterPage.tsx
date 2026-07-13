@@ -8,12 +8,16 @@ import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 
-export function RegisterPage() {
+interface RegisterPageProps {
+  isEmployeeRoute?: boolean;
+}
+
+export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [role, setRole] = useState<'CLIENT' | 'EMPLOYEE'>('CLIENT');
+  const role = isEmployeeRoute ? 'EMPLOYEE' : 'CLIENT';
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -124,138 +128,107 @@ export function RegisterPage() {
         <h1 className="text-3xl font-black uppercase text-brand-green mb-2">Регистрация</h1>
         <p className="text-brand-green/70 mb-6">Создайте аккаунт, чтобы открыть личный кабинет.</p>
 
-        {/* Tabs */}
-        <div className="flex p-1 bg-brand-green/5 rounded-xl mb-6">
-          <button
-            type="button"
-            onClick={() => setRole('CLIENT')}
-            className={`flex-1 py-2 text-sm font-bold uppercase tracking-wider rounded-lg transition-all ${
-              role === 'CLIENT'
-                ? 'bg-white text-brand-green shadow-sm'
-                : 'text-brand-green/50 hover:text-brand-green/80'
-            }`}
-          >
-            Я Клиент
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('EMPLOYEE')}
-            className={`flex-1 py-2 text-sm font-bold uppercase tracking-wider rounded-lg transition-all ${
-              role === 'EMPLOYEE'
-                ? 'bg-white text-brand-green shadow-sm'
-                : 'text-brand-green/50 hover:text-brand-green/80'
-            }`}
-          >
-            Я Сотрудник
-          </button>
-        </div>
 
-        {role === 'CLIENT' ? (
-          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
-            <Input
-              id="fullName"
-              type="text"
-              label="Имя"
-              required
-              autoComplete="off"
-              maxLength={120}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              disabled={isSubmitting}
-              error={validationErrors.fullName}
-              icon={<User className="w-5 h-5" />}
-              placeholder="Имя Фамилия"
-            />
 
-            <Input
-              id="email"
-              type="email"
-              label="Email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting}
-              error={validationErrors.email}
-              icon={<Mail className="w-5 h-5" />}
-              placeholder="example@gmail.com"
-            />
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+          <Input
+            id="fullName"
+            type="text"
+            label="Имя"
+            required
+            autoComplete="off"
+            maxLength={120}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            disabled={isSubmitting}
+            error={validationErrors.fullName}
+            icon={<User className="w-5 h-5" />}
+            placeholder="Имя Фамилия"
+          />
 
-            <Input
-              id="phone"
-              type="tel"
-              label="Телефон"
-              autoComplete="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              disabled={isSubmitting}
-              error={validationErrors.phone}
-              icon={<Phone className="w-5 h-5" />}
-              placeholder="+7 (999) 000-00-00"
-            />
+          <Input
+            id="email"
+            type="email"
+            label="Email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isSubmitting}
+            error={validationErrors.email}
+            icon={<Mail className="w-5 h-5" />}
+            placeholder="example@gmail.com"
+          />
 
-            <Input
-              id="companyName"
-              type="text"
-              label="Название компании"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              disabled={isSubmitting}
-              error={validationErrors.companyName}
-              icon={<Building2 className="w-5 h-5" />}
-              placeholder="OOO Пример"
-            />
+          {role === 'CLIENT' && (
+            <>
+              <Input
+                id="phone"
+                type="tel"
+                label="Телефон"
+                autoComplete="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={isSubmitting}
+                error={validationErrors.phone}
+                icon={<Phone className="w-5 h-5" />}
+                placeholder="+7 (999) 000-00-00"
+              />
 
-            <Input
-              id="password"
-              type="password"
-              label="Пароль"
-              required
-              autoComplete="new-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isSubmitting}
-              error={validationErrors.password}
-              icon={<Lock className="w-5 h-5" />}
-              placeholder="••••••••"
-              hint="Минимум 8 символов, хотя бы одна буква и одна цифра"
-            />
+              <Input
+                id="companyName"
+                type="text"
+                label="Название компании"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                disabled={isSubmitting}
+                error={validationErrors.companyName}
+                icon={<Building2 className="w-5 h-5" />}
+                placeholder="OOO Пример"
+              />
+            </>
+          )}
 
-            {globalError && (
-              <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-                {globalError}
-              </p>
-            )}
+          <Input
+            id="password"
+            type="password"
+            label="Пароль"
+            required
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isSubmitting}
+            error={validationErrors.password}
+            icon={<Lock className="w-5 h-5" />}
+            placeholder="••••••••"
+            hint="Минимум 8 символов, хотя бы одна буква и одна цифра"
+          />
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
-            >
-              {isSubmitting ? 'Отправка...' : 'Зарегистрироваться'}
-              {!isSubmitting && <ArrowRight className="w-4 h-4" />}
-            </button>
-          </form>
-        ) : (
-
-          <div className="bg-brand-green/5 border border-brand-green/10 rounded-xl p-6 text-center space-y-4">
-            <p className="text-sm text-brand-green/80 leading-relaxed font-medium">
-              Для корректной работы корпоративной почты и системы уведомлений, сотрудники могут регистрироваться только через <b>Google Аккаунт</b>.
+          {globalError && (
+            <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              {globalError}
             </p>
-          </div>
-        )}
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+          >
+            {isSubmitting ? 'Отправка...' : 'Зарегистрироваться'}
+            {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+          </button>
+        </form>
 
         <div className="mt-6">
-          {role === 'CLIENT' && (
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-brand-green/20"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-brand-green/50">или</span>
-              </div>
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-brand-green/20"></div>
             </div>
-          )}
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-brand-green/50">или</span>
+            </div>
+          </div>
           <div className="flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}

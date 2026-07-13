@@ -84,6 +84,7 @@ export function App() {
 
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+            <Route path={ROUTES.REGISTER_EMPLOYEE} element={<RegisterPage isEmployeeRoute={true} />} />
             <Route path={ROUTES.COMPLETE_PROFILE} element={<CompleteProfilePage />} />
 
             {/* Dashboard Entry Point */}

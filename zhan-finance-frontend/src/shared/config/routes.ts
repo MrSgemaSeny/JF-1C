@@ -4,6 +4,7 @@ export const ROUTES = {
   SERVICES: '/services',
   LOGIN: '/login',
   REGISTER: '/register',
+  REGISTER_EMPLOYEE: '/register/employee',
   COMPLETE_PROFILE: '/complete-profile',
   PROFILE: '/profile', // Redirects based on role
   ADMIN: '/admin',
