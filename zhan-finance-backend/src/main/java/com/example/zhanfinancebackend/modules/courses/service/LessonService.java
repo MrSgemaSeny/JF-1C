@@ -103,9 +103,9 @@ public class LessonService {
             String filePath = storageService.store(file);
             String fileUrl = "/api/documents/files/" + filePath;
             
-            if (type == BlockType.VIDEO) {
+            if (type == com.example.zhanfinancebackend.modules.courses.entity.BlockType.VIDEO) {
                 block.setContent("{\"url\":\"" + fileUrl + "\"}");
-            } else if (type == BlockType.FILE) {
+            } else if (type == com.example.zhanfinancebackend.modules.courses.entity.BlockType.FILE) {
                 block.setContent("{\"url\":\"" + fileUrl + "\",\"name\":\"" + file.getOriginalFilename() + "\"}");
             }
         } else {
