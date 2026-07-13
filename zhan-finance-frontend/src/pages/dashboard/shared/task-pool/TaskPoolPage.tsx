@@ -6,11 +6,36 @@ import { Users, Loader2, Inbox } from 'lucide-react';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import { StatusBadge } from '@/shared/ui/Badge';
 import type { TaskDto } from '@/entities/task/model/types';
+import { assignTask } from '@/entities/task/api/taskApi';
+import type { EmployeeDto } from '@/entities/employee/model/types';
+import { getEmployees } from '@/entities/employee/api/employeeApi';
 
 export function TaskPoolPage() {
   const { user } = useAuth();
   const { data: tasks, isLoading, error, refetch } = useApiData(() => getTasks({ unassigned: true }));
   const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
+  const [employees, setEmployees] = React.useState<EmployeeDto[]>([]);
+  const [assigningTaskId, setAssigningTaskId] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (user?.role === 'ADMIN') {
+      getEmployees().then(setEmployees).catch(console.error);
+    }
+  }, [user?.role]);
+
+  const handleAssign = async (e: React.MouseEvent | React.ChangeEvent<HTMLSelectElement>, taskId: number, assigneeId?: number) => {
+    e.stopPropagation();
+    setAssigningTaskId(taskId);
+    try {
+      await assignTask(taskId, assigneeId);
+      refetch();
+    } catch (err) {
+      console.error('Failed to assign task:', err);
+      alert('Не удалось назначить задачу');
+    } finally {
+      setAssigningTaskId(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -64,6 +89,7 @@ export function TaskPoolPage() {
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Клиент</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Статус</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Создано</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Действия</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -91,6 +117,33 @@ export function TaskPoolPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {new Date(task.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
+                      {user?.role === 'ADMIN' ? (
+                        <select
+                          disabled={assigningTaskId === task.id}
+                          value=""
+                          onChange={(e) => handleAssign(e, task.id, e.target.value ? Number(e.target.value) : undefined)}
+                          className="text-sm border border-gray-200 rounded px-2 py-1 outline-none focus:border-brand-green bg-white disabled:opacity-50 min-w-[140px]"
+                        >
+                          <option value="" disabled>Назначить...</option>
+                          {employees.map(emp => (
+                            <option key={emp.id} value={emp.id}>{emp.fullName}</option>
+                          ))}
+                        </select>
+                      ) : null}
+
+                      {(user?.role === 'EMPLOYEE' || user?.role === 'ADMIN') && (
+                        <button
+                          disabled={assigningTaskId === task.id}
+                          onClick={(e) => handleAssign(e, task.id, user.userId)}
+                          className="bg-brand-green text-white px-3 py-1 rounded text-xs font-medium hover:bg-brand-green/90 transition-colors disabled:opacity-50 whitespace-nowrap"
+                        >
+                          {assigningTaskId === task.id ? 'Назначение...' : 'Взять себе'}
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
