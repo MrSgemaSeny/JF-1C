@@ -41,10 +41,11 @@ public class ExportController {
             @RequestParam(required = false) Long stageId
     ) {
         User user = principal.getUser();
+        boolean isAdmin = user.getRole() == Role.ADMIN;
 
-        List<TaskDto> tasks = user.getRole() == Role.ADMIN
-                ? taskService.getAllTasks(clientId, assignedToId, stageId)
-                : taskService.getTasksForEmployee(user);
+        List<TaskDto> tasks = isAdmin 
+                ? taskService.getAllTasks(clientId, assignedToId, stageId, null)
+                : taskService.getAllTasks(clientId, user.getId(), stageId, null);
 
         String csv = buildCsv(tasks);
         byte[] csvBytes = (BOM + csv).getBytes(StandardCharsets.UTF_8);

@@ -33,13 +33,13 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getAllEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
                 .map(this::mapToEmployeeDto)
                 .toList();
     }
 
     public List<EmployeeDto> getPendingEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
                 .filter(u -> !u.isEnabled())
                 .map(this::mapToEmployeeDto)
                 .toList();
@@ -59,14 +59,14 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getAssignedEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
                 .filter(emp -> userRepository.countByAssignedEmployee(emp) > 0)
                 .map(this::mapToEmployeeDto)
                 .toList();
     }
 
     public List<EmployeeDto> getUnassignedEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
                 .filter(emp -> userRepository.countByAssignedEmployee(emp) == 0)
                 .map(this::mapToEmployeeDto)
                 .toList();
@@ -74,7 +74,7 @@ public class AdminService {
 
     public List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto> getEmployeeWorkloads() {
         java.util.List<com.example.zhanfinancebackend.modules.crm.entity.Task> allTasks = taskRepository.findAll();
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
                 .map(u -> {
                     int activeTasks = (int) allTasks.stream()
                             .filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(u.getId()))
