@@ -12,9 +12,20 @@ import java.util.List;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
-    public CourseService(CourseRepository courseRepository) {
+    public CourseService(CourseRepository courseRepository, org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
         this.courseRepository = courseRepository;
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void dropOldColumns() {
+        try {
+            jdbcTemplate.execute("ALTER TABLE courses DROP COLUMN IF EXISTS is_published;");
+        } catch (Exception e) {
+            // Ignore
+        }
     }
 
     @Transactional(readOnly = true)
