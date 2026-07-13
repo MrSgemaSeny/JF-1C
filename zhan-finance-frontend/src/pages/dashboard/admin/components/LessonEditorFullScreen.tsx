@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LessonDto, LessonBlockDto, addTextBlock, addMediaBlock } from '@/entities/course/api/courseApi';
+import { API_BASE_URL } from '@/shared/api/http';
 import { ArrowLeft, Plus, Video, FileText, File, Save, Trash2, GripVertical } from 'lucide-react';
 
 interface LessonEditorFullScreenProps {
@@ -69,7 +70,11 @@ export function LessonEditorFullScreen({ lesson, onClose, onSaved }: LessonEdito
     if (!content) return null;
     try {
       const parsed = JSON.parse(content);
-      return parsed.url ? parsed : null;
+      if (parsed.url) {
+        const fullUrl = parsed.url.startsWith('http') ? parsed.url : `${API_BASE_URL}${parsed.url.startsWith('/') ? '' : '/'}${parsed.url}`;
+        return { ...parsed, url: fullUrl };
+      }
+      return null;
     } catch {
       return null;
     }
@@ -113,7 +118,7 @@ export function LessonEditorFullScreen({ lesson, onClose, onSaved }: LessonEdito
 
       {/* Main Content Workspace */}
       <div className="flex-1 overflow-y-auto p-8 relative">
-        <div className="max-w-4xl mx-auto space-y-8 pb-32">
+        <div className="max-w-7xl mx-auto space-y-8 pb-32">
           
           {draftBlocks.length === 0 ? (
             <div className="text-center py-20 px-4 border-2 border-dashed border-gray-300 rounded-2xl bg-white/50">
@@ -165,7 +170,7 @@ export function LessonEditorFullScreen({ lesson, onClose, onSaved }: LessonEdito
                     <div className="p-6">
                       {block.type === 'TEXT' ? (
                         <textarea 
-                          className="w-full min-h-[250px] p-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green focus:bg-white outline-none text-gray-800 transition-all resize-y"
+                          className="w-full min-h-[350px] p-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green focus:bg-white outline-none text-gray-800 transition-all resize-y"
                           value={block.content || ''}
                           onChange={e => handleTextContentChange(idx, e.target.value)}
                           placeholder="Начните писать содержание урока (поддерживается Markdown)..."
@@ -180,7 +185,7 @@ export function LessonEditorFullScreen({ lesson, onClose, onSaved }: LessonEdito
                                 <video 
                                   src={mediaData.url} 
                                   controls 
-                                  className="w-full max-h-[500px] object-contain bg-black"
+                                  className="w-full max-h-[80vh] object-contain bg-black"
                                 >
                                   Ваш браузер не поддерживает видео.
                                 </video>
