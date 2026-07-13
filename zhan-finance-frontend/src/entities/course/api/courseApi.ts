@@ -131,16 +131,65 @@ export async function updateLesson(
   });
 }
 
-export async function addLessonBlock(
+export async function createChapter(
+  courseId: number,
+  title: string,
+  orderIndex: number = 0
+): Promise<ChapterDto> {
+  const formData = new URLSearchParams();
+  formData.append('title', title);
+  formData.append('orderIndex', String(orderIndex));
+
+  return await apiRequest<ChapterDto>(`/api/admin/courses/${courseId}/chapters`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  });
+}
+
+export async function createLessonForChapter(
+  chapterId: number,
+  title: string,
+  description: string,
+  type: string,
+  orderIndex: number = 0
+): Promise<LessonDto> {
+  const formData = new URLSearchParams();
+  formData.append('title', title);
+  if (description) formData.append('description', description);
+  formData.append('type', type);
+  formData.append('orderIndex', String(orderIndex));
+
+  return await apiRequest<LessonDto>(`/api/admin/courses/chapters/${chapterId}/lessons`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  });
+}
+
+export async function addTextBlock(
   lessonId: number,
-  type: 'VIDEO' | 'TEXT' | 'FILE',
-  content?: string,
-  file?: File
+  content: string
+): Promise<LessonBlockDto> {
+  const formData = new URLSearchParams();
+  formData.append('type', 'TEXT');
+  formData.append('content', content);
+
+  return await apiRequest<LessonBlockDto>(`/api/admin/courses/lessons/${lessonId}/blocks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  });
+}
+
+export async function addMediaBlock(
+  lessonId: number,
+  type: 'VIDEO' | 'FILE',
+  file: File
 ): Promise<LessonBlockDto> {
   const formData = new FormData();
   formData.append('type', type);
-  if (content !== undefined) formData.append('content', content);
-  if (file !== undefined) formData.append('file', file);
+  formData.append('file', file);
 
   return await apiRequest<LessonBlockDto>(`/api/admin/courses/lessons/${lessonId}/blocks`, {
     method: 'POST',

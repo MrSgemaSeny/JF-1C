@@ -34,10 +34,10 @@ public class Lesson extends BaseEntity {
     private int orderIndex = 0;
 
     @Column(name = "duration_minutes")
-    private int durationMinutes = 0;
+    private Integer durationMinutes = 0;
 
     @Column(name = "is_preview", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isPreview = false;
+    private Boolean isPreview = false;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
