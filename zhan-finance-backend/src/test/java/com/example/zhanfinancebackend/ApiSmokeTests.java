@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.transaction.annotation.Transactional;
 import com.example.zhanfinancebackend.modules.crm.entity.Pipeline;
 import com.example.zhanfinancebackend.modules.crm.entity.Stage;
 import com.example.zhanfinancebackend.modules.crm.entity.StageType;
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class ApiSmokeTests {
 
     @Autowired
