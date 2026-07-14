@@ -223,7 +223,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:border-brand-green focus:outline-none cursor-pointer"
+          className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:border-gray-900 focus:outline-none cursor-pointer"
         >
           {STATUS_OPTIONS.map(opt => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -237,7 +237,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:border-brand-green focus:outline-none cursor-pointer"
+            className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:border-gray-900 focus:outline-none cursor-pointer"
           >
             {SORT_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -278,7 +278,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
       {filteredAndSorted.length === 0 && (
         <div className="text-center py-12 text-gray-400">
           <p className="text-lg font-medium">Нет задач по выбранным фильтрам</p>
-          <button onClick={clearFilters} className="text-sm text-brand-green hover:underline mt-2">
+          <button onClick={clearFilters} className="text-sm text-gray-900 hover:underline mt-2">
             Сбросить фильтры
           </button>
         </div>

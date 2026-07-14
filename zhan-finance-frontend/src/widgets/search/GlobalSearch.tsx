@@ -63,7 +63,7 @@ export function GlobalSearch() {
         <input
           type="text"
           placeholder={t('search.placeholder')}
-          className="w-full pl-10 pr-4 pt-2 pb-2.5 leading-relaxed bg-gray-100 border-transparent rounded-lg focus:bg-white focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 outline-none transition-all"
+          className="w-full pl-10 pr-4 pt-2 pb-2.5 leading-relaxed bg-gray-100 border-transparent rounded-lg focus:bg-white focus:border-gray-900 focus:ring-2 focus:ring-gray-900/20 outline-none transition-all"
           value={query}
           onChange={e => {
             setQuery(e.target.value);
@@ -72,7 +72,7 @@ export function GlobalSearch() {
           onFocus={() => setIsOpen(true)}
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 w-5 h-5 text-brand-green animate-spin" />
+          <Loader2 className="absolute right-3 w-5 h-5 text-gray-900 animate-spin" />
         )}
       </div>
 

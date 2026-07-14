@@ -30,7 +30,7 @@ public class UserController {
     @PutMapping("/me")
     public ApiResponse<UserProfileDto> updateMyProfile(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody UpdateProfileRequest request
+            @jakarta.validation.Valid @RequestBody UpdateProfileRequest request
     ) {
         return ApiResponse.success(userService.updateProfile(principal.getId(), request));
     }
@@ -38,7 +38,7 @@ public class UserController {
     @PutMapping("/me/password")
     public ApiResponse<Void> updateMyPassword(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody UpdatePasswordRequest request
+            @jakarta.validation.Valid @RequestBody UpdatePasswordRequest request
     ) {
         userService.updatePassword(principal.getId(), request);
         return ApiResponse.success(null);

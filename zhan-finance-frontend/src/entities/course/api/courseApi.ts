@@ -11,6 +11,7 @@ export interface LessonDto {
   isPreview: boolean;
   content?: string;
   mediaUrl?: string;
+  fileUrl?: string;
 }
 
 export interface ChapterDto {
@@ -32,6 +33,13 @@ export interface CourseDto {
   chapters: ChapterDto[];
 }
 
+export interface CourseProgressDto {
+  courseId: number;
+  completionPercentage: number;
+  isCompleted: boolean;
+  completedLessonIds: number[];
+}
+
 // Learner API
 export async function getPublishedCourses(): Promise<CourseDto[]> {
   return await apiRequest<CourseDto[]>('/api/courses');
@@ -39,6 +47,16 @@ export async function getPublishedCourses(): Promise<CourseDto[]> {
 
 export async function getCourseById(id: number): Promise<CourseDto> {
   return await apiRequest<CourseDto>(`/api/courses/${id}`);
+}
+
+export async function getCourseProgress(courseId: number): Promise<CourseProgressDto> {
+  return await apiRequest<CourseProgressDto>(`/api/courses/${courseId}/progress`);
+}
+
+export async function completeLesson(courseId: number, lessonId: number): Promise<void> {
+  await apiRequest(`/api/courses/${courseId}/lessons/${lessonId}/complete`, {
+    method: 'POST'
+  });
 }
 
 // Admin API
@@ -109,14 +127,16 @@ export async function updateLesson(
   description?: string,
   content?: string,
   orderIndex?: number,
-  file?: File
+  videoFile?: File | null,
+  documentFile?: File | null
 ): Promise<LessonDto> {
   const formData = new FormData();
   if (title !== undefined) formData.append('title', title);
   if (description !== undefined) formData.append('description', description);
   if (content !== undefined) formData.append('content', content);
   if (orderIndex !== undefined) formData.append('orderIndex', String(orderIndex));
-  if (file !== undefined) formData.append('file', file);
+  if (videoFile) formData.append('videoFile', videoFile);
+  if (documentFile) formData.append('documentFile', documentFile);
 
   return await apiRequest<LessonDto>(`/api/admin/courses/lessons/${lessonId}`, {
     method: 'PUT',

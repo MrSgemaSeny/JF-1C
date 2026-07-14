@@ -53,6 +53,9 @@ public class Task extends BaseEntity {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @Column(name = "deadline_notified_at")
+    private java.time.LocalDateTime deadlineNotifiedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;
@@ -174,6 +177,14 @@ public class Task extends BaseEntity {
 
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public java.time.LocalDateTime getDeadlineNotifiedAt() {
+        return deadlineNotifiedAt;
+    }
+
+    public void setDeadlineNotifiedAt(java.time.LocalDateTime deadlineNotifiedAt) {
+        this.deadlineNotifiedAt = deadlineNotifiedAt;
     }
 
     public User getCreatedBy() {

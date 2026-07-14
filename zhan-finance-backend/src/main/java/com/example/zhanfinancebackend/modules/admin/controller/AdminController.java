@@ -71,7 +71,7 @@ public class AdminController {
     }
 
     @PostMapping("/learners")
-    public ApiResponse<Void> createLearner(@RequestBody com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest request) {
+    public ApiResponse<Void> createLearner(@jakarta.validation.Valid @RequestBody com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest request) {
         adminService.createLearner(request);
         return ApiResponse.success(null, "Обучающийся успешно создан");
     }

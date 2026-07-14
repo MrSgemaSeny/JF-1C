@@ -33,21 +33,32 @@ public class DeadlineAlertScheduler {
         
         List<StageType> excludedTypes = List.of(StageType.WON, StageType.LOST);
         
-        List<Task> dueToday = taskRepository.findByDueDateAndStageTypeNotIn(today, excludedTypes);
-        List<Task> dueTomorrow = taskRepository.findByDueDateAndStageTypeNotIn(tomorrow, excludedTypes);
+        List<Task> dueToday = taskRepository.findByDueDateAndStageTypeNotInAndNotNotified(today, excludedTypes);
+        List<Task> dueTomorrow = taskRepository.findByDueDateAndStageTypeNotInAndNotNotified(tomorrow, excludedTypes);
         
         log.info("Found {} tasks due today, {} tasks due tomorrow.", dueToday.size(), dueTomorrow.size());
+        
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        List<Task> updatedTasks = new java.util.ArrayList<>();
         
         for (Task task : dueToday) {
             if (task.getAssignedTo() != null) {
                 emailNotificationService.sendTaskDeadlineAlertEmail(task.getAssignedTo(), task);
+                task.setDeadlineNotifiedAt(now);
+                updatedTasks.add(task);
             }
         }
         
         for (Task task : dueTomorrow) {
             if (task.getAssignedTo() != null) {
                 emailNotificationService.sendTaskDeadlineAlertEmail(task.getAssignedTo(), task);
+                task.setDeadlineNotifiedAt(now);
+                updatedTasks.add(task);
             }
+        }
+        
+        if (!updatedTasks.isEmpty()) {
+            taskRepository.saveAll(updatedTasks);
         }
     }
 }

@@ -42,6 +42,9 @@ public class Lesson extends BaseEntity {
     @Column(name = "media_url", length = 512)
     private String mediaUrl;
 
+    @Column(name = "file_url", length = 512)
+    private String fileUrl;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 }

@@ -1,5 +1,6 @@
 package com.example.zhanfinancebackend.modules.audit.controller;
 
+import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.audit.entity.AuditLog;
 import com.example.zhanfinancebackend.modules.audit.repository.AuditLogRepository;
 import org.springframework.data.domain.Sort;
@@ -22,7 +23,7 @@ public class AuditLogController {
     }
 
     @GetMapping
-    public List<AuditLog> getAllAuditLogs() {
-        return auditLogRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+    public ApiResponse<List<AuditLog>> getAllAuditLogs() {
+        return ApiResponse.success(auditLogRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
     }
 }

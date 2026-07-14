@@ -31,12 +31,14 @@ public class UserService {
     private final ClientProfileRepository clientProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
+    private final com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService) {
+    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService, com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper) {
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
         this.passwordEncoder = passwordEncoder;
         this.storageService = storageService;
+        this.userMapper = userMapper;
     }
 
     @Transactional(readOnly = true)
@@ -44,38 +46,15 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
 
-        String phone = null;
-        String companyName = null;
-
+        ClientProfile clientProfile = null;
         if (user.getRole() == Role.CLIENT) {
             Optional<ClientProfile> profileOpt = clientProfileRepository.findByUser(user);
             if (profileOpt.isPresent()) {
-                ClientProfile p = profileOpt.get();
-                phone = p.getPhone();
-                companyName = p.getCompanyName();
+                clientProfile = profileOpt.get();
             }
         }
 
-        Long assignedEmployeeId = null;
-        String assignedEmployeeName = null;
-        if (user.getAssignedEmployee() != null) {
-            assignedEmployeeId = user.getAssignedEmployee().getId();
-            assignedEmployeeName = user.getAssignedEmployee().getFullName();
-        }
-
-        return new UserProfileDto(
-                user.getId(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getRole(),
-                phone,
-                companyName,
-                user.getAvatarUrl(),
-                user.getAuthProvider(),
-                assignedEmployeeId,
-                assignedEmployeeName,
-                user.getLocale()
-        );
+        return userMapper.mapToUserProfileDto(user, clientProfile);
     }
 
     @Transactional

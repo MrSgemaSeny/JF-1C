@@ -64,8 +64,7 @@ public class SecurityConfig {
                                 "/api/contact-requests",
                                 "/api/services",
                                 "/api/services/highlighted",
-                                "/api/test-email",
-                                "/uploads/**"
+                                "/uploads/avatars/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",

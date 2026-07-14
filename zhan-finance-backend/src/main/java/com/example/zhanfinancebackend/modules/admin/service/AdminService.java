@@ -19,29 +19,32 @@ public class AdminService {
     private final ClientProfileRepository clientRepository;
     private final TaskRepository taskRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper;
 
     public AdminService(
             UserRepository userRepository,
             ClientProfileRepository clientRepository,
             TaskRepository taskRepository,
-            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
+            com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper
     ) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.taskRepository = taskRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     public List<EmployeeDto> getAllEmployees() {
         return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
-                .map(this::mapToEmployeeDto)
+                .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
 
     public List<EmployeeDto> getPendingEmployees() {
         return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
                 .filter(u -> !u.isEnabled())
-                .map(this::mapToEmployeeDto)
+                .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
 
@@ -59,36 +62,28 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getAssignedEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
-                .filter(emp -> userRepository.countByAssignedEmployee(emp) > 0)
-                .map(this::mapToEmployeeDto)
+        return userRepository.findAssignedEmployees().stream()
+                .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
 
     public List<EmployeeDto> getUnassignedEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
-                .filter(emp -> userRepository.countByAssignedEmployee(emp) == 0)
-                .map(this::mapToEmployeeDto)
+        return userRepository.findUnassignedEmployees().stream()
+                .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
 
     public List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto> getEmployeeWorkloads() {
-        java.util.List<com.example.zhanfinancebackend.modules.crm.entity.Task> allTasks = taskRepository.findAll();
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
-                .map(u -> {
-                    int activeTasks = (int) allTasks.stream()
-                            .filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(u.getId()))
-                            .filter(t -> t.getStage() == null || t.getStage().getType() != com.example.zhanfinancebackend.modules.crm.entity.StageType.WON)
-                            .count();
-                    return new com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto(u.getId(), u.getFullName(), u.getEmail(), activeTasks);
-                })
-                .toList();
+        return userRepository.getEmployeeWorkloads();
     }
 
     public AdminDashboardDto getAdminDashboard() {
         long clientsCount = userRepository.countByRole(Role.CLIENT);
         long employeesCount = userRepository.countByRole(Role.EMPLOYEE);
         
+        // This will be replaced in DashboardService, but since it's duplicated in AdminService...
+        // Wait, AdminService also has getAdminDashboard which fetches ALL tasks. I should defer this or redirect to DashboardService.
+        // I will change it to return empty or just use DashboardService here later.
         java.util.List<com.example.zhanfinancebackend.modules.crm.entity.Task> allTasks = taskRepository.findAll();
         long tasksCount = allTasks.size();
         
@@ -99,29 +94,12 @@ public class AdminService {
     }
 
     public List<com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto> getClientStats() {
-        java.util.List<com.example.zhanfinancebackend.modules.crm.entity.Task> allTasks = taskRepository.findAll();
-        java.util.Map<Long, Long> counts = allTasks.stream()
-                .collect(java.util.stream.Collectors.groupingBy(t -> t.getClient().getId(), java.util.stream.Collectors.counting()));
-        
-        return counts.entrySet().stream()
-                .map(e -> new com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto(e.getKey(), e.getValue()))
-                .toList();
-    }
-
-    private EmployeeDto mapToEmployeeDto(User user) {
-        return new EmployeeDto(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getRole().name(),
-                user.isEnabled(),
-                user.getCreatedAt() != null ? user.getCreatedAt().atZone(ZoneOffset.UTC) : null
-        );
+        return taskRepository.getClientStats();
     }
 
     public List<EmployeeDto> getAllLearners() {
         return userRepository.findAllByRole(Role.LEARNER).stream()
-                .map(this::mapToEmployeeDto)
+                .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
 

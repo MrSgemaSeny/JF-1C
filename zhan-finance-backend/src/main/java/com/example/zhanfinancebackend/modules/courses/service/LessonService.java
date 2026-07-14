@@ -72,16 +72,21 @@ public class LessonService {
     }
 
     @Transactional
-    public Lesson updateLesson(Long id, String title, String description, String content, Integer orderIndex, MultipartFile file) {
+    public Lesson updateLesson(Long id, String title, String description, String content, Integer orderIndex, MultipartFile videoFile, MultipartFile documentFile) {
         Lesson lesson = getLessonById(id);
         if (title != null) lesson.setTitle(title);
         if (description != null) lesson.setDescription(description);
         if (content != null) lesson.setContent(content);
         if (orderIndex != null) lesson.setOrderIndex(orderIndex);
 
-        if (file != null && !file.isEmpty()) {
-            String filePath = storageService.store(file);
+        if (videoFile != null && !videoFile.isEmpty()) {
+            String filePath = storageService.store(videoFile);
             lesson.setMediaUrl("/uploads/" + filePath);
+        }
+
+        if (documentFile != null && !documentFile.isEmpty()) {
+            String filePath = storageService.store(documentFile);
+            lesson.setFileUrl("/uploads/" + filePath);
         }
 
         return lessonRepository.save(lesson);

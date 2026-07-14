@@ -139,17 +139,15 @@ export function SettingsPage() {
   const isGoogle = profile.authProvider === 'GOOGLE';
 
   return (
-    <div className="max-w-5xl mx-auto pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{t('settings.title')}</h1>
-          <p className="text-gray-500 mt-1">{t('settings.subtitle')}</p>
-        </div>
+    <div className="p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
+        <p className="text-gray-500 mt-1">{t('settings.subtitle')}</p>
       </div>
 
       <div className="space-y-8">
         {/* Profile Card (Avatar + Form) */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-gray-200/50 border border-white overflow-hidden p-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
           <div className="flex flex-col md:flex-row gap-10 items-start">
             
             {/* Left side: Avatar & Identity */}
@@ -297,7 +295,7 @@ export function SettingsPage() {
         </div>
 
         {/* Security / Password Card */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-gray-200/50 border border-white overflow-hidden p-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-900">{t('settings.securityTitle')}</h3>
             <p className="text-sm text-gray-500 mt-1">{t('settings.changePasswordDesc')}</p>

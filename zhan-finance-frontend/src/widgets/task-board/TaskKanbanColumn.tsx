@@ -59,7 +59,7 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
       {/* Column Body (Glassmorphism look) */}
       <div 
         ref={setNodeRef}
-        className="flex flex-col flex-1 bg-brand-beige/50 backdrop-blur-sm border-x border-b border-brand-green/10 rounded-b-lg p-2 min-h-[500px]"
+        className="flex flex-col flex-1 bg-gray-50/50 backdrop-blur-sm border-x border-b border-gray-200 rounded-b-lg p-2 min-h-[500px]"
       >
         <div className="text-center py-2 mb-2">
           <span className="inline-block bg-white/40 text-gray-700 border border-white/50 px-3 py-0.5 rounded-full text-[13px] font-medium shadow-sm backdrop-blur-md">

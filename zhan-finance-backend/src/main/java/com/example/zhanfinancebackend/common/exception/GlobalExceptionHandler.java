@@ -132,7 +132,7 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_ERROR",
-                exception.getClass().getName() + ": " + exception.getMessage(),
+                "Internal server error. Reference ID: " + requestId,
                 request.getRequestURI(),
                 requestId
         );

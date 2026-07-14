@@ -45,12 +45,16 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
     }
   };
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'VIDEO': return <Video className="w-4 h-4 text-indigo-500" />;
-      case 'PRESENTATION': return <File className="w-4 h-4 text-orange-500" />;
-      default: return <FileText className="w-4 h-4 text-blue-500" />;
+  const getIcon = (lesson: LessonDto) => {
+    const hasVideo = !!lesson.mediaUrl;
+    const hasDocument = !!lesson.fileUrl || (!!lesson.content && lesson.content.trim().length > 0);
+
+    if (hasVideo) {
+      return <Video className="w-4 h-4 text-indigo-500" />;
+    } else if (hasDocument) {
+      return <FileText className="w-4 h-4 text-green-500" />;
     }
+    return null;
   };
 
   return (
@@ -86,7 +90,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                         <GripVertical className="w-4 h-4 text-gray-400 cursor-grab" />
                       </div>
-                      {getIcon(lesson.type)}
+                      {getIcon(lesson)}
                       <span className="text-sm font-medium text-gray-700 group-hover:text-brand-green transition-colors">
                         Урок {lIdx + 1}: {lesson.title}
                       </span>

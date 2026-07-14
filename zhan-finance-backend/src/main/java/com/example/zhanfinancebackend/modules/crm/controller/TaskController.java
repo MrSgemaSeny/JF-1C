@@ -24,10 +24,12 @@ public class TaskController {
 
     private final TaskService taskService;
     private final CrmAccessService accessService;
+    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
 
-    public TaskController(TaskService taskService, CrmAccessService accessService) {
+    public TaskController(TaskService taskService, CrmAccessService accessService, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper) {
         this.taskService = taskService;
         this.accessService = accessService;
+        this.taskMapper = taskMapper;
     }
 
     @GetMapping
@@ -68,7 +70,7 @@ public class TaskController {
     ) {
         Task task = taskService.getTaskEntity(id);
         accessService.assertCanReadTask(principal.getUser(), task);
-        return ApiResponse.success(taskService.mapToDto(task));
+        return ApiResponse.success(taskMapper.mapToDto(task));
     }
 
     @PostMapping

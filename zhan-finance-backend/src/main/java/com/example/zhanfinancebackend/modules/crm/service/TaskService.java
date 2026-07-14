@@ -49,6 +49,7 @@ public class TaskService {
     private final com.example.zhanfinancebackend.modules.services.repository.ServiceRepository serviceRepository;
     private final StageRepository stageRepository;
     private final PipelineRepository pipelineRepository;
+    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
 
     public TaskService(
             TaskRepository taskRepository,
@@ -59,7 +60,8 @@ public class TaskService {
             AuditService auditService,
             com.example.zhanfinancebackend.modules.services.repository.ServiceRepository serviceRepository,
             StageRepository stageRepository,
-            PipelineRepository pipelineRepository
+            PipelineRepository pipelineRepository,
+            com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -70,40 +72,28 @@ public class TaskService {
         this.serviceRepository = serviceRepository;
         this.stageRepository = stageRepository;
         this.pipelineRepository = pipelineRepository;
+        this.taskMapper = taskMapper;
     }
 
     @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks() {
-        return taskRepository.findAllWithDetails().stream().map(this::mapToDto).toList();
+        return taskRepository.findAllWithDetails().stream().map(taskMapper::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks(Long clientId, Long assignedToId, Long stageId, Boolean unassigned) {
-        Stream<Task> tasks = taskRepository.findAllWithDetails().stream();
-
-        if (clientId != null) {
-            tasks = tasks.filter(t -> t.getClient().getId().equals(clientId));
-        }
-        if (unassigned != null && unassigned) {
-            tasks = tasks.filter(t -> t.getAssignedTo() == null);
-        } else if (assignedToId != null) {
-            tasks = tasks.filter(t -> t.getAssignedTo() != null && t.getAssignedTo().getId().equals(assignedToId));
-        }
-        if (stageId != null) {
-            tasks = tasks.filter(t -> t.getStage() != null && t.getStage().getId().equals(stageId));
-        }
-
-        return tasks.map(this::mapToDto).toList();
+        org.springframework.data.jpa.domain.Specification<Task> spec = com.example.zhanfinancebackend.modules.crm.repository.TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
+        return taskRepository.findAll(spec).stream().map(taskMapper::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)
     public List<TaskDto> getTasksForClient(User client) {
-        return taskRepository.findAllByClientWithDetails(client.getId()).stream().map(this::mapToDto).toList();
+        return taskRepository.findAllByClientWithDetails(client.getId()).stream().map(taskMapper::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)
     public List<TaskDto> getTasksForEmployee(User employee) {
-        return taskRepository.findAllByEmployeeWithDetails(employee).stream().map(this::mapToDto).toList();
+        return taskRepository.findAllByEmployeeWithDetails(employee).stream().map(taskMapper::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)
@@ -114,7 +104,7 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public TaskDto getTask(Long id) {
-        return mapToDto(getTaskEntity(id));
+        return taskMapper.mapToDto(getTaskEntity(id));
     }
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
@@ -178,7 +168,7 @@ public class TaskService {
             emailNotificationService.sendTaskAssignedEmail(savedTask.getAssignedTo(), savedTask);
         }
 
-        return mapToDto(savedTask);
+        return taskMapper.mapToDto(savedTask);
     }
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
@@ -223,7 +213,7 @@ public class TaskService {
             emailNotificationService.sendTaskAssignedEmail(employee, savedTask);
         }
 
-        return mapToDto(savedTask);
+        return taskMapper.mapToDto(savedTask);
     }
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
@@ -262,7 +252,7 @@ public class TaskService {
             }
         }
         task.setStage(newStage);
-        return mapToDto(taskRepository.save(task));
+        return taskMapper.mapToDto(taskRepository.save(task));
     }
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
@@ -287,14 +277,48 @@ public class TaskService {
             emailNotificationService.sendTaskAssignedEmail(assignee, savedTask);
         }
 
-        return mapToDto(savedTask);
+        return taskMapper.mapToDto(savedTask);
     }
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public List<TaskDto> batchUpdateTasks(TaskBatchUpdateRequest request, User user) {
-        // ... simplified batch update for now, remove status logic.
-        return List.of();
+        if (request.updates() == null || request.updates().isEmpty()) {
+            return List.of();
+        }
+        
+        List<Long> ids = request.updates().stream().map(TaskDto::id).toList();
+        List<Task> tasks = taskRepository.findAllByIdInWithDetails(ids);
+        java.util.Map<Long, Task> taskMap = tasks.stream().collect(java.util.stream.Collectors.toMap(Task::getId, t -> t));
+        
+        List<Task> updated = new java.util.ArrayList<>();
+        for (TaskDto dto : request.updates()) {
+            Task task = taskMap.get(dto.id());
+            if (task == null) continue;
+            
+            if (dto.stage() != null && dto.stage().id() != null) {
+                Stage stage = stageRepository.findById(dto.stage().id())
+                        .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Stage not found: " + dto.stage().id()));
+                
+                accessService.assertCanUpdateTaskStage(user, task, stage);
+                
+                task.setStage(stage);
+                if (stage.getType() == StageType.WON || stage.getType() == StageType.LOST) {
+                    task.setClosedAt(java.time.LocalDate.now());
+                } else {
+                    task.setClosedAt(null);
+                }
+            }
+            if (dto.assignedToId() != null) {
+                 User assignee = userRepository.findById(dto.assignedToId())
+                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
+                 task.setAssignedTo(assignee);
+            }
+            updated.add(task);
+        }
+        
+        taskRepository.saveAll(updated);
+        return updated.stream().map(taskMapper::mapToDto).toList();
     }
 
     @Transactional
@@ -307,14 +331,14 @@ public class TaskService {
         logActivity(task, author, "Оставил комментарий: " + (text.length() > 30 ? text.substring(0, 30) + "..." : text));
         
         taskRepository.save(task);
-        return mapCommentToDto(comment);
+        return taskMapper.mapCommentToDto(comment);
     }
 
     @Transactional(readOnly = true)
     public List<TaskCommentDto> getTaskComments(Long taskId, User user) {
         Task task = getTaskEntity(taskId);
         accessService.assertCanReadTask(user, task);
-        return task.getComments().stream().map(this::mapCommentToDto).toList();
+        return task.getComments().stream().map(taskMapper::mapCommentToDto).toList();
     }
 
     @Transactional(readOnly = true)
@@ -323,7 +347,7 @@ public class TaskService {
         accessService.assertCanReadTask(user, task);
         return task.getHistory().stream()
                 .sorted(java.util.Comparator.comparing(TaskActivity::getCreatedAt).reversed())
-                .map(this::mapActivityToDto)
+                .map(taskMapper::mapActivityToDto)
                 .toList();
     }
 
@@ -338,100 +362,5 @@ public class TaskService {
     private void logActivity(Task task, User actor, String actionText) {
         TaskActivity activity = new TaskActivity(task, actor, actionText);
         task.addActivity(activity);
-    }
-
-    public TaskDto mapToDto(Task task) {
-        if (task == null) return null;
-        return new TaskDto(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getClient() != null ? task.getClient().getId() : null,
-                mapUserToClientInfoDto(task.getClient()),
-                task.getAssignedTo() != null ? task.getAssignedTo().getId() : null,
-                mapUserToEmployeeInfoDto(task.getAssignedTo()),
-                task.getStage() != null ? task.getStage().getId() : null,
-                mapStageToDto(task.getStage()),
-                task.getAmount(),
-                task.getCurrency(),
-                task.getSource(),
-                task.getClosedAt(),
-                task.getLostReason(),
-                task.getDueDate(),
-                mapUserToDto(task.getCreatedBy()),
-                task.getCreatedAt() != null ? task.getCreatedAt().atZone(ZoneOffset.UTC) : null,
-                task.getUpdatedAt() != null ? task.getUpdatedAt().atZone(ZoneOffset.UTC) : null,
-                task.getSubtasks() != null ? task.getSubtasks().stream().map(this::mapSubtaskToDto).toList() : List.of(),
-                task.getTags() != null ? new java.util.ArrayList<>(task.getTags()) : List.of(),
-                task.getServices() != null ? task.getServices().stream().map(com.example.zhanfinancebackend.common.audit.BaseEntity::getId).toList() : List.of(),
-                task.getServices() != null ? task.getServices().stream().map(s -> new com.example.zhanfinancebackend.modules.services.dto.ServiceDto(
-                        s.getId(),
-                        s.getTitle(),
-                        s.getDescription(),
-                        s.getPrice(),
-                        s.getImageUrl(),
-                        s.getIsHighlighted(),
-                        s.getFeatures() != null ? new java.util.ArrayList<>(s.getFeatures()) : List.of(),
-                        s.getCreatedAt() != null ? s.getCreatedAt().atZone(java.time.ZoneOffset.UTC) : null
-                )).toList() : List.of()
-        );
-    }
-
-    private StageDto mapStageToDto(Stage stage) {
-        if (stage == null) return null;
-        return new StageDto(
-                stage.getId(),
-                stage.getPipeline().getId(),
-                stage.getName(),
-                stage.getOrderIndex(),
-                stage.getColor(),
-                stage.getType(),
-                stage.isDefault()
-        );
-    }
-
-    private SubtaskDto mapSubtaskToDto(Subtask subtask) {
-        return new SubtaskDto(
-                subtask.getId(),
-                subtask.getTask().getId(),
-                subtask.getTitle(),
-                subtask.getStatus(),
-                subtask.getCreatedAt() != null ? subtask.getCreatedAt().atZone(ZoneOffset.UTC) : null
-        );
-    }
-
-    private UserDto mapUserToDto(User user) {
-        if (user == null) return null;
-        return new UserDto(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getLocale());
-    }
-
-    private ClientInfoDto mapUserToClientInfoDto(User user) {
-        if (user == null) return null;
-        return new ClientInfoDto(user.getId(), user.getFullName(), user.getEmail(), null);
-    }
-
-    private EmployeeInfoDto mapUserToEmployeeInfoDto(User user) {
-        if (user == null) return null;
-        return new EmployeeInfoDto(user.getId(), user.getFullName(), user.getEmail(), user.getAvatarUrl());
-    }
-
-    private TaskCommentDto mapCommentToDto(TaskComment comment) {
-        return new TaskCommentDto(
-                comment.getId(),
-                comment.getTask().getId(),
-                mapUserToDto(comment.getAuthor()),
-                comment.getText(),
-                comment.getCreatedAt() != null ? comment.getCreatedAt().atZone(ZoneOffset.UTC) : null
-        );
-    }
-
-    private TaskActivityDto mapActivityToDto(TaskActivity activity) {
-        return new TaskActivityDto(
-                activity.getId(),
-                activity.getTask().getId(),
-                mapUserToDto(activity.getActor()),
-                activity.getActionText(),
-                activity.getCreatedAt() != null ? activity.getCreatedAt().atZone(ZoneOffset.UTC) : null
-        );
     }
 }

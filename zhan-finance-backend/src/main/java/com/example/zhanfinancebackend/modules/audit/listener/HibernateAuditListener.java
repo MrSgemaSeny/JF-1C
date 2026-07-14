@@ -68,7 +68,7 @@ public class HibernateAuditListener implements PostInsertEventListener, PostUpda
 
     @Override
     public boolean requiresPostCommitHandling(EntityPersister persister) {
-        return false;
+        return true;
     }
 
     private void logAction(String action, Object entity, String details) {

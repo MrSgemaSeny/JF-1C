@@ -156,7 +156,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
               {task.assignedTo.avatarUrl ? (
                 <img src={getSecureImageUrl(task.assignedTo.avatarUrl)} alt={task.assignedTo.fullName} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-brand-accent text-white flex items-center justify-center">
+                <div className="w-full h-full bg-black text-white flex items-center justify-center">
                   {task.assignedTo.fullName.charAt(0).toUpperCase()}
                 </div>
               )}

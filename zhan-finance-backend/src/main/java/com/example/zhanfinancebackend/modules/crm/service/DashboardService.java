@@ -36,74 +36,67 @@ public class DashboardService {
         long clientsCount = userRepository.countByRole(Role.CLIENT);
         long employeesCount = userRepository.countByRole(Role.EMPLOYEE);
         
-        List<Task> allTasks = taskRepository.findAllWithDetails();
-        long tasksCount = allTasks.size();
+        long tasksCount = taskRepository.count();
+        long wonTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.WON);
+        long lostTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST);
         
-        Map<String, Long> tasksByStatus = allTasks.stream()
-                .collect(Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", Collectors.counting()));
-                
-        long wonTasks = 0;
-        long lostTasks = 0;
-        long totalCompletionDays = 0;
-        long completedTasksWithDates = 0;
-        Map<String, Long> tasksByLostReason = new java.util.HashMap<>();
+        Double avgCompletionDaysRaw = taskRepository.getAverageCompletionDays();
+        double avgCompletionDays = avgCompletionDaysRaw != null ? avgCompletionDaysRaw : 0.0;
         
-        for (Task t : allTasks) {
-            if (t.getStage() != null) {
-                if (t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON) {
-                    wonTasks++;
-                    if (t.getClosedAt() != null && t.getCreatedAt() != null) {
-                        java.time.LocalDate createdDate = java.time.LocalDateTime.ofInstant(t.getCreatedAt(), java.time.ZoneId.systemDefault()).toLocalDate();
-                        long days = java.time.temporal.ChronoUnit.DAYS.between(createdDate, t.getClosedAt());
-                        totalCompletionDays += Math.max(0, days);
-                        completedTasksWithDates++;
-                    }
-                } else if (t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
-                    lostTasks++;
-                    String reason = t.getLostReason() != null && !t.getLostReason().isBlank() ? t.getLostReason() : "Не указана";
-                    tasksByLostReason.put(reason, tasksByLostReason.getOrDefault(reason, 0L) + 1);
-                }
-            }
-        }
-        
-        double avgCompletionDays = completedTasksWithDates > 0 ? (double) totalCompletionDays / completedTasksWithDates : 0;
-                
+        List<Map<String, Object>> statusList = taskRepository.countTasksByStatus();
+        Map<String, Long> tasksByStatus = statusList.stream()
+            .collect(Collectors.toMap(
+                m -> m.get("statusName") != null ? m.get("statusName").toString() : "Unknown",
+                m -> ((Number) m.get("count")).longValue()
+            ));
+
+        List<Map<String, Object>> reasonList = taskRepository.countTasksByLostReason();
+        Map<String, Long> tasksByLostReason = reasonList.stream()
+            .collect(Collectors.toMap(
+                m -> m.get("reason").toString(),
+                m -> ((Number) m.get("count")).longValue()
+            ));
+            
         List<User> employees = userRepository.findAllByRole(Role.EMPLOYEE);
-        java.time.LocalDate today = java.time.LocalDate.now();
+        List<Map<String, Object>> empStatsRaw = taskRepository.getEmployeeTaskStats();
         
-        List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto> employeeStats = employees.stream().map(emp -> {
-            long active = 0;
-            long done = 0;
-            long overdue = 0;
-            
-            for (Task t : allTasks) {
-                boolean isAssignedToEmp = (t.getAssignedTo() != null && t.getAssignedTo().getId().equals(emp.getId())) ||
-                                          (t.getAssignedTo() == null && t.getClient() != null && t.getClient().getAssignedEmployee() != null && t.getClient().getAssignedEmployee().getId().equals(emp.getId()));
-                
-                if (isAssignedToEmp) {
-                    if (t.getStage() != null && t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON) {
-                        done++;
-                    } else if (t.getStage() != null && t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
-                        // ignore cancelled
-                    } else {
-                        active++;
-                        if (t.getDueDate() != null && t.getDueDate().isBefore(today)) {
-                            overdue++;
-                        }
-                    }
-                }
-            }
-            
-            return new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
+        Map<Long, com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto> empStatsMap = new java.util.HashMap<>();
+        for (User emp : employees) {
+            empStatsMap.put(emp.getId(), new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
                     emp.getId(),
                     emp.getFullName() != null && !emp.getFullName().isBlank() ? emp.getFullName() : emp.getEmail(),
-                    active,
-                    done,
-                    overdue
-            );
-        }).collect(Collectors.toList());
+                    0, 0, 0
+            ));
+        }
+        
+        for (Map<String, Object> row : empStatsRaw) {
+            Number empIdNum = (Number) row.get("empid");
+            if (empIdNum == null) continue;
+            Long empId = empIdNum.longValue();
+            
+            String stageTypeStr = row.get("stagetype") != null ? row.get("stagetype").toString() : null;
+            long count = ((Number) row.get("taskcount")).longValue();
+            long overdue = row.get("overduecount") != null ? ((Number) row.get("overduecount")).longValue() : 0;
+            
+            com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto dto = empStatsMap.get(empId);
+            if (dto != null) {
+                long newDone = dto.doneTasks();
+                long newActive = dto.activeTasks();
+                long newOverdue = dto.overdueTasks() + overdue;
                 
-        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, wonTasks, lostTasks, avgCompletionDays, tasksByStatus, tasksByLostReason, userRepository.count(), employeeStats);
+                if ("WON".equals(stageTypeStr)) {
+                    newDone += count;
+                } else if (!"LOST".equals(stageTypeStr)) {
+                    newActive += count;
+                }
+                
+                empStatsMap.put(empId, new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
+                        dto.employeeId(), dto.employeeName(), newActive, newDone, newOverdue
+                ));
+            }
+        }
+                
+        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, wonTasks, lostTasks, avgCompletionDays, tasksByStatus, tasksByLostReason, userRepository.count(), new java.util.ArrayList<>(empStatsMap.values()));
     }
 
     @Cacheable(value = "dashboard_employee", key = "#employee.id")
@@ -111,12 +104,14 @@ public class DashboardService {
     public EmployeeDashboardDto getEmployeeDashboard(User employee) {
         long clientsCount = userRepository.countByAssignedEmployee(employee);
         
-        // Employee tasks are tasks of their clients or tasks assigned to them
-        List<Task> employeeTasks = taskRepository.findAllByEmployeeWithDetails(employee);
-        long tasksCount = employeeTasks.size();
+        long tasksCount = taskRepository.countTasksForEmployee(employee);
         
-        Map<String, Long> tasksByStatus = employeeTasks.stream()
-                .collect(Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", Collectors.counting()));
+        List<Map<String, Object>> statusList = taskRepository.countTasksByStatusForEmployee(employee);
+        Map<String, Long> tasksByStatus = statusList.stream()
+            .collect(Collectors.toMap(
+                m -> m.get("statusName") != null ? m.get("statusName").toString() : "Unknown",
+                m -> ((Number) m.get("count")).longValue()
+            ));
                 
         return new EmployeeDashboardDto(clientsCount, tasksCount, tasksByStatus);
     }
@@ -124,11 +119,14 @@ public class DashboardService {
     @Cacheable(value = "dashboard_client", key = "#client.id")
     @Transactional(readOnly = true)
     public ClientDashboardDto getClientDashboard(User client) {
-        List<Task> clientTasks = taskRepository.findAllByClientWithDetails(client.getId());
-        long tasksCount = clientTasks.size();
+        long tasksCount = taskRepository.countTasksByStatusForClient(client.getId()).stream().mapToLong(m -> ((Number) m.get("count")).longValue()).sum();
         
-        Map<String, Long> tasksByStatus = clientTasks.stream()
-                .collect(Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", Collectors.counting()));
+        List<Map<String, Object>> statusList = taskRepository.countTasksByStatusForClient(client.getId());
+        Map<String, Long> tasksByStatus = statusList.stream()
+            .collect(Collectors.toMap(
+                m -> m.get("statusName") != null ? m.get("statusName").toString() : "Unknown",
+                m -> ((Number) m.get("count")).longValue()
+            ));
                 
         return new ClientDashboardDto(tasksCount, tasksByStatus);
     }

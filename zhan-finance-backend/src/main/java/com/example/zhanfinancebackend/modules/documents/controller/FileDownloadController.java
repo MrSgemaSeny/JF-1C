@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 public class FileDownloadController {
 
@@ -19,6 +21,7 @@ public class FileDownloadController {
     }
 
     @GetMapping("/uploads/{storageKey:.+}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Resource> downloadFile(@PathVariable String storageKey) {
         Resource resource = storageService.loadAsResource(storageKey);
         

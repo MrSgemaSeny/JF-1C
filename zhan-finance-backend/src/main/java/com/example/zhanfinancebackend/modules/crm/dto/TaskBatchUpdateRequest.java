@@ -2,6 +2,8 @@ package com.example.zhanfinancebackend.modules.crm.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public record TaskBatchUpdateRequest(
-        List<TaskDto> updates
+        @NotEmpty List<TaskDto> updates
 ) {}

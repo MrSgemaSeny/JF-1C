@@ -27,14 +27,14 @@ public class GlobalSearchService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final TaskService taskService;
+    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
 
-    public GlobalSearchService(TaskRepository taskRepository, UserRepository userRepository, TaskService taskService, CourseRepository courseRepository, LessonRepository lessonRepository) {
+    public GlobalSearchService(TaskRepository taskRepository, UserRepository userRepository, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper, CourseRepository courseRepository, LessonRepository lessonRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
-        this.taskService = taskService;
+        this.taskMapper = taskMapper;
         this.courseRepository = courseRepository;
         this.lessonRepository = lessonRepository;
     }
@@ -61,7 +61,7 @@ public class GlobalSearchService {
     private List<TaskDto> searchTasks(User user, String query) {
         return taskRepository.searchTasks(query).stream()
                 .filter(t -> canAccessTask(user, t))
-                .map(taskService::mapToDto)
+                .map(taskMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Video, FileText, Monitor, ChevronRight, BookOpen } from 'lucide-react';
-import { CourseDto, LessonDto, getCourseById } from '@/entities/course/api/courseApi';
+import { ArrowLeft, Video, FileText, Monitor, ChevronRight, BookOpen, Lock, CheckCircle2 } from 'lucide-react';
+import { CourseDto, LessonDto, getCourseById, getCourseProgress, CourseProgressDto } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
 import { Spinner } from '@/shared/ui/Spinner';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/features/auth/AuthContext';
+import { CourseCertificate } from './components/CourseCertificate';
 import i18n from '@/shared/i18n/i18n';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -38,9 +40,11 @@ interface SectionCardProps {
   lessons: LessonDto[];
   courseId: string;
   onNavigate: (lessonId: number) => void;
+  progress: CourseProgressDto | null;
+  globalLessonIndexStart: number;
 }
 
-function SectionCard({ sectionIndex, title, lessons, onNavigate }: SectionCardProps) {
+function SectionCard({ sectionIndex, title, lessons, onNavigate, progress, globalLessonIndexStart }: SectionCardProps) {
   const { t } = useTranslation(['common']);
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -62,33 +66,50 @@ function SectionCard({ sectionIndex, title, lessons, onNavigate }: SectionCardPr
         <p className="px-5 py-4 text-sm text-gray-400">{t('learnerCourseDetail.noLessons')}</p>
       ) : (
         <ul className="divide-y divide-gray-100">
-          {lessons.map((lesson) => {
+          {lessons.map((lesson, localIdx) => {
             const config = getLessonTypeConfig();
             const cfg = config[lesson.type];
+            const globalIdx = globalLessonIndexStart + localIdx;
+            
+            // Lesson is completed if its ID is in completedLessonIds
+            const isCompleted = progress?.completedLessonIds.includes(lesson.id) || false;
+            
+            // First lesson is always unlocked. Other lessons are locked if progress hasn't reached them.
+            // i.e., globalIdx must be <= completedLessonIds.length
+            const isLocked = progress ? globalIdx > progress.completedLessonIds.length : false;
+
             return (
               <li key={lesson.id}>
                 <button
-                  onClick={() => onNavigate(lesson.id)}
-                  className="w-full flex items-center gap-3.5 px-5 py-3.5 hover:bg-gray-50 transition-colors text-left group"
+                  onClick={() => !isLocked && onNavigate(lesson.id)}
+                  disabled={isLocked}
+                  className={`w-full flex items-center gap-3.5 px-5 py-3.5 transition-colors text-left group ${
+                    isLocked ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:bg-brand-green/5'
+                  }`}
                 >
                   {/* Type icon */}
                   <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${cfg.iconBg} ${cfg.iconColor}`}
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${isLocked ? 'bg-gray-200 text-gray-400' : cfg.iconBg + ' ' + cfg.iconColor}`}
                   >
-                    {cfg.icon}
+                    {isLocked ? <Lock size={16} /> : cfg.icon}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{lesson.title}</p>
+                    <p className={`text-sm font-medium truncate ${isLocked ? 'text-gray-500' : 'text-gray-900'}`}>{lesson.title}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{cfg.label}</p>
                   </div>
 
-                  {/* Arrow */}
-                  <ChevronRight
-                    size={16}
-                    className="text-gray-300 group-hover:text-gray-500 transition-colors shrink-0"
-                  />
+                  {/* Status */}
+                  <div className="shrink-0 flex items-center gap-2">
+                    {isCompleted && <CheckCircle2 size={18} className="text-brand-green" />}
+                    {!isLocked && (
+                      <ChevronRight
+                        size={16}
+                        className="text-gray-300 group-hover:text-brand-green transition-colors"
+                      />
+                    )}
+                  </div>
                 </button>
               </li>
             );
@@ -103,17 +124,25 @@ function SectionCard({ sectionIndex, title, lessons, onNavigate }: SectionCardPr
 
 export function LearnerCourseDetailPage() {
   const { t } = useTranslation(['common']);
+  const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [course, setCourse] = useState<CourseDto | null>(null);
+  const [progress, setProgress] = useState<CourseProgressDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!id) return;
     setIsLoading(true);
-    getCourseById(Number(id))
-      .then(setCourse)
+    Promise.all([
+      getCourseById(Number(id)),
+      getCourseProgress(Number(id))
+    ])
+      .then(([courseData, progressData]) => {
+        setCourse(courseData);
+        setProgress(progressData);
+      })
       .catch(() => setError(true))
       .finally(() => setIsLoading(false));
   }, [id]);
@@ -176,7 +205,7 @@ export function LearnerCourseDetailPage() {
         )}
       </div>
 
-      {/* Stat cards */}
+      {/* Stat cards and Progress */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">{t('learnerCourseDetail.lessonsCountLabel')}</p>
@@ -189,7 +218,33 @@ export function LearnerCourseDetailPage() {
             {t('learnerCourseDetail.available')}
           </span>
         </div>
+        <div className="col-span-2 sm:col-span-1 bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col justify-center">
+          <div className="flex justify-between items-end mb-2">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Прогресс</p>
+            <p className="text-xl font-bold text-brand-green">{progress?.completionPercentage || 0}%</p>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+            <div 
+              className="bg-brand-green h-2.5 rounded-full transition-all duration-1000 ease-out" 
+              style={{ width: `${progress?.completionPercentage || 0}%` }}
+            ></div>
+          </div>
+        </div>
       </div>
+
+      {progress?.isCompleted && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-bold text-green-800">Поздравляем! 🎉</h3>
+            <p className="text-sm text-green-700 mt-1">Вы успешно завершили этот курс и освоили все материалы.</p>
+          </div>
+          <CourseCertificate 
+            courseTitle={course.title} 
+            studentName={user?.fullName || 'Студент'} 
+            date={new Date().toLocaleDateString('ru-RU')} 
+          />
+        </div>
+      )}
 
       {/* Chapters / Sections */}
       <div className="space-y-4">
@@ -209,16 +264,26 @@ export function LearnerCourseDetailPage() {
             </div>
           </div>
         ) : (
-          course.chapters.sort((a, b) => a.orderIndex - b.orderIndex).map((chapter, index) => (
-            <SectionCard
-              key={chapter.id}
-              sectionIndex={index + 1}
-              title={chapter.title}
-              lessons={chapter.lessons}
-              courseId={id!}
-              onNavigate={handleLessonClick}
-            />
-          ))
+          (() => {
+            let runningCount = 0;
+            return course.chapters.sort((a, b) => a.orderIndex - b.orderIndex).map((chapter, index) => {
+              const startIdx = runningCount;
+              runningCount += chapter.lessons.length;
+              
+              return (
+                <SectionCard
+                  key={chapter.id}
+                  sectionIndex={index + 1}
+                  title={chapter.title}
+                  lessons={chapter.lessons}
+                  courseId={id!}
+                  onNavigate={handleLessonClick}
+                  progress={progress}
+                  globalLessonIndexStart={startIdx}
+                />
+              );
+            });
+          })()
         )}
       </div>
 

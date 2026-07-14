@@ -235,9 +235,7 @@ export function extractValidationErrors(error: unknown): Record<string, string> 
 export function getSecureImageUrl(url: string | undefined): string | undefined {
   if (!url) return undefined;
   if (url.startsWith('http')) return url;
-  const token = getAccessToken();
-  const separator = url.includes('?') ? '&' : '?';
-  return token ? `${API_BASE_URL}${url}${separator}token=${token}` : `${API_BASE_URL}${url}`;
+  return `${API_BASE_URL}${url}`;
 }
 
 export { API_BASE_URL, getAccessToken };

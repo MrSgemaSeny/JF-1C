@@ -134,7 +134,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                   type="text"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all"
                   placeholder="Например: Справка о доходах, Бухгалтерское сопровождение..."
                   required
                 />
@@ -146,7 +146,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
+                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all"
                   placeholder="Опишите задачу подробнее..."
                 />
               </div>
@@ -157,7 +157,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                   type="date"
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
+                  className="w-full sm:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all"
                 />
               </div>
             </div>
@@ -174,16 +174,16 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                         key={service.id}
                         onClick={() => toggleService(service.id)}
                         className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
-                          isSelected ? 'bg-brand-green/5 border-brand-green' : 'bg-white border-gray-200 hover:border-gray-300'
+                          isSelected ? 'bg-gray-50 border-gray-900' : 'bg-white border-gray-200 hover:border-gray-300'
                         }`}
                       >
                         <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center ${
-                          isSelected ? 'bg-brand-green border-brand-green' : 'border-gray-300'
+                          isSelected ? 'bg-gray-900 border-gray-900' : 'border-gray-300'
                         }`}>
                           {isSelected && <CheckCircle2 size={14} className="text-white" />}
                         </div>
                         <div>
-                          <p className={`text-sm font-medium ${isSelected ? 'text-brand-green' : 'text-gray-700'}`}>
+                          <p className={`text-sm font-medium ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>
                             {service.title}
                           </p>
                         </div>
@@ -217,7 +217,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                   onChange={e => setNewSubtask(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())}
                   placeholder="Добавить пункт чек-листа..."
-                  className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
+                  className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all"
                 />
                 <button
                   type="button"
@@ -262,7 +262,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:text-brand-green hover:border-brand-green hover:bg-brand-green/5 transition-all flex flex-col items-center justify-center gap-2"
+                className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:text-gray-900 hover:border-gray-900 hover:bg-gray-50 transition-all flex flex-col items-center justify-center gap-2"
               >
                 <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
                   <Paperclip size={18} />
@@ -287,7 +287,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
             type="submit"
             form="create-task-form"
             disabled={isSubmitting || !title.trim()}
-            className="px-6 py-2.5 bg-brand-green hover:bg-green-700 text-white text-sm font-bold rounded-xl shadow-sm disabled:opacity-50 flex items-center gap-2 transition-colors"
+            className="px-6 py-2.5 bg-gray-900 hover:bg-green-700 text-white text-sm font-bold rounded-xl shadow-sm disabled:opacity-50 flex items-center gap-2 transition-colors"
           >
             {isSubmitting && <Loader2 size={16} className="animate-spin" />}
             {isSubmitting ? 'Создание...' : 'Создать заявку'}
