@@ -9,6 +9,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.Stage;
 import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import com.example.zhanfinancebackend.modules.crm.repository.PipelineRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.StageRepository;
+import com.example.zhanfinancebackend.modules.crm.repository.ClientProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +46,14 @@ class PipelineIntegrationTests {
     @Autowired
     private StageRepository stageRepository;
 
+    @Autowired
+    private ClientProfileRepository clientProfileRepository;
+
     private String adminToken;
 
     @BeforeEach
     void setup() {
+        clientProfileRepository.deleteAll();
         userRepository.deleteAll();
         pipelineRepository.deleteAll();
 
