@@ -69,12 +69,15 @@ export function DashboardLayout() {
             </div>
             <span className="font-bold text-gray-900">Zhan Finance</span>
           </div>
-          <button 
-            onClick={() => setIsMobileOpen(true)}
-            className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-          >
-            <Menu size={24} />
-          </button>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <button 
+              onClick={() => setIsMobileOpen(true)}
+              className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            >
+              <Menu size={24} />
+            </button>
+          </div>
         </header>
 
         {/* Main Content Area */}

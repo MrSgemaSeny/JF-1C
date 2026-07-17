@@ -21,8 +21,8 @@ export function TaskPoolTabs() {
   ];
 
   return (
-    <div className="mb-6 border-b border-gray-200">
-      <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+    <div className="mb-6 border-b border-gray-200 overflow-x-auto scrollbar-hide">
+      <nav className="-mb-px flex space-x-8 min-w-max px-2" aria-label="Tabs">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.href;
           return (
