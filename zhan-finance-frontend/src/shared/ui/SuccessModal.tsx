@@ -6,7 +6,7 @@ interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  message: string;
+  message: string | React.ReactNode;
 }
 
 export function SuccessModal({ isOpen, onClose, title, message }: SuccessModalProps) {

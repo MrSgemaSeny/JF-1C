@@ -9,6 +9,7 @@ import { useApiData } from '@/shared/hooks/useApiData';
 import { fetchHighlightedServices } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { requestTask } from '@/entities/task/api/taskApi';
+import { uploadDocument } from '@/entities/document/api/documentApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -21,7 +22,7 @@ export function HomeServices() {
   const { data: services, isLoading } = useApiData(fetchHighlightedServices);
   const [selectedService, setSelectedService] = useState<ServiceDto | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | React.ReactNode | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,7 +53,7 @@ export function HomeServices() {
     }
   }, [user, services]);
 
-  const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string) => {
+  const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string, files?: File[]) => {
     if (!user) {
       const pendingOrder = {
         serviceId: service.id,
@@ -67,13 +68,19 @@ export function HomeServices() {
 
     setIsSubmitting(true);
     try {
-      await requestTask({ 
+      const createdTask = await requestTask({ 
         clientId: user.userId,
         title: `${t('homeServices.orderPrefix')} ${service.title}`,
         description: message,
         dueDate: preferredDate,
         serviceIds: [service.id]
       });
+
+      // Upload attached files to the created task
+      if (files && files.length > 0 && createdTask?.id) {
+        await Promise.all(files.map(file => uploadDocument(file, undefined, createdTask.id)));
+      }
+
       setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
       setSelectedService(null);
     } catch (err) {
@@ -178,7 +185,7 @@ export function HomeServices() {
           item={selectedService}
           onClose={() => setSelectedService(null)}
           onRequest={handleRequestService}
-          onGuestRequest={async (service, name, phone, message, preferredDate) => {
+          onGuestRequest={async (service, name, phone, message, preferredDate, files) => {
             setIsSubmitting(true);
             try {
               let fullMessage = `Услуга: ${service.title}`;
@@ -190,7 +197,20 @@ export function HomeServices() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
               });
-              setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
+
+              if (files && files.length > 0) {
+                // Если гость прикрепил файлы, показываем призыв к регистрации
+                setSuccessMessage(
+                  <>
+                    Ваша заявка отправлена!<br /><br />
+                    <a href="/login" className="underline font-bold text-brand-green hover:text-brand-green/80">
+                      Войдите или зарегистрируйтесь
+                    </a>, чтобы мы могли сохранить выбранные вами файлы и вы могли отслеживать статус заказа.
+                  </>
+                );
+              } else {
+                setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
+              }
               setSelectedService(null);
             } catch (err) {
               toast.error(t('homeServices.errorMessage'));

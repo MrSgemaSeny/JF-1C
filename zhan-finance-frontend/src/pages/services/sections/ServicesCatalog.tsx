@@ -7,6 +7,7 @@ import { useApiData } from '@/shared/hooks/useApiData';
 import { fetchServices } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { requestTask } from '@/entities/task/api/taskApi';
+import { uploadDocument } from '@/entities/document/api/documentApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -57,7 +58,7 @@ export function ServicesCatalog() {
     return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
   }, [active]);
 
-  const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string) => {
+  const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string, files?: File[]) => {
     if (!user) {
       const pendingOrder = {
         serviceId: service.id,
@@ -72,13 +73,19 @@ export function ServicesCatalog() {
 
     setIsSubmitting(true);
     try {
-      await requestTask({ 
+      const createdTask = await requestTask({ 
         clientId: user.userId,
         title: `${t('services.catalog.orderTaskPrefix', { defaultValue: 'Заказ услуги: ' })}${service.title}`,
         description: message,
         dueDate: preferredDate,
         serviceIds: [service.id]
       });
+
+      // Upload attached files to the created task
+      if (files && files.length > 0 && createdTask?.id) {
+        await Promise.all(files.map(file => uploadDocument(file, undefined, createdTask.id)));
+      }
+
       toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
       setActive(null);
     } catch (err) {
@@ -147,7 +154,7 @@ export function ServicesCatalog() {
           item={active}
           onClose={() => setActive(null)}
           onRequest={handleRequestService}
-          onGuestRequest={async (service, name, phone, message, preferredDate) => {
+          onGuestRequest={async (service, name, phone, message, preferredDate, files) => {
             setIsSubmitting(true);
             try {
               let fullMessage = `Услуга: ${service.title}`;
@@ -159,7 +166,18 @@ export function ServicesCatalog() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
               });
-              toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
+
+              if (files && files.length > 0) {
+                toast.success('Заявка отправлена! Войдите, чтобы сохранить выбранные файлы', {
+                  duration: 10000,
+                  action: {
+                    label: 'Войти',
+                    onClick: () => navigate('/login')
+                  }
+                });
+              } else {
+                toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
+              }
               setActive(null);
             } catch (err) {
               toast.error(t('services.catalog.error', { defaultValue: 'Ошибка при отправке запроса. Попробуйте позже.' }));

@@ -1,16 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Loader2, CheckCircle2, Paperclip, X, FileText } from 'lucide-react';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { Input } from '@/shared/ui/Input/Input';
 import { Textarea } from '@/shared/ui/Input/Textarea';
 import { useTranslation } from 'react-i18next';
 
+const MAX_FILES = 5;
+const MAX_FILE_SIZE_MB = 10;
+const ALLOWED_EXTENSIONS = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.csv'];
+
 interface ServiceModalProps {
   item: ServiceDto;
   onClose: () => void;
-  onRequest?: (service: ServiceDto, message?: string, preferredDate?: string) => Promise<void>;
-  onGuestRequest?: (service: ServiceDto, name: string, phone: string, message?: string, preferredDate?: string) => Promise<void>;
+  onRequest?: (service: ServiceDto, message?: string, preferredDate?: string, files?: File[]) => Promise<void>;
+  onGuestRequest?: (service: ServiceDto, name: string, phone: string, message?: string, preferredDate?: string, files?: File[]) => Promise<void>;
   isSubmitting?: boolean;
   isLoggedIn?: boolean;
   initialMessage?: string;
@@ -23,24 +27,48 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
   const [preferredDate, setPreferredDate] = useState(initialPreferredDate);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
     setMessage(initialMessage);
     setPreferredDate(initialPreferredDate);
   }, [initialMessage, initialPreferredDate]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(e.target.files || []);
+    const validFiles: File[] = [];
+
+    for (const file of selected) {
+      if (files.length + validFiles.length >= MAX_FILES) break;
+      
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(ext)) continue;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) continue;
+      
+      validFiles.push(file);
+    }
+
+    setFiles(prev => [...prev, ...validFiles]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleRequest = () => {
     if (isLoggedIn) {
-      onRequest?.(item, message || undefined, preferredDate || undefined);
+      onRequest?.(item, message || undefined, preferredDate || undefined, files.length > 0 ? files : undefined);
     } else {
       if (onGuestRequest && (!name || !phone)) {
         alert(t('serviceModal.validation.fillContacts', { defaultValue: 'Пожалуйста, заполните имя и телефон' }));
         return;
       }
       if (onGuestRequest) {
-        onGuestRequest(item, name, phone, message || undefined, preferredDate || undefined);
+        onGuestRequest(item, name, phone, message || undefined, preferredDate || undefined, files.length > 0 ? files : undefined);
       } else {
-        onRequest?.(item, message || undefined, preferredDate || undefined);
+        onRequest?.(item, message || undefined, preferredDate || undefined, files.length > 0 ? files : undefined);
       }
     }
   };
@@ -139,6 +167,55 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
                       min={new Date().toISOString().split('T')[0]}
                       label={t('serviceModal.orderForm.date', { defaultValue: 'Желаемая дата звонка (необязательно)' })}
                     />
+
+                    {/* File Attachment Section - AVAILABLE TO ALL */}
+                    <div className="space-y-3">
+                      <label className="block text-sm font-medium text-gray-700">
+                        {t('serviceModal.files.label', { defaultValue: 'Прикрепить файлы' })}
+                      </label>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept={ALLOWED_EXTENSIONS.join(',')}
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={files.length >= MAX_FILES}
+                        className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 text-sm font-medium hover:border-brand-green hover:text-brand-green hover:bg-brand-green/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <Paperclip size={16} />
+                        {files.length >= MAX_FILES
+                          ? t('serviceModal.files.maxReached', { defaultValue: 'Максимум файлов' })
+                          : t('serviceModal.files.attach', { defaultValue: 'Выбрать файлы' })}
+                      </button>
+                      <p className="text-[11px] text-gray-400">
+                        {t('serviceModal.files.hint', { defaultValue: 'PDF, XLSX, DOCX, JPG, PNG. До 10 МБ, макс. 5 файлов.' })}
+                      </p>
+
+                      {files.length > 0 && (
+                        <div className="space-y-2">
+                          {files.map((file, i) => (
+                            <div key={`${file.name}-${i}`} className="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 text-sm">
+                              <FileText size={14} className="text-brand-green shrink-0" />
+                              <span className="flex-1 truncate text-gray-700 font-medium">{file.name}</span>
+                              <span className="text-gray-400 text-xs shrink-0">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                              <button
+                                type="button"
+                                onClick={() => removeFile(i)}
+                                className="p-1 text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
                     <button
                       onClick={handleRequest}
                       disabled={isSubmitting}
