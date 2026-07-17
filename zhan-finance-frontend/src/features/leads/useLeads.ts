@@ -37,29 +37,3 @@ export function useUpdateLeadStatus() {
     },
   });
 }
-
-export interface ConvertLeadRequest {
-  email: string;
-  serviceIds: number[];
-}
-
-export interface ConvertLeadResponse {
-  task: any; // TaskDto
-  generatedPassword?: string;
-}
-
-export function useConvertLead() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: ConvertLeadRequest }) => {
-      return await apiRequest<ConvertLeadResponse>(`/api/contact-requests/${id}/convert`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
-    },
-  });
-}

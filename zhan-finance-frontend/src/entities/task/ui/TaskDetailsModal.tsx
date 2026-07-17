@@ -206,8 +206,8 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-gray-100">
-          <div className="flex-1 mr-4">
+        <div className="flex items-start justify-between p-4 md:p-6 border-b border-gray-100">
+          <div className="flex-1 mr-2 md:mr-4">
             <div className="flex items-center gap-3 mb-2">
               {isEditingTitle ? (
                 <input
@@ -230,7 +230,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
               )}
               
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-2 md:gap-4 text-sm text-gray-500 mt-2">
               {task.client && (
                 <span className="flex items-center gap-1">
                   <UserIcon size={14} />
@@ -296,9 +296,9 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
         </div>
 
         {/* Body */}
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-col md:flex-row flex-1 overflow-hidden overflow-y-auto md:overflow-y-hidden">
           {/* Left Column: Details */}
-          <div className="w-[60%] p-8 overflow-y-auto border-r border-gray-100">
+          <div className="w-full md:w-[60%] p-4 md:p-8 md:overflow-y-auto border-b md:border-b-0 md:border-r border-gray-100 flex-shrink-0">
             {/* Description */}
             <div className="mb-8 group">
               <div className="flex items-center justify-between mb-2">
@@ -518,7 +518,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
           </div>
 
           {/* Right Column: Comments & History */}
-          <div className="w-[40%] flex flex-col bg-gray-50/50">
+          <div className="w-full md:w-[40%] flex flex-col bg-gray-50/50 flex-shrink-0 min-h-[400px]">
             {/* Tabs */}
             <div className="flex border-b border-gray-200 px-6 pt-4 gap-6">
               <button

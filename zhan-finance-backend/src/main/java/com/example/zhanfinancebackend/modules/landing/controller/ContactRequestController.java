@@ -3,8 +3,6 @@ package com.example.zhanfinancebackend.modules.landing.controller;
 import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestCreateRequest;
 import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestDto;
-import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestConvertRequest;
-import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestConvertResponse;
 import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestFileDto;
 import com.example.zhanfinancebackend.modules.landing.entity.ContactRequest.ContactRequestStatus;
 import com.example.zhanfinancebackend.modules.landing.service.ContactRequestService;
@@ -72,11 +70,4 @@ public class ContactRequestController {
         return ApiResponse.success(contactRequestService.uploadFiles(id, files), "Files uploaded");
     }
 
-    @PostMapping("/{id}/convert")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    public ApiResponse<ContactRequestConvertResponse> convert(
-            @PathVariable Long id,
-            @Valid @RequestBody ContactRequestConvertRequest request) {
-        return ApiResponse.success(contactRequestService.convert(id, request), "Request converted successfully");
-    }
 }

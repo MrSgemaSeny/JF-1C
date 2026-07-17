@@ -52,15 +52,18 @@ export function AdminTasksPage() {
 
   const handleExport = async () => {
     try {
-      const blob = await exportTasksCsv();
-      const url = window.URL.createObjectURL(blob);
+      const csvBlob = new Blob([blob], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(csvBlob);
       const a = document.createElement('a');
+      a.style.display = 'none';
       a.href = url;
       a.download = `tasks_export_${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
     } catch (err) {
       alert(t('adminTasks.exportError', { defaultValue: 'Ошибка экспорта' }));
     }
