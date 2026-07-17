@@ -177,11 +177,13 @@ export function CalendarPage() {
 
     return (
       <div key={monthIndex} id={`month-${monthIndex}`} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col h-full">
-        <h3 className="font-bold text-gray-900 mb-4 text-center">{MONTH_NAMES[monthIndex]}</h3>
-        <div className="grid grid-cols-7 gap-1 text-center mb-2">
-          {DAY_NAMES.map(d => (
-            <div key={d} className="text-[10px] font-medium text-gray-400">{d}</div>
-          ))}
+          <h3 className="font-bold text-gray-900 mb-4 text-center">
+            {Array.isArray(MONTH_NAMES) ? MONTH_NAMES[monthIndex] : ''}
+          </h3>
+          <div className="grid grid-cols-7 gap-1 text-center mb-2">
+            {Array.isArray(DAY_NAMES) && DAY_NAMES.map(d => (
+              <div key={d} className="text-[10px] font-medium text-gray-400">{d}</div>
+            ))}
         </div>
         <div className="grid grid-cols-7 gap-1 flex-1 content-start">
           {days}

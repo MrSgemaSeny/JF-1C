@@ -15,7 +15,7 @@ export function NotificationsPage() {
   const { user } = useAuth();
 
   const getNotificationLink = (notification: { title: string }) => {
-    const title = notification.title.toLowerCase();
+    const title = (notification?.title || '').toLowerCase();
     const role = user?.role;
     
     if (title.includes('task') || title.includes('задач')) {
