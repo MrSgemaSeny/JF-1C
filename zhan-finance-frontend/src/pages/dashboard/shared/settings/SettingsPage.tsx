@@ -295,19 +295,14 @@ export function SettingsPage() {
         </div>
 
         {/* Security / Password Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-gray-900">{t('settings.securityTitle')}</h3>
-            <p className="text-sm text-gray-500 mt-1">{t('settings.changePasswordDesc')}</p>
-          </div>
-          
-          <form onSubmit={handlePasswordSubmit} className="space-y-5">
-            {isGoogle ? (
-              <div className="bg-blue-50 text-blue-800 p-4 rounded-xl flex gap-3 text-sm">
-                <Shield className="w-5 h-5 shrink-0 text-blue-600" />
-                {t('settings.googleNoPassword')}
-              </div>
-            ) : (
+        {!isGoogle && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-900">{t('settings.securityTitle')}</h3>
+              <p className="text-sm text-gray-500 mt-1">{t('settings.changePasswordDesc')}</p>
+            </div>
+            
+            <form onSubmit={handlePasswordSubmit} className="space-y-5">
               <div className="max-w-2xl">
                 <div className="mb-5">
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('settings.currentPassword')}</label>
@@ -367,9 +362,9 @@ export function SettingsPage() {
                   </button>
                 </div>
               </div>
-            )}
-          </form>
-        </div>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );

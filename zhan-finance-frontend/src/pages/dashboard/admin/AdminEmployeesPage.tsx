@@ -87,7 +87,7 @@ export function AdminEmployeesPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-gray-50/50">
+              <thead className="bg-gray-50/50 hidden sm:table-header-group">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                     {t('adminEmployees.employee')}
@@ -105,33 +105,42 @@ export function AdminEmployeesPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {(activeTab === 'ACTIVE' ? employees : pendingEmployees).map((emp) => (
-                  <tr key={emp.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-gray-900">{emp.fullName}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{emp.email}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">
-                        {new Date(emp.createdAt).toLocaleDateString('ru-RU', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric'
-                        })}
+                  <tr key={emp.id} className="hover:bg-gray-50/50 transition-colors block sm:table-row border-b border-gray-100 sm:border-b-0 p-4 sm:p-0">
+                    <td className="px-0 sm:px-6 py-2 sm:py-4 block sm:table-cell">
+                      <div className="flex sm:block justify-between items-center sm:items-start gap-4">
+                        <span className="sm:hidden text-xs font-bold text-gray-500 uppercase shrink-0">{t('adminEmployees.employee')}</span>
+                        <div className="text-sm font-bold text-gray-900 truncate text-right sm:text-left">{emp.fullName}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-0 sm:px-6 py-2 sm:py-4 block sm:table-cell">
+                      <div className="flex sm:block justify-between items-center sm:items-start gap-4">
+                        <span className="sm:hidden text-xs font-bold text-gray-500 uppercase shrink-0">{t('adminEmployees.email')}</span>
+                        <div className="text-sm text-gray-500 truncate text-right sm:text-left">{emp.email}</div>
+                      </div>
+                    </td>
+                    <td className="px-0 sm:px-6 py-2 sm:py-4 block sm:table-cell">
+                      <div className="flex sm:block justify-between items-center sm:items-start gap-4">
+                        <span className="sm:hidden text-xs font-bold text-gray-500 uppercase shrink-0">{t('adminEmployees.registrationDate')}</span>
+                        <div className="text-sm text-gray-500 text-right sm:text-left">
+                          {new Date(emp.createdAt).toLocaleDateString('ru-RU', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                          })}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-0 sm:px-6 py-4 sm:py-4 sm:text-right block sm:table-cell border-t border-gray-100 mt-2 sm:border-0 sm:mt-0">
                       {activeTab === 'PENDING' ? (
                         <button
                           onClick={() => handleApprove(emp.id)}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-green/10 text-brand-green hover:bg-brand-green/20 rounded-lg text-sm font-bold transition-colors"
+                          className="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-4 py-2 bg-brand-green/10 text-brand-green hover:bg-brand-green/20 rounded-lg text-sm font-bold transition-colors"
                         >
                           <Check className="w-4 h-4" />
                           {t('adminEmployees.approve')}
                         </button>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                        <span className="w-full sm:w-auto inline-flex justify-center items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                           {t('adminEmployees.isActive')}
                         </span>
                       )}

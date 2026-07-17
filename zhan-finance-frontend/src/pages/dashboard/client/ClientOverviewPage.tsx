@@ -22,10 +22,11 @@ const CLIENT_STATUS_MAP: Record<string, { labelKey: string; color: string; icon:
 function getClientStatus(stage?: StageDto) {
   if (!stage) return CLIENT_STATUS_MAP.NEW;
   
-  if (stage.type === 'NEW') return CLIENT_STATUS_MAP.NEW;
-  if (stage.type === 'IN_PROGRESS') return CLIENT_STATUS_MAP.IN_PROGRESS;
   if (stage.type === 'WON') return CLIENT_STATUS_MAP.DONE;
   if (stage.type === 'LOST') return CLIENT_STATUS_MAP.CANCELLED;
+
+  if (stage.name === 'Новый') return CLIENT_STATUS_MAP.NEW;
+  if (stage.name === 'В работе') return CLIENT_STATUS_MAP.IN_PROGRESS;
   
   return { labelKey: '', dynamicLabel: stage.name, color: 'bg-blue-50 text-blue-700 border-blue-200', icon: <Clock size={14} /> };
 }

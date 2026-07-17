@@ -112,7 +112,7 @@ export function ClientServicesPage() {
               
               <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
                 <span className="font-bold text-gray-900">
-                  {service.price ? `${service.price} ₸` : t('clientServices.onDemand')}
+                  {service.price ? service.price : t('clientServices.onDemand')}
                 </span>
                 <button
                   onClick={() => setSelectedService(service)}
