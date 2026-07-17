@@ -166,7 +166,9 @@
     "unreadSubtitle_other": "You have {{count}} unread messages.",
     "markAllAsRead": "Mark all as read",
     "emptyTitle": "No notifications yet",
-    "emptySubtitle": "When there's an update about your documents or tasks, it will appear here."
+    "emptySubtitle": "When there's an update about your documents or tasks, it will appear here.",
+    "confirm": "Ok",
+    "open": "Open"
   },
   "clientChat": {
     "sidebarTitle": "Support",

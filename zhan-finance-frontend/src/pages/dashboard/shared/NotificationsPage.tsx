@@ -4,10 +4,37 @@ import { Bell, Check, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { Spinner } from '@/shared/ui/Spinner';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/features/auth/AuthContext';
+import { ROUTES } from '@/shared/config/routes';
 
 export function NotificationsPage() {
   const { notifications, loading, refresh, markAsRead, markAllAsRead, unreadCount } = useNotifications();
   const { t } = useTranslation(['common']);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const getNotificationLink = (notification: { title: string }) => {
+    const title = notification.title.toLowerCase();
+    const role = user?.role;
+    
+    if (title.includes('task') || title.includes('задач')) {
+       if (role === 'CLIENT') return ROUTES.CLIENT;
+       return role === 'ADMIN' ? ROUTES.ADMIN_TASKS : ROUTES.EMPLOYEE_TASKS;
+    }
+    if (title.includes('document') || title.includes('документ')) {
+       if (role === 'CLIENT') return ROUTES.CLIENT_DOCUMENTS;
+       return role === 'ADMIN' ? ROUTES.ADMIN_EMPLOYEES : ROUTES.EMPLOYEE_DOCUMENTS;
+    }
+    if (title.includes('lead') || title.includes('лид')) {
+       if (role === 'CLIENT') return ROUTES.CLIENT;
+       return ROUTES.ADMIN_LEADS;
+    }
+    
+    if (role === 'CLIENT') return ROUTES.CLIENT;
+    if (role === 'ADMIN') return ROUTES.ADMIN;
+    return ROUTES.EMPLOYEE;
+  };
 
   useEffect(() => {
     refresh();
@@ -64,9 +91,8 @@ export function NotificationsPage() {
             {notifications.map((notification) => (
               <div
                 key={notification.id}
-                onClick={() => !notification.read && markAsRead(notification.id)}
                 className={twMerge(
-                  "flex gap-4 p-5 sm:p-6 transition-all duration-200 group cursor-pointer",
+                  "flex gap-4 p-5 sm:p-6 transition-all duration-200 group",
                   !notification.read ? "bg-blue-50/30 hover:bg-blue-50/50" : "hover:bg-gray-50/50"
                 )}
               >
@@ -95,11 +121,37 @@ export function NotificationsPage() {
                     </div>
                   </div>
                   <p className={twMerge(
-                    "text-sm leading-relaxed",
+                    "text-sm leading-relaxed mb-3",
                     !notification.read ? "text-gray-600 font-medium" : "text-gray-500"
                   )}>
                     {notification.message}
                   </p>
+                  <div className="flex items-center gap-3">
+                    {!notification.read && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markAsRead(notification.id);
+                        }}
+                        className="text-xs font-semibold px-3 py-1.5 bg-brand-green/10 text-brand-green hover:bg-brand-green/20 rounded-lg transition-colors flex items-center gap-1.5"
+                      >
+                        <Check size={14} />
+                        {t('notifications.confirm')}
+                      </button>
+                    )}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!notification.read) {
+                          markAsRead(notification.id);
+                        }
+                        navigate(getNotificationLink(notification));
+                      }}
+                      className="text-xs font-semibold px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      {t('notifications.open')}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

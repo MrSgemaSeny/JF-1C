@@ -116,7 +116,7 @@ export function ClientServicesPage() {
                 </span>
                 <button
                   onClick={() => setSelectedService(service)}
-                  className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-lg transition-colors"
+                  className="px-4 py-2 bg-brand-green hover:bg-brand-green/90 text-white text-sm font-bold rounded-lg transition-colors"
                 >
                   {t('clientServices.requestBtn')}
                 </button>
