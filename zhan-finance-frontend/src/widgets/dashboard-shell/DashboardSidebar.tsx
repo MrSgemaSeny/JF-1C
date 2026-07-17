@@ -203,10 +203,12 @@ export function DashboardSidebar({
 
                 {/* Always show dot indicator if collapsed and has notifications */}
                 {isDesktopCollapsed && item.label === 'Notifications' && unreadCount > 0 && (
-                  <span className="absolute top-2.5 right-2 w-2 h-2 bg-red-500 rounded-full" />
+                  <span className="hidden lg:block absolute top-2.5 right-2 w-2 h-2 bg-red-500 rounded-full" />
                 )}
                 {isDesktopCollapsed && item.label === 'Chat' && unreadChatCount > 0 && (
-                  <span className="absolute top-2.5 right-2 w-2 h-2 bg-red-500 rounded-full" />
+                  <span className="hidden lg:flex absolute top-2.5 right-2 items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-bold text-white bg-blue-500 rounded-full shadow-sm">
+                    {unreadChatCount > 9 ? '9+' : unreadChatCount}
+                  </span>
                 )}
               </Link>
             );

@@ -193,7 +193,7 @@ export function CalendarPage() {
   const selectedDayEvents = events.filter(e => e.date === selectedDate);
 
   return (
-    <div className="h-full flex flex-col max-w-[1600px] mx-auto p-6">
+    <div className="flex flex-col max-w-[1600px] mx-auto p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{t('calendarPage.title')}</h1>
@@ -216,7 +216,7 @@ export function CalendarPage() {
           <Spinner className="w-8 h-8 text-brand-green" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 flex-1 overflow-y-auto pr-2 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pr-2 pb-8">
           {[...Array(12)].map((_, i) => renderMonth(i))}
         </div>
       )}
