@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, DragEvent } from 'react';
 import { motion } from 'framer-motion';
+import { UploadCloud, FileText, X } from 'lucide-react';
 import { questions } from './questions';
 import { apiRequest } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,48 @@ export function SolutionPicker() {
   const [contact, setContact] = useState({ name: '', phone: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const MAX_FILES = 5;
+  const MAX_FILE_SIZE_MB = 10;
+  const ALLOWED_EXTENSIONS = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.csv'];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    addFiles(Array.from(e.target.files || []));
+  };
+
+  const addFiles = (selectedFiles: File[]) => {
+    const validFiles: File[] = [];
+    for (const file of selectedFiles) {
+      if (files.length + validFiles.length >= MAX_FILES) break;
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(ext)) continue;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) continue;
+      validFiles.push(file);
+    }
+    setFiles(prev => [...prev, ...validFiles]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const onDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  const onDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+  const onDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    addFiles(Array.from(e.dataTransfer.files));
+  };
 
   function select(option: string) {
     const key = questions[step].id;
@@ -31,7 +74,10 @@ export function SolutionPicker() {
     if (loading) return;
     setLoading(true);
     try {
-      const message = t('quiz.resultsHeader', { defaultValue: 'Результаты опроса:\n' }) + Object.entries(answers).map(([k, v]) => `- ${t('quiz.questionResult', { defaultValue: 'Вопрос:' })} ${k}\n  ${t('quiz.answerResult', { defaultValue: 'Ответ:' })} ${v}`).join('\n');
+      let message = t('quiz.resultsHeader', { defaultValue: 'Результаты опроса:\n' }) + Object.entries(answers).map(([k, v]) => `- ${t('quiz.questionResult', { defaultValue: 'Вопрос:' })} ${k}\n  ${t('quiz.answerResult', { defaultValue: 'Ответ:' })} ${v}`).join('\n');
+      if (files.length > 0) {
+        message += '\n\n' + t('quiz.filesAttached', { defaultValue: '*Пользователь прикрепил файлы (ожидают загрузки после регистрации)*' });
+      }
       
       await apiRequest('/api/contact-requests', {
         method: 'POST',
@@ -78,7 +124,7 @@ export function SolutionPicker() {
                     {t('quiz.promoLogin', { defaultValue: 'Войти / Зарегистрироваться' })}
                   </a>
                   <button
-                    onClick={() => { setStep(0); setAnswers({}); setSubmitted(false); setContact({ name: '', phone: '' }); }}
+                    onClick={() => { setStep(0); setAnswers({}); setSubmitted(false); setContact({ name: '', phone: '' }); setFiles([]); }}
                     className="px-6 py-3 border border-brand-green/20 text-brand-green rounded-lg hover:bg-brand-green/5 transition-colors"
                   >
                     {t('quiz.restart', { defaultValue: 'Пройти заново' })}
@@ -115,10 +161,65 @@ export function SolutionPicker() {
                   {t('quiz.question', { defaultValue: 'Вопрос' })} {step + 1} {t('quiz.of', { defaultValue: 'из' })} {questions.length}
                 </div>
               </div>
+              <div className="mt-8 pt-6 border-t border-brand-green/10 text-center">
+                <p className="text-sm font-bold text-brand-green/70">
+                  {t('quiz.registerPromoShort', { defaultValue: 'Зарегистрируйтесь, чтобы получить больше возможностей!' })}
+                </p>
+              </div>
             </motion.div>
           ) : (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
               <h3 className="text-2xl font-bold text-brand-green mb-4">{t('quiz.leaveContacts', { defaultValue: 'Оставьте контакты' })}</h3>
+              
+              <div className="mb-6">
+                <label className="block text-sm text-brand-green/70 mb-2">{t('quiz.attachFiles', { defaultValue: 'Прикрепить файлы (необязательно)' })}</label>
+                <div
+                  onDragOver={onDragOver}
+                  onDragLeave={onDragLeave}
+                  onDrop={onDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all ${
+                    isDragging
+                      ? 'border-brand-green bg-brand-green/5'
+                      : 'border-brand-green/20 hover:border-brand-green hover:bg-brand-green/5'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept={ALLOWED_EXTENSIONS.join(',')}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <UploadCloud className="mx-auto h-8 w-8 text-brand-green/50 mb-2" />
+                  <p className="text-sm text-brand-green font-medium">
+                    {t('quiz.dropFiles', { defaultValue: 'Перетащите файлы сюда или нажмите для выбора' })}
+                  </p>
+                  <p className="text-xs text-brand-green/50 mt-1">
+                    PDF, DOCX, XLSX, JPG до 10 МБ (макс. {MAX_FILES})
+                  </p>
+                </div>
+                {files.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {files.map((file, i) => (
+                      <div key={i} className="flex items-center gap-3 rounded-lg border border-brand-green/10 bg-brand-green/5 p-3 text-sm">
+                        <FileText size={16} className="text-brand-green" />
+                        <span className="flex-1 truncate text-brand-green/80 font-medium">{file.name}</span>
+                        <span className="text-xs text-brand-green/50">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                          className="p-1 text-brand-green/50 hover:text-red-500 transition-colors"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm text-brand-green/70 mb-2">{t('quiz.name', { defaultValue: 'Имя' })}</label>
@@ -144,7 +245,7 @@ export function SolutionPicker() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setStep(0); setAnswers({}); setSubmitted(false); }}
+                    onClick={() => { setStep(0); setAnswers({}); setSubmitted(false); setFiles([]); }}
                     className="px-6 py-3 border rounded-lg"
                   >
                     {t('quiz.restart', { defaultValue: 'Пройти заново' })}

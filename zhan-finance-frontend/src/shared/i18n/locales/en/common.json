@@ -1074,7 +1074,11 @@
     "restart": "Start Over",
     "promoTitle": "Want to manage your tasks more conveniently?",
     "promoText": "Register on the platform to track request statuses, securely exchange documents in the chat, and always stay in touch with your personal accountant.",
-    "promoLogin": "Sign in / Register"
+    "promoLogin": "Sign in / Register",
+    "registerPromoShort": "Register to get more features!",
+    "attachFiles": "Attach files (optional)",
+    "dropFiles": "Drop files here or click to select",
+    "filesAttached": "*User attached files (waiting for upload after registration)*"
   },
   "serviceModal": {
     "validation": {
