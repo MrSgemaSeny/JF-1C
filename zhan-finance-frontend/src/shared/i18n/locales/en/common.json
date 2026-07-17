@@ -1016,33 +1016,45 @@
     "subtitle": "Answer a few questions — a form will appear at the end.",
     "success": "Thank you! We will contact you shortly.",
     "questions": {
-      "0": {
-        "q": "What industry is your business in?",
+      "form": {
+        "q": "What is your business form?",
         "options": {
-          "Услуги / Консалтинг": "Services / Consulting",
-          "Торговля (Опт/Розница)": "Trade (Wholesale/Retail)",
-          "Производство": "Manufacturing",
-          "IT / E-commerce": "IT / E-commerce",
+          "ИП": "IE (Individual Entrepreneur)",
+          "ТОО": "LLC (Limited Liability Company)",
           "Другое": "Other"
         }
       },
-      "1": {
-        "q": "How many employees do you have?",
+      "turnover": {
+        "q": "Approximate annual turnover?",
         "options": {
-          "Я один / Нет сотрудников": "Just me / No employees",
-          "От 1 до 5": "From 1 to 5",
-          "От 6 до 20": "From 6 to 20",
-          "Более 20": "More than 20"
+          "1-3 млн": "1-3M",
+          "4-10 млн": "4-10M",
+          "10+ млн": "10M+"
         }
       },
-      "2": {
-        "q": "Your current status?",
+      "employees": {
+        "q": "Number of employees?",
         "options": {
-          "Только планирую открыть ИП/ТОО": "Just planning to open IE/LLC",
-          "ИП (Упрощенка)": "IE (Simplified)",
-          "ИП (Общеустановленный)": "IE (General)",
-          "ТОО": "LLC",
-          "Не уверен": "Not sure"
+          "1–10": "1–10",
+          "11–50": "11–50",
+          "50+": "50+"
+        }
+      },
+      "needs": {
+        "q": "What is most important to you right now?",
+        "options": {
+          "Бухгалтерия": "Accounting",
+          "Налоги": "Taxes",
+          "Кадры": "HR",
+          "Юридическая защита": "Legal Protection"
+        }
+      },
+      "timeline": {
+        "q": "Implementation timeline?",
+        "options": {
+          "В течение дня": "Within a day",
+          "1-3 дня": "1-3 days",
+          "Более 3 дней": "More than 3 days"
         }
       }
     },
@@ -1082,5 +1094,16 @@
       "authRequired": "Authorization is required to submit a request."
     },
     "allServices": "All services"
+  },
+  "admin": {
+    "leads": {
+      "quizFields": {
+        "form": "Business Form",
+        "turnover": "Turnover",
+        "employees": "Employees",
+        "needs": "Requirements",
+        "timeline": "Timeline"
+      }
+    }
   }
 }
