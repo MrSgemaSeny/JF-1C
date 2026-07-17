@@ -30,17 +30,31 @@ const quizFieldLabels: Record<string, string> = {
 const formatMessage = (message: string, t: any) => {
   if (!message) return <span className="text-gray-400 text-sm italic">{t('admin.leads.noMessage', { defaultValue: 'Нет сообщения' })}</span>;
   
-  if (message.includes('Результаты опроса:')) {
-    const parts = message.replace('Результаты опроса:\n', '').split('- Вопрос: ').filter(Boolean);
+  const isQuizRu = message.includes('Результаты опроса:');
+  const isQuizEn = message.includes('Survey results:');
+  
+  if (isQuizRu || isQuizEn) {
+    let rawStr = message;
+    if (isQuizRu) rawStr = rawStr.replace('Результаты опроса:\n', '');
+    if (isQuizEn) rawStr = rawStr.replace('Survey results:\n', '');
+    
+    // Split by either "- Вопрос:" or "- Question:"
+    const parts = rawStr.split(/- (?:Вопрос|Question): /).filter(Boolean);
+    
     return (
       <div className="flex flex-col gap-2 mt-1">
         <span className="text-[10px] font-bold text-brand-green/70 uppercase tracking-wider mb-0.5">{t('admin.leads.quizResults', { defaultValue: 'Результаты квиза:' })}</span>
         <div className="flex flex-wrap gap-2.5">
           {parts.map((part, i) => {
-            const splitIndex = part.indexOf('\n  Ответ: ');
-            if (splitIndex === -1) return null;
+            // Find either "Ответ:" or "Answer:"
+            const splitMatch = part.match(/\n\s*(?:Ответ|Answer):\s*/);
+            if (!splitMatch) return null;
+            
+            const splitIndex = splitMatch.index;
+            if (splitIndex === undefined) return null;
+            
             const rawQuestionStr = part.substring(0, splitIndex).trim();
-            const answerStr = part.substring(splitIndex + '\n  Ответ: '.length).trim();
+            const answerStr = part.substring(splitIndex + splitMatch[0].length).trim();
             const questionStr = t(`admin.leads.quizFields.${rawQuestionStr}`, { defaultValue: quizFieldLabels[rawQuestionStr] || rawQuestionStr });
             return (
               <div key={i} className="flex flex-col text-sm bg-white p-3 rounded-xl border border-gray-200 shadow-sm min-w-[140px] flex-1 max-w-[240px] transition-all hover:shadow-md hover:border-brand-green/30">

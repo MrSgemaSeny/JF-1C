@@ -94,7 +94,8 @@
     "notifications": "Notifications",
     "calendar": "Calendar",
     "documents": "Documents",
-    "services": "Services"
+    "services": "Services",
+    "leads": "Leads"
   },
   "clientDashboard": {
     "welcome": "Welcome, {{name}}!",
@@ -1103,6 +1104,24 @@
         "employees": "Employees",
         "needs": "Requirements",
         "timeline": "Timeline"
+      },
+      "title": "Incoming Requests",
+      "subtitle": "Processing new requests from website and quizzes",
+      "noMessage": "No message",
+      "quizResults": "Quiz Results:",
+      "noLeads": "No new requests",
+      "loadError": "Failed to load leads. Please try again later.",
+      "table": {
+        "date": "Date",
+        "client": "Client",
+        "message": "Message / Result",
+        "status": "Status"
+      },
+      "status": {
+        "NEW": "New",
+        "IN_PROGRESS": "In progress",
+        "DONE": "Success",
+        "CANCELED": "Declined"
       }
     }
   }

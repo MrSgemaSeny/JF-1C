@@ -28,6 +28,7 @@ export function SolutionPicker() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     try {
       const message = t('quiz.resultsHeader', { defaultValue: 'Результаты опроса:\n' }) + Object.entries(answers).map(([k, v]) => `- ${t('quiz.questionResult', { defaultValue: 'Вопрос:' })} ${k}\n  ${t('quiz.answerResult', { defaultValue: 'Ответ:' })} ${v}`).join('\n');
@@ -115,8 +116,8 @@ export function SolutionPicker() {
                   />
                 </div>
                 <div className="md:col-span-2 flex items-center gap-4 mt-4">
-                  <button type="submit" className="px-6 py-3 bg-brand-green text-brand-beige rounded-lg font-bold">
-                    {t('quiz.submit', { defaultValue: 'Отправить' })}
+                  <button type="submit" disabled={loading} className={`px-6 py-3 bg-brand-green text-brand-beige rounded-lg font-bold ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                    {loading ? t('quiz.submitting', { defaultValue: 'Отправка...' }) : t('quiz.submit', { defaultValue: 'Отправить' })}
                   </button>
                   <button
                     type="button"

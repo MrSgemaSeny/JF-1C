@@ -141,6 +141,7 @@ export function DashboardSidebar({
               case 'Employees': i18nKey = 'nav.employees'; break;
               case 'Clients': i18nKey = 'nav.clients'; break;
               case 'My Clients': i18nKey = 'nav.clients'; break;
+              case 'Лиды': i18nKey = 'nav.leads'; break;
               case 'Список задач': i18nKey = 'nav.tasks'; break;
               case 'Tasks': i18nKey = 'nav.tasks'; break;
               case 'Мои задачи': i18nKey = 'nav.tasks'; break;
