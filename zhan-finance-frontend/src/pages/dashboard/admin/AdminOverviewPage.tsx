@@ -22,6 +22,9 @@ interface AdminDashboardDto {
   tasksByStatus: Record<string, number>;
   tasksByLostReason: Record<string, number>;
   totalUsers: number;
+  newRequestsToday: number;
+  totalRevenue: number;
+  expectedRevenue: number;
   employeeStats: EmployeeStatsDto[];
 }
 
@@ -57,6 +60,12 @@ export function AdminOverviewPage() {
 
   const statCards = [
     {
+      label: 'Новые заявки (сегодня)',
+      value: data.newRequestsToday,
+      icon: <Users size={22} className="text-pink-500" />,
+      bg: 'bg-pink-50',
+    },
+    {
       label: t('adminDashboard.totalClients'),
       value: data.totalClients,
       icon: <Users size={22} className="text-blue-500" />,
@@ -89,7 +98,7 @@ export function AdminOverviewPage() {
         <p className="text-sm text-gray-500 mt-1">{t('adminDashboard.subtitle')}</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
         {statCards.map((card) => (
           <div key={card.label} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
             <div className="flex items-center justify-between">
@@ -103,6 +112,27 @@ export function AdminOverviewPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Financial Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-center">
+           <h2 className="text-base font-semibold text-gray-800 mb-4">Финансовая аналитика</h2>
+           <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-500">Заработано (Успешно)</p>
+                <p className="text-2xl font-bold text-green-600 mt-1">
+                  {new Intl.NumberFormat('ru-KZ', { style: 'currency', currency: 'KZT', maximumFractionDigits: 0 }).format(data.totalRevenue || 0)}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Ожидаемая выручка (В работе)</p>
+                <p className="text-2xl font-bold text-amber-500 mt-1">
+                  {new Intl.NumberFormat('ru-KZ', { style: 'currency', currency: 'KZT', maximumFractionDigits: 0 }).format(data.expectedRevenue || 0)}
+                </p>
+              </div>
+           </div>
+        </div>
       </div>
 
       {/* Employee Workload */}

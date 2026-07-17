@@ -14,6 +14,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
 
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Task t WHERE t.stage.type = 'WON'")
+    java.math.BigDecimal sumWonAmount();
+
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Task t WHERE t.stage.type != 'LOST'")
+    java.math.BigDecimal sumExpectedAmount();
+
     @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s")
     List<Task> findAllWithDetails();
 

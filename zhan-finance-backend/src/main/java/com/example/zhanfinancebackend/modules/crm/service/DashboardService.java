@@ -17,17 +17,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.time.LocalDate;
+
 @Service
 public class DashboardService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ClientProfileRepository clientProfileRepository;
+    private final com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository contactRequestRepository;
 
-    public DashboardService(TaskRepository taskRepository, UserRepository userRepository, ClientProfileRepository clientProfileRepository) {
+    public DashboardService(TaskRepository taskRepository, UserRepository userRepository, ClientProfileRepository clientProfileRepository, com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository contactRequestRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
+        this.contactRequestRepository = contactRequestRepository;
     }
 
     @Cacheable(value = "dashboard_admin")
@@ -39,6 +43,10 @@ public class DashboardService {
         long tasksCount = taskRepository.count();
         long wonTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.WON);
         long lostTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST);
+        
+        long newRequestsToday = contactRequestRepository.countByCreatedAtAfter(LocalDate.now().atStartOfDay());
+        java.math.BigDecimal totalRevenue = taskRepository.sumWonAmount();
+        java.math.BigDecimal expectedRevenue = taskRepository.sumExpectedAmount();
         
         Double avgCompletionDaysRaw = taskRepository.getAverageCompletionDays();
         double avgCompletionDays = avgCompletionDaysRaw != null ? avgCompletionDaysRaw : 0.0;
@@ -96,7 +104,7 @@ public class DashboardService {
             }
         }
                 
-        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, wonTasks, lostTasks, avgCompletionDays, tasksByStatus, tasksByLostReason, userRepository.count(), new java.util.ArrayList<>(empStatsMap.values()));
+        return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, wonTasks, lostTasks, avgCompletionDays, tasksByStatus, tasksByLostReason, userRepository.count(), newRequestsToday, totalRevenue, expectedRevenue, new java.util.ArrayList<>(empStatsMap.values()));
     }
 
     @Cacheable(value = "dashboard_employee", key = "#employee.id")

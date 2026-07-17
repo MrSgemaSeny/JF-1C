@@ -69,6 +69,9 @@ public class CrmAccessService {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
+            if (newStage != null && (newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON || newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST)) {
+                return false;
+            }
             return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
         }
         if (actor.getRole() == Role.CLIENT) {

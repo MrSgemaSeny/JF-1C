@@ -13,6 +13,9 @@ public record AdminDashboardDto(
         Map<String, Long> tasksByStatus,
         Map<String, Long> tasksByLostReason,
         long totalUsers,
+        long newRequestsToday,
+        java.math.BigDecimal totalRevenue,
+        java.math.BigDecimal expectedRevenue,
         List<EmployeeStatsDto> employeeStats
 ) {
 }

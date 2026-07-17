@@ -39,25 +39,45 @@ public class PipelineSeederService {
                 .orElseGet(() -> pipelineRepository.findAll().stream().findFirst().orElse(null));
         }
 
-        if (defaultPipeline != null && stageRepository.count() == 0) {
-            List<Stage> savedStages = stageRepository.saveAll(List.of(
-                    createStage(defaultPipeline, "Новый", 0, StageType.OPEN, true, "var(--color-stage-new)"),
-                    createStage(defaultPipeline, "Сбор документов", 1, StageType.OPEN, false, "var(--color-stage-docs)"),
-                    createStage(defaultPipeline, "Предоплата", 2, StageType.OPEN, false, "var(--color-stage-prepay)"),
-                    createStage(defaultPipeline, "В работе", 3, StageType.OPEN, false, "var(--color-stage-active)"),
-                    createStage(defaultPipeline, "Счет выставлен", 4, StageType.OPEN, false, "var(--color-stage-invoice)"),
-                    createStage(defaultPipeline, "Успешно завершено", 5, StageType.WON, false, "var(--color-brand-green)"),
-                    createStage(defaultPipeline, "Отменен", 6, StageType.LOST, false, "var(--color-stage-lost)")
-            ));
-            
-            // Назначаем задачам без стадии дефолтную стадию "Новый"
-            Stage defaultStage = savedStages.get(0);
-            taskRepository.findAll().forEach(task -> {
-                if (task.getStage() == null) {
-                    task.setStage(defaultStage);
-                    taskRepository.save(task);
+        if (defaultPipeline != null) {
+            long stageCount = stageRepository.count();
+            if (stageCount == 0) {
+                List<Stage> savedStages = stageRepository.saveAll(List.of(
+                        createStage(defaultPipeline, "Новый", 0, StageType.OPEN, true, "var(--color-stage-new)"),
+                        createStage(defaultPipeline, "Сбор документов", 1, StageType.OPEN, false, "var(--color-stage-docs)"),
+                        createStage(defaultPipeline, "Предоплата", 2, StageType.OPEN, false, "var(--color-stage-prepay)"),
+                        createStage(defaultPipeline, "В работе", 3, StageType.OPEN, false, "var(--color-stage-active)"),
+                        createStage(defaultPipeline, "Счет выставлен", 4, StageType.OPEN, false, "var(--color-stage-invoice)"),
+                        createStage(defaultPipeline, "На проверке", 5, StageType.OPEN, false, "var(--color-stage-review)"),
+                        createStage(defaultPipeline, "Успешно завершено", 6, StageType.WON, false, "var(--color-brand-green)"),
+                        createStage(defaultPipeline, "Отменен", 7, StageType.LOST, false, "var(--color-stage-lost)")
+                ));
+                
+                // Назначаем задачам без стадии дефолтную стадию "Новый"
+                Stage defaultStage = savedStages.get(0);
+                taskRepository.findAll().forEach(task -> {
+                    if (task.getStage() == null) {
+                        task.setStage(defaultStage);
+                        taskRepository.save(task);
+                    }
+                });
+            } else {
+                // Check if "На проверке" exists, if not, create it
+                boolean hasReviewStage = stageRepository.findAll().stream()
+                        .anyMatch(s -> "На проверке".equals(s.getName()));
+                if (!hasReviewStage) {
+                    Stage reviewStage = createStage(defaultPipeline, "На проверке", 5, StageType.OPEN, false, "var(--color-stage-review)");
+                    stageRepository.save(reviewStage);
+                    
+                    // Shift indices of later stages
+                    stageRepository.findAll().forEach(s -> {
+                        if (s.getOrderIndex() >= 5 && !"На проверке".equals(s.getName())) {
+                            s.setOrderIndex(s.getOrderIndex() + 1);
+                            stageRepository.save(s);
+                        }
+                    });
                 }
-            });
+            }
         }
     }
 
