@@ -175,7 +175,7 @@ export function ServicesCatalog() {
                   method: 'POST',
                   body: formData,
                 });
-                toast.success('Заявка отправлена! Ваши файлы прикреплены. Ожидайте звонка от нашего специалиста.');
+                toast.success(t('services.catalog.successFiles', { defaultValue: 'Заявка отправлена! Ваши файлы прикреплены. Ожидайте звонка от нашего специалиста.' }));
               } else {
                 toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
               }

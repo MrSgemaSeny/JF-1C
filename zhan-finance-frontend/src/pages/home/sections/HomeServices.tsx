@@ -206,14 +206,9 @@ export function HomeServices() {
                   method: 'POST',
                   body: formData,
                 });
-                setSuccessMessage(
-                  <>
-                    Ваша заявка отправлена!<br /><br />
-                    Файлы успешно прикреплены. Ожидайте звонка от нашего специалиста.
-                  </>
-                );
+                setSuccessMessage(t('homeServices.successMessageFiles', { defaultValue: 'Ваша заявка отправлена!\n\nФайлы успешно прикреплены. Ожидайте звонка от нашего специалиста.' }));
               } else {
-                setSuccessMessage(`Запрос на услугу «${service.title}» успешно отправлен!`);
+                setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
               }
               setSelectedService(null);
             } catch (err) {
