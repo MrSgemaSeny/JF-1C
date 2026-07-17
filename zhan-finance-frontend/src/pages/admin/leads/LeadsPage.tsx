@@ -54,8 +54,9 @@ const formatMessage = (message: string, t: any) => {
             if (splitIndex === undefined) return null;
             
             const rawQuestionStr = part.substring(0, splitIndex).trim();
-            const answerStr = part.substring(splitIndex + splitMatch[0].length).trim();
+            const rawAnswerStr = part.substring(splitIndex + splitMatch[0].length).trim();
             const questionStr = t(`admin.leads.quizFields.${rawQuestionStr}`, { defaultValue: quizFieldLabels[rawQuestionStr] || rawQuestionStr });
+            const answerStr = t(`quiz.questions.${rawQuestionStr}.options.${rawAnswerStr}`, { defaultValue: rawAnswerStr });
             return (
               <div key={i} className="flex flex-col text-sm bg-white p-3 rounded-xl border border-gray-200 shadow-sm min-w-[140px] flex-1 max-w-[240px] transition-all hover:shadow-md hover:border-brand-green/30">
                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1 line-clamp-1" title={questionStr}>{questionStr}</span>
