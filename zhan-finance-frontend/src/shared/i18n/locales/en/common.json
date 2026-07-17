@@ -1071,7 +1071,10 @@
     "name": "Name",
     "phoneOrEmail": "Phone or e-mail",
     "submit": "Submit",
-    "restart": "Start Over"
+    "restart": "Start Over",
+    "promoTitle": "Want to manage your tasks more conveniently?",
+    "promoText": "Register on the platform to track request statuses, securely exchange documents in the chat, and always stay in touch with your personal accountant.",
+    "promoLogin": "Sign in / Register"
   },
   "serviceModal": {
     "validation": {
