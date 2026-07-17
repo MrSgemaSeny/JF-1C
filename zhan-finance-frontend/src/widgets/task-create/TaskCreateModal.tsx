@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { createTask, requestTask } from '@/entities/task/api/taskApi';
 import { fetchServices, ServiceDto } from '@/entities/service/api/servicesApi';
 import { uploadDocument } from '@/entities/document/api/documentApi';
+import { useTranslation } from 'react-i18next';
 interface TaskCreateModalProps {
   onClose: () => void;
   onCreated: () => void;
@@ -11,6 +12,7 @@ interface TaskCreateModalProps {
 }
 
 export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCreateModalProps) {
+  const { t } = useTranslation('crm');
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -97,7 +99,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
 
       onCreated();
     } catch (err: any) {
-      setError(err.message || 'Ошибка при создании задачи');
+      setError(err.message || t('taskCreate.error', { defaultValue: 'Ошибка при создании задачи' }));
     } finally {
       setIsSubmitting(false);
     }
@@ -108,7 +110,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900">Новая заявка</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('taskCreate.title', { defaultValue: 'Новая заявка' })}</h2>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
             <X size={20} />
           </button>
@@ -128,31 +130,31 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Суть обращения <span className="text-red-500">*</span>
+                  {t('taskCreate.subject', { defaultValue: 'Суть обращения' })} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all"
-                  placeholder="Например: Справка о доходах, Бухгалтерское сопровождение..."
+                  placeholder={t('taskCreate.subjectPlaceholder', { defaultValue: 'Например: Справка о доходах, Бухгалтерское сопровождение...' })}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Детали (необязательно)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('taskCreate.details', { defaultValue: 'Детали (необязательно)' })}</label>
                 <textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all"
-                  placeholder="Опишите задачу подробнее..."
+                  placeholder={t('taskCreate.detailsPlaceholder', { defaultValue: 'Опишите задачу подробнее...' })}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Желаемый срок (Дедлайн)</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">{t('taskCreate.deadline', { defaultValue: 'Желаемый срок (Дедлайн)' })}</label>
                 <input
                   type="date"
                   value={dueDate}
@@ -165,7 +167,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
             {/* Services Selection */}
             {availableServices.length > 0 && (
               <div className="border-t border-gray-100 pt-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Связанные услуги</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">{t('taskCreate.linkedServices', { defaultValue: 'Связанные услуги' })}</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {availableServices.map(service => {
                     const isSelected = selectedServiceIds.includes(service.id);
@@ -196,7 +198,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
 
             {/* Subtasks */}
             <div className="border-t border-gray-100 pt-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Подзадачи (чек-лист)</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">{t('taskCreate.subtasks', { defaultValue: 'Подзадачи (чек-лист)' })}</label>
               
               <div className="space-y-2 mb-3">
                 {subtasks.map((st, index) => (
@@ -216,7 +218,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                   value={newSubtask}
                   onChange={e => setNewSubtask(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddSubtask())}
-                  placeholder="Добавить пункт чек-листа..."
+                  placeholder={t('taskCreate.addSubtaskPlaceholder', { defaultValue: 'Добавить пункт чек-листа...' })}
                   className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900 transition-all"
                 />
                 <button
@@ -232,7 +234,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
 
             {/* Attachments */}
             <div className="border-t border-gray-100 pt-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Вложения</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">{t('taskCreate.attachments', { defaultValue: 'Вложения' })}</label>
               
               {files.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 mb-3">
@@ -267,7 +269,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                 <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
                   <Paperclip size={18} />
                 </div>
-                <span className="text-sm font-medium">Прикрепить файлы</span>
+                <span className="text-sm font-medium">{t('taskCreate.attachFiles', { defaultValue: 'Прикрепить файлы' })}</span>
               </button>
             </div>
 
@@ -281,7 +283,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
             onClick={onClose}
             className="px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200 bg-white border border-gray-200 rounded-xl transition-colors"
           >
-            Отмена
+            {t('taskCreate.cancel', { defaultValue: 'Отмена' })}
           </button>
           <button
             type="submit"
@@ -290,7 +292,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
             className="px-6 py-2.5 bg-gray-900 hover:bg-green-700 text-white text-sm font-bold rounded-xl shadow-sm disabled:opacity-50 flex items-center gap-2 transition-colors"
           >
             {isSubmitting && <Loader2 size={16} className="animate-spin" />}
-            {isSubmitting ? 'Создание...' : 'Создать заявку'}
+            {isSubmitting ? t('taskCreate.submitting', { defaultValue: 'Создание...' }) : t('taskCreate.submit', { defaultValue: 'Создать заявку' })}
           </button>
         </div>
       </div>

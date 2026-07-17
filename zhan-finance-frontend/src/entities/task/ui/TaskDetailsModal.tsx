@@ -11,6 +11,7 @@ import type { DocumentDto } from '@/entities/document/model/types';
 import { StatusBadge } from '@/shared/ui/Badge';
 import { twMerge } from 'tailwind-merge';
 import { Edit2, Plus, Trash2, CheckSquare, Square, Loader2, Paperclip } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface TaskDetailsModalProps {
   task: TaskDto;
@@ -21,6 +22,7 @@ interface TaskDetailsModalProps {
 }
 
 export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModal = true }: TaskDetailsModalProps) {
+  const { t } = useTranslation('crm');
   const { user } = useAuth();
   const currentUser = user ? { id: user.userId, fullName: user.fullName, email: user.email, role: user.role } : null;
   const [activeTab, setActiveTab] = useState<'comments' | 'history' | 'documents'>('comments');
@@ -192,7 +194,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
       fetchHistory(); // Refresh history to show assignment log
     } catch (err) {
       console.error('Failed to assign task:', err);
-      alert('Не удалось назначить задачу');
+      alert(t('taskModal.assignError', { defaultValue: 'Не удалось назначить задачу' }));
     } finally {
       setIsAssigning(false);
     }
@@ -221,7 +223,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                 <h2 
                   className="text-2xl font-bold text-gray-800 cursor-pointer hover:bg-gray-50 rounded px-1 -ml-1 transition-colors flex-1"
                   onClick={() => setIsEditingTitle(true)}
-                  title="Нажмите чтобы изменить"
+                  title={t('taskModal.clickToEdit', { defaultValue: 'Нажмите чтобы изменить' })}
                 >
                   {task.title}
                 </h2>
@@ -232,14 +234,14 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
               {task.client && (
                 <span className="flex items-center gap-1">
                   <UserIcon size={14} />
-                  Клиент: {task.client.fullName}
+                  {t('taskModal.client', { defaultValue: 'Клиент:' })} {task.client.fullName}
                 </span>
               )}
               {taskActions && (
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1">
                     <UserIcon size={14} className={task.assignedTo ? "text-brand-green" : "text-gray-400"} />
-                    Исполнитель:
+                    {t('taskModal.assignee', { defaultValue: 'Исполнитель:' })}
                   </span>
                   {taskActions.canAssign ? (
                     <select
@@ -248,7 +250,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                       onChange={(e) => handleAssignTask(e.target.value ? Number(e.target.value) : null)}
                       className="text-sm border border-gray-200 rounded px-2 py-0.5 outline-none focus:border-brand-green bg-white disabled:opacity-50"
                     >
-                      <option value="">Не назначен (Пул)</option>
+                      <option value="">{t('taskModal.unassigned', { defaultValue: 'Не назначен (Пул)' })}</option>
                       {employees.map(emp => (
                         <option key={emp.id} value={emp.id}>{emp.fullName}</option>
                       ))}
@@ -256,7 +258,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   ) : task.assignedTo ? (
                     <span className="font-medium text-gray-700">{task.assignedTo.fullName}</span>
                   ) : (
-                    <span className="text-gray-400 italic">Не назначен (Пул)</span>
+                    <span className="text-gray-400 italic">{t('taskModal.unassigned', { defaultValue: 'Не назначен (Пул)' })}</span>
                   )}
 
                   {taskActions.canTake && (
@@ -265,7 +267,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                       disabled={isAssigning}
                       className="ml-2 bg-brand-green text-white px-3 py-1 rounded text-xs font-medium hover:bg-brand-green/90 transition-colors disabled:opacity-50"
                     >
-                      Взять в работу
+                      {t('taskModal.take', { defaultValue: 'Взять в работу' })}
                     </button>
                   )}
                   {taskActions.canDrop && (
@@ -274,14 +276,14 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                       disabled={isAssigning}
                       className="ml-2 bg-red-500 text-white px-3 py-1 rounded text-xs font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
                     >
-                      Отказаться
+                      {t('taskModal.drop', { defaultValue: 'Отказаться' })}
                     </button>
                   )}
                 </div>
               )}
               <span className="flex items-center gap-1">
                 <Clock size={14} />
-                Создано: {new Date(task.createdAt).toLocaleDateString()}
+                {t('taskModal.created', { defaultValue: 'Создано:' })} {new Date(task.createdAt).toLocaleDateString()}
               </span>
             </div>
           </div>
@@ -300,13 +302,13 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
             {/* Description */}
             <div className="mb-8 group">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">Описание</h3>
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">{t('taskModal.description', { defaultValue: 'Описание' })}</h3>
                 {!isEditingDescription && (
                   <button 
                     onClick={() => setIsEditingDescription(true)}
                     className="text-gray-400 hover:text-brand-green opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-xs"
                   >
-                    <Edit2 size={12} /> Изменить
+                    <Edit2 size={12} /> {t('taskModal.edit', { defaultValue: 'Изменить' })}
                   </button>
                 )}
               </div>
@@ -317,7 +319,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                     value={editedDescription}
                     onChange={(e) => setEditedDescription(e.target.value)}
                     className="w-full min-h-[120px] bg-white border border-gray-200 rounded-lg p-3 outline-none focus:border-brand-green resize-y text-sm text-gray-700"
-                    placeholder="Добавьте более подробное описание..."
+                    placeholder={t('taskModal.addDescription', { defaultValue: 'Добавьте более подробное описание...' })}
                     autoFocus
                   />
                   <div className="flex items-center gap-2 mt-3">
@@ -325,7 +327,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                       onClick={handleSaveDescription}
                       className="bg-brand-green text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-brand-green/90"
                     >
-                      Сохранить
+                      {t('taskModal.save', { defaultValue: 'Сохранить' })}
                     </button>
                     <button
                       onClick={() => {
@@ -334,7 +336,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                       }}
                       className="text-gray-500 hover:bg-gray-200 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
                     >
-                      Отмена
+                      {t('taskModal.cancel', { defaultValue: 'Отмена' })}
                     </button>
                   </div>
                 </div>
@@ -342,9 +344,9 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                 <div 
                   onClick={() => setIsEditingDescription(true)}
                   className="text-gray-600 bg-gray-50 p-4 rounded-xl min-h-[100px] whitespace-pre-wrap cursor-pointer hover:bg-gray-100 transition-colors"
-                  title="Нажмите чтобы изменить"
+                  title={t('taskModal.clickToEdit', { defaultValue: 'Нажмите чтобы изменить' })}
                 >
-                  {task.description || <span className="text-gray-400 italic">Описание отсутствует...</span>}
+                  {task.description || <span className="text-gray-400 italic">{t('taskModal.noDescription', { defaultValue: 'Описание отсутствует...' })}</span>}
                 </div>
               )}
             </div>
@@ -353,7 +355,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
             {task.services && task.services.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <Hash size={16} /> Связанные услуги
+                  <Hash size={16} /> {t('taskModal.linkedServices', { defaultValue: 'Связанные услуги' })}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {task.services.map(service => (
@@ -372,7 +374,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
             <div className="mb-8 group">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                  <FileText size={16} /> Вложения ({documents.length})
+                  <FileText size={16} /> {t('taskModal.attachments', { defaultValue: 'Вложения' })} ({documents.length})
                 </h3>
                 <div className="flex items-center gap-2">
                   <input 
@@ -385,10 +387,10 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
                     className="text-gray-400 hover:text-brand-green p-1 rounded transition-colors disabled:opacity-50 flex items-center gap-1 text-xs font-medium"
-                    title="Прикрепить файл"
+                    title={t('taskModal.attachFile', { defaultValue: 'Прикрепить файл' })}
                   >
                     {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Paperclip size={14} />}
-                    Прикрепить
+                    {t('taskModal.attach', { defaultValue: 'Прикрепить' })}
                   </button>
                 </div>
               </div>
@@ -409,7 +411,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                       <button 
                         onClick={() => downloadDocument(doc.id, doc.fileName)}
                         className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-md transition-colors opacity-0 group-hover/doc:opacity-100 focus:opacity-100"
-                        title="Скачать"
+                        title={t('taskModal.download', { defaultValue: 'Скачать' })}
                       >
                         <Download size={18} />
                       </button>
@@ -418,7 +420,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                 </div>
               ) : (
                 <div className="text-sm text-gray-400 italic bg-gray-50 border border-dashed border-gray-200 rounded-lg p-4 text-center">
-                  Нет прикрепленных документов
+                  {t('taskModal.noAttachments', { defaultValue: 'Нет прикрепленных документов' })}
                 </div>
               )}
             </div>
@@ -426,7 +428,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
             {/* Tags */}
             <div className="mb-8">
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Tag size={16} /> Метки
+                <Tag size={16} /> {t('taskModal.tags', { defaultValue: 'Метки' })}
               </h3>
               <div className="flex flex-wrap gap-2 mb-3">
                 {task.tags?.map(tag => (
@@ -444,12 +446,12 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   </span>
                 ))}
                 {(!task.tags || task.tags.length === 0) && (
-                  <span className="text-gray-400 text-sm">Нет меток</span>
+                  <span className="text-gray-400 text-sm">{t('taskModal.noTags', { defaultValue: 'Нет меток' })}</span>
                 )}
               </div>
                 <input 
                   type="text" 
-                  placeholder="Добавить метку (Enter)" 
+                  placeholder={t('taskModal.addTag', { defaultValue: 'Добавить метку (Enter)' })}
                   onKeyDown={handleAddTag}
                   className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-brand-green w-full max-w-[200px]"
                 />
@@ -458,7 +460,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
             {/* Subtasks */}
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-                Подзадачи ({task.subtasks?.filter(s => s.status === 'DONE').length || 0} / {task.subtasks?.length || 0})
+                {t('taskModal.subtasks', { defaultValue: 'Подзадачи' })} ({task.subtasks?.filter(s => s.status === 'DONE').length || 0} / {task.subtasks?.length || 0})
               </h3>
               
               <div className="space-y-1 mb-3">
@@ -484,14 +486,14 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                       <button
                         onClick={() => handleDeleteSubtask(st.id)}
                         className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
-                        title="Удалить подзадачу"
+                        title={t('taskModal.deleteSubtask', { defaultValue: 'Удалить подзадачу' })}
                       >
                         <X size={16} />
                       </button>
                   </div>
                 ))}
                 {(!task.subtasks || task.subtasks.length === 0) && (
-                  <p className="text-gray-400 text-sm italic px-2">Нет подзадач</p>
+                  <p className="text-gray-400 text-sm italic px-2">{t('taskModal.noSubtasks', { defaultValue: 'Нет подзадач' })}</p>
                 )}
               </div>
 
@@ -501,7 +503,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                     value={newSubtaskTitle}
                     onChange={(e) => setNewSubtaskTitle(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddSubtask()}
-                    placeholder="Добавить подзадачу..."
+                    placeholder={t('taskModal.addSubtask', { defaultValue: 'Добавить подзадачу...' })}
                     className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-brand-green"
                   />
                   <button
@@ -529,7 +531,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                 )}
               >
                 <MessageSquare size={16} />
-                Комментарии
+                {t('taskModal.comments', { defaultValue: 'Комментарии' })}
               </button>
               <button
                 onClick={() => setActiveTab('history')}
@@ -541,7 +543,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                 )}
               >
                 <Activity size={16} />
-                История
+                {t('taskModal.history', { defaultValue: 'История' })}
               </button>
             </div>
 
@@ -562,7 +564,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   ))}
                   {comments.length === 0 && (
                     <div className="text-center text-gray-400 py-8 text-sm">
-                      Нет комментариев. Будьте первыми!
+                      {t('taskModal.noComments', { defaultValue: 'Нет комментариев. Будьте первыми!' })}
                     </div>
                   )}
                 </div>
@@ -586,7 +588,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   ))}
                   {history.length === 0 && (
                     <div className="text-center text-gray-400 py-8 text-sm">
-                      История пуста
+                      {t('taskModal.emptyHistory', { defaultValue: 'История пуста' })}
                     </div>
                   )}
                 </div>
@@ -599,7 +601,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Написать комментарий..."
+                  placeholder={t('taskModal.writeComment', { defaultValue: 'Написать комментарий...' })}
                   className="flex-1 max-h-32 min-h-[40px] border border-gray-200 rounded-xl px-4 py-2 outline-none focus:border-brand-green resize-y text-sm"
                   rows={2}
                 />
@@ -608,7 +610,7 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   disabled={isLoading || !newComment.trim()}
                   className="bg-brand-green text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Отправить
+                  {t('taskModal.send', { defaultValue: 'Отправить' })}
                 </button>
               </div>
             )}

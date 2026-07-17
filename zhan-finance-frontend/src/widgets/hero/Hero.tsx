@@ -3,8 +3,10 @@ import { ArrowUpRight } from 'lucide-react';
 import { Container } from '@/shared/ui/Container';
 import { Section } from '@/shared/ui/Section';
 import { HandwrittenText as Handwritten } from '@/shared/ui/Handwritten';
+import { useTranslation } from 'react-i18next';
 
 export function Hero() {
+  const { t } = useTranslation('common');
   return (
     <Section className="min-h-[100svh] flex items-center pt-32 pb-20 relative bg-brand-beige overflow-hidden">
       {/* Background Graphic */}
@@ -18,7 +20,7 @@ export function Hero() {
             <div className="absolute -top-16 -left-10 opacity-20 pointer-events-none hidden md:block">
               <svg width="200" height="200" viewBox="0 0 200 200" className="animate-[spin_40s_linear_infinite]">
                 <path id="curve" fill="transparent" d="M 100, 100 m -75, 0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0" />
-                <text className="text-[12px] font-black uppercase tracking-[0.3em] fill-brand-green"><textPath href="#curve">бухгалтерия • налоги • консалтинг • аутсорсинг •</textPath></text>
+                <text className="text-[12px] font-black uppercase tracking-[0.3em] fill-brand-green"><textPath href="#curve">{t('hero.circleText')}</textPath></text>
               </svg>
             </div>
 
@@ -29,8 +31,8 @@ export function Hero() {
             >
               
               <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[80px] font-black uppercase leading-[0.9] tracking-tight text-brand-green">
-                Архитектура <br />
-                ваших <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-green/60">финансов</span>
+                {t('hero.title1')} <br />
+                {t('hero.title2')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-green/60">{t('hero.titleHighlight')}</span>
               </h1>
             </motion.div>
 
@@ -41,7 +43,7 @@ export function Hero() {
               className="max-w-xl relative"
             >
               <p className="text-xl sm:text-2xl text-brand-green/80 leading-relaxed font-medium">
-                Переводим бухгалтерию из статьи расходов в точный инструмент управления прибылью.
+                {t('hero.subtitle')}
               </p>
               
             </motion.div>
@@ -53,7 +55,7 @@ export function Hero() {
               className="flex flex-col sm:flex-row gap-4 pt-4"
             >
               <a href="#solution-picker" className="group flex items-center justify-center gap-3 px-8 py-5 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all hover:-translate-y-1 shadow-xl shadow-brand-green/20">
-                Рассчитать стоимость
+                {t('hero.cta')}
                 <ArrowUpRight className="w-5 h-5 group-hover:rotate-45 transition-transform" />
               </a>
             </motion.div>

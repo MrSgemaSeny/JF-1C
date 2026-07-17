@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, User, Briefcase, Send } from "lucide-react";
 import { ContactForm } from "@/features/contact-form/ContactForm";
 import { ROUTES } from "@/shared/config/routes";
+import { useTranslation } from "react-i18next";
 
 export function Footer() {
+  const { t } = useTranslation('common');
   return (
     <footer className="bg-brand-green pt-24 pb-12 text-brand-beige rounded-t-[40px] mt-[-40px] relative z-20">
       <div className="max-w-7xl mx-auto px-6">
@@ -14,16 +16,16 @@ export function Footer() {
                 Z
               </div>
               <h2 className="text-4xl md:text-5xl font-black uppercase leading-[1.1] tracking-tight">
-                Точность в цифрах.
+                {t('footer.slogan1')}
                 <br />
-                Уверенность в завтра.
+                {t('footer.slogan2')}
               </h2>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <h4 className="font-bold uppercase tracking-widest text-sm opacity-50 mb-2">
-                  Навигация
+                  {t('footer.navigation')}
                 </h4>
                 <ul className="space-y-3 font-medium">
                   <li>
@@ -31,7 +33,7 @@ export function Footer() {
                       to={ROUTES.HOME}
                       className="hover:text-white transition-colors"
                     >
-                      Главная
+                      {t('publicNav.home')}
                     </Link>
                   </li>
                   <li>
@@ -39,7 +41,7 @@ export function Footer() {
                       to={ROUTES.SERVICES}
                       className="hover:text-white transition-colors"
                     >
-                      Услуги
+                      {t('publicNav.services')}
                     </Link>
                   </li>
                   <li>
@@ -47,14 +49,14 @@ export function Footer() {
                       to={ROUTES.ABOUT}
                       className="hover:text-white transition-colors"
                     >
-                      О компании
+                      {t('publicNav.about')}
                     </Link>
                   </li>
                 </ul>
               </div>
               <div className="space-y-4">
                 <h4 className="font-bold uppercase tracking-widest text-sm opacity-50 mb-2">
-                  Контакты
+                  {t('footer.contacts')}
                 </h4>
                 <ul className="space-y-4 font-medium">
                   <li>
@@ -94,7 +96,7 @@ export function Footer() {
                   <li className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 shrink-0 mt-1" />
                     <span>
-                      г. Шымкент, ​Улица Байтерекова, 79а
+                      {t('footer.address')}
                       <br />
                       ЖАН FINANCE
                     </span>
@@ -126,18 +128,18 @@ export function Footer() {
           </div>
 
           <div className="bg-brand-beige text-brand-green p-8 md:p-12 rounded-[32px]">
-            <ContactForm title="Обсудим задачу?" />
+            <ContactForm title={t('footer.discussTask')} />
           </div>
         </div>
 
         <div className="pt-8 border-t border-brand-beige/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-medium opacity-60">
-          <p>© {new Date().getFullYear()} Zhan Finance. Все права защищены.</p>
+          <p>© {new Date().getFullYear()} Zhan Finance. {t('footer.allRightsReserved')}</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-white transition-colors">
-              Политика конфиденциальности
+              {t('footer.privacy')}
             </a>
             <a href="#" className="hover:text-white transition-colors">
-              Договор оферты
+              {t('footer.terms')}
             </a>
           </div>
         </div>

@@ -42,10 +42,15 @@ public class GlobalExceptionHandler {
 
         log.warn("[{}] Validation failed: {}", requestId, details);
         
+        String titleMessage = "Validation failed";
+        try {
+            titleMessage = messageSource.getMessage("error.validation.failed", null, titleMessage, request.getLocale());
+        } catch (Exception ignored) {}
+
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "VALIDATION_ERROR",
-                "Validation failed",
+                titleMessage,
                 details,
                 request.getRequestURI(),
                 requestId
@@ -129,10 +134,15 @@ public class GlobalExceptionHandler {
         String requestId = UUID.randomUUID().toString();
         log.error("[{}] Unexpected internal error at {}: {}", requestId, request.getRequestURI(), exception.getMessage(), exception);
         
+        String translatedMessage = "Internal server error. Reference ID: " + requestId;
+        try {
+            translatedMessage = messageSource.getMessage("error.internal", null, "Internal server error", locale) + ". Reference ID: " + requestId;
+        } catch (Exception ignored) {}
+
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_ERROR",
-                "Internal server error. Reference ID: " + requestId,
+                translatedMessage,
                 request.getRequestURI(),
                 requestId
         );
@@ -155,12 +165,13 @@ public class GlobalExceptionHandler {
         try {
             String messageKey = "error.internal";
             if (exception instanceof ResourceNotFoundException) messageKey = "error.resource.notFound";
-            if (exception instanceof UnauthorizedException || exception instanceof org.springframework.security.core.AuthenticationException) messageKey = "error.unauthorized";
-            if (exception instanceof AccessDeniedException) messageKey = "error.access.denied";
-            if (exception instanceof org.springframework.security.authentication.BadCredentialsException) messageKey = "error.bad.credentials";
-            
-            if (exception instanceof ApiException apiEx) {
-                // Handle specific apiEx logic if needed
+            else if (exception instanceof org.springframework.security.authentication.BadCredentialsException) messageKey = "error.bad.credentials";
+            else if (exception instanceof UnauthorizedException || exception instanceof org.springframework.security.core.AuthenticationException) messageKey = "error.unauthorized";
+            else if (exception instanceof AccessDeniedException) messageKey = "error.access.denied";
+            else if (exception instanceof ConflictException) messageKey = "error.conflict";
+            else if (exception instanceof BadRequestException) messageKey = "error.bad.request";
+            else if (exception instanceof ApiException apiEx) {
+                messageKey = "error." + apiEx.getErrorCode().name().toLowerCase();
             }
             
             translatedMessage = messageSource.getMessage(messageKey, null, exception.getMessage(), locale);

@@ -5,6 +5,7 @@ import { Phone, Mail, MessageCircle } from 'lucide-react';
 import type { TaskDto } from '@/entities/task/model/types';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { getSecureImageUrl } from '@/shared/api/http';
+import { useTranslation } from 'react-i18next';
 
 interface TaskKanbanCardProps {
   task: TaskDto;
@@ -14,6 +15,7 @@ interface TaskKanbanCardProps {
 }
 
 export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanbanCardProps) {
+  const { t } = useTranslation('crm');
   const {
     attributes,
     listeners,
@@ -35,7 +37,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
   };
 
   const amountStr = task.amount ? new Intl.NumberFormat('ru-RU').format(task.amount) : '0';
-  const currencyStr = task.currency || 'тенге';
+  const currencyStr = task.currency || t('kanban.currency', { defaultValue: 'тенге' });
   
   const dateStr = task.createdAt 
     ? new Date(task.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
@@ -82,7 +84,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
                 ? 'text-blue-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
                 : 'text-gray-300 cursor-default'
             }`}
-            title={task.client?.phone ? `Позвонить: ${task.client.phone}` : 'Телефон не указан'}
+            title={task.client?.phone ? `${t('kanban.call', { defaultValue: 'Позвонить:' })} ${task.client.phone}` : t('kanban.phoneNotSpecified', { defaultValue: 'Телефон не указан' })}
           >
             <Phone size={14} />
           </button>
@@ -98,7 +100,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
                 ? 'text-blue-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
                 : 'text-gray-300 cursor-default'
             }`}
-            title={task.client?.email ? `Написать: ${task.client.email}` : 'Email не указан'}
+            title={task.client?.email ? `${t('kanban.emailAction', { defaultValue: 'Написать:' })} ${task.client.email}` : t('kanban.emailNotSpecified', { defaultValue: 'Email не указан' })}
           >
             <Mail size={14} />
           </button>
@@ -114,7 +116,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
                 ? 'text-blue-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer'
                 : 'text-gray-300 cursor-default'
             }`}
-            title={task.client ? `Чат с ${task.client.fullName}` : 'Клиент не указан'}
+            title={task.client ? `${t('kanban.chatWith', { defaultValue: 'Чат с' })} ${task.client.fullName}` : t('kanban.clientNotSpecified', { defaultValue: 'Клиент не указан' })}
           >
             <MessageCircle size={14} />
           </button>
@@ -137,14 +139,14 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
       )}
       {!task.client && (
         <span className="text-[13px] text-gray-400">
-          Без клиента
+          {t('kanban.noClient', { defaultValue: 'Без клиента' })}
         </span>
       )}
 
       {/* Footer: Date and Avatar */}
       <div className="flex items-center justify-between mt-1">
         <span className="text-[12px] text-gray-400 flex items-center gap-1">
-          <span className="text-gray-300">+ Дело</span>
+          <span className="text-gray-300">{t('kanban.addDeal', { defaultValue: '+ Дело' })}</span>
         </span>
         <div className="flex items-center gap-2">
           <span className="text-[12px] text-gray-400">{dateStr}</span>

@@ -4,8 +4,10 @@ import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import { useTaskQuery } from '@/entities/task/api/taskQueries';
 import { useAuth } from '@/features/auth/AuthContext';
 import type { TaskDto } from '@/entities/task/model/types';
+import { useTranslation } from 'react-i18next';
 
 export function TaskDetailsPage() {
+  const { t } = useTranslation('crm');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -25,7 +27,7 @@ export function TaskDetailsPage() {
   if (error || !task) {
     return (
       <div className="text-center text-red-500 py-10">
-        Ошибка при загрузке задачи.
+        {t('taskDetailsPage.loadError', { defaultValue: 'Ошибка при загрузке задачи.' })}
       </div>
     );
   }
@@ -37,7 +39,7 @@ export function TaskDetailsPage() {
         className="flex items-center gap-2 text-gray-500 hover:text-brand-green mb-6 transition-colors"
       >
         <ArrowLeft size={18} />
-        <span>Назад</span>
+        <span>{t('taskDetailsPage.back', { defaultValue: 'Назад' })}</span>
       </button>
 
       <div className="flex-1 min-h-[600px]">

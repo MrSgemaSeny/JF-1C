@@ -2,27 +2,17 @@ import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const cards = [
-  {
-    title: 'Ответственность',
-    text: 'Берем на себя финансовую ответственность по договору SLA. Штрафы по нашей вине — платим мы.',
-  },
-  {
-    title: 'Автоматизация',
-    text: 'Интеграция 1С с банками и CRM. Минимум ручного ввода — максимум точности.',
-  },
-  {
-    title: 'Контроль 24/7',
-    text: 'Прозрачная отчетность в любой момент времени. Вы всегда знаете, где ваши деньги.',
-  },
-  {
-    title: 'Оптимизация',
-    text: 'Легально снижаем налоговую нагрузку на основе актуальной судебной практики.',
-  },
-];
+interface AdvantageCard {
+  title: string;
+  text: string;
+}
 
 export function HomeAdvantages() {
+  const { t } = useTranslation('common');
+  const cards = t('homeAdvantages.cards', { returnObjects: true }) as AdvantageCard[];
+
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -47,10 +37,8 @@ export function HomeAdvantages() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
               className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green"
-            >
-              Почему выбирают <br />
-              <span className="text-brand-green/40">Zhan Finance</span>
-            </motion.h2>
+              dangerouslySetInnerHTML={{ __html: t('homeAdvantages.title') }}
+            />
             <motion.p 
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -58,7 +46,7 @@ export function HomeAdvantages() {
               viewport={{ once: true }}
               className="text-xl text-brand-green/80 font-medium"
             >
-              Мы не просто сдаем отчеты. Мы выстраиваем прозрачную систему, которая помогает бизнесу расти безопасно.
+              {t('homeAdvantages.subtitle')}
             </motion.p>
           </div>
 

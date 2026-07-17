@@ -21,6 +21,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { getTask } from '@/entities/task/api/taskApi';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import { ChatDrawer } from '@/widgets/chat/ChatDrawer';
+import { useTranslation } from 'react-i18next';
 
 interface TaskKanbanBoardProps {
   initialTasks: TaskDto[];
@@ -33,6 +34,7 @@ export interface TaskKanbanBoardRef {
 }
 
 export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardProps>(({ initialTasks, userRole }, ref) => {
+  const { t } = useTranslation('crm');
   const [columns, setColumns] = useState<Record<string, TaskDto[]>>({});
   const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
   const [selectedTaskForModal, setSelectedTaskForModal] = useState<TaskDto | null>(null);
@@ -97,7 +99,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
           setSelectedTaskForModal(fetched);
         } catch (e) {
           console.error('Task not found:', e);
-          alert('Task not found');
+          alert(t('errors.taskNotFound', { defaultValue: 'Task not found' }));
         }
       }
     }
@@ -244,7 +246,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   }
 
   if (!stages.length) {
-    return <div className="p-8 text-center text-gray-500">Воронки не настроены</div>;
+    return <div className="p-8 text-center text-gray-500">{t('kanban.noPipelines', { defaultValue: 'Воронки не настроены' })}</div>;
   }
 
   const handleOpenChat = (clientId: number, clientName: string) => {

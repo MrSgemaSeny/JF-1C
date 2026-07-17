@@ -4,14 +4,17 @@ import { Menu, X, ArrowRight, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
-
-const navItems = [
-  { label: 'Главная', path: ROUTES.HOME },
-  { label: 'Услуги', path: ROUTES.SERVICES },
-  { label: 'О компании', path: ROUTES.ABOUT },
-];
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 
 export function Header() {
+  const { t } = useTranslation('common');
+
+  const navItems = [
+    { label: t('publicNav.home'), path: ROUTES.HOME },
+    { label: t('publicNav.services'), path: ROUTES.SERVICES },
+    { label: t('publicNav.about'), path: ROUTES.ABOUT },
+  ];
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -90,7 +93,7 @@ export function Header() {
               }`}
             >
               <User className="w-4 h-4" />
-              {user ? 'Профиль' : 'Войти'}
+              {user ? t('publicNav.profile') : t('publicNav.login')}
             </Link>
 
             <a
@@ -103,9 +106,13 @@ export function Header() {
                   : 'bg-brand-green text-brand-beige lg:bg-white lg:text-brand-green hover:scale-105 shadow-xl'
               }`}
             >
-              Связаться
+              {t('publicNav.contact')}
               <ArrowRight className="w-4 h-4" />
             </a>
+
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -144,14 +151,17 @@ export function Header() {
                 className="p-4 rounded-2xl text-xl font-black uppercase tracking-wider bg-white text-brand-green border border-brand-green/10 flex items-center gap-2"
               >
                 <User className="w-5 h-5" />
-                {user ? 'Профиль' : 'Войти'}
+                {user ? t('publicNav.profile') : t('publicNav.login')}
               </Link>
+              <div className="pt-4 border-t border-brand-green/10 flex justify-center">
+                <LanguageSwitcher />
+              </div>
             </nav>
             <div className="mt-8 p-6 bg-brand-green text-brand-beige rounded-3xl">
-              <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-4">Начать работу</p>
+              <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-4">{t('publicNav.getStarted')}</p>
               <a href="tel:+77000000000" className="block text-2xl font-black mb-6 hover:opacity-80">+7 700 000 00 00</a>
               <a href="https://wa.me/77000000000" className="flex items-center justify-center gap-2 w-full py-4 bg-brand-beige text-brand-green rounded-xl font-bold uppercase">
-                Написать в WhatsApp
+                {t('publicNav.whatsapp')}
               </a>
             </div>
           </motion.div>

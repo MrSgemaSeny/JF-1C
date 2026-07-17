@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import { uploadDocument } from '@/entities/document/api/documentApi';
 
 import type { EmployeeDto } from '@/entities/employee/model/types';
+import { useTranslation } from 'react-i18next';
 
 interface TaskCardProps {
   task: TaskDto;
@@ -43,6 +44,7 @@ function getDueDateInfo(dueDate?: string): { color: string; icon: 'overdue' | 's
 }
 
 export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask, userRole, employees }: TaskCardProps) {
+  const { t } = useTranslation('crm');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingSubtaskId, setEditingSubtaskId] = useState<number | null>(null);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
@@ -220,7 +222,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
             className="flex-1 font-semibold text-gray-800 text-base leading-tight cursor-text hover:bg-gray-50 rounded px-1 -ml-1 transition-colors"
             title="Double-click to edit"
           >
-            {task.title || 'Untitled Task'}
+            {task.title || t('taskCard.untitledTask', { defaultValue: 'Untitled Task' })}
           </h3>
         )}
 
@@ -254,7 +256,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
       {/* Client info */}
       {task.client && (
         <p className="text-xs text-gray-500 mb-2 truncate bg-gray-50 self-start px-2 py-1 rounded-md">
-          Client: {task.client.fullName}
+          {t('taskCard.client', { defaultValue: 'Client:' })} {task.client.fullName}
         </p>
       )}
 
@@ -267,7 +269,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
             onClick={(e) => e.stopPropagation()}
             className="w-full bg-gray-50 border border-gray-200 text-gray-600 rounded px-2 py-1 outline-none focus:border-brand-green"
           >
-            <option value="">Не назначен</option>
+            <option value="">{t('taskCard.unassigned', { defaultValue: 'Не назначен' })}</option>
             {employees?.map(emp => (
               <option key={emp.id} value={emp.id}>{emp.fullName}</option>
             ))}
@@ -275,7 +277,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
         </div>
       ) : task.assignedTo && (
         <p className="text-xs text-gray-500 mb-4 truncate bg-gray-50 self-start px-2 py-1 rounded-md">
-          Исполнитель: {task.assignedTo.fullName}
+          {t('taskCard.assignee', { defaultValue: 'Исполнитель:' })} {task.assignedTo.fullName}
         </p>
       )}
 
@@ -335,7 +337,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
                 onUpdateTask({ ...task, subtasks: updatedSubtasks });
               }}
               className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
-              title="Удалить подзадачу"
+              title={t('taskCard.deleteSubtask', { defaultValue: 'Удалить подзадачу' })}
             >
               <X size={16} />
             </button>
@@ -348,7 +350,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
           className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors mt-1 self-start"
         >
           <Plus size={14} />
-          <span>Добавить подзадачу</span>
+          <span>{t('taskCard.addSubtask', { defaultValue: 'Добавить подзадачу' })}</span>
         </button>
       </div>
 
@@ -431,7 +433,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
               }}
             >
               <Calendar size={14} />
-              <span>Дедлайн</span>
+              <span>{t('taskCard.deadline', { defaultValue: 'Дедлайн' })}</span>
             </button>
           )}
 

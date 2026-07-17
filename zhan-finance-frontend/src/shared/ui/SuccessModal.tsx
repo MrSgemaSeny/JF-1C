@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -8,7 +9,10 @@ interface SuccessModalProps {
   message: string;
 }
 
-export function SuccessModal({ isOpen, onClose, title = 'Успешно!', message }: SuccessModalProps) {
+export function SuccessModal({ isOpen, onClose, title, message }: SuccessModalProps) {
+  const { t } = useTranslation('common');
+  const displayTitle = title || t('ui.successModal.title', { defaultValue: 'Успешно!' });
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -29,13 +33,13 @@ export function SuccessModal({ isOpen, onClose, title = 'Успешно!', messa
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-brand-green/10">
               <CheckCircle2 className="h-8 w-8 text-brand-green" />
             </div>
-            <h3 className="mb-4 text-2xl font-black uppercase text-brand-green">{title}</h3>
+            <h3 className="mb-4 text-2xl font-black uppercase text-brand-green">{displayTitle}</h3>
             <p className="mb-8 text-brand-green/70">{message}</p>
             <button
               onClick={onClose}
               className="w-full rounded-xl bg-brand-green py-3.5 font-bold uppercase tracking-wider text-brand-beige transition hover:bg-brand-green/90"
             >
-              Отлично
+              {t('ui.successModal.button', { defaultValue: 'Отлично' })}
             </button>
           </motion.div>
         </div>

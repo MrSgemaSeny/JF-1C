@@ -9,6 +9,73 @@
   "loading": "Loading...",
   "success": "Success",
   "error": "Error",
+  "publicNav": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About",
+    "profile": "Profile",
+    "login": "Log In",
+    "contact": "Contact Us",
+    "getStarted": "Get Started",
+    "whatsapp": "Message on WhatsApp"
+  },
+  "footer": {
+    "slogan1": "Precision in numbers.",
+    "slogan2": "Confidence in tomorrow.",
+    "navigation": "Navigation",
+    "contacts": "Contacts",
+    "address": "Shymkent, Bayterekov str, 79a",
+    "discussTask": "Discuss a project?",
+    "allRightsReserved": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "hero": {
+    "circleText": "accounting • taxes • consulting • outsourcing •",
+    "title1": "Architecture",
+    "title2": "of your",
+    "titleHighlight": "finances",
+    "subtitle": "We turn accounting from a cost center into a precise profit management tool.",
+    "cta": "Calculate Cost"
+  },
+  "homeAbout": {
+    "badge": "About Us",
+    "title": "CHOOSE <span class=\"italic font-light\">PEACE OF MIND</span> — <br />AND FOCUS ON GROWING <br />YOUR BUSINESS",
+    "description": "We handle audits, test tax strategies, and think through every accounting detail — so you can just focus on scaling your company.",
+    "link": "Learn more about us"
+  },
+  "homeServices": {
+    "title": "Solutions for <br /><span class=\"text-brand-green/40\">your business</span>",
+    "subtitle": "From one-off consultations to full accounting and HR outsourcing. We will find the perfect format.",
+    "allServices": "All Services",
+    "orderPrefix": "Service request:",
+    "successMessage": "Your request for «{{title}}» has been accepted! We will contact you shortly.",
+    "errorMessage": "Error sending request. Please try again later.",
+    "more": "Learn more",
+    "modalTitle": "Request Accepted!"
+  },
+  "homeAdvantages": {
+    "title": "Why choose <br /><span class=\"text-brand-green/40\">Zhan Finance</span>",
+    "subtitle": "We don't just submit reports. We build a transparent system that helps businesses grow safely.",
+    "cards": [
+      {
+        "title": "Responsibility",
+        "text": "We take financial responsibility under the SLA. If there are fines due to our fault, we pay them."
+      },
+      {
+        "title": "Automation",
+        "text": "Integration of 1C with banks and CRM. Minimum manual input — maximum accuracy."
+      },
+      {
+        "title": "24/7 Control",
+        "text": "Transparent reporting at any time. You always know where your money is."
+      },
+      {
+        "title": "Optimization",
+        "text": "We legally reduce the tax burden based on current judicial practice."
+      }
+    ]
+  },
   "nav": {
     "overview": "Overview",
     "courses": "Courses",
@@ -530,5 +597,135 @@
     "title": "Personal Dashboard",
     "logout": "Log Out",
     "soon": "Your invoices and documents will appear here soon."
+  },
+  "about": {
+    "hero": {
+      "badge": "About Us",
+      "title": "Machine Precision",
+      "subtitle": "and Financial Engineering",
+      "description": "Accounting has long ceased to be just moving papers and entering invoices. Today it is a complex engineering system, on the correct architecture of which the survival of a business, its ability to attract investment and pass tax audits depend."
+    },
+    "stats": {
+      "title": "In Figures and Facts",
+      "items": [
+        {
+          "value": "12+",
+          "label": "years in the market",
+          "description": "More than a decade of continuous practice in the constantly changing legislation of the Republic of Kazakhstan."
+        },
+        {
+          "value": "350+",
+          "label": "clients serviced",
+          "description": "Small and medium businesses in IT, construction, logistics, manufacturing, and e-commerce."
+        },
+        {
+          "value": "2 bln ₸",
+          "label": "saved for clients",
+          "description": "Through legal tax optimization, VAT refunds, audit of overpayments, and prevention of fines."
+        },
+        {
+          "value": "100%",
+          "label": "financial guarantee",
+          "description": "Our liability is secured by an SLA agreement. We reimburse penalties and fines arising from our fault."
+        }
+      ]
+    },
+    "ideology": {
+      "badge": "Our Ideology",
+      "title": "Business should earn, not service taxes",
+      "p1": "Companies often come to us whose accounting was in a state of permanent chaos: lost electronic invoices, blocked accounts due to unpaid 100 tenge penalties, duplicates in nomenclature causing incorrect cost calculations, and huge overpayments of corporate income tax.",
+      "p2": "The problem with in-house accounting often lies in the lack of a dual control system and technological stack. One person cannot equally well know foreign economic activity, complex production accruals, the intricacies of currency control, and IT integration.",
+      "p3": "Our solution is the division of labor. Primary documents are processed by operators (fast and accurate). Salary is calculated by a separate payroll specialist (no errors in vacation pay). Taxes are planned by a methodologist. And the process is managed by a financial architect. You get an entire department for the price of one in-house specialist.",
+      "p4": "We treat financial data as a critical asset (Master Data Management). We implement strict policies for entering directories and nomenclature, eliminating 'garbage' in databases. All processes are documented, roles are distributed. Replacing an employee within our team goes completely unnoticed by the client."
+    },
+    "process": {
+      "badge": "Engineering Approach",
+      "title": "How we rebuild accounting",
+      "items": [
+        {
+          "title": "Audit and reverse engineering",
+          "text": "We don't just 'pick up' the database. We conduct a deep technical audit: check data integrity in 1C, identify gaps in document chains, analyze tax and accounting registers. We find hidden tax risks, stuck balances, and incorrect postings."
+        },
+        {
+          "title": "Data normalization",
+          "text": "Like code refactoring, we rebuild the financial architecture. We restore lost documents, reconcile balances, correct duplicate contractors. We create a clean reference database where every tenge is confirmed."
+        },
+        {
+          "title": "Contour automation",
+          "text": "We integrate 1C with client-banks, CRM systems, e-invoicing systems, and virtual warehouses. We set up automatic bank statement downloads, data parsing, and document routing. This eliminates manual entry (human factor) and radically reduces processing time."
+        },
+        {
+          "title": "Continuous monitoring (SLA)",
+          "text": "Work moves to the stage of routine maintenance. A specialized team is assigned to you. You receive transparent reporting showing the current tax burden, tax return submission status, and payment plan. Every action we take is strictly subject to internal regulations."
+        }
+      ]
+    },
+    "guarantees": {
+      "badge": "Responsibility",
+      "title": "Legally Binding Guarantees",
+      "p1": "The words 'we are professionals' mean nothing without financial responsibility. Our confidence in our processes allows us to assume 100% of material risks.",
+      "items": [
+        { "title": "Financial security:", "text": "Full compensation for fines and penalties if they arise due to our mistake." },
+        { "title": "Confidentiality (NDA):", "text": "Strict trade secret regime. Encrypted communication channels and secure servers." },
+        { "title": "Business continuity:", "text": "No sick leaves, vacations, or sudden resignations. The service operates continuously." },
+        { "title": "Price transparency:", "text": "You pay for the volume of operations and contour complexity. No hidden fees." }
+      ]
+    }
+  },
+  "services": {
+    "hero": {
+      "title": "Our Services",
+      "description": "Full transaction accounting, reporting, financial control — all in one place.",
+      "action": "View services"
+    },
+    "catalog": {
+      "orderTaskPrefix": "Order service: ",
+      "success": "Request for service «{{title}}» has been sent!",
+      "error": "Error sending request. Please try again later.",
+      "details": "Details"
+    },
+    "howWeWork": {
+      "title": "How we work",
+      "items": [
+        { "title": "Urgent reports in 15 minutes", "text": "Emergency data is ready instantly so you can make decisions promptly." },
+        { "title": "Average term 1-3 business days", "text": "We close most tasks within three business days without loss of quality." },
+        { "title": "Orders accepted 09:00-16:00", "text": "We work on a convenient schedule so you know exactly when to expect confirmation." },
+        { "title": "Quality control before submission", "text": "Each report is checked within the team before submission to regulatory authorities." },
+        { "title": "Manager in touch", "text": "A personal manager leads the task and answers all questions during the work." },
+        { "title": "Consultation after results", "text": "We discuss the final reporting and recommendations at no additional charge." }
+      ]
+    },
+    "why": {
+      "title": "Why do you need accounting services and a subscription?",
+      "description": "Professional accounting frees you from routine tasks, reduces the risk of fines, and allows you to focus on business growth.",
+      "items": [
+        { "title": "Control without stress", "text": "All numbers in one place, without the risk of losing documents or making a mistake." },
+        { "title": "Time saving", "text": "We handle reporting, you make decisions based on ready data." },
+        { "title": "Guarantee of regularity", "text": "Subscription ensures that reports, declarations, and consultations go according to plan." }
+      ]
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "contactTitle": "Ready to discuss your task?",
+      "items": [
+        { "q": "How to start working?", "a": "Leave a request on the site or call — we will prepare an implementation plan and cost estimate." },
+        { "q": "What documents are needed?", "a": "Depends on the service: usually a contract, statements, contracts with counterparties, and primary documentation." },
+        { "q": "Can I connect remotely?", "a": "Yes — most processes can be organized remotely using secure channels." }
+      ]
+    }
+  },
+  "ui": {
+    "empty": {
+      "defaultLabel": "No data found"
+    },
+    "errorBoundary": {
+      "title": "Something went wrong",
+      "unknown": "Unknown error",
+      "reload": "Reload page"
+    },
+    "successModal": {
+      "title": "Success!",
+      "button": "Great"
+    }
   }
 }

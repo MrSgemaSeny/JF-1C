@@ -7,6 +7,7 @@ import {
 import { TaskKanbanCard } from './TaskKanbanCard';
 import type { TaskDto, StageDto } from '@/entities/task/model/types';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface TaskKanbanColumnProps {
   stage: StageDto;
@@ -17,6 +18,7 @@ interface TaskKanbanColumnProps {
 }
 
 export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenChat }: TaskKanbanColumnProps) {
+  const { t } = useTranslation('crm');
   const { setNodeRef } = useDroppable({
     id: `stage-${stage.id}`,
     data: {
@@ -63,13 +65,13 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
       >
         <div className="text-center py-2 mb-2">
           <span className="inline-block bg-white/40 text-gray-700 border border-white/50 px-3 py-0.5 rounded-full text-[13px] font-medium shadow-sm backdrop-blur-md">
-            {amountStr} тенге
+            {amountStr} {t('kanban.currency', { defaultValue: 'тенге' })}
           </span>
         </div>
         
         <button className="w-full mb-3 flex items-center justify-center gap-1 py-1.5 text-sm text-gray-500 bg-white/30 hover:bg-white/50 border border-white/40 rounded shadow-sm transition-colors backdrop-blur-md">
           <Plus size={14} />
-          <span>Быстрая сделка</span>
+          <span>{t('kanban.quickDeal', { defaultValue: 'Быстрая сделка' })}</span>
         </button>
 
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>

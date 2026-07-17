@@ -2,6 +2,7 @@ import { Section } from '@/shared/ui/Section';
 import { motion } from 'framer-motion';
 import { ROUTES } from '@/shared/config/routes';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const polaroids = [
   {
@@ -40,6 +41,7 @@ const polaroids = [
 ];
 
 export function HomeAbout() {
+  const { t } = useTranslation('common');
   return (
     <Section className="overflow-hidden min-h-screen flex items-center bg-white relative">
       <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center relative z-10 w-full">
@@ -53,14 +55,13 @@ export function HomeAbout() {
           >
             <div className="flex items-center gap-2 text-brand-green/60 font-bold tracking-widest uppercase text-sm mb-6">
               <span className="w-2 h-2 rounded-full bg-brand-green" />
-              О нас
+              {t('homeAbout.badge')}
             </div>
 
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">
-              ВЫБИРАЙТЕ <span className="italic font-light">СПОКОЙСТВИЕ</span> — <br />
-              И ЗАНИМАЙТЕСЬ РОСТОМ <br />
-              БИЗНЕСА
-            </h2>
+            <h2 
+              className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green"
+              dangerouslySetInnerHTML={{ __html: t('homeAbout.title') }}
+            />
           </motion.div>
 
           <motion.div
@@ -71,15 +72,14 @@ export function HomeAbout() {
             className="space-y-8 max-w-xl"
           >
             <p className="text-xl text-brand-green/80 leading-relaxed font-medium">
-              Мы сами проходим проверки, тестируем схемы налогообложения и продумываем каждую
-              деталь в учете — чтобы вам оставалось только масштабировать компанию.
+              {t('homeAbout.description')}
             </p>
 
             <Link
               to={ROUTES.ABOUT}
               className="inline-block px-8 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all hover:-translate-y-1 shadow-lg shadow-brand-green/20"
             >
-              Подробнее о нас
+              {t('homeAbout.link')}
             </Link>
           </motion.div>
         </div>

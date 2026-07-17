@@ -13,8 +13,10 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { ROUTES } from '@/shared/config/routes';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { ApiError } from '@/shared/api/http';
+import { useTranslation } from 'react-i18next';
 
 export function ServicesCatalog() {
+  const { t } = useTranslation('common');
   const { data: services, isLoading } = useApiData(fetchServices);
   const [active, setActive] = useState<ServiceDto | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,15 +74,15 @@ export function ServicesCatalog() {
     try {
       await requestTask({ 
         clientId: user.userId,
-        title: `Заказ услуги: ${service.title}`,
+        title: `${t('services.catalog.orderTaskPrefix', { defaultValue: 'Заказ услуги: ' })}${service.title}`,
         description: message,
         dueDate: preferredDate,
         serviceIds: [service.id]
       });
-      toast.success(`Запрос на услугу «${service.title}» отправлен!`);
+      toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
       setActive(null);
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Ошибка при отправке запроса. Попробуйте позже.');
+      toast.error(err instanceof ApiError ? err.message : t('services.catalog.error', { defaultValue: 'Ошибка при отправке запроса. Попробуйте позже.' }));
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +132,7 @@ export function ServicesCatalog() {
                       onClick={(e) => { e.stopPropagation(); setActive(s); }}
                       className="px-4 py-2 border border-brand-green text-brand-green rounded-full text-sm"
                     >
-                      Подробнее
+                      {t('services.catalog.details', { defaultValue: 'Подробнее' })}
                     </button>
                   </div>
                 </div>

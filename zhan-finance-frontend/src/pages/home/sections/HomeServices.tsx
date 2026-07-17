@@ -14,8 +14,10 @@ import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { ApiError } from '@/shared/api/http';
+import { useTranslation } from 'react-i18next';
 
 export function HomeServices() {
+  const { t } = useTranslation('common');
   const { data: services, isLoading } = useApiData(fetchHighlightedServices);
   const [selectedService, setSelectedService] = useState<ServiceDto | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,15 +69,15 @@ export function HomeServices() {
     try {
       await requestTask({ 
         clientId: user.userId,
-        title: `Заказ услуги: ${service.title}`,
+        title: `${t('homeServices.orderPrefix')} ${service.title}`,
         description: message,
         dueDate: preferredDate,
         serviceIds: [service.id]
       });
-      setSuccessMessage(`Ваш запрос на услугу «${service.title}» принят! Мы свяжемся с вами в ближайшее время.`);
+      setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
       setSelectedService(null);
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Ошибка при отправке запроса. Попробуйте позже.');
+      toast.error(err instanceof ApiError ? err.message : t('homeServices.errorMessage'));
     } finally {
       setIsSubmitting(false);
     }
@@ -86,19 +88,19 @@ export function HomeServices() {
       <Container>
         <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
           <div className="max-w-2xl">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6">
-              Решения для <br />
-              <span className="text-brand-green/40">вашего бизнеса</span>
-            </h2>
+            <h2 
+              className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6"
+              dangerouslySetInnerHTML={{ __html: t('homeServices.title') }}
+            />
             <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
-              От разовых консультаций до полного аутсорсинга бухгалтерии и кадров. Мы подберем идеальный формат работы.
+              {t('homeServices.subtitle')}
             </p>
           </div>
           <Link
             to={ROUTES.SERVICES}
             className="hidden md:inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-brand-green text-brand-green font-bold uppercase tracking-wider hover:bg-brand-green hover:text-brand-beige transition-all group"
           >
-            Все услуги
+            {t('homeServices.allServices')}
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -154,7 +156,7 @@ export function HomeServices() {
                 <button
                   className="inline-flex items-center gap-2 text-brand-green font-black uppercase tracking-wider group-hover:gap-4 transition-all"
                 >
-                  Подробнее <ArrowRight className="w-4 h-4" />
+                  {t('homeServices.more')} <ArrowRight className="w-4 h-4" />
                 </button>
               </motion.div>
             ))}
@@ -166,7 +168,7 @@ export function HomeServices() {
             to={ROUTES.SERVICES}
             className="inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-brand-green text-brand-green font-bold uppercase tracking-wider hover:bg-brand-green hover:text-brand-beige transition-all"
           >
-            Все услуги
+            {t('homeServices.allServices')}
           </Link>
         </div>
       </Container>
@@ -186,7 +188,7 @@ export function HomeServices() {
       <SuccessModal
         isOpen={!!successMessage}
         onClose={() => setSuccessMessage(null)}
-        title="Заявка принята!"
+        title={t('homeServices.modalTitle')}
         message={successMessage || ''}
       />
     </Section>
