@@ -161,20 +161,21 @@ export function ServicesCatalog() {
               if (message) fullMessage += `\nКомментарий: ${message}`;
               if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
               
-              await fetch('/api/contact-requests', {
+              const res = await fetch('/api/contact-requests', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
               });
 
-              if (files && files.length > 0) {
-                toast.success('Заявка отправлена! Войдите, чтобы сохранить выбранные файлы', {
-                  duration: 10000,
-                  action: {
-                    label: 'Войти',
-                    onClick: () => navigate('/login')
-                  }
+              const data = await res.json();
+              if (files && files.length > 0 && data.data?.id) {
+                const formData = new FormData();
+                files.forEach(file => formData.append('files', file));
+                await fetch(`/api/contact-requests/${data.data.id}/files`, {
+                  method: 'POST',
+                  body: formData,
                 });
+                toast.success('Заявка отправлена! Ваши файлы прикреплены. Ожидайте звонка от нашего специалиста.');
               } else {
                 toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
               }

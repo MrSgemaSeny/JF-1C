@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLeads, useUpdateLeadStatus, LeadStatus } from '@/features/leads/useLeads';
+import { useLeads, useUpdateLeadStatus, LeadStatus, LeadDto } from '@/features/leads/useLeads';
+import { ConvertLeadModal } from './ConvertLeadModal';
 import { Calendar, Phone, Mail, MessageSquare, AlertCircle, ChevronDown, CheckCircle2, XCircle, Clock, LayoutList } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
@@ -81,6 +82,7 @@ export const LeadsPage = () => {
   const { t } = useTranslation();
   const { data: leads, isLoading, error } = useLeads();
   const { mutate: updateStatus, isPending } = useUpdateLeadStatus();
+  const [convertingLead, setConvertingLead] = useState<LeadDto | null>(null);
 
   if (isLoading) {
     return (
@@ -185,6 +187,14 @@ export const LeadsPage = () => {
                           </select>
                           <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
                         </div>
+                        {lead.status === 'NEW' && (
+                          <button
+                            onClick={() => setConvertingLead(lead)}
+                            className="mt-2 w-full max-w-[160px] py-1.5 px-3 bg-brand-green/10 hover:bg-brand-green/20 text-brand-green text-xs font-bold rounded-lg transition-colors"
+                          >
+                            {t('admin.leads.convert.action', { defaultValue: 'Взять в работу' })}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -194,6 +204,11 @@ export const LeadsPage = () => {
           </div>
         </div>
       </main>
+      <ConvertLeadModal
+        isOpen={!!convertingLead}
+        onClose={() => setConvertingLead(null)}
+        lead={convertingLead}
+      />
     </div>
   );
 };

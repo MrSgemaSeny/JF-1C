@@ -192,24 +192,28 @@ export function HomeServices() {
               if (message) fullMessage += `\nКомментарий: ${message}`;
               if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
               
-              await fetch('/api/contact-requests', {
+              const res = await fetch('/api/contact-requests', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
               });
 
-              if (files && files.length > 0) {
-                // Если гость прикрепил файлы, показываем призыв к регистрации
+              const data = await res.json();
+              if (files && files.length > 0 && data.data?.id) {
+                const formData = new FormData();
+                files.forEach(file => formData.append('files', file));
+                await fetch(`/api/contact-requests/${data.data.id}/files`, {
+                  method: 'POST',
+                  body: formData,
+                });
                 setSuccessMessage(
                   <>
                     Ваша заявка отправлена!<br /><br />
-                    <a href="/login" className="underline font-bold text-brand-green hover:text-brand-green/80">
-                      Войдите или зарегистрируйтесь
-                    </a>, чтобы мы могли сохранить выбранные вами файлы и вы могли отслеживать статус заказа.
+                    Файлы успешно прикреплены. Ожидайте звонка от нашего специалиста.
                   </>
                 );
               } else {
-                setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
+                setSuccessMessage(`Запрос на услугу «${service.title}» успешно отправлен!`);
               }
               setSelectedService(null);
             } catch (err) {

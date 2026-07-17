@@ -3,6 +3,9 @@ package com.example.zhanfinancebackend.modules.landing.controller;
 import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestCreateRequest;
 import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestDto;
+import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestConvertRequest;
+import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestConvertResponse;
+import com.example.zhanfinancebackend.modules.landing.dto.ContactRequestFileDto;
 import com.example.zhanfinancebackend.modules.landing.entity.ContactRequest.ContactRequestStatus;
 import com.example.zhanfinancebackend.modules.landing.service.ContactRequestService;
 import jakarta.validation.Valid;
@@ -35,19 +38,19 @@ public class ContactRequestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<List<ContactRequestDto>> findAll() {
         return ApiResponse.success(contactRequestService.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<ContactRequestDto> findById(@PathVariable Long id) {
         return ApiResponse.success(contactRequestService.findById(id));
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<ContactRequestDto> updateStatus(
             @PathVariable Long id,
             @RequestParam ContactRequestStatus status
@@ -60,5 +63,20 @@ public class ContactRequestController {
     public ApiResponse<Void> delete(@PathVariable Long id) {
         contactRequestService.delete(id);
         return ApiResponse.success(null, "Contact request deleted");
+    }
+
+    @PostMapping("/{id}/files")
+    public ApiResponse<List<ContactRequestFileDto>> uploadFiles(
+            @PathVariable Long id,
+            @RequestParam("files") org.springframework.web.multipart.MultipartFile[] files) {
+        return ApiResponse.success(contactRequestService.uploadFiles(id, files), "Files uploaded");
+    }
+
+    @PostMapping("/{id}/convert")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ApiResponse<ContactRequestConvertResponse> convert(
+            @PathVariable Long id,
+            @Valid @RequestBody ContactRequestConvertRequest request) {
+        return ApiResponse.success(contactRequestService.convert(id, request), "Request converted successfully");
     }
 }

@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/contact-requests",
+                                "/api/contact-requests/*/files",
                                 "/api/services",
                                 "/api/services/highlighted",
                                 "/uploads/avatars/**"

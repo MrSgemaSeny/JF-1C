@@ -76,10 +76,10 @@ export function SolutionPicker() {
     try {
       let message = t('quiz.resultsHeader', { defaultValue: 'Результаты опроса:\n' }) + Object.entries(answers).map(([k, v]) => `- ${t('quiz.questionResult', { defaultValue: 'Вопрос:' })} ${k}\n  ${t('quiz.answerResult', { defaultValue: 'Ответ:' })} ${v}`).join('\n');
       if (files.length > 0) {
-        message += '\n\n' + t('quiz.filesAttached', { defaultValue: '*Пользователь прикрепил файлы (ожидают загрузки после регистрации)*' });
+        message += '\n\n' + t('quiz.filesAttachedAmount', { defaultValue: '*Прикреплено файлов: {{count}}*', count: files.length });
       }
       
-      await apiRequest('/api/contact-requests', {
+      const response = await apiRequest<{ id: number }>('/api/contact-requests', {
         method: 'POST',
         body: JSON.stringify({
           name: contact.name,
@@ -88,6 +88,16 @@ export function SolutionPicker() {
           source: 'frontend'
         })
       });
+
+      if (files.length > 0 && response.id) {
+        const formData = new FormData();
+        files.forEach(file => formData.append('files', file));
+        await fetch(`/api/contact-requests/${response.id}/files`, {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
       setSubmitted(true);
     } catch (err) {
       console.error('Failed to submit survey', err);
