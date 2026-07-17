@@ -60,7 +60,7 @@ export function AdminOverviewPage() {
 
   const statCards = [
     {
-      label: 'Новые заявки (сегодня)',
+      label: t('adminDashboard.newRequests'),
       value: data.newRequestsToday,
       icon: <Users size={22} className="text-pink-500" />,
       bg: 'bg-pink-50',
@@ -84,7 +84,7 @@ export function AdminOverviewPage() {
       bg: 'bg-amber-50',
     },
     {
-      label: 'Завершено (Успешно)',
+      label: t('adminDashboard.wonTasks'),
       value: data.wonTasks,
       icon: <CheckCircle2 size={22} className="text-green-500" />,
       bg: 'bg-green-50',
@@ -117,16 +117,16 @@ export function AdminOverviewPage() {
       {/* Financial Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-center">
-           <h2 className="text-base font-semibold text-gray-800 mb-4">Финансовая аналитика</h2>
+           <h2 className="text-base font-semibold text-gray-800 mb-4">{t('adminDashboard.financialAnalytics')}</h2>
            <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Заработано (Успешно)</p>
+                <p className="text-sm text-gray-500">{t('adminDashboard.earned')}</p>
                 <p className="text-2xl font-bold text-green-600 mt-1">
                   {new Intl.NumberFormat('ru-KZ', { style: 'currency', currency: 'KZT', maximumFractionDigits: 0 }).format(data.totalRevenue || 0)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Ожидаемая выручка (В работе)</p>
+                <p className="text-sm text-gray-500">{t('adminDashboard.expectedRevenue')}</p>
                 <p className="text-2xl font-bold text-amber-500 mt-1">
                   {new Intl.NumberFormat('ru-KZ', { style: 'currency', currency: 'KZT', maximumFractionDigits: 0 }).format(data.expectedRevenue || 0)}
                 </p>
@@ -190,7 +190,7 @@ export function AdminOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Task distribution */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-base font-semibold text-gray-800 mb-5">Задачи по стадиям</h2>
+          <h2 className="text-base font-semibold text-gray-800 mb-5">{t('adminDashboard.tasksByStatus')}</h2>
           <div className="space-y-3">
             {Object.entries(data.tasksByStatus).map(([statusName, count], index) => {
               const percent = data.totalTasks > 0 ? Math.round((count / data.totalTasks) * 100) : 0;
@@ -213,7 +213,7 @@ export function AdminOverviewPage() {
               );
             })}
             {Object.keys(data.tasksByStatus).length === 0 && (
-              <div className="text-sm text-gray-500 text-center py-4">Нет задач</div>
+              <div className="text-sm text-gray-500 text-center py-4">{t('adminDashboard.noTasks')}</div>
             )}
           </div>
         </div>
@@ -221,25 +221,25 @@ export function AdminOverviewPage() {
         {/* Cancellation Analytics & Efficiency */}
         <div className="space-y-5">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-center h-[140px]">
-             <h2 className="text-base font-semibold text-gray-800 mb-4">Конверсия и Эффективность</h2>
+             <h2 className="text-base font-semibold text-gray-800 mb-4">{t('adminDashboard.conversion')}</h2>
              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Win Rate</p>
+                  <p className="text-sm text-gray-500">{t('adminDashboard.winRate')}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
                     {data.totalTasks > 0 ? Math.round((data.wonTasks / (data.wonTasks + data.lostTasks || 1)) * 100) : 0}%
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Среднее время закрытия</p>
+                  <p className="text-sm text-gray-500">{t('adminDashboard.avgCloseTime')}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
-                    {data.avgCompletionDays.toFixed(1)} <span className="text-sm font-medium text-gray-500">дн.</span>
+                    {data.avgCompletionDays.toFixed(1)} <span className="text-sm font-medium text-gray-500">{t('adminDashboard.days')}</span>
                   </p>
                 </div>
              </div>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-base font-semibold text-gray-800 mb-5">Причины отказов</h2>
+            <h2 className="text-base font-semibold text-gray-800 mb-5">{t('adminDashboard.lostReasons')}</h2>
             <div className="space-y-3">
               {Object.entries(data.tasksByLostReason).sort((a, b) => b[1] - a[1]).map(([reason, count], index) => {
                 const percent = data.lostTasks > 0 ? Math.round((count / data.lostTasks) * 100) : 0;
@@ -260,7 +260,7 @@ export function AdminOverviewPage() {
                 );
               })}
               {Object.keys(data.tasksByLostReason).length === 0 && (
-                <div className="text-sm text-gray-500 text-center py-4">Нет отмененных задач</div>
+                <div className="text-sm text-gray-500 text-center py-4">{t('adminDashboard.noLostTasks')}</div>
               )}
             </div>
           </div>
@@ -308,7 +308,7 @@ export function AdminOverviewPage() {
               {data.employeeStats.length === 0 && (
                 <tr>
                   <td colSpan={4} className="py-4 text-center text-gray-500">
-                    Нет данных по сотрудникам
+                    {t('adminDashboard.noEmployees')}
                   </td>
                 </tr>
               )}
