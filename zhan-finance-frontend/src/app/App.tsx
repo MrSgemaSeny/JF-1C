@@ -96,6 +96,11 @@ export function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
               
+                {/* Shared Admin & Employee Routes */}
+              <Route element={<RoleProtectedRoute allow={['ADMIN', 'EMPLOYEE']} />}>
+                <Route path={ROUTES.ADMIN_LEADS} element={<AdminLeadsPage />} />
+              </Route>
+
                 {/* Admin Routes */}
               <Route element={<RoleProtectedRoute allow={['ADMIN']} />}>
                 <Route path={ROUTES.ADMIN} element={<AdminOverviewPage />} />
@@ -103,7 +108,6 @@ export function App() {
                 <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
                 <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
                 <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
-                <Route path={ROUTES.ADMIN_LEADS} element={<AdminLeadsPage />} />
                 <Route path="/admin/tasks/pool" element={<TaskPoolPage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />

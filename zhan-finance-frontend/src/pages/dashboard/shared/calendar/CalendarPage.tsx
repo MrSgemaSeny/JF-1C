@@ -37,6 +37,22 @@ export function CalendarPage() {
     loadEvents();
   }, [currentYear]);
 
+  // Auto-scroll to current month on mobile
+  useEffect(() => {
+    if (!isLoading && window.innerWidth < 768) {
+      const currentMonth = new Date().getMonth();
+      const currentYearObj = new Date().getFullYear();
+      if (currentYear === currentYearObj) {
+        const el = document.getElementById(`month-${currentMonth}`);
+        if (el) {
+          setTimeout(() => {
+            el.scrollIntoView({ behavior: 'auto', block: 'start' });
+          }, 100);
+        }
+      }
+    }
+  }, [isLoading, currentYear]);
+
   const loadEvents = async () => {
     setIsLoading(true);
     try {
@@ -160,7 +176,7 @@ export function CalendarPage() {
     }
 
     return (
-      <div key={monthIndex} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col h-full">
+      <div key={monthIndex} id={`month-${monthIndex}`} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col h-full">
         <h3 className="font-bold text-gray-900 mb-4 text-center">{MONTH_NAMES[monthIndex]}</h3>
         <div className="grid grid-cols-7 gap-1 text-center mb-2">
           {DAY_NAMES.map(d => (
