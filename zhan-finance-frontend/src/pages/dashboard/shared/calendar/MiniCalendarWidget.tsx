@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, X, Clock, AlignLeft, Tag } from 'lucide-react';
 import { getCalendarEvents, createCalendarEvent, deleteCalendarEvent, CalendarEventDto } from '@/entities/calendar/api/calendarApi';
 import { Link } from 'react-router-dom';
@@ -6,12 +6,6 @@ import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { useTranslation } from 'react-i18next';
-
-const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-const MONTH_NAMES = [
-  'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-];
 const COLORS = [
   { value: 'BLUE', bg: 'bg-blue-100', text: 'text-blue-800' },
   { value: 'RED', bg: 'bg-red-100', text: 'text-red-800' },
@@ -22,7 +16,7 @@ const COLORS = [
 
 export function MiniCalendarWidget() {
   const { user } = useAuth();
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEventDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,6 +35,22 @@ export function MiniCalendarWidget() {
   useEffect(() => {
     loadEvents();
   }, [currentDate]);
+
+  const locale = i18n.language === 'en' ? 'en-US' : 'ru-RU';
+  
+  const currentMonthName = useMemo(() => {
+    const name = new Intl.DateTimeFormat(locale, { month: 'long' }).format(currentDate);
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }, [currentDate, locale]);
+
+  const dayNames = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      // 2021-11-01 is Monday
+      const d = new Date(2021, 10, i + 1);
+      const name = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(d);
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    });
+  }, [locale]);
 
   const loadEvents = async () => {
     setIsLoading(true);
@@ -175,7 +185,7 @@ export function MiniCalendarWidget() {
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="font-medium text-sm w-24 text-center">
-            {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
+            {currentMonthName} {currentDate.getFullYear()}
           </span>
           <button 
             onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
@@ -193,8 +203,8 @@ export function MiniCalendarWidget() {
       ) : (
         <div className="flex-1">
           <div className="grid grid-cols-7 gap-1 text-center mb-2">
-            {DAY_NAMES.map(d => (
-              <div key={d} className="text-[10px] font-medium text-gray-400">{d}</div>
+            {dayNames.map(d => (
+              <div key={d} className="text-[10px] font-medium text-gray-400 uppercase">{d}</div>
             ))}
           </div>
           <div className="grid grid-cols-7 gap-1">
