@@ -903,32 +903,57 @@
   },
   "service": {
     "1": {
-      "title": "Comprehensive Service",
-      "description": "Full accounting and tax support for LLCs and IEs.",
+      "title": "Accounting Support",
+      "description": "Full transaction accounting, reporting, financial control.",
       "features": {
-        "0": "Primary docs processing",
-        "1": "Submission of all tax reports",
-        "2": "Payroll calculation",
-        "3": "HR accounting"
+        "0": "Full transaction accounting",
+        "1": "Reporting preparation",
+        "2": "Financial control"
       }
     },
     "2": {
-      "title": "Accounting Restoration",
-      "description": "Bringing accounting for past periods in order, correcting errors.",
+      "title": "Tax Reporting",
+      "description": "Timely preparation and submission of all mandatory forms.",
       "features": {
-        "0": "Current database audit",
-        "1": "Document restoration",
-        "2": "Submission of additional reports",
-        "3": "Defense during inspections"
+        "0": "Preparation and submission",
+        "1": "Tax consultations",
+        "2": "Work with tax authorities"
       }
     },
     "3": {
-      "title": "One-time Consultations",
-      "description": "Help with specific taxes, optimization, or opening/closing a business.",
+      "title": "HR & Payroll",
+      "description": "HR document management, timesheets, vacation pay calculation.",
       "features": {
-        "0": "Choice of tax regime",
-        "1": "Analysis of complex transactions",
-        "2": "Legal optimization"
+        "0": "HR documents",
+        "1": "Payroll calculation",
+        "2": "Timesheets and vacations"
+      }
+    },
+    "4": {
+      "title": "Accounting Restoration",
+      "description": "Bring documents in order, fix errors, and resubmit reports.",
+      "features": {
+        "0": "Analysis of past periods",
+        "1": "Document restoration",
+        "2": "Report resubmission"
+      }
+    },
+    "5": {
+      "title": "Primary Doc Processing",
+      "description": "Working with acts, invoices, bills, and internal accounting.",
+      "features": {
+        "0": "Acts and invoices processing",
+        "1": "Data entry",
+        "2": "Reconciliations with clients"
+      }
+    },
+    "6": {
+      "title": "Counterparty Analysis",
+      "description": "Legal check of partner and client reliability before deals.",
+      "features": {
+        "0": "Counterparty check",
+        "1": "Risk analysis",
+        "2": "Cooperation recommendations"
       }
     },
     "s1": {
