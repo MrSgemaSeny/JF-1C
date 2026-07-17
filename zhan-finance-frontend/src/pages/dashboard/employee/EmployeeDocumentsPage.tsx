@@ -133,20 +133,20 @@ export function EmployeeDocumentsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 w-full max-w-full overflow-hidden flex flex-col">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('employeeDocuments.title')}</h1>
         <p className="text-gray-500 text-sm mt-1">{t('employeeDocuments.subtitle')}</p>
       </div>
 
       {/* Upload Zone */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-        <div className="max-w-md">
+      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+        <div className="max-w-md w-full">
           <label className="block text-sm font-medium text-gray-700 mb-1">{t('employeeDocuments.uploadLabel')}</label>
           <select
             value={selectedClientId}
             onChange={(e) => setSelectedClientId(e.target.value === '' ? '' : Number(e.target.value))}
-            className="w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-green focus:ring-brand-green sm:text-sm py-2.5 px-3 border"
+            className="w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-green focus:ring-brand-green sm:text-sm py-2.5 px-3 border truncate"
           >
             <option value="">{t('employeeDocuments.selectClientOption')}</option>
             {clients.map(client => (
@@ -159,7 +159,7 @@ export function EmployeeDocumentsPage() {
 
         <div 
           className={clsx(
-            "relative border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center text-center transition-all group",
+            "relative border-2 border-dashed rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center transition-all group w-full overflow-hidden",
             !selectedClientId ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200" : "cursor-pointer",
             isDragging && selectedClientId ? "border-brand-green bg-green-50/50" : "",
             selectedClientId && !isDragging ? "border-gray-200 bg-white hover:border-brand-green/50 hover:bg-gray-50" : ""
@@ -213,7 +213,7 @@ export function EmployeeDocumentsPage() {
       )}
 
       {/* Documents Table */}
-      <div className="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden w-full flex-1">
         {isLoading ? (
           <div className="py-12 flex justify-center">
             <Spinner />
@@ -227,7 +227,7 @@ export function EmployeeDocumentsPage() {
             <p className="text-gray-500 text-sm">{t('employeeDocuments.noDocsSubtext')}</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto w-full">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
