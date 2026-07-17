@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 export function Footer() {
   const { t } = useTranslation('common');
   return (
-    <footer className="bg-brand-green pt-24 pb-12 text-brand-beige rounded-t-[40px] mt-[-40px] relative z-20">
+    <footer id="contact" className="bg-brand-green pt-24 pb-12 text-brand-beige rounded-t-[40px] mt-[-40px] relative z-20">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 mb-20">
           <div className="space-y-12">

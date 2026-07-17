@@ -35,6 +35,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Chat':                <MessageCircle size={16} />,
   'Employees':           <UserCheck size={16} />,
   'Clients':             <Users size={16} />,
+  'Лиды':                <ClipboardList size={16} />,
   'Список задач':        <ClipboardList size={16} />,
   'Tasks':               <ClipboardList size={16} />,
   'Task Pool':           <Briefcase size={16} />,

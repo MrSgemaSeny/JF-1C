@@ -8,6 +8,7 @@ import { deleteTask, getTask } from '@/entities/task/api/taskApi';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useApiData } from '@/shared/hooks/useApiData';
+import { useTranslation } from 'react-i18next';
 
 interface TaskGridBoardProps {
   initialTasks: TaskDto[];
@@ -22,23 +23,20 @@ export interface TaskGridBoardRef {
 
 type SortOption = 'newest' | 'oldest' | 'deadline_asc' | 'deadline_desc';
 
-const STATUS_OPTIONS: { value: string; label: string }[] = [
-  { value: 'ALL', label: 'Все стадии' },
-];
-
-
-
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'newest', label: 'Новые первыми' },
-  { value: 'oldest', label: 'Старые первыми' },
-  { value: 'deadline_asc', label: 'Дедлайн ↑' },
-  { value: 'deadline_desc', label: 'Дедлайн ↓' },
-  
-];
-
-
-
 export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({ initialTasks, onBatchSave, userRole }, ref) => {
+  const { t } = useTranslation('common');
+  
+  const STATUS_OPTIONS: { value: string; label: string }[] = [
+    { value: 'ALL', label: t('kanban.allStages', { defaultValue: 'Все стадии' }) },
+  ];
+
+  const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+    { value: 'newest', label: t('kanban.sort.newest', { defaultValue: 'Новые первыми' }) },
+    { value: 'oldest', label: t('kanban.sort.oldest', { defaultValue: 'Старые первыми' }) },
+    { value: 'deadline_asc', label: t('kanban.sort.deadline_asc', { defaultValue: 'Дедлайн ↑' }) },
+    { value: 'deadline_desc', label: t('kanban.sort.deadline_desc', { defaultValue: 'Дедлайн ↓' }) },
+  ];
+
   const [tasks, setTasks] = useState<TaskDto[]>(initialTasks);
   const [isSaving, setIsSaving] = useState(false);
   const [createdTaskIds, setCreatedTaskIds] = useState<Set<number>>(new Set());
@@ -149,7 +147,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
       const target = e.target as HTMLElement;
       const link = target.closest('a');
       if (link && link.href) {
-        if (!window.confirm('У вас есть несохраненные изменения! Вы уверены, что хотите уйти?')) {
+        if (!window.confirm(t('kanban.unsavedChanges', { defaultValue: 'У вас есть несохраненные изменения! Вы уверены, что хотите уйти?' }))) {
           e.preventDefault();
           e.stopPropagation();
         }
@@ -164,7 +162,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
   };
 
   const handleDeleteTask = async (taskId: number) => {
-    if (!window.confirm('Удалить эту задачу навсегда?')) return;
+    if (!window.confirm(t('kanban.deleteConfirm', { defaultValue: 'Удалить эту задачу навсегда?' }))) return;
     
     if (taskId > 1000000000000) {
       // Это локальная несохраненная задача, просто удаляем из стейта
@@ -181,7 +179,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
       await deleteTask(taskId);
       setTasks(prev => prev.filter(t => t.id !== taskId));
     } catch (e) {
-      alert('Ошибка при удалении задачи');
+      alert(t('kanban.deleteError', { defaultValue: 'Ошибка при удалении задачи' }));
     }
   };
 
@@ -251,12 +249,12 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-500 transition-colors ml-auto"
           >
             <X size={14} />
-            <span>Сбросить</span>
+            <span>{t('kanban.reset', { defaultValue: 'Сбросить' })}</span>
           </button>
         )}
 
         <span className="text-xs text-gray-400 ml-auto">
-          {filteredAndSorted.length} из {tasks.length} задач
+          {filteredAndSorted.length} {t('kanban.of', { defaultValue: 'из' })} {tasks.length} {t('kanban.tasks', { defaultValue: 'задач' })}
         </span>
       </div>
 
@@ -277,9 +275,9 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
 
       {filteredAndSorted.length === 0 && (
         <div className="text-center py-12 text-gray-400">
-          <p className="text-lg font-medium">Нет задач по выбранным фильтрам</p>
+          <p className="text-lg font-medium">{t('kanban.noFilteredTasks', { defaultValue: 'Нет задач по выбранным фильтрам' })}</p>
           <button onClick={clearFilters} className="text-sm text-gray-900 hover:underline mt-2">
-            Сбросить фильтры
+            {t('kanban.resetFilters', { defaultValue: 'Сбросить фильтры' })}
           </button>
         </div>
       )}

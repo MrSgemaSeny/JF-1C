@@ -117,13 +117,13 @@ export function ServicesCatalog() {
                 className="flex gap-6 bg-white rounded-2xl p-6 items-start shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-green border border-brand-green/20 hover:border-brand-green/60 transition-colors"
               >
                 <div className="flex-1">
-                  <h4 className="text-2xl font-black text-brand-green mb-2">{s.title}</h4>
-                  <p className="text-lg text-brand-green/70 mb-3">{s.description}</p>
+                  <h4 className="text-2xl font-black text-brand-green mb-2">{t(`service.${s.id}.title`, { defaultValue: s.title })}</h4>
+                  <p className="text-lg text-brand-green/70 mb-3">{t(`service.${s.id}.description`, { defaultValue: s.description })}</p>
                   <ul className="text-base text-brand-green/60 space-y-2 mb-4">
-                    {s.features.map((b) => (
+                    {s.features.map((b, bIndex) => (
                       <li key={b} className="flex items-start gap-3">
                         <span className="w-2 h-2 mt-2 rounded-full bg-brand-green shrink-0" />
-                        <span>{b}</span>
+                        <span>{t(`service.${s.id}.features.${bIndex}`, { defaultValue: b })}</span>
                       </li>
                     ))}
                   </ul>
@@ -147,6 +147,26 @@ export function ServicesCatalog() {
           item={active}
           onClose={() => setActive(null)}
           onRequest={handleRequestService}
+          onGuestRequest={async (service, name, phone, message, preferredDate) => {
+            setIsSubmitting(true);
+            try {
+              let fullMessage = `Услуга: ${service.title}`;
+              if (message) fullMessage += `\nКомментарий: ${message}`;
+              if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
+              
+              await fetch('/api/contact-requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
+              });
+              toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
+              setActive(null);
+            } catch (err) {
+              toast.error(t('services.catalog.error', { defaultValue: 'Ошибка при отправке запроса. Попробуйте позже.' }));
+            } finally {
+              setIsSubmitting(false);
+            }
+          }}
           isSubmitting={isSubmitting}
           isLoggedIn={!!user}
           initialMessage={restoredMessage}

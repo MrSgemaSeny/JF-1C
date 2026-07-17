@@ -7,6 +7,8 @@ import type { TaskDto } from '@/entities/task/model/types';
 import { TaskGridBoard, type TaskGridBoardRef } from '@/widgets/task-board/TaskGridBoard';
 import { useTranslation } from 'react-i18next';
 
+import { TaskPoolTabs } from '../shared/task-pool/TaskPoolTabs';
+
 export function AdminArchiveDonePage() {
   const { t } = useTranslation(['common']);
   const { data: tasks, isLoading, refetch: fetchTasks } = useApiData(getTasks);
@@ -26,7 +28,8 @@ export function AdminArchiveDonePage() {
   const doneTasks = tasks?.filter(t => t.stage?.type === 'WON') || [];
 
   return (
-    <div>
+    <div className="h-full flex flex-col w-full">
+      <TaskPoolTabs />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('adminArchive.doneTitle')}</h1>
       </div>

@@ -11,6 +11,7 @@ export const ROUTES = {
   ADMIN_EMPLOYEES: '/admin/employees',
   ADMIN_CLIENTS: '/admin/clients',
   ADMIN_TASKS: '/admin/tasks',
+  ADMIN_LEADS: '/admin/leads',
   ADMIN_TASK_POOL: '/admin/tasks/pool',
   ADMIN_TASK_DETAILS: '/admin/tasks/:id',
   ADMIN_ARCHIVE_DONE: '/admin/archive/done',

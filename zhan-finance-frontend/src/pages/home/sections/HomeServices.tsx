@@ -138,17 +138,17 @@ export function HomeServices() {
                 }}
               >
                 <h3 className="text-2xl font-black uppercase text-brand-green mb-4 leading-tight">
-                  {service.title}
+                  {t(`service.${service.id}.title`, { defaultValue: service.title })}
                 </h3>
                 <p className="text-brand-green/70 mb-8 leading-relaxed flex-1">
-                  {service.description}
+                  {t(`service.${service.id}.description`, { defaultValue: service.description })}
                 </p>
                 
                 <ul className="space-y-3 mb-8">
-                  {service.features.map((feature) => (
+                  {service.features.map((feature, featureIndex) => (
                     <li key={feature} className="flex items-start gap-3 text-sm font-bold text-brand-green/80">
                       <span className="w-1.5 h-1.5 rounded-full bg-brand-green mt-1.5 opacity-50" />
-                      {feature}
+                      {t(`service.${service.id}.features.${featureIndex}`, { defaultValue: feature })}
                     </li>
                   ))}
                 </ul>
@@ -178,6 +178,26 @@ export function HomeServices() {
           item={selectedService}
           onClose={() => setSelectedService(null)}
           onRequest={handleRequestService}
+          onGuestRequest={async (service, name, phone, message, preferredDate) => {
+            setIsSubmitting(true);
+            try {
+              let fullMessage = `Услуга: ${service.title}`;
+              if (message) fullMessage += `\nКомментарий: ${message}`;
+              if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
+              
+              await fetch('/api/contact-requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
+              });
+              setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
+              setSelectedService(null);
+            } catch (err) {
+              toast.error(t('homeServices.errorMessage'));
+            } finally {
+              setIsSubmitting(false);
+            }
+          }}
           isSubmitting={isSubmitting}
           isLoggedIn={!!user}
           initialMessage={restoredMessage}

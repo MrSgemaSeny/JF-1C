@@ -5,15 +5,17 @@ import { Container } from '@/shared/ui/Container';
 // Import images
 import shymkentImg from '@/shared/assets/images/Shymkent_off.jpg';
 import almatyImg from '@/shared/assets/images/Almaty_off.jpg';
+import { useTranslation } from 'react-i18next';
 
 export function Offices() {
+  const { t } = useTranslation('common');
   return (
     <Section className="bg-brand-beige py-24 overflow-hidden">
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">
-            Наши <br />
-            <span className="text-brand-green/40">Офисы</span>
+            {t('offices.title1', { defaultValue: 'Наши' })} <br />
+            <span className="text-brand-green/40">{t('offices.title2', { defaultValue: 'Офисы' })}</span>
           </h2>
         </div>
 
@@ -30,10 +32,10 @@ export function Offices() {
             className="group flex flex-col items-center cursor-pointer"
           >
             <div className="relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-transform duration-500 group-hover:scale-105 w-72 h-72 md:w-96 md:h-96 shadow-lg group-hover:shadow-2xl">
-              <img src={shymkentImg} alt="Офис в Шымкенте" className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
+              <img src={shymkentImg} alt={t('offices.shymkent', { defaultValue: 'Офис в Шымкенте' })} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
             </div>
             <h3 className="font-black uppercase tracking-wider text-brand-green text-xl md:text-2xl transition-colors duration-300 group-hover:text-brand-green/70 underline-offset-8 group-hover:underline">
-              Офис в Шымкенте
+              {t('offices.shymkent', { defaultValue: 'Офис в Шымкенте' })}
             </h3>
           </motion.a>
 
@@ -49,10 +51,10 @@ export function Offices() {
             className="group flex flex-col items-center cursor-pointer"
           >
             <div className="relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-transform duration-500 group-hover:scale-105 w-72 h-72 md:w-96 md:h-96 shadow-lg group-hover:shadow-2xl">
-              <img src={almatyImg} alt="Офис в Алматы" className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
+              <img src={almatyImg} alt={t('offices.almaty', { defaultValue: 'Офис в Алматы' })} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
             </div>
             <h3 className="font-black uppercase tracking-wider text-brand-green text-xl md:text-2xl transition-colors duration-300 group-hover:text-brand-green/70 underline-offset-8 group-hover:underline">
-              Офис в Алматы
+              {t('offices.almaty', { defaultValue: 'Офис в Алматы' })}
             </h3>
           </motion.a>
         </div>

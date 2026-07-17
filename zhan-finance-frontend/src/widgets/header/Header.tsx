@@ -96,10 +96,8 @@ export function Header() {
               {user ? t('publicNav.profile') : t('publicNav.login')}
             </Link>
 
-            <a
-              href="https://wa.me/+77753855077"
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               className={`hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
                 isScrolled || !isHome
                   ? 'bg-brand-green text-brand-beige hover:bg-brand-green/90 shadow-lg shadow-brand-green/20'
@@ -108,7 +106,7 @@ export function Header() {
             >
               {t('publicNav.contact')}
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </button>
 
             <div className="hidden md:block">
               <LanguageSwitcher />
@@ -160,9 +158,15 @@ export function Header() {
             <div className="mt-8 p-6 bg-brand-green text-brand-beige rounded-3xl">
               <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-4">{t('publicNav.getStarted')}</p>
               <a href="tel:+77000000000" className="block text-2xl font-black mb-6 hover:opacity-80">+7 700 000 00 00</a>
-              <a href="https://wa.me/77000000000" className="flex items-center justify-center gap-2 w-full py-4 bg-brand-beige text-brand-green rounded-xl font-bold uppercase">
-                {t('publicNav.whatsapp')}
-              </a>
+              <button 
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                }}
+                className="flex items-center justify-center gap-2 w-full py-4 bg-brand-beige text-brand-green rounded-xl font-bold uppercase"
+              >
+                {t('publicNav.contact')}
+              </button>
             </div>
           </motion.div>
         )}

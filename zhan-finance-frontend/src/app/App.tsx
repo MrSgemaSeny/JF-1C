@@ -25,6 +25,7 @@ const AdminOverviewPage = lazy(() => import('@/pages/dashboard/admin/AdminOvervi
 const AdminEmployeesPage = lazy(() => import('@/pages/dashboard/admin/AdminEmployeesPage').then(m => ({ default: m.AdminEmployeesPage })));
 const AdminClientsPage = lazy(() => import('@/pages/dashboard/admin/AdminClientsPage').then(m => ({ default: m.AdminClientsPage })));
 const AdminTasksPage = lazy(() => import('@/pages/dashboard/admin/AdminTasksPage').then(m => ({ default: m.AdminTasksPage })));
+const AdminLeadsPage = lazy(() => import('@/pages/admin/leads/LeadsPage').then(m => ({ default: m.LeadsPage })));
 const AdminArchiveDonePage = lazy(() => import('@/pages/dashboard/admin/AdminArchiveDonePage').then(m => ({ default: m.AdminArchiveDonePage })));
 const AdminArchiveCancelledPage = lazy(() => import('@/pages/dashboard/admin/AdminArchiveCancelledPage').then(m => ({ default: m.AdminArchiveCancelledPage })));
 const EmployeeChatPage = lazy(() => import('@/pages/dashboard/employee/EmployeeChatPage').then(m => ({ default: m.EmployeeChatPage })));
@@ -102,6 +103,7 @@ export function App() {
                 <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
                 <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
                 <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
+                <Route path={ROUTES.ADMIN_LEADS} element={<AdminLeadsPage />} />
                 <Route path="/admin/tasks/pool" element={<TaskPoolPage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />

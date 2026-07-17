@@ -79,13 +79,13 @@ export function GlobalSearch() {
       {isOpen && query.length >= 2 && results && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 max-h-96 overflow-y-auto z-50">
           {results.tasks.length === 0 && results.users.length === 0 && results.courses.length === 0 && results.lessons.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">Ничего не найдено</div>
+            <div className="p-4 text-center text-gray-500">{t('search.noResults', { defaultValue: 'Ничего не найдено' })}</div>
           ) : (
             <div className="py-2">
               {results.tasks.length > 0 && (
                 <div className="mb-2">
                   <div className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Задачи
+                    {t('search.categories.tasks', { defaultValue: 'Задачи' })}
                   </div>
                   {results.tasks.map(task => (
                     <button
@@ -104,7 +104,7 @@ export function GlobalSearch() {
               {results.courses.length > 0 && (
                 <div className="mb-2">
                   <div className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Курсы
+                    {t('search.categories.courses', { defaultValue: 'Курсы' })}
                   </div>
                   {results.courses.map(course => (
                     <button
@@ -114,7 +114,7 @@ export function GlobalSearch() {
                     >
                       <span className="font-medium text-gray-900 truncate leading-relaxed pb-0.5">{course.title}</span>
                       <span className="text-xs text-gray-500">
-                        {course.isPublished ? 'Опубликован' : 'Черновик'}
+                        {course.isPublished ? t('search.status.published', { defaultValue: 'Опубликован' }) : t('search.status.draft', { defaultValue: 'Черновик' })}
                       </span>
                     </button>
                   ))}
@@ -123,7 +123,7 @@ export function GlobalSearch() {
               {results.lessons.length > 0 && (
                 <div className="mb-2">
                   <div className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Уроки
+                    {t('search.categories.lessons', { defaultValue: 'Уроки' })}
                   </div>
                   {results.lessons.map(lesson => (
                     <button
@@ -133,7 +133,7 @@ export function GlobalSearch() {
                     >
                       <span className="font-medium text-gray-900 truncate leading-relaxed pb-0.5">{lesson.title}</span>
                       <span className="text-xs text-gray-500">
-                        Тип: {lesson.type}
+                        {t('search.lessonType', { defaultValue: 'Тип:' })} {lesson.type}
                       </span>
                     </button>
                   ))}
@@ -142,7 +142,7 @@ export function GlobalSearch() {
               {results.users.length > 0 && (
                 <div>
                   <div className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Пользователи
+                    {t('search.categories.users', { defaultValue: 'Пользователи' })}
                   </div>
                   {results.users.map(user => (
                     <div key={user.id} className="px-4 py-2 hover:bg-gray-50 flex flex-col">

@@ -665,10 +665,22 @@
       "title": "Legally Binding Guarantees",
       "p1": "The words 'we are professionals' mean nothing without financial responsibility. Our confidence in our processes allows us to assume 100% of material risks.",
       "items": [
-        { "title": "Financial security:", "text": "Full compensation for fines and penalties if they arise due to our mistake." },
-        { "title": "Confidentiality (NDA):", "text": "Strict trade secret regime. Encrypted communication channels and secure servers." },
-        { "title": "Business continuity:", "text": "No sick leaves, vacations, or sudden resignations. The service operates continuously." },
-        { "title": "Price transparency:", "text": "You pay for the volume of operations and contour complexity. No hidden fees." }
+        {
+          "title": "Financial security:",
+          "text": "Full compensation for fines and penalties if they arise due to our mistake."
+        },
+        {
+          "title": "Confidentiality (NDA):",
+          "text": "Strict trade secret regime. Encrypted communication channels and secure servers."
+        },
+        {
+          "title": "Business continuity:",
+          "text": "No sick leaves, vacations, or sudden resignations. The service operates continuously."
+        },
+        {
+          "title": "Price transparency:",
+          "text": "You pay for the volume of operations and contour complexity. No hidden fees."
+        }
       ]
     }
   },
@@ -687,30 +699,66 @@
     "howWeWork": {
       "title": "How we work",
       "items": [
-        { "title": "Urgent reports in 15 minutes", "text": "Emergency data is ready instantly so you can make decisions promptly." },
-        { "title": "Average term 1-3 business days", "text": "We close most tasks within three business days without loss of quality." },
-        { "title": "Orders accepted 09:00-16:00", "text": "We work on a convenient schedule so you know exactly when to expect confirmation." },
-        { "title": "Quality control before submission", "text": "Each report is checked within the team before submission to regulatory authorities." },
-        { "title": "Manager in touch", "text": "A personal manager leads the task and answers all questions during the work." },
-        { "title": "Consultation after results", "text": "We discuss the final reporting and recommendations at no additional charge." }
+        {
+          "title": "Urgent reports in 15 minutes",
+          "text": "Emergency data is ready instantly so you can make decisions promptly."
+        },
+        {
+          "title": "Average term 1-3 business days",
+          "text": "We close most tasks within three business days without loss of quality."
+        },
+        {
+          "title": "Orders accepted 09:00-16:00",
+          "text": "We work on a convenient schedule so you know exactly when to expect confirmation."
+        },
+        {
+          "title": "Quality control before submission",
+          "text": "Each report is checked within the team before submission to regulatory authorities."
+        },
+        {
+          "title": "Manager in touch",
+          "text": "A personal manager leads the task and answers all questions during the work."
+        },
+        {
+          "title": "Consultation after results",
+          "text": "We discuss the final reporting and recommendations at no additional charge."
+        }
       ]
     },
     "why": {
       "title": "Why do you need accounting services and a subscription?",
       "description": "Professional accounting frees you from routine tasks, reduces the risk of fines, and allows you to focus on business growth.",
       "items": [
-        { "title": "Control without stress", "text": "All numbers in one place, without the risk of losing documents or making a mistake." },
-        { "title": "Time saving", "text": "We handle reporting, you make decisions based on ready data." },
-        { "title": "Guarantee of regularity", "text": "Subscription ensures that reports, declarations, and consultations go according to plan." }
+        {
+          "title": "Control without stress",
+          "text": "All numbers in one place, without the risk of losing documents or making a mistake."
+        },
+        {
+          "title": "Time saving",
+          "text": "We handle reporting, you make decisions based on ready data."
+        },
+        {
+          "title": "Guarantee of regularity",
+          "text": "Subscription ensures that reports, declarations, and consultations go according to plan."
+        }
       ]
     },
     "faq": {
       "title": "Frequently Asked Questions",
       "contactTitle": "Ready to discuss your task?",
       "items": [
-        { "q": "How to start working?", "a": "Leave a request on the site or call — we will prepare an implementation plan and cost estimate." },
-        { "q": "What documents are needed?", "a": "Depends on the service: usually a contract, statements, contracts with counterparties, and primary documentation." },
-        { "q": "Can I connect remotely?", "a": "Yes — most processes can be organized remotely using secure channels." }
+        {
+          "q": "How to start working?",
+          "a": "Leave a request on the site or call — we will prepare an implementation plan and cost estimate."
+        },
+        {
+          "q": "What documents are needed?",
+          "a": "Depends on the service: usually a contract, statements, contracts with counterparties, and primary documentation."
+        },
+        {
+          "q": "Can I connect remotely?",
+          "a": "Yes — most processes can be organized remotely using secure channels."
+        }
       ]
     }
   },
@@ -727,5 +775,287 @@
       "title": "Success!",
       "button": "Great"
     }
+  },
+  "contactForm": {
+    "title": "Contact Us",
+    "success": {
+      "title": "Thank you!",
+      "text": "We will contact you shortly to discuss the details."
+    },
+    "fields": {
+      "name": {
+        "label": "Your Name",
+        "placeholder": "First and Last Name"
+      },
+      "phone": {
+        "label": "Phone"
+      },
+      "message": {
+        "label": "Brief description of the task",
+        "placeholder": "Tell us how we can help you..."
+      }
+    },
+    "buttons": {
+      "submit": "Send Request",
+      "submitting": "Sending..."
+    },
+    "error": {
+      "default": "Failed to send request"
+    }
+  },
+  "trust": {
+    "title1": "Your Business",
+    "title2": "Under Reliable Protection",
+    "description": "We take full financial responsibility for our work results. Our clients do not pay fines for accounting errors.",
+    "stats": {
+      "0": {
+        "value": "12+",
+        "label": "years in market"
+      },
+      "1": {
+        "value": "350+",
+        "label": "clients"
+      },
+      "2": {
+        "value": "2B ₸",
+        "label": "saved"
+      },
+      "3": {
+        "value": "100%",
+        "label": "guarantee"
+      }
+    }
+  },
+  "reviews": {
+    "1": {
+      "text": "We outsourced all accounting to Zhan Finance. Not a single fine in a year, optimized taxes by 20%. Perfect.",
+      "name": "John Doe",
+      "company": "Example LLC"
+    },
+    "2": {
+      "text": "Love their approach. Always in touch, answer quickly and to the point. Payroll is no longer a headache.",
+      "name": "Jane Smith",
+      "company": "Example Network"
+    },
+    "3": {
+      "text": "Opened an IE through them, they immediately took over the service. Very convenient when everything is in one place.",
+      "name": "Alan Turing",
+      "company": "Example IE"
+    },
+    "title1": "What Clients",
+    "title2": "Say",
+    "description": "Real stories of companies that entrusted us with their accounting."
+  },
+  "team": {
+    "title1": "Team",
+    "title2": "Zhan Finance",
+    "members": {
+      "0_0": {
+        "name": "Name Surname",
+        "role": "Founder / CEO"
+      },
+      "1_0": {
+        "name": "Name Surname",
+        "role": "Chief Accountant"
+      },
+      "1_1": {
+        "name": "Name Surname",
+        "role": "Methodologist"
+      },
+      "2_0": {
+        "name": "Name Surname",
+        "role": "Tax Accountant"
+      },
+      "2_1": {
+        "name": "Name Surname",
+        "role": "Foreign Trade Accountant"
+      },
+      "2_2": {
+        "name": "Name Surname",
+        "role": "Payroll Accountant"
+      },
+      "2_3": {
+        "name": "Name Surname",
+        "role": "HR Specialist"
+      },
+      "2_4": {
+        "name": "Name Surname",
+        "role": "Operator Accountant"
+      },
+      "2_5": {
+        "name": "Name Surname",
+        "role": "Junior Accountant"
+      }
+    }
+  },
+  "offices": {
+    "title1": "Our",
+    "title2": "Offices",
+    "description": "We are always happy to see you in our modern offices. Come discuss tasks over a great cup of coffee.",
+    "shymkent": {
+      "city": "Shymkent",
+      "address": "79a Bayterekov St."
+    },
+    "almaty": {
+      "city": "Almaty",
+      "address": "Opening soon"
+    }
+  },
+  "service": {
+    "1": {
+      "title": "Comprehensive Service",
+      "description": "Full accounting and tax support for LLCs and IEs.",
+      "features": {
+        "0": "Primary docs processing",
+        "1": "Submission of all tax reports",
+        "2": "Payroll calculation",
+        "3": "HR accounting"
+      }
+    },
+    "2": {
+      "title": "Accounting Restoration",
+      "description": "Bringing accounting for past periods in order, correcting errors.",
+      "features": {
+        "0": "Current database audit",
+        "1": "Document restoration",
+        "2": "Submission of additional reports",
+        "3": "Defense during inspections"
+      }
+    },
+    "3": {
+      "title": "One-time Consultations",
+      "description": "Help with specific taxes, optimization, or opening/closing a business.",
+      "features": {
+        "0": "Choice of tax regime",
+        "1": "Analysis of complex transactions",
+        "2": "Legal optimization"
+      }
+    },
+    "s1": {
+      "title": "Accounting Support",
+      "description": "Full transaction accounting, reporting, financial control.",
+      "features": {
+        "0": "Full transaction accounting",
+        "1": "Reporting preparation",
+        "2": "Financial control"
+      }
+    },
+    "s2": {
+      "title": "Tax Reporting",
+      "description": "Timely preparation and submission of all mandatory forms.",
+      "features": {
+        "0": "Preparation and submission",
+        "1": "Tax consultations",
+        "2": "Work with tax authorities"
+      }
+    },
+    "s3": {
+      "title": "HR & Payroll",
+      "description": "HR document management, timesheets, vacation pay calculation.",
+      "features": {
+        "0": "HR documents",
+        "1": "Payroll calculation",
+        "2": "Timesheets and vacations"
+      }
+    },
+    "s4": {
+      "title": "Accounting Restoration",
+      "description": "Bring documents in order, fix errors, and resubmit reports.",
+      "features": {
+        "0": "Analysis of past periods",
+        "1": "Document restoration",
+        "2": "Report resubmission"
+      }
+    },
+    "s5": {
+      "title": "Primary Doc Processing",
+      "description": "Working with acts, invoices, bills, and internal accounting.",
+      "features": {
+        "0": "Acts and invoices processing",
+        "1": "Data entry",
+        "2": "Reconciliations with clients"
+      }
+    },
+    "s6": {
+      "title": "Counterparty Analysis",
+      "description": "Legal check of partner and client reliability before deals.",
+      "features": {
+        "0": "Counterparty check",
+        "1": "Risk analysis",
+        "2": "Cooperation recommendations"
+      }
+    }
+  },
+  "quiz": {
+    "title": "Let us help you choose a solution for your business",
+    "subtitle": "Answer a few questions — a form will appear at the end.",
+    "success": "Thank you! We will contact you shortly.",
+    "questions": {
+      "0": {
+        "q": "What industry is your business in?",
+        "options": {
+          "Услуги / Консалтинг": "Services / Consulting",
+          "Торговля (Опт/Розница)": "Trade (Wholesale/Retail)",
+          "Производство": "Manufacturing",
+          "IT / E-commerce": "IT / E-commerce",
+          "Другое": "Other"
+        }
+      },
+      "1": {
+        "q": "How many employees do you have?",
+        "options": {
+          "Я один / Нет сотрудников": "Just me / No employees",
+          "От 1 до 5": "From 1 to 5",
+          "От 6 до 20": "From 6 to 20",
+          "Более 20": "More than 20"
+        }
+      },
+      "2": {
+        "q": "Your current status?",
+        "options": {
+          "Только планирую открыть ИП/ТОО": "Just planning to open IE/LLC",
+          "ИП (Упрощенка)": "IE (Simplified)",
+          "ИП (Общеустановленный)": "IE (General)",
+          "ТОО": "LLC",
+          "Не уверен": "Not sure"
+        }
+      }
+    },
+    "resultsHeader": "Survey results:\n",
+    "questionResult": "Question:",
+    "answerResult": "Answer:",
+    "prev": "Back",
+    "next": "Next",
+    "nextToForm": "Next to form",
+    "question": "Question",
+    "of": "of",
+    "leaveContacts": "Leave your contacts",
+    "name": "Name",
+    "phoneOrEmail": "Phone or e-mail",
+    "submit": "Submit",
+    "restart": "Start Over"
+  },
+  "serviceModal": {
+    "validation": {
+      "fillContacts": "Please fill in your name and phone number"
+    },
+    "service": "Service",
+    "close": "Close",
+    "about": "About the service",
+    "includes": "What is included:",
+    "orderForm": {
+      "title": "Leave a request",
+      "descriptionLoggedIn": "Describe the task or click \"Leave a request\", and our specialist will contact you.",
+      "descriptionGuest": "Fill out the form below so we can contact you and discuss the details.",
+      "name": "How should we address you? *",
+      "phone": "Phone number *",
+      "commentPlaceholder": "For example: I need accounting for an LLC...",
+      "comment": "Additional comment",
+      "date": "Preferred call date (optional)",
+      "submitting": "Submitting...",
+      "submit": "Leave a request",
+      "authRequired": "Authorization is required to submit a request."
+    },
+    "allServices": "All services"
   }
 }

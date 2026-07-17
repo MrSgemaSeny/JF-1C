@@ -67,6 +67,8 @@ function CustomAssignDropdown({ employees, disabled, onAssign, assigningTaskId, 
   );
 }
 
+import { TaskPoolTabs } from './TaskPoolTabs';
+
 export function TaskPoolPage() {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
@@ -89,7 +91,7 @@ export function TaskPoolPage() {
       refetch();
     } catch (err) {
       console.error('Failed to assign task:', err);
-      alert('Не удалось назначить задачу');
+      alert(t('taskPool.error.assign', { defaultValue: 'Не удалось назначить задачу' }));
     } finally {
       setAssigningTaskId(null);
     }
@@ -106,16 +108,17 @@ export function TaskPoolPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-red-500 gap-4">
-        <p>Ошибка загрузки пула задач</p>
+        <p>{t('taskPool.error.load', { defaultValue: 'Ошибка загрузки пула задач' })}</p>
         <button onClick={refetch} className="px-4 py-2 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors">
-          Повторить
+          {t('taskPool.actions.retry', { defaultValue: 'Повторить' })}
         </button>
       </div>
     );
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-full mx-auto min-h-full">
+    <div className="h-full flex flex-col w-full">
+      <TaskPoolTabs />
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-3">
           <div className="p-2 bg-brand-green/10 text-brand-green rounded-xl">
@@ -169,14 +172,14 @@ export function TaskPoolPage() {
                     {task.client ? (
                       <div className="text-sm font-medium text-gray-700">{task.client.fullName}</div>
                     ) : (
-                      <span className="text-xs text-gray-400 italic bg-gray-50 px-2 py-1 rounded">Не указан</span>
+                      <span className="text-xs text-gray-400 italic bg-gray-50 px-2 py-1 rounded">{t('taskPool.noClient', { defaultValue: 'Не указан' })}</span>
                     )}
                   </td>
                   <td className="px-6 py-5">
                     {task.stage && <StatusBadge stage={task.stage} />}
                   </td>
                   <td className="px-6 py-5 text-sm text-gray-500 font-medium">
-                    {new Date(task.createdAt).toLocaleDateString()}
+                    {new Date(task.createdAt).toLocaleDateString(t('common:locale', { defaultValue: 'ru-RU' }))}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-3" onClick={e => e.stopPropagation()}>
@@ -233,12 +236,12 @@ export function TaskPoolPage() {
                   <div className="flex flex-col">
                     <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">{t('taskPool.columns.client')}</span>
                     <span className="font-medium text-gray-700 truncate max-w-[140px]">
-                      {task.client ? task.client.fullName : <span className="italic text-gray-400">Не указан</span>}
+                      {task.client ? task.client.fullName : <span className="italic text-gray-400">{t('taskPool.noClient', { defaultValue: 'Не указан' })}</span>}
                     </span>
                   </div>
                   <div className="flex flex-col text-right">
                     <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">{t('taskPool.columns.created')}</span>
-                    <span className="font-medium">{new Date(task.createdAt).toLocaleDateString()}</span>
+                    <span className="font-medium">{new Date(task.createdAt).toLocaleDateString(t('common:locale', { defaultValue: 'ru-RU' }))}</span>
                   </div>
                 </div>
 

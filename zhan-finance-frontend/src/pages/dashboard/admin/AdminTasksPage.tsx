@@ -31,7 +31,7 @@ export function AdminTasksPage() {
     try {
       await batchUpdate(allTasks);
     } catch (err) {
-      alert(err instanceof Error ? err.message : t('adminTasks.updateError'));
+      alert(err instanceof Error ? err.message : t('adminTasks.updateError', { defaultValue: 'Ошибка обновления задач' }));
     }
   };
 
@@ -39,9 +39,9 @@ export function AdminTasksPage() {
     const now = Date.now();
     const newTask: TaskDto = {
       id: now,
-      title: t('adminTasks.newTask'),
+      title: t('adminTasks.newTask', { defaultValue: 'Новая задача' }),
       subtasks: [
-        { id: now + 1, taskId: now, title: t('adminTasks.firstStep'), status: 'NEW', createdAt: new Date().toISOString() }
+        { id: now + 1, taskId: now, title: t('adminTasks.firstStep', { defaultValue: 'Первый шаг' }), status: 'NEW', createdAt: new Date().toISOString() }
       ],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -62,7 +62,7 @@ export function AdminTasksPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err) {
-      alert(t('adminTasks.exportError'));
+      alert(t('adminTasks.exportError', { defaultValue: 'Ошибка экспорта' }));
     }
   };
 
@@ -71,21 +71,21 @@ export function AdminTasksPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('adminTasks.title')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('adminTasks.title', { defaultValue: 'Задачи' })}</h1>
         <div className="flex gap-3">
           <button 
             onClick={handleExport}
             className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-sm"
           >
             <Download size={18} />
-            <span>{t('adminTasks.exportCSV')}</span>
+            <span>{t('adminTasks.exportCSV', { defaultValue: 'Экспорт CSV' })}</span>
           </button>
           <button 
             onClick={handleCreateTask}
             className="flex items-center gap-2 bg-brand-green text-white px-4 py-2 rounded-lg font-medium hover:bg-brand-accent transition-colors shadow-sm"
           >
             <Plus size={18} />
-            <span>{t('adminTasks.newTaskBtn')}</span>
+            <span>{t('adminTasks.newTaskBtn', { defaultValue: '+ Новая задача' })}</span>
           </button>
         </div>
       </div>

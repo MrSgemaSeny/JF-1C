@@ -27,15 +27,15 @@ export const LanguageSwitcher = () => {
   };
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center bg-brand-green/5 border border-brand-green/10 rounded-full p-1 shadow-sm">
       {LANGUAGES.map(({ code, label }) => (
         <button
           key={code}
           onClick={() => handleLanguageChange(code)}
-          className={`text-sm hover:text-brand-green transition-colors ${
+          className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all ${
             i18n.language === code 
-              ? 'font-bold text-brand-green bg-green-50 px-2 py-0.5 rounded' 
-              : 'text-gray-500 font-medium'
+              ? 'bg-brand-green text-brand-beige shadow-md' 
+              : 'text-brand-green/70 hover:text-brand-green hover:bg-brand-green/10'
           }`}
         >
           {label}

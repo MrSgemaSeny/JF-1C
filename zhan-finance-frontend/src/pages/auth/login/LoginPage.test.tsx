@@ -49,14 +49,14 @@ describe('LoginPage Component', () => {
   it('renders login form elements', () => {
     renderWithProviders(<LoginPage />);
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /Log In/i })[0]).toBeInTheDocument();
+    expect(screen.getByLabelText(/auth\.login\.passwordLabel/i)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /auth\.login\.loginBtn/i })[0]).toBeInTheDocument();
   });
 
   it('shows validation errors when submitting empty form', async () => {
     renderWithProviders(<LoginPage />);
     
-    const submitButton = screen.getAllByRole('button', { name: /Log In/i })[0];
+    const submitButton = screen.getAllByRole('button', { name: /auth\.login\.loginBtn/i })[0];
     
     fireEvent.click(submitButton);
 
