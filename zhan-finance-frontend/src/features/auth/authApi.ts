@@ -1,4 +1,4 @@
-import { apiRequest } from '@/shared/api/http';
+import { apiRequest, API_BASE_URL } from '@/shared/api/http';
 
 export type UserRole = 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
 
@@ -51,11 +51,24 @@ export function register(request: RegisterRequest): Promise<AuthResponse | null>
   });
 }
 
-export function refresh(request: RefreshRequest): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/api/auth/refresh', {
+export async function refresh(request: RefreshRequest): Promise<AuthResponse> {
+  const url = `${API_BASE_URL}/api/auth/refresh`;
+  const response = await fetch(url, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request)
   });
+  
+  if (!response.ok) {
+    throw new Error('Refresh failed');
+  }
+  
+  const json = await response.json();
+  if (json.success === false) {
+    throw new Error(json.message || 'Refresh failed');
+  }
+  
+  return json.data as AuthResponse;
 }
 
 export async function loginWithGoogle(credential: string, role?: 'CLIENT' | 'EMPLOYEE'): Promise<AuthResponse> {
