@@ -103,39 +103,39 @@ export const LeadsPage = () => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50/50 w-full">
-      <header className="px-6 md:px-8 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 border-b border-gray-200 bg-white">
+      <header className="px-4 md:px-8 py-4 md:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0 border-b border-gray-200 bg-white">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <div className="p-2 bg-brand-green/10 text-brand-green rounded-xl">
-              <LayoutList size={24} />
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2 md:gap-3">
+            <div className="p-1.5 md:p-2 bg-brand-green/10 text-brand-green rounded-lg md:rounded-xl">
+              <LayoutList size={20} className="md:w-6 md:h-6" />
             </div>
             {t('admin.leads.title', { defaultValue: 'Входящие заявки' })}
-            <span className="rounded-full px-2.5 py-0.5 text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">
+            <span className="rounded-full px-2 py-0.5 text-[10px] md:text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">
               {leads?.length || 0}
             </span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs md:text-sm text-gray-500 mt-1">
             {t('admin.leads.subtitle', { defaultValue: 'Обработка новых заявок с сайта и квизов' })}
           </p>
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto p-6 md:p-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <main className="flex-1 overflow-auto p-0 md:p-8">
+        <div className="bg-white md:rounded-xl shadow-sm border-y md:border-x border-gray-200 overflow-hidden">
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
-                <tr className="bg-gray-50/80 border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider font-semibold">
-                  <th className="px-6 py-4 w-48">{t('admin.leads.table.date', { defaultValue: 'Дата' })}</th>
-                  <th className="px-6 py-4 w-64">{t('admin.leads.table.client', { defaultValue: 'Клиент' })}</th>
-                  <th className="px-6 py-4">{t('admin.leads.table.message', { defaultValue: 'Сообщение / Результат' })}</th>
-                  <th className="px-6 py-4 w-48 text-right">{t('admin.leads.table.status', { defaultValue: 'Статус' })}</th>
+                <tr className="bg-gray-50/80 border-b border-gray-200 text-gray-500 text-[10px] md:text-xs uppercase tracking-wider font-semibold">
+                  <th className="px-4 md:px-6 py-3 md:py-4 w-40 md:w-48">{t('admin.leads.table.date', { defaultValue: 'Дата' })}</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 w-48 md:w-64">{t('admin.leads.table.client', { defaultValue: 'Клиент' })}</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4">{t('admin.leads.table.message', { defaultValue: 'Сообщение / Результат' })}</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 w-40 md:w-48 text-right">{t('admin.leads.table.status', { defaultValue: 'Статус' })}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {sortedLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-16 text-center">
+                    <td colSpan={4} className="px-4 md:px-6 py-10 md:py-16 text-center">
                       <div className="flex flex-col items-center justify-center text-gray-400">
                         <MessageSquare size={32} className="mb-3 opacity-20" />
                         <span className="font-medium">{t('admin.leads.noLeads', { defaultValue: 'Нет новых заявок' })}</span>
@@ -145,7 +145,7 @@ export const LeadsPage = () => {
                 ) : (
                   sortedLeads.map((lead) => (
                     <tr key={lead.id} className="hover:bg-brand-green/[0.02] transition-colors group">
-                      <td className="px-6 py-5 align-top">
+                      <td className="px-4 md:px-6 py-4 md:py-5 align-top">
                         <div className="flex flex-col gap-1">
                           <span className="font-medium text-gray-900">
                             {new Date(lead.createdAt).toLocaleDateString(t('common:locale', { defaultValue: 'ru-RU' }), { day: 'numeric', month: 'long' })}
@@ -156,17 +156,17 @@ export const LeadsPage = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 align-top">
+                      <td className="px-4 md:px-6 py-4 md:py-5 align-top">
                         <div className="font-semibold text-gray-900 text-base mb-1.5">{lead.name}</div>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Phone size={14} className="text-gray-400" />
                           <a href={`tel:${lead.phone}`} className="hover:text-brand-green transition-colors">{lead.phone}</a>
                         </div>
                       </td>
-                      <td className="px-6 py-5 align-top">
+                      <td className="px-4 md:px-6 py-4 md:py-5 align-top">
                         {formatMessage(lead.message || '', t)}
                       </td>
-                      <td className="px-6 py-5 align-top text-right">
+                      <td className="px-4 md:px-6 py-4 md:py-5 align-top text-right">
                         <div className="relative inline-block text-left w-full max-w-[160px]">
                           <select
                             className={twMerge(
