@@ -70,7 +70,7 @@ export function App() {
   const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
+    <GoogleOAuthProvider clientId="249161344734-j51fft6shbogf2clnrhofn3l0c1euihl.apps.googleusercontent.com">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <NotificationProvider>
