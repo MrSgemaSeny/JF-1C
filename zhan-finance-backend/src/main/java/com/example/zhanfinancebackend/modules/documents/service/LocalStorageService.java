@@ -70,6 +70,29 @@ public class LocalStorageService implements StorageService {
     }
 
     @Override
+    public String store(byte[] content, String originalFilename, String contentType) {
+        try {
+            String cleanFilename = StringUtils.cleanPath(originalFilename != null ? originalFilename : "unknown");
+            if (cleanFilename.contains("..")) {
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Cannot store file with relative path outside current directory.");
+            }
+
+            String storageKey = UUID.randomUUID().toString() + "_" + cleanFilename;
+            Path destinationFile = this.rootLocation.resolve(Paths.get(storageKey)).normalize().toAbsolutePath();
+
+            if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Cannot store file outside current directory.");
+            }
+
+            Files.write(destinationFile, content);
+            
+            return storageKey;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file.", e);
+        }
+    }
+
+    @Override
     public Resource loadAsResource(String storageKey) {
         try {
             Path file = rootLocation.resolve(storageKey).normalize();
@@ -91,6 +114,20 @@ public class LocalStorageService implements StorageService {
             Files.deleteIfExists(file);
         } catch (IOException e) {
             throw new RuntimeException("Failed to delete file.");
+        }
+    }
+
+    @Override
+    public byte[] loadAsBytes(String storageKey) {
+        try {
+            Path file = rootLocation.resolve(storageKey).normalize();
+            if (Files.exists(file) && Files.isReadable(file)) {
+                return Files.readAllBytes(file);
+            } else {
+                throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+            }
+        } catch (IOException e) {
+            throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
         }
     }
 }

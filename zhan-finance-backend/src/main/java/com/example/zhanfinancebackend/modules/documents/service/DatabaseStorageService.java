@@ -53,6 +53,43 @@ public class DatabaseStorageService implements StorageService {
     }
 
     @Override
+    public String store(byte[] content, String originalFilename, String contentType) {
+        String cleanFilename = StringUtils.cleanPath(originalFilename != null ? originalFilename : "unknown");
+        String storageKey = UUID.randomUUID().toString();
+        
+        StoredFile storedFile = new StoredFile(
+            storageKey,
+            cleanFilename,
+            contentType,
+            content
+        );
+        
+        storedFileRepository.save(storedFile);
+        return storageKey;
+    }
+
+    @Override
+    public byte[] loadAsBytes(String storageKey) {
+        java.util.Optional<StoredFile> fileOpt = storedFileRepository.findById(storageKey);
+        if (fileOpt.isPresent()) {
+            return fileOpt.get().getData();
+        }
+        
+        if (localStorageService != null) {
+            try {
+                return localStorageService.loadAsBytes(storageKey);
+            } catch (Exception e) {
+                try {
+                    return localStorageService.loadAsBytes("avatars/" + storageKey);
+                } catch (Exception ex) {
+                    throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+                }
+            }
+        }
+        throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+    }
+
+    @Override
     public Resource loadAsResource(String storageKey) {
         java.util.Optional<StoredFile> fileOpt = storedFileRepository.findById(storageKey);
         if (fileOpt.isPresent()) {

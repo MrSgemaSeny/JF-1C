@@ -25,11 +25,13 @@ public class TaskController {
     private final TaskService taskService;
     private final CrmAccessService accessService;
     private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
+    private final com.example.zhanfinancebackend.modules.documents.service.DocumentGeneratorService documentGeneratorService;
 
-    public TaskController(TaskService taskService, CrmAccessService accessService, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper) {
+    public TaskController(TaskService taskService, CrmAccessService accessService, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper, com.example.zhanfinancebackend.modules.documents.service.DocumentGeneratorService documentGeneratorService) {
         this.taskService = taskService;
         this.accessService = accessService;
         this.taskMapper = taskMapper;
+        this.documentGeneratorService = documentGeneratorService;
     }
 
     @GetMapping
@@ -167,5 +169,21 @@ public class TaskController {
         return ApiResponse.success(taskService.getTaskHistory(id, principal.getUser()));
     }
 
-
+    @PostMapping("/{id}/documents/generate")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ApiResponse<com.example.zhanfinancebackend.modules.documents.dto.DocumentDto> generateDocument(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body
+    ) {
+        String templateIdStr = body.get("templateId");
+        if (templateIdStr == null || templateIdStr.isBlank()) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST,
+                    "templateId is required"
+            );
+        }
+        java.util.UUID templateId = java.util.UUID.fromString(templateIdStr);
+        return ApiResponse.success(documentGeneratorService.generateFromTemplate(id, templateId, principal.getUser()));
+    }
 }

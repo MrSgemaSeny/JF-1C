@@ -44,9 +44,11 @@ public class DashboardService {
         long wonTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.WON);
         long lostTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST);
         
-        long newRequestsToday = contactRequestRepository.countByCreatedAtAfter(LocalDate.now().atStartOfDay());
+        long newRequestsToday = contactRequestRepository.countByCreatedAtAfter(LocalDate.now().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
         java.math.BigDecimal totalRevenue = taskRepository.sumWonAmount();
+        if (totalRevenue == null) totalRevenue = java.math.BigDecimal.ZERO;
         java.math.BigDecimal expectedRevenue = taskRepository.sumExpectedAmount();
+        if (expectedRevenue == null) expectedRevenue = java.math.BigDecimal.ZERO;
         
         Double avgCompletionDaysRaw = taskRepository.getAverageCompletionDays();
         double avgCompletionDays = avgCompletionDaysRaw != null ? avgCompletionDaysRaw : 0.0;
@@ -78,13 +80,18 @@ public class DashboardService {
         }
         
         for (Map<String, Object> row : empStatsRaw) {
-            Number empIdNum = (Number) row.get("empid");
+            Number empIdNum = getNumberIgnoreCase(row, "empid");
             if (empIdNum == null) continue;
             Long empId = empIdNum.longValue();
             
-            String stageTypeStr = row.get("stagetype") != null ? row.get("stagetype").toString() : null;
-            long count = ((Number) row.get("taskcount")).longValue();
-            long overdue = row.get("overduecount") != null ? ((Number) row.get("overduecount")).longValue() : 0;
+            Object stageObj = getObjectIgnoreCase(row, "stagetype");
+            String stageTypeStr = stageObj != null ? stageObj.toString() : null;
+            
+            Number countNum = getNumberIgnoreCase(row, "taskcount");
+            long count = countNum != null ? countNum.longValue() : 0;
+            
+            Number overdueNum = getNumberIgnoreCase(row, "overduecount");
+            long overdue = overdueNum != null ? overdueNum.longValue() : 0;
             
             com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto dto = empStatsMap.get(empId);
             if (dto != null) {
@@ -105,6 +112,20 @@ public class DashboardService {
         }
                 
         return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, wonTasks, lostTasks, avgCompletionDays, tasksByStatus, tasksByLostReason, userRepository.count(), newRequestsToday, totalRevenue, expectedRevenue, new java.util.ArrayList<>(empStatsMap.values()));
+    }
+
+    private Number getNumberIgnoreCase(Map<String, Object> map, String key) {
+        Object obj = getObjectIgnoreCase(map, key);
+        return obj instanceof Number ? (Number) obj : null;
+    }
+
+    private Object getObjectIgnoreCase(Map<String, Object> map, String key) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(key)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     @Cacheable(value = "dashboard_employee", key = "#employee.id")

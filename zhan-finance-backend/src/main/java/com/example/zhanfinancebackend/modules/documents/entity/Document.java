@@ -42,6 +42,10 @@ public class Document {
     @Column(name = "status", length = 50)
     private String status = "UPLOADED";
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "generated_from_template_id")
+    private DocumentTemplate generatedFromTemplate;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -75,5 +79,7 @@ public class Document {
     public void setTask(Task task) { this.task = task; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public DocumentTemplate getGeneratedFromTemplate() { return generatedFromTemplate; }
+    public void setGeneratedFromTemplate(DocumentTemplate generatedFromTemplate) { this.generatedFromTemplate = generatedFromTemplate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }
