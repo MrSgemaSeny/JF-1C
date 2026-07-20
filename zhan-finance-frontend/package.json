@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "deploy": "cross-env VITE_API_URL=https://zhanfinance.fly.dev vite build && node -e \"require('fs').copyFileSync('dist/index.html', 'dist/404.html')\" && gh-pages -d dist",
+    "deploy": "cross-env VITE_API_URL=https://zhanfinance.fly.dev VITE_GOOGLE_CLIENT_ID=249161344734-j51fft6shbogf2clnrhofn3l0c1euihl.apps.googleusercontent.com vite build && node -e \"require('fs').copyFileSync('dist/index.html', 'dist/404.html')\" && gh-pages -d dist",
     "test": "vitest run"
   },
   "devDependencies": {
