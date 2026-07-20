@@ -146,9 +146,9 @@ export function TaskPoolPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col flex-1 min-h-0">
           {/* Desktop Table View */}
-          <div className="hidden md:block overflow-x-auto">
+          <div className="hidden md:block overflow-auto flex-1 custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -228,7 +228,7 @@ export function TaskPoolPage() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden divide-y divide-gray-100">
+          <div className="md:hidden divide-y divide-gray-100 overflow-auto flex-1 custom-scrollbar">
             {tasks.map((task: TaskDto) => (
               <div 
                 key={task.id} 
