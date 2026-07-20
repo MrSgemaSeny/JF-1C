@@ -36,6 +36,7 @@ const AdminLearnersPage = lazy(() => import('@/pages/dashboard/admin/AdminLearne
 const AdminInvoicesPage = lazy(() => import('@/pages/dashboard/admin/billing/AdminInvoicesPage').then(m => ({ default: m.AdminInvoicesPage })));
 const AdminSubscriptionsPage = lazy(() => import('@/pages/dashboard/admin/billing/AdminSubscriptionsPage').then(m => ({ default: m.AdminSubscriptionsPage })));
 const AdminAuditLogPage = lazy(() => import('@/pages/dashboard/admin/AdminAuditLogPage').then(m => ({ default: m.AdminAuditLogPage })));
+const AdminTemplatesPage = lazy(() => import('@/pages/dashboard/admin/AdminTemplatesPage').then(m => ({ default: m.AdminTemplatesPage })));
 
 // Learner
 const LearnerCoursesPage = lazy(() => import('@/pages/dashboard/learner/LearnerCoursesPage').then(m => ({ default: m.LearnerCoursesPage })));
@@ -120,6 +121,7 @@ export function App() {
                 <Route path={ROUTES.ADMIN_INVOICES} element={<AdminInvoicesPage />} />
                 <Route path={ROUTES.ADMIN_SUBSCRIPTIONS} element={<AdminSubscriptionsPage />} />
                 <Route path={ROUTES.ADMIN_AUDIT_LOGS} element={<AdminAuditLogPage />} />
+                <Route path={ROUTES.ADMIN_TEMPLATES} element={<AdminTemplatesPage />} />
               </Route>
 
               <Route element={<RoleProtectedRoute allow={['EMPLOYEE']} />}>

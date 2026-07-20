@@ -95,6 +95,7 @@
     "calendar": "Календарь",
     "documents": "Документы",
     "services": "Услуги",
+    "templates": "Шаблоны",
     "leads": "Лиды"
   },
   "clientDashboard": {
@@ -242,6 +243,11 @@
     "totalEmployees": "Сотрудников",
     "totalTasks": "Всего задач",
     "doneTasks": "Выполнено",
+    "newRequests": "Новые заявки (сегодня)",
+    "wonTasks": "Завершено (Успешно)",
+    "financialAnalytics": "Финансовая аналитика",
+    "earned": "Заработано (Успешно)",
+    "expectedRevenue": "Ожидаемая выручка (В работе)",
     "workload": "Рабочая нагрузка сотрудников",
     "workloadDesc": "Количество активных, просроченных и выполненных задач",
     "employee": "Сотрудник",

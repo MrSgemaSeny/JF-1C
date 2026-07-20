@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTasksQuery, useBatchUpdateTasksMutation } from '@/entities/task/api/taskQueries';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
@@ -9,14 +9,16 @@ import { Plus, Download } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { exportTasksCsv } from '@/entities/task/api/taskApi';
 import { useTranslation } from 'react-i18next';
+import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
 
 export function AdminTasksPage() {
   const { t } = useTranslation(['common']);
-  const { data: tasks, isLoading, error } = useTasksQuery();
+  const { data: tasks, isLoading, error, refetch } = useTasksQuery();
   const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
   const boardRef = useRef<TaskKanbanBoardRef>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const taskIdParam = searchParams.get('taskId');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     if (taskIdParam && tasks && boardRef.current) {
@@ -33,21 +35,6 @@ export function AdminTasksPage() {
     } catch (err) {
       alert(err instanceof Error ? err.message : t('adminTasks.updateError', { defaultValue: 'Ошибка обновления задач' }));
     }
-  };
-
-  const handleCreateTask = () => {
-    const now = Date.now();
-    const newTask: TaskDto = {
-      id: now,
-      title: t('adminTasks.newTask', { defaultValue: 'Новая задача' }),
-      subtasks: [
-        { id: now + 1, taskId: now, title: t('adminTasks.firstStep', { defaultValue: 'Первый шаг' }), status: 'NEW', createdAt: new Date().toISOString() }
-      ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      createdBy: { id: 1, fullName: 'Admin', email: '', role: 'ADMIN' }
-    };
-    boardRef.current?.createNewTask(newTask);
   };
 
   const handleExport = async () => {
@@ -85,7 +72,7 @@ export function AdminTasksPage() {
             <span>{t('adminTasks.exportCSV', { defaultValue: 'Экспорт CSV' })}</span>
           </button>
           <button 
-            onClick={handleCreateTask}
+            onClick={() => setIsCreateModalOpen(true)}
             className="flex items-center gap-2 bg-brand-green text-white px-4 py-2 rounded-lg font-medium hover:bg-brand-accent transition-colors shadow-sm"
           >
             <Plus size={18} />
@@ -99,6 +86,16 @@ export function AdminTasksPage() {
         userRole="ADMIN"
         ref={boardRef}
       />
+
+      {isCreateModalOpen && (
+        <TaskCreateModal
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreated={() => {
+            setIsCreateModalOpen(false);
+            refetch();
+          }}
+        />
+      )}
     </div>
   );
 }

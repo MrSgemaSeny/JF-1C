@@ -52,6 +52,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Invoices':            <CreditCard size={16} />,
   'Subscriptions':       <RefreshCw size={16} />,
   'Audit Logs':          <History size={16} />,
+  'Templates':           <FileText size={16} />,
   'Settings':            <Settings size={16} />,
   'Notifications':       <Bell size={16} />,
 };
@@ -157,6 +158,7 @@ export function DashboardSidebar({
               case 'Calendar': i18nKey = 'nav.calendar'; break;
               case 'Documents': i18nKey = 'nav.documents'; break;
               case 'Services': i18nKey = 'nav.services'; break;
+              case 'Templates': i18nKey = 'nav.templates'; break;
               default: i18nKey = item.label;
             }
             const translatedLabel = i18nKey.startsWith('nav.') ? t(i18nKey) : item.label;

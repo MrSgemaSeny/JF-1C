@@ -95,6 +95,7 @@
     "calendar": "Calendar",
     "documents": "Documents",
     "services": "Services",
+    "templates": "Templates",
     "leads": "Leads"
   },
   "clientDashboard": {

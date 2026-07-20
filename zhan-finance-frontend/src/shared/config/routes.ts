@@ -25,6 +25,7 @@ export const ROUTES = {
   ADMIN_INVOICES: '/admin/invoices',
   ADMIN_SUBSCRIPTIONS: '/admin/subscriptions',
   ADMIN_AUDIT_LOGS: '/admin/audit-logs',
+  ADMIN_TEMPLATES: '/admin/templates',
 
   // Shared Dashboard Routes
   SETTINGS: '/settings',

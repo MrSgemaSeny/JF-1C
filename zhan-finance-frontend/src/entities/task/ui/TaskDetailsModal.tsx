@@ -5,8 +5,10 @@ import { getTaskComments, addTaskComment, getTaskHistory, assignTask } from '../
 import { getEmployees } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
+import { updateTaskStage, deleteTask } from '@/entities/task/api/taskApi';
 import { useTaskActions } from '../lib/useTaskActions';
 import { getTaskDocuments, downloadDocument, uploadDocument } from '@/entities/document/api/documentApi';
+import { GenerateDocumentButton } from '@/entities/document-template/ui/GenerateDocumentButton';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { StatusBadge } from '@/shared/ui/Badge';
 import { twMerge } from 'tailwind-merge';
@@ -377,6 +379,12 @@ export function TaskDetailsModal({ task, onClose, onUpdateTask, userRole, isModa
                   <FileText size={16} /> {t('taskModal.attachments', { defaultValue: 'Вложения' })} ({documents.length})
                 </h3>
                 <div className="flex items-center gap-2">
+                  {user?.role !== 'CLIENT' && (
+                    <GenerateDocumentButton 
+                      taskId={task.id} 
+                      onSuccess={fetchDocuments} 
+                    />
+                  )}
                   <input 
                     type="file" 
                     ref={fileInputRef} 
