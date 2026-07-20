@@ -72,7 +72,10 @@ import { TaskPoolTabs } from './TaskPoolTabs';
 export function TaskPoolPage() {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
-  const { data: tasksData, isLoading, error, refetch } = useTasksQuery(user?.role === 'ADMIN' ? undefined : { unassigned: true });
+  const { data: tasksData, isLoading, error, refetch } = useTasksQuery(
+    user?.role === 'ADMIN' ? undefined : { unassigned: true },
+    !!user // Only run the query when user object is loaded
+  );
   const tasks = tasksData || [];
   const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
   const [employees, setEmployees] = React.useState<EmployeeDto[]>([]);
