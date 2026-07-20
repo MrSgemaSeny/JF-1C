@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getTasks } from '@/entities/task/api/taskApi';
-import { useApiData } from '@/shared/hooks/useApiData';
+import { useTasksQuery } from '@/entities/task/api/taskQueries';
 import { Users, Loader2, Inbox } from 'lucide-react';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import { StatusBadge } from '@/shared/ui/Badge';
@@ -72,7 +72,8 @@ import { TaskPoolTabs } from './TaskPoolTabs';
 export function TaskPoolPage() {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
-  const { data: tasks, isLoading, error, refetch } = useApiData(() => getTasks({ unassigned: true }));
+  const { data: tasksData, isLoading, error, refetch } = useTasksQuery(user?.role === 'ADMIN' ? undefined : { unassigned: true });
+  const tasks = tasksData || [];
   const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
   const [employees, setEmployees] = React.useState<EmployeeDto[]>([]);
   const [assigningTaskId, setAssigningTaskId] = React.useState<number | null>(null);
@@ -109,7 +110,7 @@ export function TaskPoolPage() {
     return (
       <div className="flex flex-col items-center justify-center h-full text-red-500 gap-4">
         <p>{t('taskPool.error.load', { defaultValue: 'Ошибка загрузки пула задач' })}</p>
-        <button onClick={refetch} className="px-4 py-2 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors">
+        <button onClick={() => refetch()} className="px-4 py-2 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors">
           {t('taskPool.actions.retry', { defaultValue: 'Повторить' })}
         </button>
       </div>
@@ -127,7 +128,7 @@ export function TaskPoolPage() {
           {t('taskPool.title')}
         </h1>
         <p className="text-gray-500">
-          {user?.role === 'EMPLOYEE' ? t('taskPool.description.employee', 'Свободные задачи, ожидающие назначения. Вы можете взять любую задачу в работу.') : t('taskPool.description.admin', 'Свободные задачи, ожидающие назначения. Назначьте задачу сотруднику.')}
+          {user?.role === 'EMPLOYEE' ? t('taskPool.description.employee', 'Свободные задачи, ожидающие назначения. Вы можете взять любую задачу в работу.') : t('taskPool.description.admin', 'Список всех активных задач. Здесь вы видите всё, можете назначить или переназначить исполнителя.')}
         </p>
       </div>
 
@@ -150,6 +151,9 @@ export function TaskPoolPage() {
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[40%]">{t('taskPool.columns.title')}</th>
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.client')}</th>
+                {user?.role === 'ADMIN' && (
+                  <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Исполнитель</th>
+                )}
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.status')}</th>
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.created')}</th>
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">{t('taskPool.columns.actions')}</th>
@@ -175,6 +179,15 @@ export function TaskPoolPage() {
                       <span className="text-xs text-gray-400 italic bg-gray-50 px-2 py-1 rounded">{t('taskPool.noClient', { defaultValue: 'Не указан' })}</span>
                     )}
                   </td>
+                  {user?.role === 'ADMIN' && (
+                    <td className="px-6 py-5">
+                      {task.assignedTo ? (
+                        <div className="text-sm font-medium text-gray-700">{task.assignedTo.fullName}</div>
+                      ) : (
+                        <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">Не назначен</span>
+                      )}
+                    </td>
+                  )}
                   <td className="px-6 py-5">
                     {task.stage && <StatusBadge stage={task.stage} />}
                   </td>
@@ -239,6 +252,14 @@ export function TaskPoolPage() {
                       {task.client ? task.client.fullName : <span className="italic text-gray-400">{t('taskPool.noClient', { defaultValue: 'Не указан' })}</span>}
                     </span>
                   </div>
+                  {user?.role === 'ADMIN' && (
+                    <div className="flex flex-col text-center">
+                      <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">Исполнитель</span>
+                      <span className="font-medium text-gray-700 truncate max-w-[100px]">
+                        {task.assignedTo ? task.assignedTo.fullName : <span className="text-amber-600 font-bold">Нет</span>}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex flex-col text-right">
                     <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">{t('taskPool.columns.created')}</span>
                     <span className="font-medium">{new Date(task.createdAt).toLocaleDateString(t('common:locale', { defaultValue: 'ru-RU' }))}</span>
