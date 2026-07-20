@@ -4,7 +4,7 @@ import type { TaskDto, StageDto } from '@/entities/task/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { MiniCalendarWidget } from '../shared/calendar/MiniCalendarWidget';
-import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
+
 import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
 import { Plus, MessageSquare, Clock, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
@@ -31,8 +31,12 @@ function getClientStatus(stage?: StageDto) {
   return { labelKey: '', dynamicLabel: stage.name, color: 'bg-blue-50 text-blue-700 border-blue-200', icon: <Clock size={14} /> };
 }
 
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/shared/config/routes';
+
 export function ClientOverviewPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { t } = useTranslation(['common']);
   const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,8 +49,6 @@ export function ClientOverviewPage() {
   const [dueDate, setDueDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Modal state
-  const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
 
   // Filter state
   const [activeTab, setActiveTab] = useState<'ACTIVE' | 'HISTORY'>('ACTIVE');
@@ -100,13 +102,6 @@ export function ClientOverviewPage() {
     }
   };
 
-  const handleUpdateTask = async (updatedTask: TaskDto) => {
-    // Если клиент меняет статус через модалку
-    setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t));
-    if (selectedTask?.id === updatedTask.id) {
-      setSelectedTask(updatedTask);
-    }
-  };
 
   // Stats calculations
   const stats = {
@@ -235,7 +230,7 @@ export function ClientOverviewPage() {
                   return (
                     <div 
                       key={task.id}
-                      onClick={() => setSelectedTask(task)}
+                      onClick={() => navigate(ROUTES.CLIENT_TASK_DETAILS.replace(':id', task.id.toString()))}
                       className="p-5 hover:bg-gray-50 transition-colors cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
                       <div className="flex-1 min-w-0">
@@ -277,17 +272,6 @@ export function ClientOverviewPage() {
           <MiniCalendarWidget />
         </div>
       </div>
-
-      {selectedTask && (
-        <TaskDetailsModal
-          task={selectedTask}
-          onClose={() => setSelectedTask(null)}
-          onUpdateTask={(updated) => {
-            handleUpdateTask(updated);
-          }}
-          userRole="CLIENT"
-        />
-      )}
     </div>
   );
 }

@@ -3,6 +3,8 @@ package com.example.zhanfinancebackend.modules.crm.dto;
 import jakarta.validation.constraints.NotNull;
 
 public record TaskStageUpdateRequest(
-        @NotNull Long stageId
+        @NotNull(message = "Stage ID is required")
+        Long stageId,
+        String lostReason
 ) {
 }

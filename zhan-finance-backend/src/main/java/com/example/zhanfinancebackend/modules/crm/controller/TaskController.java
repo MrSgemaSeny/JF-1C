@@ -63,6 +63,15 @@ public class TaskController {
         return ApiResponse.success(taskService.getTasksForClient(user));
     }
 
+    @GetMapping("/archived")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ApiResponse<List<TaskDto>> getArchivedTasks(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam com.example.zhanfinancebackend.modules.crm.entity.StageType stageType
+    ) {
+        return ApiResponse.success(taskService.getArchivedTasks(stageType));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
@@ -101,7 +110,16 @@ public class TaskController {
             @PathVariable Long id,
             @Valid @RequestBody TaskStageUpdateRequest request
     ) {
-        return ApiResponse.success(taskService.updateTaskStage(id, request.stageId(), principal.getUser()));
+        return ApiResponse.success(taskService.updateTaskStage(id, request.stageId(), request.lostReason(), principal.getUser()));
+    }
+
+    @PostMapping("/{id}/archive")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ApiResponse<TaskDto> archiveTask(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(taskService.archiveTask(id, principal.getUser()));
     }
 
     @PatchMapping("/{id}/assign")

@@ -50,6 +50,8 @@ public class TaskService {
     private final StageRepository stageRepository;
     private final PipelineRepository pipelineRepository;
     private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
+    private final com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository;
+    private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
 
     public TaskService(
             TaskRepository taskRepository,
@@ -61,7 +63,9 @@ public class TaskService {
             com.example.zhanfinancebackend.modules.services.repository.ServiceRepository serviceRepository,
             StageRepository stageRepository,
             PipelineRepository pipelineRepository,
-            com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper
+            com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper,
+            com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository,
+            com.example.zhanfinancebackend.modules.documents.service.StorageService storageService
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -73,6 +77,8 @@ public class TaskService {
         this.stageRepository = stageRepository;
         this.pipelineRepository = pipelineRepository;
         this.taskMapper = taskMapper;
+        this.documentRepository = documentRepository;
+        this.storageService = storageService;
     }
 
     @Transactional(readOnly = true)
@@ -94,6 +100,11 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskDto> getTasksForEmployee(User employee) {
         return taskRepository.findAllByEmployeeWithDetails(employee).stream().map(taskMapper::mapToDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskDto> getArchivedTasks(StageType stageType) {
+        return taskRepository.findArchivedByStageType(stageType).stream().map(taskMapper::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)
@@ -164,7 +175,19 @@ public class TaskService {
             );
         }
 
+        notificationService.notifyAdmins(
+                "Новая задача",
+                "Создана новая задача: " + savedTask.getTitle() + " для клиента " + client.getFullName(),
+                "/dashboard/tasks"
+        );
+
         if (savedTask.getAssignedTo() != null) {
+            notificationService.createNotification(
+                    savedTask.getAssignedTo(),
+                    "Новая задача",
+                    "Вам назначена задача: " + savedTask.getTitle(),
+                    "/dashboard/tasks"
+            );
             emailNotificationService.sendTaskAssignedEmail(savedTask.getAssignedTo(), savedTask);
         }
 
@@ -208,8 +231,20 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         auditService.logAction("CREATE", "Task", savedTask.getId(), "Client requested task: " + savedTask.getTitle());
 
+        notificationService.notifyAdmins(
+                "Новая задача от клиента",
+                "Клиент " + managedClient.getFullName() + " создал запрос на услугу: " + savedTask.getTitle(),
+                "/dashboard/tasks"
+        );
+
         User employee = managedClient.getAssignedEmployee();
         if (employee != null) {
+            notificationService.createNotification(
+                    employee,
+                    "Новая задача от клиента",
+                    "Клиент " + managedClient.getFullName() + " создал запрос на услугу: " + savedTask.getTitle(),
+                    "/dashboard/tasks"
+            );
             emailNotificationService.sendTaskAssignedEmail(employee, savedTask);
         }
 
@@ -218,7 +253,7 @@ public class TaskService {
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
-    public TaskDto updateTaskStage(Long taskId, Long stageId, User user) {
+    public TaskDto updateTaskStage(Long taskId, Long stageId, String lostReason, User user) {
         Task task = getTaskEntity(taskId);
         Stage newStage = stageRepository.findById(stageId)
                 .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Stage not found"));
@@ -229,29 +264,95 @@ public class TaskService {
             String oldStage = task.getStage() != null ? task.getStage().getName() : "None";
             logActivity(task, user, "Изменил стадию с " + oldStage + " на " + newStage.getName());
             auditService.logAction("UPDATE_STAGE", "Task", task.getId(), "Stage changed from " + oldStage + " to " + newStage.getName());
-            
+
             if (user.getRole() == Role.CLIENT) {
                 User employee = task.getClient().getAssignedEmployee();
                 if (employee != null) {
                     notificationService.createNotification(
                             employee,
-                            "Task Stage Updated",
-                            "Client " + user.getFullName() + " updated task '" + task.getTitle() + "' to " + newStage.getName(),
-                            "/employee/tasks/" + task.getId()
+                            "Статус задачи изменен",
+                            "Клиент " + user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + newStage.getName(),
+                            "/dashboard/tasks"
                     );
-                    emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName());
+                }
+                notificationService.notifyAdmins(
+                        "Статус задачи изменен",
+                        "Клиент " + user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + newStage.getName(),
+                        "/dashboard/tasks"
+                );
+                
+                if (newStage.getType() == StageType.LOST && employee != null) {
+                     emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName());
                 }
             } else {
                 notificationService.createNotification(
                         task.getClient(),
-                        "Task Stage Updated",
-                        "The stage of your task '" + task.getTitle() + "' has been updated to: " + newStage.getName(),
-                        "/client/documents"
+                        "Статус задачи изменен",
+                        "Статус вашей задачи '" + task.getTitle() + "' изменен на: " + newStage.getName(),
+                        "/dashboard/client"
                 );
-                emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName());
+                
+                User employee = task.getAssignedTo();
+                if (employee != null && !employee.getId().equals(user.getId())) {
+                    notificationService.createNotification(
+                        employee,
+                        "Статус задачи изменен",
+                        "Статус задачи '" + task.getTitle() + "' изменен на: " + newStage.getName(),
+                        "/dashboard/tasks"
+                    );
+                }
+
+                if (user.getRole() != Role.ADMIN) {
+                    notificationService.notifyAdmins(
+                        "Статус задачи изменен",
+                        user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + newStage.getName(),
+                        "/dashboard/tasks"
+                    );
+                }
+
+                if (newStage.getType() == StageType.WON) {
+                    java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
+                    emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                } else if (newStage.getType() == StageType.LOST) {
+                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName());
+                }
             }
         }
+        
+        if (newStage.getType() == StageType.LOST) {
+            if (lostReason != null && !lostReason.isBlank()) {
+                task.setLostReason(lostReason);
+                logActivity(task, user, "Причина отказа: " + lostReason);
+            }
+        }
+        
+        if (newStage.getType() == StageType.WON || newStage.getType() == StageType.LOST) {
+            task.setClosedAt(java.time.LocalDate.now());
+        } else {
+            task.setClosedAt(null);
+        }
+        
         task.setStage(newStage);
+        return taskMapper.mapToDto(taskRepository.save(task));
+    }
+
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
+    public TaskDto archiveTask(Long taskId, User user) {
+        Task task = getTaskEntity(taskId);
+        // Only allow archive if stage is WON or LOST
+        if (task.getStage() == null || (task.getStage().getType() != StageType.WON && task.getStage().getType() != StageType.LOST)) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Можно архивировать только завершенные задачи");
+        }
+        // Check access
+        accessService.assertCanUpdateTaskDetails(user, task);
+        
+        if (task.isArchived()) {
+            return taskMapper.mapToDto(task);
+        }
+        
+        task.setArchived(true);
+        logActivity(task, user, "Задача архивирована");
         return taskMapper.mapToDto(taskRepository.save(task));
     }
 
@@ -274,8 +375,20 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
 
         if (assignee != null) {
+            notificationService.createNotification(
+                    assignee,
+                    "Новая задача",
+                    "Вам назначена задача: " + savedTask.getTitle(),
+                    "/dashboard/tasks"
+            );
             emailNotificationService.sendTaskAssignedEmail(assignee, savedTask);
         }
+
+        notificationService.notifyAdmins(
+                "Смена исполнителя",
+                "Исполнитель задачи '" + task.getTitle() + "' изменен на: " + (assignee != null ? assignee.getFullName() : "Не назначен"),
+                "/dashboard/tasks"
+        );
 
         return taskMapper.mapToDto(savedTask);
     }
@@ -307,6 +420,38 @@ public class TaskService {
                     task.setClosedAt(java.time.LocalDate.now());
                 } else {
                     task.setClosedAt(null);
+                }
+                
+                notificationService.createNotification(
+                        task.getClient(),
+                        "Статус задачи изменен",
+                        "Статус вашей задачи '" + task.getTitle() + "' изменен на: " + stage.getName(),
+                        "/dashboard/client"
+                );
+                
+                if (task.getAssignedTo() != null && !task.getAssignedTo().getId().equals(user.getId())) {
+                    notificationService.createNotification(
+                        task.getAssignedTo(),
+                        "Статус задачи изменен",
+                        "Статус задачи '" + task.getTitle() + "' изменен на: " + stage.getName(),
+                        "/dashboard/tasks"
+                    );
+                }
+
+                if (user.getRole() != Role.ADMIN) {
+                    notificationService.notifyAdmins(
+                        "Обновление задачи",
+                        user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + stage.getName(),
+                        "/dashboard/tasks"
+                    );
+                }
+
+                // Add WON/LOST email notifications for batch updates
+                if (stage.getType() == StageType.WON) {
+                    java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
+                    emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                } else if (stage.getType() == StageType.LOST) {
+                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, "Неизвестно", stage.getName());
                 }
             }
             if (dto.assignedToId() != null) {
@@ -355,6 +500,19 @@ public class TaskService {
     @Transactional
     public void deleteTask(Long taskId) {
         Task task = getTaskEntity(taskId);
+        
+        java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId);
+        for (com.example.zhanfinancebackend.modules.documents.entity.Document doc : docs) {
+            try {
+                if (doc.getStorageKey() != null && !doc.getStorageKey().isBlank()) {
+                    storageService.delete(doc.getStorageKey());
+                }
+            } catch (Exception e) {
+                // Ignore if file is already missing
+            }
+            documentRepository.delete(doc);
+        }
+        
         auditService.logAction("DELETE", "Task", task.getId(), "Task deleted: " + task.getTitle());
         taskRepository.delete(task);
     }

@@ -17,35 +17,37 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final EmailNotificationService emailNotificationService;
+    private final com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
 
     @org.springframework.beans.factory.annotation.Value("${app.frontend.url}")
     private String frontendUrl;
 
-    public NotificationService(NotificationRepository notificationRepository, EmailNotificationService emailNotificationService) {
+    public NotificationService(NotificationRepository notificationRepository, 
+                               EmailNotificationService emailNotificationService,
+                               com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
         this.emailNotificationService = emailNotificationService;
+        this.userRepository = userRepository;
     }
 
     @Transactional
     public void createNotification(User user, String title, String message, String relativeLink) {
+        if (user == null) return;
         Notification notification = new Notification(user, title, message);
         notificationRepository.save(notification);
-
-        // Also fire off an email asynchronously
-        String emailText = message;
-        if (relativeLink != null && !relativeLink.isBlank()) {
-            emailText += "\n\nView details here: " + frontendUrl + relativeLink;
-        }
-        
-        // We only send emails to users who have an email address (should be all users)
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            emailNotificationService.sendEmailAsync(user.getEmail(), title, emailText);
-        }
     }
 
     @Transactional
     public void createNotification(User user, String title, String message) {
         createNotification(user, title, message, null);
+    }
+
+    @Transactional
+    public void notifyAdmins(String title, String message, String relativeLink) {
+        List<User> admins = userRepository.findAllByRole(com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN);
+        for (User admin : admins) {
+            createNotification(admin, title, message, relativeLink);
+        }
     }
 
     @Transactional(readOnly = true)

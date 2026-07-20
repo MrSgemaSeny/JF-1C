@@ -28,6 +28,7 @@ public class DocumentService {
     private final StorageService storageService;
     private final DocumentAccessService documentAccessService;
     private final NotificationService notificationService;
+    private final com.example.zhanfinancebackend.modules.crm.service.CrmAccessService crmAccessService;
 
     // MVP allowed types
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
@@ -44,13 +45,15 @@ public class DocumentService {
                            TaskRepository taskRepository,
                            StorageService storageService,
                            DocumentAccessService documentAccessService,
-                           NotificationService notificationService) {
+                           NotificationService notificationService,
+                           com.example.zhanfinancebackend.modules.crm.service.CrmAccessService crmAccessService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
         this.storageService = storageService;
         this.documentAccessService = documentAccessService;
         this.notificationService = notificationService;
+        this.crmAccessService = crmAccessService;
     }
 
     @Transactional
@@ -95,23 +98,36 @@ public class DocumentService {
             // Notify Assigned Employee if exists
             User employee = targetUser.getAssignedEmployee();
             if (employee != null) {
-                String link = taskId != null ? "/employee/tasks/" + taskId : "/employee/documents";
+                String link = taskId != null ? "/dashboard/tasks" : "/dashboard/documents";
                 notificationService.createNotification(
                         employee,
-                        "New Document Uploaded",
-                        "Client " + targetUser.getFullName() + " uploaded a new file: " + document.getFileName(),
+                        "Новый документ",
+                        "Клиент " + targetUser.getFullName() + " загрузил файл: " + document.getFileName(),
                         link
                 );
             }
+            notificationService.notifyAdmins(
+                    "Новый документ от клиента",
+                    "Клиент " + targetUser.getFullName() + " загрузил файл: " + document.getFileName(),
+                    "/dashboard/documents"
+            );
         } else {
             // Notify the Client
-            String link = "/client/documents";
+            String link = "/dashboard/client";
             notificationService.createNotification(
                     targetUser,
-                    "New Document Available",
-                    "A new document has been uploaded for you: " + document.getFileName(),
+                    "Новый документ",
+                    "Сотрудник загрузил для вас файл: " + document.getFileName(),
                     link
             );
+            
+            if (actor.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN) {
+                notificationService.notifyAdmins(
+                        "Загружен документ",
+                        actor.getFullName() + " загрузил файл: " + document.getFileName() + " для клиента " + targetUser.getFullName(),
+                        "/dashboard/documents"
+                );
+            }
         }
 
         return mapToDto(document);
@@ -152,8 +168,7 @@ public class DocumentService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Task not found"));
         
-        // Assert can read task user
-        documentAccessService.assertCanCreateFor(actor, task.getClient());
+        crmAccessService.assertCanReadTask(actor, task);
 
         return documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId).stream()
                 .map(this::mapToDto)
@@ -170,9 +185,17 @@ public class DocumentService {
         if (actor.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT) {
             notificationService.createNotification(
                     document.getUser(),
-                    "Document Status Updated",
-                    "The status of your document '" + document.getFileName() + "' is now: " + status,
-                    "/client/documents"
+                    "Статус документа изменен",
+                    "Статус документа '" + document.getFileName() + "' изменен на: " + status,
+                    "/dashboard/client"
+            );
+        }
+        
+        if (actor.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN) {
+            notificationService.notifyAdmins(
+                 "Статус документа изменен",
+                 actor.getFullName() + " изменил статус документа '" + document.getFileName() + "' на: " + status,
+                 "/dashboard/documents"
             );
         }
 

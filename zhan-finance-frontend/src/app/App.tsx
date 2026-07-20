@@ -55,6 +55,7 @@ const TaskPoolPage = lazy(() => import('@/pages/dashboard/shared/task-pool/TaskP
 
 // Client
 const ClientOverviewPage = lazy(() => import('@/pages/dashboard/client/ClientOverviewPage').then(m => ({ default: m.ClientOverviewPage })));
+const ClientTaskDetailsPage = lazy(() => import('@/pages/dashboard/client/ClientTaskDetailsPage').then(m => ({ default: m.ClientTaskDetailsPage })));
 const ClientDocumentsPage = lazy(() => import('@/pages/dashboard/client/ClientDocumentsPage').then(m => ({ default: m.ClientDocumentsPage })));
 const ClientChatPage = lazy(() => import('@/pages/dashboard/client/ClientChatPage').then(m => ({ default: m.ClientChatPage })));
 const ClientServicesPage = lazy(() => import('@/pages/dashboard/client/ClientServicesPage').then(m => ({ default: m.ClientServicesPage })));
@@ -138,6 +139,7 @@ export function App() {
               {/* Client Routes */}
               <Route element={<RoleProtectedRoute allow={['CLIENT']} />}>
                 <Route path={ROUTES.CLIENT} element={<ClientOverviewPage />} />
+                <Route path={ROUTES.CLIENT_TASK_DETAILS} element={<ClientTaskDetailsPage />} />
                 <Route path={ROUTES.CLIENT_CHAT} element={<ClientChatPage />} />
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
                 <Route path={ROUTES.CLIENT_CALENDAR} element={<CalendarPage />} />

@@ -67,10 +67,8 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
       </div>
 
       {/* Amount and Icons */}
-      <div className="flex items-center justify-between mt-1">
-        <span className="text-[13px] text-gray-500">
-          {amountStr} {currencyStr}
-        </span>
+      <div className="flex justify-between items-center text-xs text-gray-500 mb-2">
+        <span className="font-medium text-gray-700"></span>
         <div className="flex gap-1.5">
           <button
             onClick={(e) => {

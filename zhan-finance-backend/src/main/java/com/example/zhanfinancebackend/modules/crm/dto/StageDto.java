@@ -9,6 +9,7 @@ public record StageDto(
         Integer orderIndex,
         String color,
         StageType type,
-        boolean isDefault
+        boolean isDefault,
+        boolean isPreFinal
 ) {
 }

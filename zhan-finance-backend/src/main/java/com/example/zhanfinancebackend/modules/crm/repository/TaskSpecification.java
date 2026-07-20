@@ -13,6 +13,7 @@ public class TaskSpecification {
     public static Specification<Task> filterTasks(Long clientId, Long assignedToId, Long stageId, Boolean unassigned) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("archived"), false));
 
             if (clientId != null) {
                 predicates.add(cb.equal(root.get("client").get("id"), clientId));

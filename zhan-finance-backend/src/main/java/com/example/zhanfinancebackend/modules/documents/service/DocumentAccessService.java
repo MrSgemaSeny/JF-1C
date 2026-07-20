@@ -17,7 +17,13 @@ public class DocumentAccessService {
         if (actor.getRole() == Role.CLIENT) {
             return sameUser(actor, document.getUser());
         }
-        return actor.getRole() == Role.EMPLOYEE && assignedToEmployee(actor, document.getUser());
+        if (actor.getRole() == Role.EMPLOYEE) {
+            if (assignedToEmployee(actor, document.getUser())) return true;
+            if (document.getTask() != null) {
+                return sameUser(actor, document.getTask().getAssignedTo()) || assignedToEmployee(actor, document.getTask().getClient());
+            }
+        }
+        return false;
     }
 
     public boolean canWrite(User actor, Document document) {

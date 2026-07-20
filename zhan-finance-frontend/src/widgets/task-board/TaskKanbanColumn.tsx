@@ -43,7 +43,8 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
     'var(--color-stage-lost)'
   ];
   
-  const headerColor = stage.color || stageColors[stage.orderIndex % stageColors.length] || 'var(--color-brand-green)';
+  const headerColorRaw = stage.color || stageColors[stage.orderIndex % stageColors.length] || 'var(--color-brand-green)';
+  const headerColor = headerColorRaw === 'var(--color-stage-review)' ? '#6366F1' : headerColorRaw;
 
   return (
     <div className="flex flex-col flex-shrink-0 w-[85vw] md:w-[280px] snap-center">
@@ -63,16 +64,9 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
         ref={setNodeRef}
         className="flex flex-col flex-1 bg-gray-50/50 backdrop-blur-sm border-x border-b border-gray-200 rounded-b-lg p-2 min-h-[500px]"
       >
-        <div className="text-center py-2 mb-2">
-          <span className="inline-block bg-white/40 text-gray-700 border border-white/50 px-3 py-0.5 rounded-full text-[13px] font-medium shadow-sm backdrop-blur-md">
-            {amountStr} {t('kanban.currency', { defaultValue: 'тенге' })}
-          </span>
-        </div>
+
         
-        <button className="w-full mb-3 flex items-center justify-center gap-1 py-1.5 text-sm text-gray-500 bg-white/30 hover:bg-white/50 border border-white/40 rounded shadow-sm transition-colors backdrop-blur-md">
-          <Plus size={14} />
-          <span>{t('kanban.quickDeal', { defaultValue: 'Быстрая сделка' })}</span>
-        </button>
+
 
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (

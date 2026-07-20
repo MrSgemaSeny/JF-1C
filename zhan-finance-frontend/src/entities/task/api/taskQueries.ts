@@ -47,7 +47,18 @@ export function useBatchUpdateTasksMutation() {
 export function useUpdateTaskStage() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, stageId }: { id: number; stageId: number }) => updateTaskStage(id, stageId),
+    mutationFn: ({ id, stageId, lostReason }: { id: number; stageId: number; lostReason?: string }) => updateTaskStage(id, stageId, lostReason),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
+      queryClient.setQueryData(TASK_QUERY_KEYS.detail(data.id), data);
+    },
+  });
+}
+
+export function useArchiveTaskMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => import('./taskApi').then(m => m.archiveTask(id)),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
       queryClient.setQueryData(TASK_QUERY_KEYS.detail(data.id), data);

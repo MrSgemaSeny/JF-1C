@@ -33,6 +33,7 @@ public record TaskDto(
         List<SubtaskDto> subtasks,
         List<String> tags,
         List<Long> serviceIds,
-        List<ServiceDto> services
+        List<ServiceDto> services,
+        boolean archived
 ) {
 }

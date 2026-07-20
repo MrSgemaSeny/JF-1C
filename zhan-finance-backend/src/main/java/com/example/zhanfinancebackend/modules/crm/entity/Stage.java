@@ -29,6 +29,9 @@ public class Stage extends BaseEntity {
     @Column(name = "is_default", nullable = false)
     private boolean isDefault = false;
 
+    @Column(name = "is_pre_final", nullable = false, columnDefinition = "boolean default false")
+    private boolean isPreFinal = false;
+
     public Stage() {}
 
     public Stage(Pipeline pipeline, String name, Integer orderIndex, String color, StageType type) {
@@ -85,5 +88,13 @@ public class Stage extends BaseEntity {
 
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public boolean isPreFinal() {
+        return isPreFinal;
+    }
+
+    public void setPreFinal(boolean preFinal) {
+        isPreFinal = preFinal;
     }
 }

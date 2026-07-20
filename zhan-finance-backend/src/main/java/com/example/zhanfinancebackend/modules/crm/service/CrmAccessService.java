@@ -69,13 +69,19 @@ public class CrmAccessService {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
-            if (newStage != null && (newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON || newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST)) {
-                return false;
-            }
             return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
         }
         if (actor.getRole() == Role.CLIENT) {
-            return sameUser(actor, task.getClient()) && newStage != null && newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON;
+            if (!sameUser(actor, task.getClient()) || newStage == null) {
+                return false;
+            }
+            if (newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
+                return true;
+            }
+            if (newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON) {
+                return task.getStage() != null && task.getStage().isPreFinal();
+            }
+            return false;
         }
         return false;
     }

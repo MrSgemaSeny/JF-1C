@@ -128,4 +128,56 @@ public class EmailNotificationService {
 
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+
+    @Async
+    public void sendTaskCompletedEmailWithDocuments(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task, java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> documents, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+
+        String subject = "✅ Ваша задача успешно завершена: " + task.getTitle();
+        
+        String html = String.format(
+            "<h2>Задача завершена!</h2>" +
+            "<p>Здравствуйте, <b>%s</b>!</p>" +
+            "<p>С радостью сообщаем, что задача <b>%s</b> была успешно завершена.</p>" +
+            "<p>Во вложении к этому письму вы найдете все необходимые документы, подготовленные в рамках этой задачи.</p>" +
+            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Перейти в личный кабинет</a>",
+            user.getFullName(),
+            task.getTitle(),
+            frontendUrl
+        );
+
+        try {
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(fromAddress);
+            helper.setTo(user.getEmail());
+            helper.setSubject(subject);
+            helper.setText(html, true);
+            
+            if (documents != null && !documents.isEmpty() && storageService != null) {
+                for (com.example.zhanfinancebackend.modules.documents.entity.Document doc : documents) {
+                    try {
+                        if (doc.getStorageKey() == null || doc.getStorageKey().isBlank()) {
+                            log.warn("Document {} has no storageKey, skipping attachment", doc.getId());
+                            continue;
+                        }
+                        byte[] fileData = storageService.loadAsBytes(doc.getStorageKey());
+                        helper.addAttachment(doc.getFileName(), new org.springframework.core.io.ByteArrayResource(fileData));
+                    } catch (Exception e) {
+                        log.warn("Failed to attach document {} to email: {}", doc.getFileName(), e.getMessage());
+                    }
+                }
+            }
+            
+            mailSender.send(message);
+            log.info("Sent completed task email with documents to: {}", user.getEmail());
+        } catch (org.springframework.mail.MailAuthenticationException e) {
+            log.warn("Mocking email to {}. (SMTP authentication failed - skipping real email)", user.getEmail());
+        } catch (jakarta.mail.MessagingException e) {
+            log.error("Failed to send email to: {}", user.getEmail(), e);
+        } catch (Exception e) {
+            log.error("Error sending email: ", e);
+        }
+    }
 }

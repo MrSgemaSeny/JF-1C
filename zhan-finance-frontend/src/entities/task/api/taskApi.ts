@@ -12,6 +12,10 @@ export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
   return apiRequest<TaskDto[]>(`/api/crm/tasks${queryString}`);
 }
 
+export async function getArchivedTasks(stageType: 'WON' | 'LOST'): Promise<TaskDto[]> {
+  return apiRequest<TaskDto[]>(`/api/crm/tasks/archived?stageType=${stageType}`);
+}
+
 export async function exportTasksCsv(filter?: TaskFilter): Promise<Blob> {
   const query = new URLSearchParams();
   if (filter?.stageId) query.append('stageId', filter.stageId.toString());
@@ -40,10 +44,16 @@ export async function requestTask(request: TaskRequestCreateRequest): Promise<Ta
   });
 }
 
-export async function updateTaskStage(id: number, stageId: number): Promise<TaskDto> {
+export async function updateTaskStage(id: number, stageId: number, lostReason?: string): Promise<TaskDto> {
   return apiRequest<TaskDto>(`/api/crm/tasks/${id}/stage`, {
     method: 'PATCH',
-    body: JSON.stringify({ stageId }),
+    body: JSON.stringify({ stageId, lostReason }),
+  });
+}
+
+export async function archiveTask(id: number): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/archive`, {
+    method: 'POST'
   });
 }
 

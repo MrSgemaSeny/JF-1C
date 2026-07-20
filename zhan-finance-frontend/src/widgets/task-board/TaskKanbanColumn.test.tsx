@@ -50,8 +50,7 @@ describe('TaskKanbanColumn', () => {
     // Should display task count (2)
     expect(screen.getByText('2')).toBeInTheDocument();
 
-    // Should display total sum (8000)
-    expect(screen.getByText('8 000 тенге')).toBeInTheDocument();
+    // Total sum was removed from design
 
     // Should render the tasks
     expect(screen.getByText('Task 1')).toBeInTheDocument();

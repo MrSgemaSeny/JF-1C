@@ -56,6 +56,9 @@ public class Task extends BaseEntity {
     @Column(name = "deadline_notified_at")
     private java.time.LocalDateTime deadlineNotifiedAt;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean archived = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;
@@ -185,6 +188,14 @@ public class Task extends BaseEntity {
 
     public void setDeadlineNotifiedAt(java.time.LocalDateTime deadlineNotifiedAt) {
         this.deadlineNotifiedAt = deadlineNotifiedAt;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public User getCreatedBy() {

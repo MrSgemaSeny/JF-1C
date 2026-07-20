@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { getTasks, batchUpdateTasks } from '@/entities/task/api/taskApi';
+import { getArchivedTasks, batchUpdateTasks } from '@/entities/task/api/taskApi';
 import { useApiData } from '@/shared/hooks/useApiData';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
@@ -11,7 +11,7 @@ import { TaskPoolTabs } from '../shared/task-pool/TaskPoolTabs';
 
 export function AdminArchiveCancelledPage() {
   const { t } = useTranslation(['common']);
-  const { data: tasks, isLoading, refetch: fetchTasks } = useApiData(getTasks);
+  const { data: tasks, isLoading, refetch: fetchTasks } = useApiData(() => getArchivedTasks('LOST'));
   const boardRef = useRef<TaskGridBoardRef>(null);
 
   const handleBatchSave = async (allTasks: TaskDto[]) => {

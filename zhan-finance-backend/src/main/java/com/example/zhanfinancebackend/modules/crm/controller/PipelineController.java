@@ -36,7 +36,8 @@ public class PipelineController {
                         s.getOrderIndex(),
                         s.getColor(),
                         s.getType(),
-                        s.isDefault()
+                        s.isDefault(),
+                        s.isPreFinal()
                 )).toList()
         )).toList();
         return ApiResponse.success(pipelines);

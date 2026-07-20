@@ -45,7 +45,8 @@ public class TaskMapper {
                         s.getIsHighlighted(),
                         s.getFeatures() != null ? new java.util.ArrayList<>(s.getFeatures()) : List.of(),
                         s.getCreatedAt() != null ? s.getCreatedAt().atZone(java.time.ZoneOffset.UTC) : null
-                )).toList() : List.of()
+                )).toList() : List.of(),
+                task.isArchived()
         );
     }
 
@@ -58,7 +59,8 @@ public class TaskMapper {
                 stage.getOrderIndex(),
                 stage.getColor(),
                 stage.getType(),
-                stage.isDefault()
+                stage.isDefault(),
+                stage.isPreFinal()
         );
     }
 

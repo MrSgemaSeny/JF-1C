@@ -94,6 +94,7 @@ export interface TaskDto {
   createdBy: UserDto;
   createdAt: string;
   updatedAt: string;
+  archived?: boolean;
 }
 
 export interface TaskCreateRequest {
