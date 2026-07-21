@@ -11,21 +11,49 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import com.example.zhanfinancebackend.modules.documents.service.DocumentAccessService;
+import com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository;
+import com.example.zhanfinancebackend.modules.documents.entity.Document;
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 @RestController
 public class FileDownloadController {
 
     private final StorageService storageService;
+    private final DocumentAccessService documentAccessService;
+    private final DocumentRepository documentRepository;
 
-    public FileDownloadController(StorageService storageService) {
+    public FileDownloadController(StorageService storageService,
+                                  DocumentAccessService documentAccessService,
+                                  DocumentRepository documentRepository) {
         this.storageService = storageService;
+        this.documentAccessService = documentAccessService;
+        this.documentRepository = documentRepository;
     }
 
     @GetMapping("/uploads/{storageKey:.+}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String storageKey) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable String storageKey, @AuthenticationPrincipal UserPrincipal principal) {
+        Document document = documentRepository.findByStorageKey(storageKey)
+            .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("File not found"));
+        
+        documentAccessService.assertCanRead(principal.getUser(), document);
+        return serveResource(storageKey);
+    }
+    @GetMapping("/uploads/avatars/{storageKey:.+}")
+    public ResponseEntity<Resource> downloadAvatar(@PathVariable String storageKey) {
+        try {
+            return serveResource("avatars/" + storageKey);
+        } catch (Exception e) {
+            // Fallback for avatars that were uploaded directly to the root uploads folder
+            return serveResource(storageKey);
+        }
+    }
+
+    private ResponseEntity<Resource> serveResource(String storageKey) {
         Resource resource = storageService.loadAsResource(storageKey);
         
-        // Try to determine content type from filename
         String contentType = "application/octet-stream";
         String filename = resource.getFilename();
         if (filename != null) {
@@ -39,15 +67,5 @@ public class FileDownloadController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
-    
-    @GetMapping("/uploads/avatars/{storageKey:.+}")
-    public ResponseEntity<Resource> downloadAvatar(@PathVariable String storageKey) {
-        try {
-            return downloadFile("avatars/" + storageKey);
-        } catch (Exception e) {
-            // Fallback for avatars that were uploaded directly to the root uploads folder
-            return downloadFile(storageKey);
-        }
     }
 }

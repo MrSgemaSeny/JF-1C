@@ -122,12 +122,16 @@ public class CrmAccessService {
         }
     }
 
-    public boolean canAssignTask(User actor) {
-        return actor.getRole() == Role.ADMIN || actor.getRole() == Role.EMPLOYEE;
+    public boolean canAssignTask(User actor, Task task) {
+        if (actor.getRole() == Role.ADMIN) return true;
+        if (actor.getRole() != Role.EMPLOYEE) return false;
+        return task.getAssignedTo() == null
+                || assignedToEmployee(actor, task.getClient())
+                || sameUser(actor, task.getAssignedTo());
     }
 
-    public void assertCanAssignTask(User actor) {
-        if (!canAssignTask(actor)) {
+    public void assertCanAssignTask(User actor, Task task) {
+        if (!canAssignTask(actor, task)) {
             throw new org.springframework.security.access.AccessDeniedException("Assigning task denied");
         }
     }

@@ -12,4 +12,5 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByUser_AssignedEmployee_IdOrderByCreatedAtDesc(Long employeeId);
     List<Document> findAllByOrderByCreatedAtDesc();
     List<Document> findByTaskIdOrderByCreatedAtDesc(Long taskId);
+    java.util.Optional<Document> findByStorageKey(String storageKey);
 }

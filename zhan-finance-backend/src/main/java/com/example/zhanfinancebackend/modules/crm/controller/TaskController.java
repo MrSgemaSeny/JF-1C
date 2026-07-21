@@ -139,7 +139,8 @@ public class TaskController {
             @PathVariable Long id,
             @RequestParam(required = false) Long assigneeId
     ) {
-        accessService.assertCanAssignTask(principal.getUser());
+        Task task = taskService.getTaskEntity(id);
+        accessService.assertCanAssignTask(principal.getUser(), task);
         return ApiResponse.success(taskService.assignTask(id, assigneeId, principal.getUser()));
     }
 
