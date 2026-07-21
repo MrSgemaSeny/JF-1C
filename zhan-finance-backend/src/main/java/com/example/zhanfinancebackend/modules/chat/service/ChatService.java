@@ -82,7 +82,7 @@ public class ChatService {
         } else if (currentUser.getRole() == Role.EMPLOYEE) {
             usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.EMPLOYEE)));
             usersToInclude.addAll(userRepository.findAllByAssignedEmployee(currentUser));
-        } else {
+        } else if (currentUser.getRole() == Role.CLIENT || currentUser.getRole() == Role.LEARNER) {
             if (currentUser.getAssignedEmployee() != null) {
                 usersToInclude.add(currentUser.getAssignedEmployee());
             }
@@ -122,25 +122,30 @@ public class ChatService {
             return; // Admin can chat with anyone
         }
 
-        if (currentUser.getRole() == Role.CLIENT) {
+        if (currentUser.getRole() == Role.CLIENT || currentUser.getRole() == Role.LEARNER) {
             if (otherUser.getRole() == Role.ADMIN) {
-                return; // Clients can chat with admins
+                return; // Clients/Learners can chat with admins
             }
-            if (currentUser.getAssignedEmployee() == null || !currentUser.getAssignedEmployee().getId().equals(otherUserId)) {
-                throw new org.springframework.security.access.AccessDeniedException("Client can only chat with their assigned employee or admins");
+            if (currentUser.getAssignedEmployee() != null && currentUser.getAssignedEmployee().getId().equals(otherUserId)) {
+                return;
             }
-        } else if (currentUser.getRole() == Role.EMPLOYEE) {
+            throw new org.springframework.security.access.AccessDeniedException("Client can only chat with their assigned employee or admins");
+        } 
+        
+        if (currentUser.getRole() == Role.EMPLOYEE) {
             if (otherUser.getRole() == Role.ADMIN || otherUser.getRole() == Role.EMPLOYEE) {
                 return; // Employees can chat with admins and other employees
             }
-            if (otherUser.getRole() == Role.CLIENT) {
-                if (otherUser.getAssignedEmployee() == null || !otherUser.getAssignedEmployee().getId().equals(currentUserId)) {
-                    throw new org.springframework.security.access.AccessDeniedException("Employee can only chat with their assigned clients");
+            if (otherUser.getRole() == Role.CLIENT || otherUser.getRole() == Role.LEARNER) {
+                if (otherUser.getAssignedEmployee() != null && otherUser.getAssignedEmployee().getId().equals(currentUserId)) {
+                    return;
                 }
-            } else {
-                 throw new org.springframework.security.access.AccessDeniedException("Employee cannot chat with this user");
+                throw new org.springframework.security.access.AccessDeniedException("Employee can only chat with their assigned clients");
             }
         }
+        
+        // Deny by default
+        throw new org.springframework.security.access.AccessDeniedException("Access denied");
     }
 
     @Transactional

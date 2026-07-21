@@ -6,6 +6,7 @@ import type { TaskDto } from '@/entities/task/model/types';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { getSecureImageUrl } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/features/auth/AuthContext';
 
 interface TaskKanbanCardProps {
   task: TaskDto;
@@ -16,6 +17,8 @@ interface TaskKanbanCardProps {
 
 export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanbanCardProps) {
   const { t } = useTranslation('crm');
+  const { user } = useAuth();
+  const isMyTask = task.assignedTo?.id === user?.userId;
   const {
     attributes,
     listeners,
@@ -51,10 +54,11 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
       {...listeners}
       onClick={onClick}
       className={`
-        bg-white rounded-md p-3 mb-2 cursor-pointer
+        rounded-md p-3 mb-2 cursor-pointer
         shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_2px_5px_rgba(0,0,0,0.15)]
-        transition-shadow border border-gray-100 flex flex-col gap-2 relative
+        transition-shadow border flex flex-col gap-2 relative
         ${isDragging ? 'opacity-50 scale-[1.02] rotate-1 z-50' : 'opacity-100'}
+        ${isMyTask ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-100'}
       `}
     >
       {/* Top row: Name and red badge if any */}

@@ -67,7 +67,7 @@ public class Task extends BaseEntity {
     private Integer stagePosition = 0;
 
     @Column(name = "reassignment_requested")
-    private boolean reassignmentRequested = false;
+    private Boolean reassignmentRequested = false;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subtask> subtasks = new ArrayList<>();
@@ -220,11 +220,11 @@ public class Task extends BaseEntity {
         this.stagePosition = stagePosition;
     }
 
-    public boolean isReassignmentRequested() {
-        return reassignmentRequested;
+    public Boolean isReassignmentRequested() {
+        return reassignmentRequested != null ? reassignmentRequested : false;
     }
 
-    public void setReassignmentRequested(boolean reassignmentRequested) {
+    public void setReassignmentRequested(Boolean reassignmentRequested) {
         this.reassignmentRequested = reassignmentRequested;
     }
 

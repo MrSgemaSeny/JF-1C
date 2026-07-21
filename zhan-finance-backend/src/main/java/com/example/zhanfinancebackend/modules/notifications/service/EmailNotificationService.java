@@ -199,4 +199,19 @@ public class EmailNotificationService {
 
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+
+    public void sendAccountApprovedEmail(com.example.zhanfinancebackend.modules.auth.entity.User user) {
+        String subject = "Аккаунт подтвержден";
+        String html = """
+                <div style="font-family:sans-serif">
+                  <h2>Здравствуйте, %s!</h2>
+                  <p>Ваш аккаунт сотрудника был успешно подтвержден администратором.</p>
+                  <p>Теперь вы можете войти в систему и начать работу.</p>
+                  <br/>
+                  <p><a href="%s" style="padding:10px 20px; background-color:#1a73e8; color:white; text-decoration:none; border-radius:5px;">Войти в систему</a></p>
+                </div>
+                """.formatted(user.getFullName(), frontendUrl + "/login");
+
+        sendHtmlEmail(user.getEmail(), subject, html);
+    }
 }

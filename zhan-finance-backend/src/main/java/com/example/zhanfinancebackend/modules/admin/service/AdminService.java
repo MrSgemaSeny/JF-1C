@@ -20,19 +20,25 @@ public class AdminService {
     private final TaskRepository taskRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper;
+    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
+    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
 
     public AdminService(
             UserRepository userRepository,
             ClientProfileRepository clientRepository,
             TaskRepository taskRepository,
             org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
-            com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper
+            com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper,
+            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService,
+            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService
     ) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.taskRepository = taskRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.emailNotificationService = emailNotificationService;
+        this.notificationService = notificationService;
     }
 
     public List<EmployeeDto> getAllEmployees() {
@@ -59,6 +65,13 @@ public class AdminService {
         }
         user.setEnabled(true);
         userRepository.save(user);
+        emailNotificationService.sendAccountApprovedEmail(user);
+        notificationService.createNotification(
+                user,
+                "Аккаунт подтвержден",
+                "Ваш аккаунт был успешно подтвержден администратором.",
+                "/login"
+        );
     }
 
     public List<EmployeeDto> getAssignedEmployees() {

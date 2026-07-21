@@ -169,11 +169,11 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         auditService.logAction("CREATE", "Task", savedTask.getId(), "Task created: " + savedTask.getTitle());
 
-        if (creator.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT && client.getId().equals(savedTask.getClient().getId())) {
+        if (creator.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT) {
             notificationService.createNotification(
                     client,
-                    "Новый запрос документов",
-                    "Сотрудник запросил у вас документ по задаче: " + savedTask.getTitle(),
+                    "Новая задача",
+                    "Вам создана новая задача: " + savedTask.getTitle(),
                     "/client"
             );
         }
@@ -215,6 +215,10 @@ public class TaskService {
                     .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default stage not found"));
         }
         task.setStage(defaultStage);
+
+        if (managedClient.getAssignedEmployee() != null) {
+            task.setAssignedTo(managedClient.getAssignedEmployee());
+        }
 
         if (request.subtasks() != null) {
             for (SubtaskCreateRequest stReq : request.subtasks()) {
