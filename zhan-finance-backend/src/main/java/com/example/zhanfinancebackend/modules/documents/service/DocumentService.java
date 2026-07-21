@@ -104,7 +104,7 @@ public class DocumentService {
             // Notify Assigned Employee if exists
             User employee = targetUser.getAssignedEmployee();
             if (employee != null) {
-                String link = taskId != null ? "/dashboard/tasks" : "/dashboard/documents";
+                String link = taskId != null ? "/employee/tasks" : "/employee/documents";
                 notificationService.createNotification(
                         employee,
                         "Новый документ",
@@ -123,7 +123,7 @@ public class DocumentService {
         );
         } else {
             // Notify the Client
-            String link = "/dashboard/client";
+            String link = "/client";
             notificationService.createNotification(
                     targetUser,
                     "Новый документ",
@@ -197,7 +197,7 @@ public class DocumentService {
                     document.getUser(),
                     "Статус документа изменен",
                     "Статус документа '" + document.getFileName() + "' изменен на: " + status,
-                    "/dashboard/client"
+                    "/client"
             );
         }
         
@@ -205,7 +205,7 @@ public class DocumentService {
             notificationService.notifyAdmins(
                  "Статус документа изменен",
                  actor.getFullName() + " изменил статус документа '" + document.getFileName() + "' на: " + status,
-                 "/dashboard/documents"
+                 "/employee/documents"
             );
         }
 

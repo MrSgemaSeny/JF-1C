@@ -174,14 +174,14 @@ public class TaskService {
                     client,
                     "Новый запрос документов",
                     "Сотрудник запросил у вас документ по задаче: " + savedTask.getTitle(),
-                    "/dashboard/client"
+                    "/client"
             );
         }
 
         notificationService.notifyAdmins(
                 "Новая задача",
                 "Создана новая задача: " + savedTask.getTitle() + " для клиента " + client.getFullName(),
-                "/dashboard/tasks"
+                "/admin/tasks"
         );
 
         if (savedTask.getAssignedTo() != null) {
@@ -189,7 +189,7 @@ public class TaskService {
                     savedTask.getAssignedTo(),
                     "Новая задача",
                     "Вам назначена задача: " + savedTask.getTitle(),
-                    "/dashboard/tasks"
+                    "/employee/tasks"
             );
             emailNotificationService.sendTaskAssignedEmail(savedTask.getAssignedTo(), savedTask);
         }
@@ -237,7 +237,7 @@ public class TaskService {
         notificationService.notifyAdmins(
                 "Новая задача от клиента",
                 "Клиент " + managedClient.getFullName() + " создал запрос на услугу: " + savedTask.getTitle(),
-                "/dashboard/tasks"
+                "/admin/tasks"
         );
 
         User employee = managedClient.getAssignedEmployee();
@@ -246,7 +246,7 @@ public class TaskService {
                     employee,
                     "Новая задача от клиента",
                     "Клиент " + managedClient.getFullName() + " создал запрос на услугу: " + savedTask.getTitle(),
-                    "/dashboard/tasks"
+                    "/employee/tasks"
             );
             emailNotificationService.sendTaskAssignedEmail(employee, savedTask);
         }
@@ -327,24 +327,24 @@ public class TaskService {
                             employee,
                             "Статус задачи изменен",
                             "Клиент " + user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + newStage.getName(),
-                            "/dashboard/tasks"
+                            "/employee/tasks"
                     );
                 }
                 notificationService.notifyAdmins(
                         "Статус задачи изменен",
                         "Клиент " + user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + newStage.getName(),
-                        "/dashboard/tasks"
+                        "/admin/tasks"
                 );
                 
                 if (newStage.getType() == StageType.LOST && employee != null) {
-                     emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName());
+                     emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), lostReason);
                 }
             } else {
                 notificationService.createNotification(
                         task.getClient(),
                         "Статус задачи изменен",
                         "Статус вашей задачи '" + task.getTitle() + "' изменен на: " + newStage.getName(),
-                        "/dashboard/client"
+                        "/client"
                 );
                 
                 User employee = task.getAssignedTo();
@@ -353,7 +353,7 @@ public class TaskService {
                         employee,
                         "Статус задачи изменен",
                         "Статус задачи '" + task.getTitle() + "' изменен на: " + newStage.getName(),
-                        "/dashboard/tasks"
+                        "/employee/tasks"
                     );
                 }
 
@@ -361,7 +361,7 @@ public class TaskService {
                     notificationService.notifyAdmins(
                         "Статус задачи изменен",
                         user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + newStage.getName(),
-                        "/dashboard/tasks"
+                        "/admin/tasks"
                     );
                 }
 
@@ -369,7 +369,7 @@ public class TaskService {
                     java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
                     emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
                 } else if (newStage.getType() == StageType.LOST) {
-                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName());
+                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), lostReason);
                 }
             }
         }
@@ -450,7 +450,7 @@ public class TaskService {
                     assignee,
                     "Новая задача",
                     "Вам назначена задача: " + savedTask.getTitle(),
-                    "/dashboard/tasks"
+                    "/employee/tasks"
             );
             emailNotificationService.sendTaskAssignedEmail(assignee, savedTask);
         }
@@ -458,7 +458,7 @@ public class TaskService {
         notificationService.notifyAdmins(
                 "Смена исполнителя",
                 "Исполнитель задачи '" + task.getTitle() + "' изменен на: " + (assignee != null ? assignee.getFullName() : "Не назначен"),
-                "/dashboard/tasks"
+                "/admin/tasks"
         );
 
         return taskMapper.mapToDto(savedTask);
@@ -478,7 +478,7 @@ public class TaskService {
         notificationService.notifyAdmins(
                 "Запрос на отказ от задачи",
                 "Сотрудник " + user.getFullName() + " запросил отказ от задачи '" + task.getTitle() + "'",
-                "/dashboard/tasks"
+                "/admin/tasks"
         );
         return taskMapper.mapToDto(savedTask);
     }
@@ -501,7 +501,7 @@ public class TaskService {
                     oldAssignee,
                     "Отказ подтвержден",
                     "Администратор подтвердил ваш отказ от задачи '" + task.getTitle() + "'",
-                    "/dashboard/tasks"
+                    "/employee/tasks"
             );
         }
         return taskMapper.mapToDto(savedTask);
@@ -523,7 +523,7 @@ public class TaskService {
                     task.getAssignedTo(),
                     "Отказ отклонен",
                     "Администратор отклонил ваш запрос на отказ от задачи '" + task.getTitle() + "'",
-                    "/dashboard/tasks"
+                    "/employee/tasks"
             );
         }
         return taskMapper.mapToDto(savedTask);
@@ -564,7 +564,7 @@ public class TaskService {
                         task.getClient(),
                         "Статус задачи изменен",
                         "Статус вашей задачи '" + task.getTitle() + "' изменен на: " + stage.getName(),
-                        "/dashboard/client"
+                        "/client"
                 );
                 
                 if (task.getAssignedTo() != null && !task.getAssignedTo().getId().equals(user.getId())) {
@@ -572,7 +572,7 @@ public class TaskService {
                         task.getAssignedTo(),
                         "Статус задачи изменен",
                         "Статус задачи '" + task.getTitle() + "' изменен на: " + stage.getName(),
-                        "/dashboard/tasks"
+                        "/employee/tasks"
                     );
                 }
 
@@ -580,7 +580,7 @@ public class TaskService {
                     notificationService.notifyAdmins(
                         "Обновление задачи",
                         user.getFullName() + " перевел задачу '" + task.getTitle() + "' в статус " + stage.getName(),
-                        "/dashboard/tasks"
+                        "/admin/tasks"
                     );
                 }
 
@@ -589,7 +589,7 @@ public class TaskService {
                     java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
                     emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
                 } else if (stage.getType() == StageType.LOST) {
-                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, "Неизвестно", stage.getName());
+                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, "Неизвестно", stage.getName(), null);
                 }
             }
             if (dto.assignedToId() != null) {

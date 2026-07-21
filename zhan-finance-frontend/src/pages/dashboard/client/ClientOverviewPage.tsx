@@ -6,6 +6,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { MiniCalendarWidget } from '../shared/calendar/MiniCalendarWidget';
 
 import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
+import { ClientWelcomeScreen } from './ClientWelcomeScreen';
 import { Plus, MessageSquare, Clock, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
@@ -49,10 +50,6 @@ export function ClientOverviewPage() {
 
   // Form state
   const [showForm, setShowForm] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   // Filter state
@@ -82,30 +79,7 @@ export function ClientOverviewPage() {
     }
   };
 
-  const handleCreateRequest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
 
-    setIsSubmitting(true);
-    try {
-      await requestTask({ 
-        title, 
-        description, 
-        clientId: user?.userId || 0,
-        dueDate: dueDate ? new Date(dueDate).toISOString() : undefined 
-      });
-      setTitle('');
-      setDescription('');
-      setDueDate('');
-      setShowForm(false);
-      await fetchTasks();
-    } catch (err) {
-      setError('Failed to create request');
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
 
   // Stats calculations
@@ -225,9 +199,13 @@ export function ClientOverviewPage() {
 
             <div className="p-6">
               {displayedTasks.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
-                  {activeTab === 'ACTIVE' ? t('clientDashboard.noActiveRequests') : t('clientDashboard.noHistoryRequests')}
-                </div>
+                activeTab === 'ACTIVE' && tasks.length === 0 ? (
+                  <ClientWelcomeScreen onCreateRequest={() => setShowForm(true)} />
+                ) : (
+                  <div className="text-center py-12 text-gray-400">
+                    {activeTab === 'ACTIVE' ? t('clientDashboard.noActiveRequests') : t('clientDashboard.noHistoryRequests')}
+                  </div>
+                )
               ) : (
                 displayedTasks.map((task) => {
                   const status = getClientStatus(task.stage, t);
