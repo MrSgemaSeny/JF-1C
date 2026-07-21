@@ -65,19 +65,43 @@ public class AuthService {
                 assignedRole
         );
 
+        if (isEmployee) {
+            user.setEnabled(false);
+        }
+
         User savedUser = userRepository.save(user);
 
         // Создаём CRM-карточку клиента при регистрации
         clientService.ensureProfile(savedUser, request.companyName(), request.phone());
 
-        notificationService.notifyAdmins(
-                "Новая регистрация",
-                savedUser.getFullName() + " (" + savedUser.getEmail() + ") зарегистрировался как "
-                        + (assignedRole == Role.EMPLOYEE ? "сотрудник" : "клиент"),
-                "/admin/employees"
-        );
-        RefreshToken refreshToken = refreshTokenService.create(savedUser);
-        return response(savedUser, refreshToken.getToken());
+        if (isEmployee) {
+            notificationService.notifyAdmins(
+                    "Запрос на регистрацию",
+                    savedUser.getFullName() + " (" + savedUser.getEmail() + ") хочет зарегистрироваться как сотрудник. Требуется подтверждение.",
+                    "/admin/employees"
+            );
+            return new AuthResponse(
+                    null,
+                    null,
+                    "Bearer",
+                    savedUser.getId(),
+                    savedUser.getEmail(),
+                    savedUser.getFullName(),
+                    savedUser.getRole(),
+                    false,
+                    savedUser.getAvatarUrl(),
+                    savedUser.getAuthProvider(),
+                    savedUser.getLocale()
+            );
+        } else {
+            notificationService.notifyAdmins(
+                    "Новая регистрация",
+                    savedUser.getFullName() + " (" + savedUser.getEmail() + ") зарегистрировался как клиент",
+                    "/admin/employees"
+            );
+            RefreshToken refreshToken = refreshTokenService.create(savedUser);
+            return response(savedUser, refreshToken.getToken());
+        }
     }
 
     public AuthResponse login(LoginRequest request) {

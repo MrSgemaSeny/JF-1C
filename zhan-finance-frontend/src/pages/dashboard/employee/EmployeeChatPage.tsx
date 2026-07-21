@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Send, User, Search, UserCheck, Users, MessageCircle, Trash2, ChevronLeft } from 'lucide-react';
+import { Send, User, Search, UserCheck, Users, MessageCircle, Trash2, ChevronLeft, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getChatContacts, getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, ChatContactDto, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
@@ -259,7 +259,7 @@ export function EmployeeChatPage() {
               >
                 <div className="relative flex-shrink-0">
                   <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-white overflow-hidden ${
-                      contact.role === 'CLIENT' ? 'bg-blue-400' : 'bg-brand-green/80'
+                      contact.role === 'CLIENT' ? 'bg-blue-400' : (contact.role === 'ADMIN' ? 'bg-indigo-500' : 'bg-brand-green/80')
                   }`}>
                     <User className="w-5 h-5 absolute z-0" />
                     {contact.avatarUrl && (
@@ -288,11 +288,11 @@ export function EmployeeChatPage() {
                   </div>
                   <div className="flex justify-between items-center gap-2">
                     <p className={`text-xs truncate ${contact.unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                      {contact.lastMessage ? contact.lastMessage.content : (contact.role === 'CLIENT' ? t('employeeChat.client') : t('employeeChat.colleague'))}
+                      {contact.lastMessage ? contact.lastMessage.content : (contact.role === 'CLIENT' ? t('employeeChat.client') : (contact.role === 'ADMIN' ? t('sidebar.roles.ADMIN', { defaultValue: 'Admin' }) : t('employeeChat.colleague')))}
                     </p>
                     {contact.role !== 'CLIENT' && (
-                      <span className="px-1.5 py-0.5 bg-brand-green/10 text-brand-green text-[9px] rounded uppercase font-bold tracking-wider">
-                        {t('employeeChat.colleague')}
+                      <span className={`px-1.5 py-0.5 ${contact.role === 'ADMIN' ? 'bg-indigo-100 text-indigo-700' : 'bg-brand-green/10 text-brand-green'} text-[9px] rounded uppercase font-bold tracking-wider`}>
+                        {contact.role === 'ADMIN' ? t('sidebar.roles.ADMIN', { defaultValue: 'АДМИН' }) : t('employeeChat.colleague')}
                       </span>
                     )}
                   </div>
@@ -321,9 +321,9 @@ export function EmployeeChatPage() {
               </button>
               <div className="flex items-center gap-3">
                 <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-white overflow-hidden ${
-                  selectedContact.role === 'CLIENT' ? 'bg-blue-400' : 'bg-brand-green/80'
+                  selectedContact.role === 'CLIENT' ? 'bg-blue-400' : (selectedContact.role === 'ADMIN' ? 'bg-indigo-500' : 'bg-brand-green/80')
                 }`}>
-                  {selectedContact.role === 'CLIENT' ? <Users className="w-5 h-5 absolute z-0" /> : <UserCheck className="w-5 h-5 absolute z-0" />}
+                  {selectedContact.role === 'CLIENT' ? <Users className="w-5 h-5 absolute z-0" /> : (selectedContact.role === 'ADMIN' ? <Shield className="w-5 h-5 absolute z-0" /> : <UserCheck className="w-5 h-5 absolute z-0" />)}
                   {selectedContact.avatarUrl && (
                     <img 
                       src={getSecureImageUrl(selectedContact.avatarUrl)} 
@@ -335,8 +335,8 @@ export function EmployeeChatPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900">{selectedContact.fullName}</h3>
-                  <p className="text-xs text-brand-green font-medium">
-                    {selectedContact.role === 'CLIENT' ? t('employeeChat.client') : t('employeeChat.colleague')}
+                  <p className={`text-xs font-medium ${selectedContact.role === 'ADMIN' ? 'text-indigo-600' : 'text-brand-green'}`}>
+                    {selectedContact.role === 'CLIENT' ? t('employeeChat.client') : (selectedContact.role === 'ADMIN' ? t('sidebar.roles.ADMIN', { defaultValue: 'Admin' }) : t('employeeChat.colleague'))}
                   </p>
                 </div>
               </div>
