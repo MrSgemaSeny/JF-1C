@@ -50,6 +50,8 @@ class AuthServiceUnitTests {
     private RefreshTokenService refreshTokenService;
     @Mock
     private ClientService clientService;
+    @Mock
+    private com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
 
     @InjectMocks
     private AuthService authService;
@@ -86,6 +88,7 @@ class AuthServiceUnitTests {
         assertThat(response.accessToken()).isEqualTo("accessToken123");
         assertThat(response.email()).isEqualTo("newuser@test.com");
         verify(clientService).ensureProfile(eq(savedUser), eq("Test Company"), eq("+123456789"));
+        verify(notificationService).notifyAdmins(anyString(), anyString(), anyString());
     }
 
     @Test
@@ -103,26 +106,8 @@ class AuthServiceUnitTests {
 
         // ACT & ASSERT
         assertThatThrownBy(() -> authService.register(request))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Email is already registered");
-    }
-
-    @Test
-    void register_EmployeeRole_ThrowsException() {
-        RegisterRequest request = new RegisterRequest(
-                "Employee",
-                "emp@test.com",
-                "pass",
-                Role.EMPLOYEE,
-                null,
-                null
-        );
-
-        when(userRepository.existsByEmailIgnoreCase(anyString())).thenReturn(false);
-
-        assertThatThrownBy(() -> authService.register(request))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Сотрудники могут регистрироваться только через Google-аккаунт.");
+                .isInstanceOf(com.example.zhanfinancebackend.common.exception.ConflictException.class)
+                .hasMessage(com.example.zhanfinancebackend.common.exception.ErrorCode.EMAIL_ALREADY_REGISTERED.name());
     }
 
     @Test

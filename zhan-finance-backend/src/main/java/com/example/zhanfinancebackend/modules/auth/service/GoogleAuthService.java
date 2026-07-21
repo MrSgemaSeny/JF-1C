@@ -36,7 +36,7 @@ public class GoogleAuthService {
     private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
 
     public GoogleAuthService(
-            GoogleIdTokenVerifier googleIdTokenVerifier,
+
             UserRepository userRepository,
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
