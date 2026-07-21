@@ -25,7 +25,7 @@ function formatDueDate(dateStr: string): string {
   return `${day}.${month}`;
 }
 
-function getDueDateInfo(dueDate?: string): { color: string; icon: 'overdue' | 'soon' | 'normal' } | null {
+function getDueDateInfo(dueDate?: string | null): { color: string; icon: 'overdue' | 'soon' | 'normal' } | null {
   if (!dueDate) return null;
 
   const now = new Date();
@@ -157,7 +157,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
     e.stopPropagation();
     setIsEditingDueDate(false);
     const newDate = e.target.value;
-    onUpdateTask({ ...task, dueDate: newDate ? new Date(newDate).toISOString() : undefined });
+    onUpdateTask({ ...task, dueDate: newDate ? new Date(newDate).toISOString() : null });
   };
 
   const handleAssigneeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

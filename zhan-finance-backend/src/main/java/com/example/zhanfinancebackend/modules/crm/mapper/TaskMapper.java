@@ -33,6 +33,8 @@ public class TaskMapper {
                 mapUserToDto(task.getCreatedBy()),
                 task.getCreatedAt() != null ? task.getCreatedAt().atZone(ZoneOffset.UTC) : null,
                 task.getUpdatedAt() != null ? task.getUpdatedAt().atZone(ZoneOffset.UTC) : null,
+                task.getStagePosition(),
+                task.isReassignmentRequested(),
                 task.getSubtasks() != null ? task.getSubtasks().stream().map(this::mapSubtaskToDto).toList() : List.of(),
                 task.getTags() != null ? new java.util.ArrayList<>(task.getTags()) : List.of(),
                 task.getServices() != null ? task.getServices().stream().map(com.example.zhanfinancebackend.common.audit.BaseEntity::getId).toList() : List.of(),

@@ -6,13 +6,15 @@ public class NotificationDto {
     private Long id;
     private String title;
     private String message;
+    private String link;
     private boolean isRead;
     private LocalDateTime createdAt;
 
-    public NotificationDto(Long id, String title, String message, boolean isRead, LocalDateTime createdAt) {
+    public NotificationDto(Long id, String title, String message, String link, boolean isRead, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.message = message;
+        this.link = link;
         this.isRead = isRead;
         this.createdAt = createdAt;
     }
@@ -22,4 +24,8 @@ public class NotificationDto {
     public String getMessage() { return message; }
     public boolean isRead() { return isRead; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public String getLink() {
+        return link;
+    }
 }

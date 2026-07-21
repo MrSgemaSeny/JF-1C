@@ -145,7 +145,7 @@ export function NotificationsPage() {
                         if (!notification.read) {
                           markAsRead(notification.id);
                         }
-                        navigate(getNotificationLink(notification));
+                        navigate(notification.link ?? getNotificationLink(notification));
                       }}
                       className="text-xs font-semibold px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
                     >

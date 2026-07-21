@@ -77,6 +77,24 @@ export async function deleteTask(id: number): Promise<void> {
   });
 }
 
+export async function requestReassignment(id: number): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/reassign/request`, {
+    method: 'POST',
+  });
+}
+
+export async function approveReassignment(id: number): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/reassign/approve`, {
+    method: 'POST',
+  });
+}
+
+export async function rejectReassignment(id: number): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/crm/tasks/${id}/reassign/reject`, {
+    method: 'POST',
+  });
+}
+
 export async function batchUpdateTasks(updatedTasks: TaskDto[]): Promise<void> {
   await apiRequest<TaskDto[]>('/api/crm/tasks/batch', {
     method: 'PUT',

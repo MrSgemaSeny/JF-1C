@@ -96,6 +96,35 @@ public class CalendarService {
                 false
         );
     }
+    @Transactional
+    public CalendarEventDto updateEvent(User user, Long id, CalendarEventCreateRequest request) {
+        CalendarEvent event = eventRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "Event not found"));
+        
+        if (!event.getUser().getId().equals(user.getId())) {
+            throw new ApiException(ErrorCode.FORBIDDEN, "You don't own this event");
+        }
+        
+        event.setDate(request.date());
+        event.setTime(request.time());
+        event.setTitle(request.title());
+        event.setDescription(request.description());
+        if (request.color() != null) event.setColor(request.color());
+        
+        eventRepository.save(event);
+        
+        return new CalendarEventDto(
+                "event_" + event.getId(),
+                event.getId(),
+                "EVENT",
+                event.getDate().toString(),
+                event.getTime() != null ? event.getTime().toString() : null,
+                event.getTitle(),
+                event.getDescription(),
+                event.getColor(),
+                false
+        );
+    }
     
     @Transactional
     public void deleteEvent(User user, Long id) {

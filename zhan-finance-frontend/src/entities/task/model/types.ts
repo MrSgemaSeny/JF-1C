@@ -84,17 +84,19 @@ export interface TaskDto {
   source?: string;
   closedAt?: string;
   lostReason?: string;
-  dueDate?: string;
-  subtasks?: SubtaskDto[];
-  tags?: string[];
-  serviceIds?: number[];
-  services?: ServiceDto[];
-  comments?: TaskCommentDto[];
-  history?: TaskActivityDto[];
-  createdBy: UserDto;
+  dueDate: string | null;
+  createdBy: UserDto | null;
   createdAt: string;
   updatedAt: string;
-  archived?: boolean;
+  stagePosition: number;
+  reassignmentRequested: boolean;
+  subtasks: SubtaskDto[];
+  tags: string[];
+  serviceIds: number[];
+  services: ServiceDto[];
+  comments?: TaskCommentDto[];
+  history?: TaskActivityDto[];
+  archived: boolean;
 }
 
 export interface TaskCreateRequest {

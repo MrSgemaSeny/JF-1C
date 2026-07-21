@@ -33,7 +33,7 @@ public class NotificationService {
     @Transactional
     public void createNotification(User user, String title, String message, String relativeLink) {
         if (user == null) return;
-        Notification notification = new Notification(user, title, message);
+        Notification notification = new Notification(user, title, message, relativeLink);
         notificationRepository.save(notification);
     }
 
@@ -80,6 +80,7 @@ public class NotificationService {
                 notification.getId(),
                 notification.getTitle(),
                 notification.getMessage(),
+                notification.getLink(),
                 notification.isRead(),
                 notification.getCreatedAt()
         );

@@ -214,4 +214,31 @@ public class TaskController {
         java.util.UUID templateId = java.util.UUID.fromString(templateIdStr);
         return ApiResponse.success(documentGeneratorService.generateFromTemplate(id, templateId, principal.getUser()));
     }
+
+    @PostMapping("/{id}/reassign/request")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ApiResponse<TaskDto> requestReassignment(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(taskService.requestReassignment(id, principal.getUser()));
+    }
+
+    @PostMapping("/{id}/reassign/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<TaskDto> approveReassignment(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(taskService.approveReassignment(id, principal.getUser()));
+    }
+
+    @PostMapping("/{id}/reassign/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<TaskDto> rejectReassignment(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(taskService.rejectReassignment(id, principal.getUser()));
+    }
 }

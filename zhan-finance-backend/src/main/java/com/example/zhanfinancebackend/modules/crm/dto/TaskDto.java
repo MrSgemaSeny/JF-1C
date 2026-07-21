@@ -30,6 +30,8 @@ public record TaskDto(
         UserDto createdBy,
         ZonedDateTime createdAt,
         ZonedDateTime updatedAt,
+        Integer stagePosition,
+        boolean reassignmentRequested,
         List<SubtaskDto> subtasks,
         List<String> tags,
         List<Long> serviceIds,

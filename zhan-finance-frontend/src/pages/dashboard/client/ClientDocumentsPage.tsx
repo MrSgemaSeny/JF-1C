@@ -122,7 +122,7 @@ export function ClientDocumentsPage() {
   };
 
   return (
-    <div className="h-full w-full flex flex-col max-w-[1600px] mx-auto p-6 space-y-8 pb-12">
+    <div className="h-full w-full flex flex-col max-w-[1440px] px-4 md:px-8 mx-auto space-y-8 pb-12 pt-6">
       
       {/* Header aligned to the left */}
       <div className="flex flex-col items-start border-b border-gray-200 pb-6 shrink-0">

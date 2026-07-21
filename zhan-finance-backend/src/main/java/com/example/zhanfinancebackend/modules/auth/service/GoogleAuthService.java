@@ -32,17 +32,24 @@ public class GoogleAuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final ClientService clientService;
+    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
+    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
 
     public GoogleAuthService(
+            GoogleIdTokenVerifier googleIdTokenVerifier,
             UserRepository userRepository,
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
-            ClientService clientService
+            ClientService clientService,
+            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService,
+            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.clientService = clientService;
+        this.notificationService = notificationService;
+        this.emailNotificationService = emailNotificationService;
     }
 
     @Transactional
@@ -58,7 +65,7 @@ public class GoogleAuthService {
         }
 
         if (idToken == null) {
-            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Invalid Google token");
+            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException(com.example.zhanfinancebackend.common.exception.ErrorCode.INVALID_GOOGLE_TOKEN.name());
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
@@ -73,7 +80,7 @@ public class GoogleAuthService {
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
             if (!user.isEnabled()) {
-                throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Аккаунт ещё не активирован администратором");
+                throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException(com.example.zhanfinancebackend.common.exception.ErrorCode.ACCOUNT_NOT_ACTIVATED.name());
             }
             // Update avatar and provider if they login via Google
             boolean updated = false;
@@ -111,12 +118,25 @@ public class GoogleAuthService {
             user = userRepository.save(user);
 
             if (isEmployee) {
-                return null; // pending approval
-            }
+            notificationService.notifyAdmins(
+                    "Новая регистрация сотрудника",
+                    user.getFullName() + " (" + user.getEmail() + ") запросил доступ как сотрудник — требуется подтверждение",
+                    "/admin/employees"
+            );
+            return null; // pending approval
+        }
 
             // New Client: create empty profile (phone/company filled later via onboarding)
             clientService.ensureProfile(user);
-            isNewUser = true;
+        
+        notificationService.notifyAdmins(
+                "Новая регистрация",
+                user.getFullName() + " (" + user.getEmail() + ") зарегистрировался как клиент (Google)",
+                "/admin/employees"
+        );
+        emailNotificationService.sendWelcomeEmail(user);
+        
+        isNewUser = true;
         }
 
         RefreshToken refreshToken = refreshTokenService.create(user);

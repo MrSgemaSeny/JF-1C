@@ -17,7 +17,7 @@ describe('TaskKanbanColumn', () => {
       pipelineId: 1,
     };
 
-    const mockTasks: TaskDto[] = [
+    const mockTasks = [
       {
         id: 101,
         title: 'Task 1',
@@ -36,7 +36,7 @@ describe('TaskKanbanColumn', () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
-    ];
+    ] as TaskDto[];
 
     render(
       <DndContext>

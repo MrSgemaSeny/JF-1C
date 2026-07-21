@@ -5,6 +5,7 @@ import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { Input } from '@/shared/ui/Input/Input';
 import { Textarea } from '@/shared/ui/Input/Textarea';
 import { useTranslation } from 'react-i18next';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 10;
@@ -22,6 +23,7 @@ interface ServiceModalProps {
 }
 
 export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmitting = false, isLoggedIn = false, initialMessage = '', initialPreferredDate = '' }: ServiceModalProps) {
+
   const { t } = useTranslation('common');
   const [message, setMessage] = useState(initialMessage);
   const [preferredDate, setPreferredDate] = useState(initialPreferredDate);
@@ -29,6 +31,8 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
   const [phone, setPhone] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEscapeKey(() => onClose(), true);
   
   useEffect(() => {
     setMessage(initialMessage);
@@ -72,6 +76,7 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
       }
     }
   };
+
 
   return (
     <AnimatePresence>

@@ -42,6 +42,15 @@ public class CalendarController {
         return ApiResponse.success(calendarService.createEvent(principal.getUser(), request));
     }
 
+    @PutMapping("/{id}")
+    public ApiResponse<CalendarEventDto> updateEvent(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id,
+            @Valid @RequestBody CalendarEventCreateRequest request
+    ) {
+        return ApiResponse.success(calendarService.updateEvent(principal.getUser(), id, request));
+    }
+
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteEvent(
             @AuthenticationPrincipal UserPrincipal principal,

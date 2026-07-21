@@ -52,6 +52,7 @@ public class TaskService {
     private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
     private final com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository;
     private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
+    private final ClientService clientService;
 
     public TaskService(
             TaskRepository taskRepository,
@@ -65,7 +66,8 @@ public class TaskService {
             PipelineRepository pipelineRepository,
             com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper,
             com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository,
-            com.example.zhanfinancebackend.modules.documents.service.StorageService storageService
+            com.example.zhanfinancebackend.modules.documents.service.StorageService storageService,
+            ClientService clientService
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -79,6 +81,7 @@ public class TaskService {
         this.taskMapper = taskMapper;
         this.documentRepository = documentRepository;
         this.storageService = storageService;
+        this.clientService = clientService;
     }
 
     @Transactional(readOnly = true)
@@ -417,13 +420,21 @@ public class TaskService {
             assignee = userRepository.findById(assigneeId)
                     .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
         }
-        if (task.getAssignedTo() != assignee) {
+        Long oldAssigneeId = task.getAssignedTo() != null ? task.getAssignedTo().getId() : null;
+        Long newAssigneeId = assignee != null ? assignee.getId() : null;
+
+        if (!java.util.Objects.equals(oldAssigneeId, newAssigneeId)) {
             String oldAssigneeName = task.getAssignedTo() != null ? task.getAssignedTo().getFullName() : "None";
             String assigneeName = assignee != null ? assignee.getFullName() : "Не назначен";
             logActivity(task, user, "Назначил исполнителя: " + assigneeName);
             auditService.logAction("UPDATE_ASSIGNEE", "Task", task.getId(), "Assignee changed from " + oldAssigneeName + " to " + assigneeName);
         }
         task.setAssignedTo(assignee);
+
+        if (assignee != null && task.getClient() != null) {
+            clientService.assignEmployeeToClient(task.getClient().getId(), assignee.getId());
+        }
+
         Task savedTask = taskRepository.save(task);
 
         if (assignee != null) {
@@ -442,6 +453,71 @@ public class TaskService {
                 "/dashboard/tasks"
         );
 
+        return taskMapper.mapToDto(savedTask);
+    }
+
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
+    public TaskDto requestReassignment(Long taskId, User user) {
+        Task task = getTaskEntity(taskId);
+        if (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(user.getId())) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(ErrorCode.FORBIDDEN, "Вы можете отказаться только от своих задач");
+        }
+        task.setReassignmentRequested(true);
+        Task savedTask = taskRepository.save(task);
+
+        logActivity(task, user, "Запросил отказ от задачи");
+        notificationService.notifyAdmins(
+                "Запрос на отказ от задачи",
+                "Сотрудник " + user.getFullName() + " запросил отказ от задачи '" + task.getTitle() + "'",
+                "/dashboard/tasks"
+        );
+        return taskMapper.mapToDto(savedTask);
+    }
+
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
+    public TaskDto approveReassignment(Long taskId, User admin) {
+        Task task = getTaskEntity(taskId);
+        if (admin.getRole() != Role.ADMIN) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(ErrorCode.FORBIDDEN, "Только администратор может подтвердить отказ");
+        }
+        User oldAssignee = task.getAssignedTo();
+        task.setAssignedTo(null);
+        task.setReassignmentRequested(false);
+        Task savedTask = taskRepository.save(task);
+
+        logActivity(task, admin, "Подтвердил отказ от задачи. Исполнитель снят.");
+        if (oldAssignee != null) {
+            notificationService.createNotification(
+                    oldAssignee,
+                    "Отказ подтвержден",
+                    "Администратор подтвердил ваш отказ от задачи '" + task.getTitle() + "'",
+                    "/dashboard/tasks"
+            );
+        }
+        return taskMapper.mapToDto(savedTask);
+    }
+
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
+    public TaskDto rejectReassignment(Long taskId, User admin) {
+        Task task = getTaskEntity(taskId);
+        if (admin.getRole() != Role.ADMIN) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(ErrorCode.FORBIDDEN, "Только администратор может отклонить отказ");
+        }
+        task.setReassignmentRequested(false);
+        Task savedTask = taskRepository.save(task);
+
+        logActivity(task, admin, "Отклонил запрос на отказ от задачи.");
+        if (task.getAssignedTo() != null) {
+            notificationService.createNotification(
+                    task.getAssignedTo(),
+                    "Отказ отклонен",
+                    "Администратор отклонил ваш запрос на отказ от задачи '" + task.getTitle() + "'",
+                    "/dashboard/tasks"
+            );
+        }
         return taskMapper.mapToDto(savedTask);
     }
 

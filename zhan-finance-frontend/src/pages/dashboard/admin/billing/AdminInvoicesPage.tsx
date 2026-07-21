@@ -8,13 +8,18 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Empty } from '@/shared/ui/Empty';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 
 export function AdminInvoicesPage() {
+
   const { t } = useTranslation(['common']);
   const { data: invoices, isLoading, error, refetch } = useApiData<InvoiceDto[]>(billingApi.getInvoices);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEscapeKey(() => setIsModalOpen(false), isModalOpen);
+
   if (isLoading) {
+
     return <div className="flex justify-center p-10"><Spinner size="lg" /></div>;
   }
 

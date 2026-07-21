@@ -19,16 +19,21 @@ const CLIENT_STATUS_MAP: Record<string, { labelKey: string; color: string; icon:
   CANCELLED: { labelKey: 'clientDashboard.status.CANCELLED', color: 'bg-red-50 text-red-700 border-red-200', icon: <AlertCircle size={14} /> },
 };
 
-function getClientStatus(stage: StageDto | undefined, t: any) {
+function getClientStatus(stage: StageDto | undefined, t: any): { labelKey: string; dynamicLabel?: string; color: string; hexColor?: string; icon: React.ReactNode } {
   if (!stage) return CLIENT_STATUS_MAP.NEW;
   
-  if (stage.type === 'WON') return CLIENT_STATUS_MAP.DONE;
-  if (stage.type === 'LOST') return CLIENT_STATUS_MAP.CANCELLED;
+  const base = (() => {
+    if (stage.type === 'WON') return CLIENT_STATUS_MAP.DONE;
+    if (stage.type === 'LOST') return CLIENT_STATUS_MAP.CANCELLED;
+    if (stage.name === 'Новый') return CLIENT_STATUS_MAP.NEW;
+    if (stage.name === 'В работе') return CLIENT_STATUS_MAP.IN_PROGRESS;
+    return { labelKey: '', dynamicLabel: t(`stages.${stage.name}`, { defaultValue: stage.name }), color: '', icon: <Clock size={14} /> };
+  })();
 
-  if (stage.name === 'Новый') return CLIENT_STATUS_MAP.NEW;
-  if (stage.name === 'В работе') return CLIENT_STATUS_MAP.IN_PROGRESS;
-  
-  return { labelKey: '', dynamicLabel: t(`stages.${stage.name}`, { defaultValue: stage.name }), color: 'bg-blue-50 text-blue-700 border-blue-200', icon: <Clock size={14} /> };
+  if (stage.color) {
+    return { ...base, color: '', hexColor: stage.color };
+  }
+  return base;
 }
 
 import { useNavigate } from 'react-router-dom';
@@ -106,7 +111,10 @@ export function ClientOverviewPage() {
   // Stats calculations
   const stats = {
     active: tasks.filter((t) => t.stage?.type === 'OPEN').length,
-    onReview: 0,
+    onReview: tasks.filter((t) => {
+      const name = t.stage?.name?.toLowerCase() || '';
+      return name.includes('доработк') || name.includes('проверк');
+    }).length,
     completed: tasks.filter((t) => t.stage?.type === 'WON').length,
   };
 
@@ -121,19 +129,15 @@ export function ClientOverviewPage() {
   }
 
   return (
-    <div className="space-y-6 pb-20 animate-in fade-in duration-500">
-      {/* Premium Welcome Header */}
-      <div className="bg-gradient-to-r from-brand-green to-emerald-700 rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
-        <div className="relative z-10">
-          <h1 className="text-3xl font-extrabold tracking-tight">
-            {t('clientDashboard.welcome', { name: user?.fullName || 'Client' })}
-          </h1>
-          <p className="text-brand-green-100 mt-2 text-lg max-w-2xl">
-            {t('clientDashboard.subtitle')}
-          </p>
-        </div>
-        {/* Decorative background circle */}
-        <div className="absolute -right-10 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+    <div className="max-w-[1440px] w-full px-4 md:px-8 mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
+      {/* Simple Welcome Header */}
+      <div className="mb-2">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {t('clientDashboard.welcome', { name: user?.fullName || 'Client' })}
+        </h1>
+        <p className="text-gray-500 mt-1">
+          {t('clientDashboard.subtitle')}
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -170,10 +174,10 @@ export function ClientOverviewPage() {
       </div>
 
       {/* Main Content Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+      <div className="flex flex-col gap-6 mt-4">
         
-        {/* Left Column: Requests List */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Requests List */}
+        <div className="space-y-6">
           
           {/* Create Request Block */}
           <button
@@ -235,7 +239,14 @@ export function ClientOverviewPage() {
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1.5">
-                          <span className={twMerge("px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit", status.color)}>
+                          <span 
+                            className={twMerge("px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit", status.color, status.hexColor ? "border" : "")}
+                            style={status.hexColor ? {
+                               backgroundColor: status.hexColor + '1A', 
+                               color: status.hexColor,
+                               borderColor: status.hexColor + '33'
+                            } : undefined}
+                          >
                             {status.icon}
                             {status.labelKey ? t(status.labelKey) : ('dynamicLabel' in status ? status.dynamicLabel : '')}
                           </span>

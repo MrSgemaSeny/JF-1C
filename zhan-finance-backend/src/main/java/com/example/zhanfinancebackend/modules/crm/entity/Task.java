@@ -63,6 +63,12 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;
 
+    @Column(name = "stage_position")
+    private Integer stagePosition = 0;
+
+    @Column(name = "reassignment_requested")
+    private boolean reassignmentRequested = false;
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subtask> subtasks = new ArrayList<>();
 
@@ -204,6 +210,22 @@ public class Task extends BaseEntity {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Integer getStagePosition() {
+        return stagePosition;
+    }
+
+    public void setStagePosition(Integer stagePosition) {
+        this.stagePosition = stagePosition;
+    }
+
+    public boolean isReassignmentRequested() {
+        return reassignmentRequested;
+    }
+
+    public void setReassignmentRequested(boolean reassignmentRequested) {
+        this.reassignmentRequested = reassignmentRequested;
     }
 
     public List<Subtask> getSubtasks() {

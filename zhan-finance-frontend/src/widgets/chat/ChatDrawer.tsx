@@ -6,6 +6,7 @@ import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 
 interface ChatDrawerProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  
+  useEscapeKey(() => onClose(), isOpen);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

@@ -6,10 +6,11 @@ import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
 import type { StageDto } from '@/entities/task/model/types';
 import { TaskRejectModal } from '@/widgets/task-reject/TaskRejectModal';
 import { Spinner } from '@/shared/ui/Spinner';
-import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive } from 'lucide-react';
+import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
-import { downloadDocument } from '@/entities/document/api/documentApi';
+import { downloadDocument, getTaskDocuments } from '@/entities/document/api/documentApi';
+import type { DocumentDto } from '@/entities/document/model/types';
 
 // Reusing colors from Kanban config for the stepper
 export function ClientTaskDetailsPage() {
@@ -24,6 +25,13 @@ export function ClientTaskDetailsPage() {
   const { mutateAsync: updateStage, isPending: isUpdatingStage } = useUpdateTaskStage();
 
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [documents, setDocuments] = useState<DocumentDto[]>([]);
+
+  React.useEffect(() => {
+    if (taskId) {
+      getTaskDocuments(taskId).then(setDocuments).catch(console.error);
+    }
+  }, [taskId]);
 
   if (isTaskLoading || isPipelinesLoading) {
     return <div className="flex h-screen items-center justify-center"><Spinner /></div>;
@@ -80,7 +88,7 @@ export function ClientTaskDetailsPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-20 animate-in fade-in duration-300">
+    <div className="max-w-[1440px] w-full px-4 md:px-8 mx-auto pb-20 animate-in fade-in duration-300">
       <button 
         onClick={() => navigate(ROUTES.CLIENT)}
         className="flex items-center gap-2 text-gray-500 hover:text-gray-800 mb-6 transition-colors"
@@ -91,10 +99,19 @@ export function ClientTaskDetailsPage() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
         {/* Header */}
-        <div className="p-6 md:p-8 border-b border-gray-100">
+        <div className="relative p-6 md:p-8 border-b border-gray-100">
+          {!isFinished && task.stage?.name !== 'На проверке' && (
+            <button
+              onClick={() => setShowRejectModal(true)}
+              title="Отказаться от задачи"
+              className="absolute top-4 right-4 p-1.5 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors z-10"
+            >
+              <X size={18} />
+            </button>
+          )}
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-2 pr-8">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{task.title}</h1>
                 {isArchived && (
                   <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold uppercase flex items-center gap-1">
@@ -126,14 +143,6 @@ export function ClientTaskDetailsPage() {
                       <Activity size={16} /> На доработку
                     </button>
                   </>
-                )}
-                {!isFinished && task.stage?.name !== 'На проверке' && (
-                  <button
-                    onClick={() => setShowRejectModal(true)}
-                    className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
-                  >
-                    <XCircle size={16} /> Отказаться
-                  </button>
                 )}
               </div>
             )}
@@ -213,7 +222,7 @@ export function ClientTaskDetailsPage() {
         </div>
 
         {/* Content Body */}
-        <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="p-6 md:p-8 flex flex-col gap-8">
           
           {/* Left Column */}
           <div className="space-y-6">
@@ -241,14 +250,72 @@ export function ClientTaskDetailsPage() {
           {/* Right Column */}
           <div className="space-y-6">
             
+            {/* Документы */}
+            {documents && documents.length > 0 && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Paperclip size={16} /> Документы
+                </h3>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                  {documents.map(doc => (
+                    <div key={doc.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <FileText size={20} className="text-brand-green flex-shrink-0" />
+                        <div className="truncate">
+                          <p className="text-sm font-semibold text-gray-800 truncate" title={doc.fileName}>{doc.fileName}</p>
+                          <p className="text-xs text-gray-400">{(doc.fileSize / 1024).toFixed(1)} KB • {new Date(doc.createdAt).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => downloadDocument(doc.id, doc.fileName)}
+                        className="p-2 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors ml-2"
+                        title="Скачать"
+                      >
+                        <Download size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Дополнительная информация */}
+            {(task.amount || task.dueDate || task.source) && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Activity size={16} /> Дополнительная информация
+                </h3>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-3 text-sm">
+                  {task.amount && (
+                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <span className="text-gray-500">Сумма:</span>
+                      <span className="font-semibold">{task.amount} {task.currency || 'KZT'}</span>
+                    </div>
+                  )}
+                  {task.dueDate && (
+                    <div className="flex justify-between border-b border-gray-200 pb-2">
+                      <span className="text-gray-500">Дедлайн:</span>
+                      <span className="font-semibold">{new Date(task.dueDate).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                  {task.source && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Источник:</span>
+                      <span className="font-semibold">{task.source}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Документы из истории */}
             <div>
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <FileText size={16} /> Последние события
+                <Clock size={16} /> Последние события
               </h3>
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-4 max-h-[300px] overflow-y-auto">
                 {task.history && task.history.length > 0 ? (
-                  task.history.slice(0, 5).map(h => (
+                  task.history.slice(0, 10).map(h => (
                     <div key={h.id} className="flex gap-3 text-sm">
                       <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 text-gray-400">
                         <Activity size={14} />

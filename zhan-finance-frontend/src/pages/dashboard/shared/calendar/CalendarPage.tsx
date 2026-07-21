@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, X, Clock, AlignLeft, Tag } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, X, Clock, AlignLeft, Tag, Edit2 } from 'lucide-react';
 import { getCalendarEvents, createCalendarEvent, deleteCalendarEvent, CalendarEventDto } from '@/entities/calendar/api/calendarApi';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 
 import { useTranslation } from 'react-i18next';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 
 // Colors remain hardcoded but can be translated later if needed, they are not primarily shown in the UI here.
 const COLORS = [
@@ -32,6 +33,7 @@ export function CalendarPage() {
   const [time, setTime] = useState('');
   const [color, setColor] = useState('BLUE');
   const [isSaving, setIsSaving] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
   useEffect(() => {
     loadEvents();
@@ -72,11 +74,17 @@ export function CalendarPage() {
   const handleNextYear = () => setCurrentYear(y => y + 1);
 
   const handleDayClick = (dateStr: string) => {
+    const selectedDateObj = new Date(dateStr + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDateObj < today) return;
+
     setSelectedDate(dateStr);
     setTitle('');
     setDescription('');
-    setTime('');
+    setTime('09:00');
     setColor('BLUE');
+    setEditingEventId(null);
     setIsModalOpen(true);
   };
 
@@ -156,7 +164,7 @@ export function CalendarPage() {
         <div 
           key={d} 
           onClick={() => handleDayClick(dateStr)}
-          className={`h-8 flex items-center justify-center rounded-md cursor-pointer transition-all ${cellBg}`}
+          className={`relative aspect-square w-full min-h-[2.5rem] sm:min-h-[3rem] flex items-center justify-center rounded-lg cursor-pointer transition-all ${cellBg}`}
         >
           <span className={`text-xs ${textColor}`}>{d}</span>
           
@@ -226,7 +234,7 @@ export function CalendarPage() {
       {/* Day Modal */}
       {isModalOpen && selectedDate && (
         <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h3 className="font-bold text-lg text-gray-900">
                 События на {new Date(selectedDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -287,33 +295,35 @@ export function CalendarPage() {
                   Добавить событие
                 </h4>
                 <form onSubmit={handleSaveEvent} className="space-y-4">
-                  <div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1">Название события</label>
                     <input
                       type="text"
                       value={title}
                       onChange={e => setTitle(e.target.value)}
-                      placeholder="Название события (напр. Оплата ИПН)"
-                      className="w-full text-sm font-medium border-0 border-b-2 border-gray-100 focus:border-brand-green focus:ring-0 px-0 py-2 transition-colors bg-transparent placeholder-gray-400"
+                      placeholder="Напр. Оплата ИПН"
+                      className="w-full text-base font-medium border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none placeholder-gray-400"
                       required
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-4 h-4 text-gray-400" />
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Время</label>
                       <input
                         type="time"
                         value={time}
                         onChange={e => setTime(e.target.value)}
-                        className="flex-1 text-sm border-gray-200 rounded-lg focus:ring-brand-green focus:border-brand-green"
+                        className="w-full text-base font-medium border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none"
+                        required
                       />
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Tag className="w-4 h-4 text-gray-400" />
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Tag className="w-3.5 h-3.5" /> Цвет метки</label>
                       <select
                         value={color}
                         onChange={e => setColor(e.target.value)}
-                        className="flex-1 text-sm border-gray-200 rounded-lg focus:ring-brand-green focus:border-brand-green"
+                        className="w-full text-base font-medium border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none appearance-none"
                       >
                         {COLORS.map(c => (
                           <option key={c.value} value={c.value}>{c.label}</option>
@@ -322,13 +332,13 @@ export function CalendarPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <AlignLeft className="w-4 h-4 text-gray-400 mt-2.5" />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><AlignLeft className="w-3.5 h-3.5" /> Описание</label>
                     <textarea
                       value={description}
                       onChange={e => setDescription(e.target.value)}
                       placeholder="Дополнительное описание (опционально)..."
-                      className="flex-1 text-sm border-gray-200 rounded-lg focus:ring-brand-green focus:border-brand-green min-h-[80px] resize-none"
+                      className="w-full text-base border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green min-h-[100px] resize-none transition-all outline-none placeholder-gray-400"
                     />
                   </div>
 

@@ -14,7 +14,7 @@ interface RegisterPageProps {
 }
 
 export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'auth']);
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -47,7 +47,8 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
         }
       }
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('auth.register.googleError'));
+      const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
+      toast.error(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.register.googleError') : msg }));
     }
   };
 
@@ -88,7 +89,8 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
       if (Object.keys(fieldErrors).length > 0) {
         setValidationErrors(fieldErrors);
       } else {
-        setGlobalError(err instanceof ApiError ? err.message : t('auth.register.registerError'));
+        const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
+        setGlobalError(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.register.registerError') : msg }));
       }
     } finally {
       setIsSubmitting(false);

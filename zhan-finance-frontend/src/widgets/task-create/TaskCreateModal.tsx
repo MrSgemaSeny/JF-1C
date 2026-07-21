@@ -5,6 +5,7 @@ import { createTask, requestTask } from '@/entities/task/api/taskApi';
 import { fetchServices, ServiceDto } from '@/entities/service/api/servicesApi';
 import { uploadDocument } from '@/entities/document/api/documentApi';
 import { useTranslation } from 'react-i18next';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 interface TaskCreateModalProps {
   onClose: () => void;
   onCreated: () => void;
@@ -12,6 +13,7 @@ interface TaskCreateModalProps {
 }
 
 export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCreateModalProps) {
+
   const { t } = useTranslation('crm');
   const { user } = useAuth();
   const [title, setTitle] = useState('');
@@ -32,6 +34,8 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEscapeKey(() => onClose(), true);
 
   useEffect(() => {
     fetchServices().then(setAvailableServices).catch(console.error);
@@ -104,6 +108,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">

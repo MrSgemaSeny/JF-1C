@@ -180,4 +180,17 @@ public class EmailNotificationService {
             log.error("Error sending email: ", e);
         }
     }
+
+    public void sendWelcomeEmail(com.example.zhanfinancebackend.modules.auth.entity.User user) {
+        String subject = "Добро пожаловать в Zhan Finance";
+        String html = """
+                <div style="font-family:sans-serif">
+                  <h2>Добро пожаловать, %s!</h2>
+                  <p>Вы успешно зарегистрировались в системе Zhan Finance через Google-аккаунт.</p>
+                  <p>Вы можете войти в личный кабинет и начать работу прямо сейчас.</p>
+                </div>
+                """.formatted(user.getFullName());
+
+        sendHtmlEmail(user.getEmail(), subject, html);
+    }
 }

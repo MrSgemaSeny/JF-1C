@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -10,8 +11,12 @@ interface SuccessModalProps {
 }
 
 export function SuccessModal({ isOpen, onClose, title, message }: SuccessModalProps) {
+
   const { t } = useTranslation('common');
   const displayTitle = title || t('ui.successModal.title', { defaultValue: 'Успешно!' });
+
+  useEscapeKey(() => onClose(), isOpen);
+
 
   return (
     <AnimatePresence>

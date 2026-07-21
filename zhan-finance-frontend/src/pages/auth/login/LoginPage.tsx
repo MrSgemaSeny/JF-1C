@@ -10,7 +10,7 @@ import { toast } from '@/shared/ui/Toast/ToastContext';
 import { useTranslation } from 'react-i18next';
 
 export function LoginPage() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'auth']);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -37,7 +37,8 @@ export function LoginPage() {
         }
       }
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('auth.login.googleError'));
+      const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
+      toast.error(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.googleError') : msg }));
     }
   };
 
@@ -56,7 +57,8 @@ export function LoginPage() {
       if (Object.keys(fieldErrors).length > 0) {
         setValidationErrors(fieldErrors);
       } else {
-        setGlobalError(err instanceof ApiError ? err.message : t('auth.login.loginError'));
+        const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
+        setGlobalError(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.loginError') : msg }));
       }
     } finally {
       setIsSubmitting(false);

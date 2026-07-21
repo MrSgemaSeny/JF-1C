@@ -68,10 +68,16 @@ public class DocumentService {
             throw new com.example.zhanfinancebackend.common.exception.BadRequestException("File type not recognized");
         }
         
-        // Relaxing content type checks to allow common image formats and standard documents
-        // For production, maybe use a more robust detection like Apache Tika.
-        if (contentType.contains("exe") || contentType.contains("javascript")) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Executable files are not allowed");
+        java.util.Set<String> ALLOWED_CONTENT_TYPES = java.util.Set.of(
+                "application/pdf", "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "image/png", "image/jpeg"
+        );
+
+        if (!ALLOWED_CONTENT_TYPES.contains(contentType)) {
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Недопустимый тип файла: " + contentType);
         }
 
         String storageKey = storageService.store(file);
@@ -106,11 +112,15 @@ public class DocumentService {
                         link
                 );
             }
-            notificationService.notifyAdmins(
-                    "Новый документ от клиента",
-                    "Клиент " + targetUser.getFullName() + " загрузил файл: " + document.getFileName(),
-                    "/dashboard/documents"
-            );
+            String taskLink = document.getTask() != null
+                ? "/admin/tasks/" + document.getTask().getId()
+                : "/admin/documents";
+
+        notificationService.notifyAdmins(
+                "Новый документ",
+                actor.getFullName() + " загрузил файл: " + document.getFileName(),
+                taskLink
+        );
         } else {
             // Notify the Client
             String link = "/dashboard/client";

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, AlertTriangle, AlertCircle, Send, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 
 interface TaskRejectModalProps {
   taskTitle?: string;
@@ -18,9 +19,12 @@ const PREDEFINED_REASONS = [
 ];
 
 export function TaskRejectModal({ taskTitle, onClose, onSubmit, isLoading = false }: TaskRejectModalProps) {
+
   const { t } = useTranslation('crm');
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [customReason, setCustomReason] = useState('');
+
+  useEscapeKey(() => onClose(), true);
 
   const handleReasonClick = (reason: string) => {
     setSelectedReason(reason === selectedReason ? null : reason);
@@ -38,6 +42,7 @@ export function TaskRejectModal({ taskTitle, onClose, onSubmit, isLoading = fals
       onSubmit(finalReason);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">

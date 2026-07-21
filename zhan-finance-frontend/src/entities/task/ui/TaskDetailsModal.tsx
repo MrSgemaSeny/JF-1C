@@ -10,13 +10,14 @@ import { getTaskComments, addTaskComment, getTaskHistory, assignTask } from '../
 import { getEmployees } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
-import { updateTaskStage, archiveTask, deleteTask, updateTaskDetails } from '@/entities/task/api/taskApi';
+import { updateTaskStage, archiveTask, deleteTask, updateTaskDetails, requestReassignment, approveReassignment, rejectReassignment } from '@/entities/task/api/taskApi';
 import { useTaskActions } from '../lib/useTaskActions';
 import { getTaskDocuments, downloadDocument, uploadDocument } from '@/entities/document/api/documentApi';
 import { GenerateDocumentButton } from '@/entities/document-template/ui/GenerateDocumentButton';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
+import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 
 export interface TaskDetailsModalProps {
   task: TaskDto;
@@ -31,6 +32,7 @@ type RightTab = 'comments' | 'history' | 'tags';
 // ─── Small reusable atoms ────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
+
   return (
     <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
       {children}
@@ -93,6 +95,8 @@ export function TaskDetailsModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const moreMenuRef  = useRef<HTMLDivElement>(null);
 
+  useEscapeKey(() => { if (onClose) onClose(); }, isModal);
+
   // ── Effects ─────────────────────────────────────────────────────────────
   useEffect(() => {
     fetchComments();
@@ -107,6 +111,7 @@ export function TaskDetailsModal({
     if (!isModal) return;
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape' && onClose) onClose(); };
     window.addEventListener('keydown', handler);
+
     return () => window.removeEventListener('keydown', handler);
   }, [isModal, onClose]);
 
@@ -204,6 +209,42 @@ export function TaskDetailsModal({
       console.error('Failed to toggle subtask', err);
     }
   };
+
+  async function handleRequestReassignment() {
+    setIsAssigning(true);
+    try {
+      const updated = await requestReassignment(task.id);
+      onUpdateTask(updated);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsAssigning(false);
+    }
+  }
+
+  async function handleApproveReassignment() {
+    setIsAssigning(true);
+    try {
+      const updated = await approveReassignment(task.id);
+      onUpdateTask(updated);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsAssigning(false);
+    }
+  }
+
+  async function handleRejectReassignment() {
+    setIsAssigning(true);
+    try {
+      const updated = await rejectReassignment(task.id);
+      onUpdateTask(updated);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsAssigning(false);
+    }
+  }
 
   const handleDeleteSubtask = async (id: number) => {
     const newSubtasks = task.subtasks?.filter(s => s.id !== id) ?? [];
@@ -401,13 +442,33 @@ export function TaskDetailsModal({
             )}
             {taskActions.canDrop && (
               <button
-                onClick={() => handleAssign(null)}
-                disabled={isAssigning}
+                onClick={handleRequestReassignment}
+                disabled={isAssigning || task.reassignmentRequested}
                 className="inline-flex items-center gap-2 text-red-600 bg-white border border-red-200 shadow-sm px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-50 transition-colors disabled:opacity-50 ml-auto"
               >
                 <XCircle size={16} />
-                {t('taskModal.drop', { defaultValue: 'Отказаться' })}
+                {task.reassignmentRequested ? 'Ожидается отказ' : t('taskModal.drop', { defaultValue: 'Отказаться' })}
               </button>
+            )}
+            {userRole === 'ADMIN' && task.reassignmentRequested && (
+              <div className="flex items-center gap-2 ml-auto">
+                <button
+                  onClick={handleApproveReassignment}
+                  disabled={isAssigning}
+                  className="inline-flex items-center gap-2 text-green-600 bg-white border border-green-200 shadow-sm px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors disabled:opacity-50"
+                >
+                  <Check size={16} />
+                  Одобрить отказ
+                </button>
+                <button
+                  onClick={handleRejectReassignment}
+                  disabled={isAssigning}
+                  className="inline-flex items-center gap-2 text-red-600 bg-white border border-red-200 shadow-sm px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-50 transition-colors disabled:opacity-50"
+                >
+                  <X size={16} />
+                  Отклонить отказ
+                </button>
+              </div>
             )}
           </div>
         )}

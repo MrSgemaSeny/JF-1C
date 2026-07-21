@@ -27,17 +27,25 @@ public class Notification {
     @Column(name = "is_read", nullable = false)
     private boolean isRead = false;
 
+    @Column(name = "link")
+    private String link;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     protected Notification() {}
 
-    public Notification(User user, String title, String message) {
+    public Notification(User user, String title, String message, String link) {
         this.user = user;
         this.title = title;
         this.message = message;
+        this.link = link;
         this.isRead = false;
+    }
+
+    public Notification(User user, String title, String message) {
+        this(user, title, message, null);
     }
 
     public Long getId() { return id; }
@@ -47,4 +55,8 @@ public class Notification {
     public boolean isRead() { return isRead; }
     public void setRead(boolean read) { isRead = read; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public String getLink() {
+        return link;
+    }
 }

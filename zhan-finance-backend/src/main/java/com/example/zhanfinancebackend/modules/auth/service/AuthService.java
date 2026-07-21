@@ -29,6 +29,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final ClientService clientService;
+    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
 
     public AuthService(
             UserRepository userRepository,
@@ -36,7 +37,8 @@ public class AuthService {
             AuthenticationManager authenticationManager,
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
-            ClientService clientService
+            ClientService clientService,
+            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -44,20 +46,17 @@ public class AuthService {
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.clientService = clientService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new com.example.zhanfinancebackend.common.exception.ConflictException("Email is already registered");
+            throw new com.example.zhanfinancebackend.common.exception.ConflictException(ErrorCode.EMAIL_ALREADY_REGISTERED.name());
         }
 
         Role assignedRole = request.role() != null ? request.role() : Role.CLIENT;
         boolean isEmployee = assignedRole == Role.EMPLOYEE;
-        
-        if (isEmployee) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Сотрудники могут регистрироваться только через Google-аккаунт.");
-        }
 
         User user = new User(
                 request.fullName(),
@@ -70,6 +69,13 @@ public class AuthService {
 
         // Создаём CRM-карточку клиента при регистрации
         clientService.ensureProfile(savedUser, request.companyName(), request.phone());
+
+        notificationService.notifyAdmins(
+                "Новая регистрация",
+                savedUser.getFullName() + " (" + savedUser.getEmail() + ") зарегистрировался как "
+                        + (assignedRole == Role.EMPLOYEE ? "сотрудник" : "клиент"),
+                "/admin/employees"
+        );
         RefreshToken refreshToken = refreshTokenService.create(savedUser);
         return response(savedUser, refreshToken.getToken());
     }

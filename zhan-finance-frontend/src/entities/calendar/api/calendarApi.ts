@@ -31,6 +31,13 @@ export async function createCalendarEvent(request: CalendarEventCreateRequest): 
   });
 }
 
+export async function updateCalendarEvent(id: number, request: CalendarEventCreateRequest): Promise<CalendarEventDto> {
+  return apiRequest<CalendarEventDto>(`/api/crm/calendar/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  });
+}
+
 export async function deleteCalendarEvent(id: number): Promise<void> {
   return apiRequest<void>(`/api/crm/calendar/${id}`, {
     method: 'DELETE',
