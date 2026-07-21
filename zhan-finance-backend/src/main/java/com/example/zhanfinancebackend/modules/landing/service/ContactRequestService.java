@@ -140,4 +140,21 @@ public class ContactRequestService {
                 contactRequest.getUpdatedAt()
         );
     }
+
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> downloadFile(Long id, Long fileId) {
+        ContactRequest contactRequest = get(id);
+        ContactRequestFile file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new ResourceNotFoundException("File not found"));
+        
+        if (!file.getContactRequest().getId().equals(contactRequest.getId())) {
+            throw new ResourceNotFoundException("File not found for this contact request");
+        }
+
+        org.springframework.core.io.Resource resource = storageService.loadAsResource(file.getStorageKey());
+        
+        return org.springframework.http.ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.parseMediaType(file.getContentType()))
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFileName() + "\"")
+                .body(resource);
+    }
 }

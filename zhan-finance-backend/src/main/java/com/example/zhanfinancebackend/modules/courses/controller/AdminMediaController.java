@@ -24,7 +24,7 @@ public class AdminMediaController {
     public ApiResponse<Map<String, String>> uploadMedia(@RequestParam("file") MultipartFile file) {
         String storageKey = storageService.store(file);
         Map<String, String> result = new HashMap<>();
-        result.put("url", "/uploads/" + storageKey);
+        result.put("url", "/api/courses/media/" + storageKey);
         return ApiResponse.success(result);
     }
 }

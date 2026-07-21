@@ -70,4 +70,12 @@ public class ContactRequestController {
         return ApiResponse.success(contactRequestService.uploadFiles(id, files), "Files uploaded");
     }
 
+    @GetMapping("/{id}/files/{fileId}/download")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> downloadFile(
+            @PathVariable Long id,
+            @PathVariable Long fileId) {
+        return contactRequestService.downloadFile(id, fileId);
+    }
+
 }
