@@ -141,6 +141,17 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
         </span>
       )}
 
+      {/* Tags */}
+      {task.tags && task.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1.5">
+          {task.tags.map(tag => (
+            <span key={tag} className="px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[10px] font-medium leading-none border border-gray-200 truncate max-w-full">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Footer: Date and Avatar */}
       <div className="flex items-center justify-between mt-1">
         <span className="text-[12px] text-gray-400 flex items-center gap-1">

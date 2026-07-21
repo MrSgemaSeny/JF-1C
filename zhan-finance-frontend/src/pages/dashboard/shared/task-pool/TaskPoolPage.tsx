@@ -121,9 +121,9 @@ export function TaskPoolPage() {
   }
 
   return (
-    <div className="h-full flex flex-col w-full">
+    <div className="flex flex-col w-full gap-6 pb-20">
       <TaskPoolTabs />
-      <div className="mb-8">
+      <div>
         <h1 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-3">
           <div className="p-2 bg-brand-green/10 text-brand-green rounded-xl">
             <Users size={24} />
@@ -146,16 +146,16 @@ export function TaskPoolPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col flex-1 min-h-0">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           {/* Desktop Table View */}
-          <div className="hidden md:block overflow-auto flex-1 custom-scrollbar">
+          <div className="hidden md:block overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[40%]">{t('taskPool.columns.title')}</th>
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.client')}</th>
                 {user?.role === 'ADMIN' && (
-                  <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Исполнитель</th>
+                  <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.assignee', { defaultValue: 'Исполнитель' })}</th>
                 )}
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.status')}</th>
                 <th className="px-6 py-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('taskPool.columns.created')}</th>
@@ -187,7 +187,7 @@ export function TaskPoolPage() {
                       {task.assignedTo ? (
                         <div className="text-sm font-medium text-gray-700">{task.assignedTo.fullName}</div>
                       ) : (
-                        <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">Не назначен</span>
+                        <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">{t('taskPool.unassigned', { defaultValue: 'Не назначен' })}</span>
                       )}
                     </td>
                   )}
@@ -228,7 +228,7 @@ export function TaskPoolPage() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden divide-y divide-gray-100 overflow-auto flex-1 custom-scrollbar">
+          <div className="md:hidden divide-y divide-gray-100">
             {tasks.map((task: TaskDto) => (
               <div 
                 key={task.id} 
@@ -257,9 +257,9 @@ export function TaskPoolPage() {
                   </div>
                   {user?.role === 'ADMIN' && (
                     <div className="flex flex-col text-center">
-                      <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">Исполнитель</span>
+                      <span className="text-xs uppercase font-bold text-gray-400 mb-0.5">{t('taskPool.columns.assignee', { defaultValue: 'Исполнитель' })}</span>
                       <span className="font-medium text-gray-700 truncate max-w-[100px]">
-                        {task.assignedTo ? task.assignedTo.fullName : <span className="text-amber-600 font-bold">Нет</span>}
+                        {task.assignedTo ? task.assignedTo.fullName : <span className="text-amber-600 font-bold">{t('taskPool.no', { defaultValue: 'Нет' })}</span>}
                       </span>
                     </div>
                   )}

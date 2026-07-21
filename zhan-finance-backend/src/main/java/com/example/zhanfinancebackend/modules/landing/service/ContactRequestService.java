@@ -8,6 +8,8 @@ import com.example.zhanfinancebackend.modules.landing.entity.ContactRequestFile;
 import com.example.zhanfinancebackend.modules.landing.repository.ContactRequestFileRepository;
 import com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository;
 import com.example.zhanfinancebackend.modules.documents.service.StorageService;
+import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,14 +24,20 @@ public class ContactRequestService {
     private final ContactRequestRepository contactRequestRepository;
     private final ContactRequestFileRepository fileRepository;
     private final StorageService storageService;
+    private final NotificationService notificationService;
+    private final EmailNotificationService emailNotificationService;
 
     public ContactRequestService(
             ContactRequestRepository contactRequestRepository,
             ContactRequestFileRepository fileRepository,
-            StorageService storageService) {
+            StorageService storageService,
+            NotificationService notificationService,
+            EmailNotificationService emailNotificationService) {
         this.contactRequestRepository = contactRequestRepository;
         this.fileRepository = fileRepository;
         this.storageService = storageService;
+        this.notificationService = notificationService;
+        this.emailNotificationService = emailNotificationService;
     }
 
     @Transactional
@@ -37,10 +45,35 @@ public class ContactRequestService {
         ContactRequest contactRequest = new ContactRequest(
                 request.name(),
                 request.phone(),
+                request.email(),
                 request.message(),
                 request.source()
         );
-        return toDto(contactRequestRepository.save(contactRequest));
+        ContactRequest saved = contactRequestRepository.save(contactRequest);
+
+        // Уведомление менеджерам (админам)
+        try {
+            String title = "Новый лид: " + request.name();
+            String message = "Телефон: " + request.phone() + (request.email() != null ? ", Email: " + request.email() : "");
+            notificationService.notifyAdmins(title, message, "/admin/leads");
+        } catch (Exception e) {
+            // Игнорируем ошибку уведомлений, чтобы не сбросить создание лида
+        }
+
+        // Email самому лиду
+        if (request.email() != null && !request.email().isBlank()) {
+            try {
+                String subject = "Мы получили вашу заявку - Zhan Finance";
+                String htmlBody = "<h3>Здравствуйте, " + request.name() + "!</h3>" +
+                                  "<p>Мы успешно получили вашу заявку. Наш менеджер скоро свяжется с вами по номеру " + request.phone() + ".</p>" +
+                                  "<p>Спасибо за интерес к Zhan Finance!</p>";
+                emailNotificationService.sendHtmlEmail(request.email(), subject, htmlBody);
+            } catch (Exception e) {
+                // Игнорируем ошибку отправки письма
+            }
+        }
+
+        return toDto(saved);
     }
 
     @Transactional(readOnly = true)
@@ -99,6 +132,7 @@ public class ContactRequestService {
                 contactRequest.getId(),
                 contactRequest.getName(),
                 contactRequest.getPhone(),
+                contactRequest.getEmail(),
                 contactRequest.getMessage(),
                 contactRequest.getSource(),
                 contactRequest.getStatus(),

@@ -37,9 +37,9 @@ public class ContactRequestControllerTest {
 
     @Test
     public void createContactRequest_ShouldReturnSuccess() throws Exception {
-        ContactRequestCreateRequest request = new ContactRequestCreateRequest("Ivan Ivanov", "+7 777 123 4567", "Test message", "frontend");
+        ContactRequestCreateRequest request = new ContactRequestCreateRequest("Ivan Ivanov", "+7 777 123 4567", null, "Test message", "frontend");
 
-        ContactRequestDto mockResponse = new ContactRequestDto(1L, "Ivan Ivanov", "+7 777 123 4567", "Test message", "frontend", ContactRequestStatus.NEW, null, null);
+        ContactRequestDto mockResponse = new ContactRequestDto(1L, "Ivan Ivanov", "+7 777 123 4567", null, "Test message", "frontend", ContactRequestStatus.NEW, null, null);
 
         when(contactRequestService.create(any(ContactRequestCreateRequest.class))).thenReturn(mockResponse);
 

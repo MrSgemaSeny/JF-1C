@@ -9,7 +9,7 @@ export function SolutionPicker() {
   const { t } = useTranslation('common');
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [contact, setContact] = useState({ name: '', phone: '' });
+  const [contact, setContact] = useState({ name: '', phone: '', email: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -84,6 +84,7 @@ export function SolutionPicker() {
         body: JSON.stringify({
           name: contact.name,
           phone: contact.phone,
+          email: contact.email || undefined,
           message: message,
           source: 'frontend'
         })
@@ -134,7 +135,7 @@ export function SolutionPicker() {
                     {t('quiz.promoLogin', { defaultValue: 'Войти / Зарегистрироваться' })}
                   </a>
                   <button
-                    onClick={() => { setStep(0); setAnswers({}); setSubmitted(false); setContact({ name: '', phone: '' }); setFiles([]); }}
+                    onClick={() => { setStep(0); setAnswers({}); setSubmitted(false); setContact({ name: '', phone: '', email: '' }); setFiles([]); }}
                     className="px-6 py-3 border border-brand-green/20 text-brand-green rounded-lg hover:bg-brand-green/5 transition-colors"
                   >
                     {t('quiz.restart', { defaultValue: 'Пройти заново' })}
@@ -241,12 +242,21 @@ export function SolutionPicker() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-brand-green/70 mb-2">{t('quiz.phoneOrEmail', { defaultValue: 'Телефон или e-mail' })}</label>
+                  <label className="block text-sm text-brand-green/70 mb-2">{t('quiz.phone', { defaultValue: 'Телефон' })}</label>
                   <input
                     value={contact.phone}
                     onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))}
                     className="w-full p-3 rounded-lg bg-white border border-brand-green/20"
                     required
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm text-brand-green/70 mb-2">{t('quiz.email', { defaultValue: 'Email (необязательно)' })}</label>
+                  <input
+                    type="email"
+                    value={contact.email}
+                    onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))}
+                    className="w-full p-3 rounded-lg bg-white border border-brand-green/20"
                   />
                 </div>
                 <div className="md:col-span-2 flex items-center gap-4 mt-4">

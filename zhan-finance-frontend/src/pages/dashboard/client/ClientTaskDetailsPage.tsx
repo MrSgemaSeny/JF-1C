@@ -59,6 +59,26 @@ export function ClientTaskDetailsPage() {
     }
   };
 
+  const handleConfirm = async () => {
+    const wonStage = stages.find((s: StageDto) => s.type === 'WON');
+    if (!wonStage) return;
+    try {
+      await updateStage({ id: task.id, stageId: wonStage.id });
+    } catch (err) {
+      console.error('Failed to confirm task', err);
+    }
+  };
+
+  const handleRework = async () => {
+    const reworkStage = stages.find((s: StageDto) => s.name === 'Доработка');
+    if (!reworkStage) return;
+    try {
+      await updateStage({ id: task.id, stageId: reworkStage.id });
+    } catch (err) {
+      console.error('Failed to send to rework', err);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto pb-20 animate-in fade-in duration-300">
       <button 
@@ -88,8 +108,26 @@ export function ClientTaskDetailsPage() {
             </div>
             
             {!isArchived && (
-              <div className="flex items-center gap-3">
-                {!isFinished && (
+              <div className="flex flex-wrap items-center gap-3">
+                {task.stage?.name === 'На проверке' && (
+                  <>
+                    <button
+                      onClick={handleConfirm}
+                      disabled={isUpdatingStage}
+                      className="px-4 py-2 bg-brand-green text-white hover:bg-brand-green/90 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <CheckCircle2 size={16} /> Подтвердить
+                    </button>
+                    <button
+                      onClick={handleRework}
+                      disabled={isUpdatingStage}
+                      className="px-4 py-2 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <Activity size={16} /> На доработку
+                    </button>
+                  </>
+                )}
+                {!isFinished && task.stage?.name !== 'На проверке' && (
                   <button
                     onClick={() => setShowRejectModal(true)}
                     className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
@@ -156,7 +194,7 @@ export function ClientTaskDetailsPage() {
                       {icon}
                     </div>
                     <span className={textClasses} style={textStyle}>
-                      {stage.name}
+                      {t(`stages.${stage.name}`, { defaultValue: stage.name })}
                     </span>
                   </div>
                 );
@@ -166,8 +204,8 @@ export function ClientTaskDetailsPage() {
               <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700 text-sm flex gap-2">
                 <AlertCircle size={18} className="shrink-0" />
                 <div>
-                  <p className="font-semibold mb-1">Задача отменена</p>
-                  {task.lostReason && <p>Причина: {task.lostReason}</p>}
+                  <p className="font-semibold mb-1">{t('taskDetails.cancelled', { defaultValue: 'Задача отменена' })}</p>
+                  {task.lostReason && <p>{t('taskDetails.reason', { defaultValue: 'Причина:' })} {task.lostReason}</p>}
                 </div>
               </div>
             )}

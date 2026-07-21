@@ -6,13 +6,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 
 public record TaskRequestCreateRequest(
         @NotBlank @Size(max = 255) String title,
         @Size(max = 5000) String description,
         Long clientId,
-        @Future LocalDate dueDate,
+        @FutureOrPresent LocalDate dueDate,
         List<SubtaskCreateRequest> subtasks,
         List<Long> serviceIds
 ) {

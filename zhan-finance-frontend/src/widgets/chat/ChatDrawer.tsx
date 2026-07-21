@@ -124,7 +124,10 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
 
     try {
       const sent = await sendChatMessage(otherUserId, content);
-      setMessages(prev => [...prev, sent]);
+      setMessages(prev => {
+        if (prev.find(m => m.id === sent.id)) return prev;
+        return [...prev, sent];
+      });
       lastMessageIdRef.current = Math.max(lastMessageIdRef.current, sent.id);
     } catch (error) {
       console.error('Failed to send message:', error);

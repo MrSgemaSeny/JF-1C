@@ -44,7 +44,24 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
   ];
   
   const headerColorRaw = stage.color || stageColors[stage.orderIndex % stageColors.length] || 'var(--color-brand-green)';
-  const headerColor = headerColorRaw === 'var(--color-stage-review)' ? '#6366F1' : headerColorRaw;
+  
+  // Tailwind v4 might purge CSS variables that aren't statically used in classes.
+  // We map them to hex codes here if they match known variables.
+  const getHexColor = (colorStr: string) => {
+    switch (colorStr) {
+      case 'var(--color-stage-new)': return '#0EA5E9';
+      case 'var(--color-stage-docs)': return '#8B5CF6';
+      case 'var(--color-stage-prepay)': return '#F59E0B';
+      case 'var(--color-stage-active)': return '#10B981';
+      case 'var(--color-stage-invoice)': return '#F97316';
+      case 'var(--color-stage-rework)': return '#EAB308';
+      case 'var(--color-stage-review)': return '#6366F1';
+      case 'var(--color-stage-lost)': return '#EF4444';
+      default: return colorStr;
+    }
+  };
+  
+  const headerColor = getHexColor(headerColorRaw);
 
   return (
     <div className="flex flex-col flex-shrink-0 w-[85vw] md:w-[280px] snap-center">
@@ -53,7 +70,7 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
         className="rounded-t-lg px-3 py-2 flex items-center justify-between text-white shadow-sm"
         style={{ backgroundColor: headerColor }}
       >
-        <span className="font-semibold text-sm truncate pr-2">{stage.name}</span>
+        <span className="font-semibold text-sm truncate pr-2">{t(`stages.${stage.name}`, { defaultValue: stage.name })}</span>
         <span className="text-xs bg-white/20 px-1.5 py-0.5 rounded-full font-medium">
           {tasks.length}
         </span>

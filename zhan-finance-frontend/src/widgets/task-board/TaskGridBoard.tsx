@@ -24,7 +24,7 @@ export interface TaskGridBoardRef {
 type SortOption = 'newest' | 'oldest' | 'deadline_asc' | 'deadline_desc';
 
 export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({ initialTasks, onBatchSave, userRole }, ref) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['crm', 'common']);
   
   const STATUS_OPTIONS: { value: string; label: string }[] = [
     { value: 'ALL', label: t('kanban.allStages', { defaultValue: 'Все стадии' }) },

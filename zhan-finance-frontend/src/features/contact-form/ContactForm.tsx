@@ -10,7 +10,7 @@ interface ContactFormProps {
 
 export function ContactForm({ title, className = '', showMessage = false }: ContactFormProps) {
   const { t } = useTranslation('common');
-  const { name, setName, phone, setPhone, message, setMessage, submitted, loading, error, handleSubmit } = useContactForm();
+  const { name, setName, phone, setPhone, email, setEmail, message, setMessage, submitted, loading, error, handleSubmit } = useContactForm();
 
   const displayTitle = title || t('contactForm.title', { defaultValue: 'Связаться с нами' });
 
@@ -70,6 +70,18 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
               className="w-full bg-brand-green/5 border-b-2 border-brand-green/20 px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium"
               placeholder="+7 (___) ___-__-__"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-wider opacity-70">
+              {t('contactForm.fields.email.label', { defaultValue: 'Email (необязательно)' })}
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-brand-green/5 border-b-2 border-brand-green/20 px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium"
+              placeholder={t('contactForm.fields.email.placeholder', { defaultValue: 'name@example.com' })}
             />
           </div>
           {showMessage && (

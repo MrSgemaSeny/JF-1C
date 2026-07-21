@@ -40,7 +40,22 @@
     "chatWith": "Chat with",
     "clientNotSpecified": "Client not specified",
     "noClient": "No client",
-    "addDeal": "+ Deal"
+    "addDeal": "+ Deal",
+    "allStages": "All stages",
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "deadline_asc": "Deadline ↑",
+      "deadline_desc": "Deadline ↓"
+    },
+    "unsavedChanges": "You have unsaved changes! Are you sure you want to leave?",
+    "deleteConfirm": "Delete this task permanently?",
+    "deleteError": "Error deleting task",
+    "reset": "Reset",
+    "of": "of",
+    "tasks": "tasks",
+    "noFilteredTasks": "No tasks match selected filters",
+    "resetFilters": "Reset filters"
   },
   "errors": {
     "taskNotFound": "Task not found"

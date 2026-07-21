@@ -20,6 +20,9 @@ public class ContactRequest extends BaseEntity {
     @Column(length = 600)
     private String message;
 
+    @Column(length = 120)
+    private String email;
+
     @Column(nullable = false, length = 80)
     private String source = "landing";
 
@@ -30,9 +33,10 @@ public class ContactRequest extends BaseEntity {
     protected ContactRequest() {
     }
 
-    public ContactRequest(String name, String phone, String message, String source) {
+    public ContactRequest(String name, String phone, String email, String message, String source) {
         this.name = name;
         this.phone = phone;
+        this.email = email;
         this.message = message;
         if (source != null && !source.isBlank()) {
             this.source = source;
@@ -45,6 +49,10 @@ public class ContactRequest extends BaseEntity {
 
     public String getPhone() {
         return phone;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getMessage() {

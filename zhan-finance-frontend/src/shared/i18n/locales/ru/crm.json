@@ -40,7 +40,22 @@
     "chatWith": "Чат с",
     "clientNotSpecified": "Клиент не указан",
     "noClient": "Без клиента",
-    "addDeal": "+ Дело"
+    "addDeal": "+ Дело",
+    "allStages": "Все стадии",
+    "sort": {
+      "newest": "Новые первыми",
+      "oldest": "Старые первыми",
+      "deadline_asc": "Дедлайн ↑",
+      "deadline_desc": "Дедлайн ↓"
+    },
+    "unsavedChanges": "У вас есть несохраненные изменения! Вы уверены, что хотите уйти?",
+    "deleteConfirm": "Удалить эту задачу навсегда?",
+    "deleteError": "Ошибка при удалении задачи",
+    "reset": "Сбросить",
+    "of": "из",
+    "tasks": "задач",
+    "noFilteredTasks": "Нет задач по выбранным фильтрам",
+    "resetFilters": "Сбросить фильтры"
   },
   "errors": {
     "taskNotFound": "Задача не найдена"

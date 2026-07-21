@@ -113,8 +113,18 @@ public class TaskController {
         return ApiResponse.success(taskService.updateTaskStage(id, request.stageId(), request.lostReason(), principal.getUser()));
     }
 
-    @PostMapping("/{id}/archive")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ApiResponse<TaskDto> updateTaskDetails(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id,
+            @Valid @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskUpdateRequest request
+    ) {
+        return ApiResponse.success(taskService.updateTaskDetails(id, request, principal.getUser()));
+    }
+
+    @PostMapping("/{id}/archive")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<TaskDto> archiveTask(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id

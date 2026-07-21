@@ -44,6 +44,13 @@ export async function requestTask(request: TaskRequestCreateRequest): Promise<Ta
   });
 }
 
+export async function updateTaskDetails(id: number, data: Partial<TaskDto>): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/crm/tasks/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
 export async function updateTaskStage(id: number, stageId: number, lostReason?: string): Promise<TaskDto> {
   return apiRequest<TaskDto>(`/api/crm/tasks/${id}/stage`, {
     method: 'PATCH',

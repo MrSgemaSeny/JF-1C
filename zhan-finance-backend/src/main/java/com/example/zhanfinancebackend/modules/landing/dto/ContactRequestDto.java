@@ -8,6 +8,7 @@ public record ContactRequestDto(
         Long id,
         String name,
         String phone,
+        String email,
         String message,
         String source,
         ContactRequestStatus status,

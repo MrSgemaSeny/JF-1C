@@ -19,7 +19,7 @@ const CLIENT_STATUS_MAP: Record<string, { labelKey: string; color: string; icon:
   CANCELLED: { labelKey: 'clientDashboard.status.CANCELLED', color: 'bg-red-50 text-red-700 border-red-200', icon: <AlertCircle size={14} /> },
 };
 
-function getClientStatus(stage?: StageDto) {
+function getClientStatus(stage: StageDto | undefined, t: any) {
   if (!stage) return CLIENT_STATUS_MAP.NEW;
   
   if (stage.type === 'WON') return CLIENT_STATUS_MAP.DONE;
@@ -28,7 +28,7 @@ function getClientStatus(stage?: StageDto) {
   if (stage.name === 'Новый') return CLIENT_STATUS_MAP.NEW;
   if (stage.name === 'В работе') return CLIENT_STATUS_MAP.IN_PROGRESS;
   
-  return { labelKey: '', dynamicLabel: stage.name, color: 'bg-blue-50 text-blue-700 border-blue-200', icon: <Clock size={14} /> };
+  return { labelKey: '', dynamicLabel: t(`stages.${stage.name}`, { defaultValue: stage.name }), color: 'bg-blue-50 text-blue-700 border-blue-200', icon: <Clock size={14} /> };
 }
 
 import { useNavigate } from 'react-router-dom';
@@ -226,7 +226,7 @@ export function ClientOverviewPage() {
                 </div>
               ) : (
                 displayedTasks.map((task) => {
-                  const status = getClientStatus(task.stage);
+                  const status = getClientStatus(task.stage, t);
                   return (
                     <div 
                       key={task.id}

@@ -61,16 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<StoredAuth | null>(() => readStoredAuth());
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [user]);
-
-  // Configure HTTP client with current token and refresh logic asynchronously
-  useEffect(() => {
+  // Сразу синхронно настраиваем http-клиент перед рендером детей
+  useMemo(() => {
     configureAuth(
       () => user?.accessToken ?? null,
       async () => {
@@ -90,6 +82,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [user]);
+
+
 
   const value = useMemo<AuthContextValue>(() => ({
     user,

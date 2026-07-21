@@ -48,9 +48,10 @@ public class PipelineSeederService {
                         createStage(defaultPipeline, "Предоплата", 2, StageType.OPEN, false, "var(--color-stage-prepay)"),
                         createStage(defaultPipeline, "В работе", 3, StageType.OPEN, false, "var(--color-stage-active)"),
                         createStage(defaultPipeline, "Счет выставлен", 4, StageType.OPEN, false, "var(--color-stage-invoice)"),
-                        createStage(defaultPipeline, "На проверке", 5, StageType.OPEN, false, "var(--color-stage-review)"),
-                        createStage(defaultPipeline, "Успешно завершено", 6, StageType.WON, false, "var(--color-brand-green)"),
-                        createStage(defaultPipeline, "Отменен", 7, StageType.LOST, false, "var(--color-stage-lost)")
+                        createStage(defaultPipeline, "Доработка", 5, StageType.OPEN, false, "var(--color-stage-rework)"),
+                        createStage(defaultPipeline, "На проверке", 6, StageType.OPEN, false, "var(--color-stage-review)"),
+                        createStage(defaultPipeline, "Успешно завершено", 7, StageType.WON, false, "var(--color-brand-green)"),
+                        createStage(defaultPipeline, "Отменен", 8, StageType.LOST, false, "var(--color-stage-lost)")
                 ));
                 
                 // Назначаем задачам без стадии дефолтную стадию "Новый"
@@ -72,6 +73,22 @@ public class PipelineSeederService {
                     // Shift indices of later stages
                     stageRepository.findAll().forEach(s -> {
                         if (s.getOrderIndex() >= 5 && !"На проверке".equals(s.getName())) {
+                            s.setOrderIndex(s.getOrderIndex() + 1);
+                            stageRepository.save(s);
+                        }
+                    });
+                }
+
+                // Check if "Доработка" exists, if not, create it at index 5 and push others
+                boolean hasReworkStage = stageRepository.findAll().stream()
+                        .anyMatch(s -> "Доработка".equals(s.getName()));
+                if (!hasReworkStage) {
+                    Stage reworkStage = createStage(defaultPipeline, "Доработка", 5, StageType.OPEN, false, "var(--color-stage-rework)");
+                    stageRepository.save(reworkStage);
+                    
+                    // Shift indices of later stages (which includes 'На проверке' now)
+                    stageRepository.findAll().forEach(s -> {
+                        if (s.getOrderIndex() >= 5 && !"Доработка".equals(s.getName())) {
                             s.setOrderIndex(s.getOrderIndex() + 1);
                             stageRepository.save(s);
                         }

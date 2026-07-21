@@ -40,7 +40,8 @@ public class GlobalExceptionHandler {
                 .map(err -> new ErrorResponse.ErrorDetail(err.getField(), err.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        log.warn("[{}] Validation failed: {}", requestId, details);
+        log.warn("[{}] Validation failed: {}", requestId, 
+                details.stream().map(d -> d.getField() + "=" + d.getError()).collect(Collectors.joining(", ")));
         
         String titleMessage = "Validation failed";
         try {

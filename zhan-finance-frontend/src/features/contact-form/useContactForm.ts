@@ -8,6 +8,7 @@ export function useContactForm() {
   const { t } = useTranslation('common');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,10 @@ export function useContactForm() {
     if (user?.fullName && !name) {
       setName(user.fullName);
     }
-  }, [user, name]);
+    if (user?.email && !email) {
+      setEmail(user.email);
+    }
+  }, [user, name, email]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,6 +34,7 @@ export function useContactForm() {
         body: JSON.stringify({
           name,
           phone,
+          email: email || undefined,
           message,
           source: 'frontend'
         })
@@ -47,6 +52,8 @@ export function useContactForm() {
     setName,
     phone,
     setPhone,
+    email,
+    setEmail,
     message,
     setMessage,
     submitted,

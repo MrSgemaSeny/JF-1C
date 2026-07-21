@@ -253,6 +253,58 @@ public class TaskService {
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
+    public TaskDto updateTaskDetails(Long taskId, com.example.zhanfinancebackend.modules.crm.dto.TaskUpdateRequest request, User user) {
+        Task task = getTaskEntity(taskId);
+        accessService.assertCanUpdateTaskStage(user, task, task.getStage()); // Using this check for now to ensure they have write access
+
+        if (request.title() != null && !request.title().trim().isEmpty()) {
+            task.setTitle(request.title().trim());
+        }
+        if (request.description() != null) {
+            task.setDescription(request.description().trim());
+        }
+        if (request.tags() != null) {
+            task.setTags(request.tags());
+        }
+        
+        if (request.subtasks() != null) {
+            // keep existing subtasks to preserve status
+            java.util.List<Subtask> existing = task.getSubtasks();
+            java.util.Map<Long, Subtask> existingMap = new java.util.HashMap<>();
+            for (Subtask st : existing) {
+                if (st.getId() != null) {
+                    existingMap.put(st.getId(), st);
+                }
+            }
+            
+            java.util.List<Subtask> updatedSubtasks = new java.util.ArrayList<>();
+            for (com.example.zhanfinancebackend.modules.crm.dto.SubtaskDto stDto : request.subtasks()) {
+                if (stDto.id() != null && stDto.id() > 0 && existingMap.containsKey(stDto.id())) {
+                    Subtask st = existingMap.get(stDto.id());
+                    st.setTitle(stDto.title());
+                    if (stDto.status() != null) {
+                        st.setStatus(stDto.status());
+                    }
+                    updatedSubtasks.add(st);
+                } else {
+                    Subtask newSt = new Subtask(task, stDto.title());
+                    if (stDto.status() != null) {
+                        newSt.setStatus(stDto.status());
+                    }
+                    updatedSubtasks.add(newSt);
+                }
+            }
+            task.setSubtasks(updatedSubtasks);
+        }
+
+        Task savedTask = taskRepository.save(task);
+        logActivity(task, user, "Обновил данные задачи");
+        auditService.logAction("UPDATE", "Task", task.getId(), "Task details updated");
+        return taskMapper.mapToDto(savedTask);
+    }
+
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
     public TaskDto updateTaskStage(Long taskId, Long stageId, String lostReason, User user) {
         Task task = getTaskEntity(taskId);
         Stage newStage = stageRepository.findById(stageId)

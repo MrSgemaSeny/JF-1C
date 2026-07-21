@@ -442,6 +442,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
             <input
               ref={dueDateInputRef}
               type="date"
+              min={new Date().toISOString().split('T')[0]}
               defaultValue={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
               onChange={handleDueDateChange}
               onBlur={() => setIsEditingDueDate(false)}

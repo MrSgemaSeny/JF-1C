@@ -341,6 +341,7 @@
     "columns": {
       "title": "Task",
       "client": "Client",
+      "assignee": "Assignee",
       "status": "Status",
       "created": "Created",
       "actions": "Actions"
@@ -350,7 +351,22 @@
       "assign": "Assign",
       "assigning": "Assigning..."
     },
-    "noEmployees": "No available employees"
+    "noEmployees": "No available employees",
+    "unassigned": "Unassigned",
+    "no": "No",
+    "noClient": "Not specified",
+    "noStage": "No stage"
+  },
+  "stages": {
+    "Новый": "New",
+    "Сбор документов": "Document Collection",
+    "Предоплата": "Prepayment",
+    "В работе": "In Progress",
+    "Счет выставлен": "Invoiced",
+    "Доработка": "Rework",
+    "На проверке": "In Review",
+    "Успешно завершено": "Completed",
+    "Отменен": "Cancelled"
   },
   "adminArchive": {
     "cancelledTitle": "Archive: Cancelled Tasks",
