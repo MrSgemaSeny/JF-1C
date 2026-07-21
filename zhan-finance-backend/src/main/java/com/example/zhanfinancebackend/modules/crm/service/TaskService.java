@@ -423,6 +423,14 @@ public class TaskService {
         Long oldAssigneeId = task.getAssignedTo() != null ? task.getAssignedTo().getId() : null;
         Long newAssigneeId = assignee != null ? assignee.getId() : null;
 
+        if (user.getRole() == Role.EMPLOYEE) {
+            if (assigneeId != null && !assigneeId.equals(user.getId())) {
+                throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                        ErrorCode.FORBIDDEN, "Сотрудники могут назначать задачи только на себя."
+                );
+            }
+        }
+
         if (!java.util.Objects.equals(oldAssigneeId, newAssigneeId)) {
             String oldAssigneeName = task.getAssignedTo() != null ? task.getAssignedTo().getFullName() : "None";
             String assigneeName = assignee != null ? assignee.getFullName() : "Не назначен";
@@ -537,6 +545,8 @@ public class TaskService {
             Task task = taskMap.get(dto.id());
             if (task == null) continue;
             
+            accessService.assertCanUpdateTaskDetails(user, task);
+            
             if (dto.stage() != null && dto.stage().id() != null) {
                 Stage stage = stageRepository.findById(dto.stage().id())
                         .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Stage not found: " + dto.stage().id()));
@@ -583,6 +593,11 @@ public class TaskService {
                 }
             }
             if (dto.assignedToId() != null) {
+                 if (user.getRole() == Role.EMPLOYEE && !dto.assignedToId().equals(user.getId())) {
+                     throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                             ErrorCode.FORBIDDEN, "Сотрудники могут назначать задачи только на себя."
+                     );
+                 }
                  User assignee = userRepository.findById(dto.assignedToId())
                     .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
                  task.setAssignedTo(assignee);
