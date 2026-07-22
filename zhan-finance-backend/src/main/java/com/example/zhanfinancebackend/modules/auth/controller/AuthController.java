@@ -6,6 +6,8 @@ import com.example.zhanfinancebackend.modules.auth.dto.LoginRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.RefreshRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.GoogleLoginRequest;
+import com.example.zhanfinancebackend.modules.auth.dto.CheckEmailRequest;
+import com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse;
 import com.example.zhanfinancebackend.modules.auth.service.AuthService;
 import com.example.zhanfinancebackend.modules.auth.service.GoogleAuthService;
 import jakarta.validation.Valid;
@@ -52,5 +54,10 @@ public class AuthController {
     @PostMapping("/refresh")
     public ApiResponse<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request) {
         return ApiResponse.success(authService.refresh(request));
+    }
+
+    @PostMapping("/check-email")
+    public ApiResponse<CheckEmailResponse> checkEmail(@Valid @RequestBody CheckEmailRequest request) {
+        return ApiResponse.success(authService.checkEmail(request.email()));
     }
 }

@@ -37,6 +37,11 @@ export interface GoogleLoginRequest {
   credential: string;
 }
 
+export interface CheckEmailResponse {
+  exists: boolean;
+  provider: 'LOCAL' | 'GOOGLE' | null;
+}
+
 export function login(request: LoginRequest): Promise<AuthResponse> {
   return apiRequest<AuthResponse>('/api/auth/login', {
     method: 'POST',
@@ -75,5 +80,12 @@ export async function loginWithGoogle(credential: string, role?: 'CLIENT' | 'EMP
   return apiRequest<AuthResponse>('/api/auth/google', {
     method: 'POST',
     body: JSON.stringify({ credential, role })
+  });
+}
+
+export function checkEmail(email: string): Promise<CheckEmailResponse> {
+  return apiRequest<CheckEmailResponse>('/api/auth/check-email', {
+    method: 'POST',
+    body: JSON.stringify({ email })
   });
 }

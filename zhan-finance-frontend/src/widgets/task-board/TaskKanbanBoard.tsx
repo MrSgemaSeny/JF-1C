@@ -42,15 +42,47 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   const [chatClientName, setChatClientName] = useState<string>('');
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const thumbRef = React.useRef<HTMLDivElement>(null);
   const isDraggingScroll = React.useRef(false);
   const startX = React.useRef(0);
   const scrollLeft = React.useRef(0);
 
+  // ─── Thumb state ───────────────────────────────────────────
+  const isDraggingThumb = React.useRef(false);
+  const thumbStartX = React.useRef(0);
+  const thumbScrollStart = React.useRef(0);
+  const [thumbStyle, setThumbStyle] = useState({ left: 0, width: 0 });
+
+  // ─── Пересчёт размера и позиции thumb ──────────────────────
+  const updateThumb = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const ratio = el.clientWidth / el.scrollWidth;
+    const width = Math.max(el.clientWidth * ratio, 40);
+    const left = (el.scrollLeft / el.scrollWidth) * el.clientWidth;
+    setThumbStyle({ left, width });
+  }, []);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    updateThumb();
+    el.addEventListener('scroll', updateThumb, { passive: true });
+    const ro = new ResizeObserver(updateThumb);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener('scroll', updateThumb);
+      ro.disconnect();
+    };
+  }, [updateThumb]);
+
+  // ─── Wheel → horizontal scroll ──────────────────────────────
   const handleWheel = useCallback((e: WheelEvent) => {
-    if (!scrollContainerRef.current) return;
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // тачпад сам справляется
     e.preventDefault();
-    scrollContainerRef.current.scrollLeft += e.deltaY * 1.5;
+    el.scrollLeft += e.deltaY * 1.5;
   }, []);
 
   useEffect(() => {
@@ -59,6 +91,34 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
+
+  // ─── Thumb drag (глобальные listeners) ─────────────────────
+  const handleThumbMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    isDraggingThumb.current = true;
+    thumbStartX.current = e.clientX;
+    thumbScrollStart.current = scrollContainerRef.current?.scrollLeft ?? 0;
+  };
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (!isDraggingThumb.current) return;
+      const el = scrollContainerRef.current;
+      if (!el) return;
+      const dx = e.clientX - thumbStartX.current;
+      const scrollRatio = el.scrollWidth / el.clientWidth;
+      el.scrollLeft = thumbScrollStart.current + dx * scrollRatio;
+    };
+    const onUp = () => { isDraggingThumb.current = false; };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, []);
 
   const { data: pipelines, isLoading: isLoadingPipelines } = usePipelinesQuery();
   const { mutateAsync: updateTaskStage } = useUpdateTaskStage();
@@ -279,13 +339,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       target.closest('button') ||
       target.closest('input') ||
       target.closest('.task-kanban-card') ||
-      target.closest('a')
+      target.closest('a') ||
+      target.closest('.kanban-scrollbar-thumb')
     ) return;
 
     isDraggingScroll.current = true;
+    startX.current = e.pageX;
+    scrollLeft.current = scrollContainerRef.current?.scrollLeft ?? 0;
     if (scrollContainerRef.current) {
-      startX.current = e.pageX;
-      scrollLeft.current = scrollContainerRef.current.scrollLeft;
       scrollContainerRef.current.style.cursor = 'grabbing';
       scrollContainerRef.current.style.userSelect = 'none';
     }
@@ -301,47 +362,61 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDraggingScroll.current) return;
-    if (scrollContainerRef.current) {
-      e.preventDefault();
-      const dx = e.pageX - startX.current;
-      scrollContainerRef.current.scrollLeft = scrollLeft.current - dx;
-    }
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    e.preventDefault();
+    el.scrollLeft = scrollLeft.current - (e.pageX - startX.current);
   };
 
   return (
-    <div 
-      ref={scrollContainerRef}
-      onMouseDown={handleMouseDown}
-      onMouseLeave={handleMouseLeaveOrUp}
-      onMouseUp={handleMouseLeaveOrUp}
-      onMouseMove={handleMouseMove}
-      className="flex-1 overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 snap-x snap-mandatory hide-scrollbar select-none"
-    >
-      <div className="flex gap-4 items-start min-h-[calc(100vh-200px)]">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCorners}
-          onDragStart={onDragStart}
-          onDragOver={onDragOver}
-          onDragEnd={onDragEnd}
-        >
-          {stages.map(stage => (
-            <TaskKanbanColumn
-              key={stage.id}
-              stage={stage}
-              tasks={columns[`stage-${stage.id}`] || []}
-              onTaskClick={(id) => ref && 'current' in ref && ref.current?.openTaskModal(id)}
-              userRole={userRole}
-              onOpenChat={handleOpenChat}
-            />
-          ))}
+    <div className="flex flex-col flex-1 overflow-hidden">
+      {/* ── Канбан-доска ── */}
+      <div
+        ref={scrollContainerRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeaveOrUp}
+        onMouseUp={handleMouseLeaveOrUp}
+        onMouseMove={handleMouseMove}
+        className="flex-1 overflow-x-auto overflow-y-hidden pb-2 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 hide-scrollbar select-none"
+      >
+        <div className="flex gap-4 items-start min-h-[calc(100vh-220px)]">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={onDragStart}
+            onDragOver={onDragOver}
+            onDragEnd={onDragEnd}
+          >
+            {stages.map(stage => (
+              <TaskKanbanColumn
+                key={stage.id}
+                stage={stage}
+                tasks={columns[`stage-${stage.id}`] || []}
+                onTaskClick={(id) => ref && 'current' in ref && ref.current?.openTaskModal(id)}
+                userRole={userRole}
+                onOpenChat={handleOpenChat}
+              />
+            ))}
+            <DragOverlay>
+              {activeTask ? (
+                <TaskKanbanCard task={activeTask} onClick={() => {}} userRole={userRole} />
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      </div>
 
-          <DragOverlay>
-            {activeTask ? (
-              <TaskKanbanCard task={activeTask} onClick={() => {}} userRole={userRole} />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+      {/* ── Кастомный scrollbar ── */}
+      <div className="relative h-2 mx-4 sm:mx-6 lg:mx-8 mt-1 mb-2">
+        {/* track */}
+        <div className="absolute inset-0 rounded-full bg-gray-200" />
+        {/* thumb */}
+        <div
+          ref={thumbRef}
+          className="kanban-scrollbar-thumb absolute top-0 h-2 rounded-full bg-gray-400 hover:bg-gray-500 active:bg-gray-600 cursor-grab active:cursor-grabbing transition-colors"
+          style={{ left: thumbStyle.left, width: thumbStyle.width }}
+          onMouseDown={handleThumbMouseDown}
+        />
       </div>
 
       {selectedTaskForModal && (
