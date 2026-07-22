@@ -273,6 +273,14 @@ public class TaskService {
             task.setDescription(request.description().trim());
             isEdited = true;
         }
+        if (request.dueDate() != null) {
+            if (request.dueDate().trim().isEmpty()) {
+                task.setDueDate(null);
+            } else {
+                task.setDueDate(java.time.LocalDate.parse(request.dueDate().trim().substring(0, 10)));
+            }
+            isEdited = true;
+        }
         if (request.tags() != null) {
             task.setTags(request.tags());
         }

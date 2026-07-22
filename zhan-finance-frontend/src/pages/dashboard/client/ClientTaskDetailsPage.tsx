@@ -12,6 +12,7 @@ import { twMerge } from 'tailwind-merge';
 import { translateTaskTitle, translateServiceName, translateStageName } from '@/shared/i18n/taskTranslator';
 import { downloadDocument, getTaskDocuments } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
+import { TaskEditModal } from '@/entities/task/ui/TaskEditModal';
 
 // Reusing colors from Kanban config for the stepper
 export function ClientTaskDetailsPage() {
@@ -20,12 +21,13 @@ export function ClientTaskDetailsPage() {
   const { t, i18n } = useTranslation(['tasks', 'crm']);
 
   const taskId = parseInt(id || '0', 10);
-  const { data: task, isLoading: isTaskLoading } = useTaskQuery(taskId, !!taskId);
+  const { data: task, isLoading: isTaskLoading, refetch: refetchTask } = useTaskQuery(taskId, !!taskId);
   const { data: pipelines, isLoading: isPipelinesLoading } = usePipelinesQuery();
   
   const { mutateAsync: updateStage, isPending: isUpdatingStage } = useUpdateTaskStage();
 
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const moreMenuRef = React.useRef<HTMLDivElement>(null);
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
@@ -158,7 +160,7 @@ export function ClientTaskDetailsPage() {
                   <div className="flex items-center gap-2">
                     <button
                       className="px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
-                      onClick={() => alert('Редактирование задачи будет доступно в следующем обновлении')}
+                      onClick={() => setShowEditModal(true)}
                     >
                       {t('tasks:details.editTask', { defaultValue: 'Изменить' })}
                     </button>
@@ -384,6 +386,15 @@ export function ClientTaskDetailsPage() {
           onClose={() => setShowRejectModal(false)}
           onSubmit={handleRejectSubmit}
           isLoading={isUpdatingStage}
+        />
+      )}
+
+      {showEditModal && task && (
+        <TaskEditModal
+          task={task}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSaved={() => refetchTask()}
         />
       )}
     </div>

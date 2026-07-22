@@ -6,5 +6,6 @@ public record TaskUpdateRequest(
         String title,
         String description,
         List<String> tags,
-        List<SubtaskDto> subtasks
+        List<SubtaskDto> subtasks,
+        String dueDate
 ) {}

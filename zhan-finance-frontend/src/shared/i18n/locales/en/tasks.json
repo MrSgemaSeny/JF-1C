@@ -22,5 +22,16 @@
     "source": "Source:",
     "recentEvents": "Recent events",
     "historyEmpty": "History is empty"
+  },
+  "editModal": {
+    "title": "Edit Task",
+    "taskTitle": "Task Title",
+    "taskTitlePlaceholder": "Enter task title",
+    "description": "Task Description",
+    "descriptionPlaceholder": "Describe task details...",
+    "deadline": "Desired Deadline",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "saving": "Saving..."
   }
 }

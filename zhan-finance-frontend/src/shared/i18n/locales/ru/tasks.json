@@ -22,5 +22,16 @@
     "source": "Источник:",
     "recentEvents": "Последние события",
     "historyEmpty": "История пуста"
+  },
+  "editModal": {
+    "title": "Редактирование задачи",
+    "taskTitle": "Название задачи",
+    "taskTitlePlaceholder": "Введите название задачи",
+    "description": "Описание задачи",
+    "descriptionPlaceholder": "Опишите детали задачи...",
+    "deadline": "Желаемый срок (Дедлайн)",
+    "cancel": "Отмена",
+    "save": "Сохранить изменения",
+    "saving": "Сохранение..."
   }
 }
