@@ -237,7 +237,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     const overStage = stages.find(s => s.id === overStageId);
 
     if (userRole === 'EMPLOYEE' && overStage && (overStage.type === 'WON' || overStage.type === 'LOST')) {
-      return;
+      return; // Block employee from moving to WON or LOST
     }
 
     setColumns((prev) => {
@@ -278,6 +278,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     const overContainer = findContainer(over.id);
 
     if (!activeContainer || !overContainer) return;
+
+    // Block employee from moving to WON or LOST
+    const overStageIdStr = overContainer.replace('stage-', '');
+    const overStageId = parseInt(overStageIdStr, 10);
+    const overStage = stages.find(s => s.id === overStageId);
+    if (userRole === 'EMPLOYEE' && overStage && (overStage.type === 'WON' || overStage.type === 'LOST')) {
+      return;
+    }
 
     // Handle reordering within the same column
     if (activeContainer === overContainer) {

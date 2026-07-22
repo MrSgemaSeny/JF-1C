@@ -12,7 +12,7 @@ interface SuccessModalProps {
 
 export function SuccessModal({ isOpen, onClose, title, message }: SuccessModalProps) {
 
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['modals', 'common']);
   const displayTitle = title || t('ui.successModal.title', { defaultValue: 'Успешно!' });
 
   useEscapeKey(() => onClose(), isOpen);
@@ -33,7 +33,7 @@ export function SuccessModal({ isOpen, onClose, title, message }: SuccessModalPr
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl"
+            className="relative w-full max-w-lg rounded-3xl bg-white p-8 text-center shadow-2xl"
           >
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-brand-green/10">
               <CheckCircle2 className="h-8 w-8 text-brand-green" />

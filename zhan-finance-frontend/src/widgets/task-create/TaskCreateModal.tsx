@@ -6,6 +6,7 @@ import { fetchServices, ServiceDto } from '@/entities/service/api/servicesApi';
 import { uploadDocument } from '@/entities/document/api/documentApi';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
+import { translateServiceName } from '@/shared/i18n/taskTranslator';
 interface TaskCreateModalProps {
   onClose: () => void;
   onCreated: () => void;
@@ -14,7 +15,7 @@ interface TaskCreateModalProps {
 
 export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCreateModalProps) {
 
-  const { t } = useTranslation('crm');
+  const { t, i18n } = useTranslation('crm');
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -112,7 +113,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-2xl shadow-xl w-[95vw] max-w-[1400px] max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-900">{t('taskCreate.title', { defaultValue: 'Новая заявка' })}</h2>
@@ -193,7 +194,7 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
                         </div>
                         <div>
                           <p className={`text-sm font-medium ${isSelected ? 'text-brand-green' : 'text-gray-700'}`}>
-                            {service.title}
+                            {translateServiceName(service, t, i18n)}
                           </p>
                         </div>
                       </div>

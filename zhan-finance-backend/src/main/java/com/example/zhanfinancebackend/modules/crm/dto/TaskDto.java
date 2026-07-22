@@ -36,6 +36,7 @@ public record TaskDto(
         List<String> tags,
         List<Long> serviceIds,
         List<ServiceDto> services,
-        boolean archived
+        boolean archived,
+        ZonedDateTime editedAt
 ) {
 }

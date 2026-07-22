@@ -6,6 +6,7 @@ export interface StageDto {
   id: number;
   pipelineId: number;
   name: string;
+  nameEn?: string;
   orderIndex: number;
   color?: string;
   type: StageType;
@@ -97,6 +98,7 @@ export interface TaskDto {
   comments?: TaskCommentDto[];
   history?: TaskActivityDto[];
   archived: boolean;
+  editedAt?: string;
 }
 
 export interface TaskCreateRequest {

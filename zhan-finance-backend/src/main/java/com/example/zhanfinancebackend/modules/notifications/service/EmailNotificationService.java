@@ -214,4 +214,38 @@ public class EmailNotificationService {
 
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+
+    public void sendTaskEditedByClientEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task, com.example.zhanfinancebackend.modules.auth.entity.User client) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+
+        String subject = "Клиент отредактировал задачу: " + task.getTitle();
+        String html = String.format(
+            "<h2>Обновление задачи</h2>" +
+            "<p>Здравствуйте, <b>%s</b>!</p>" +
+            "<p>Клиент <b>%s</b> внес изменения в задачу <b>%s</b>.</p>" +
+            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Посмотреть задачу</a>",
+            user.getFullName(),
+            client.getFullName(),
+            task.getTitle(),
+            frontendUrl
+        );
+
+        sendHtmlEmail(user.getEmail(), subject, html);
+    }
+
+    public void sendTaskDeletedByClientEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, String taskTitle, com.example.zhanfinancebackend.modules.auth.entity.User client) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+
+        String subject = "Клиент удалил задачу: " + taskTitle;
+        String html = String.format(
+            "<h2>Удаление задачи</h2>" +
+            "<p>Здравствуйте, <b>%s</b>!</p>" +
+            "<p>Клиент <b>%s</b> удалил свою задачу <b>%s</b>.</p>",
+            user.getFullName(),
+            client.getFullName(),
+            taskTitle
+        );
+
+        sendHtmlEmail(user.getEmail(), subject, html);
+    }
 }

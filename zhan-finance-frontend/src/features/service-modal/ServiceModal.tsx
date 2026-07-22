@@ -24,7 +24,7 @@ interface ServiceModalProps {
 
 export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmitting = false, isLoggedIn = false, initialMessage = '', initialPreferredDate = '' }: ServiceModalProps) {
 
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['modals', 'landing', 'common']);
   const [message, setMessage] = useState(initialMessage);
   const [preferredDate, setPreferredDate] = useState(initialPreferredDate);
   const [name, setName] = useState('');
@@ -85,7 +85,7 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
         onClick={onClose}
       >
         <motion.div
-          className="w-full max-w-4xl overflow-hidden rounded-[24px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar relative flex flex-col"
+          className="w-[95vw] max-w-[1400px] overflow-hidden rounded-[24px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar relative flex flex-col"
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -146,7 +146,7 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
                         <Input
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="Иван Иванов"
+                          placeholder={t('serviceModal.orderForm.namePlaceholder', { defaultValue: 'Иван Иванов' })}
                           label={t('serviceModal.orderForm.name', { defaultValue: 'Как к вам обращаться? *' })}
                         />
                         <Input

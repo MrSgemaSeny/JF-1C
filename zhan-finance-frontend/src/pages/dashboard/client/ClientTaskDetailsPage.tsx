@@ -9,6 +9,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
+import { translateTaskTitle, translateServiceName, translateStageName } from '@/shared/i18n/taskTranslator';
 import { downloadDocument, getTaskDocuments } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 
@@ -16,7 +17,7 @@ import type { DocumentDto } from '@/entities/document/model/types';
 export function ClientTaskDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation('crm');
+  const { t, i18n } = useTranslation(['tasks', 'crm']);
 
   const taskId = parseInt(id || '0', 10);
   const { data: task, isLoading: isTaskLoading } = useTaskQuery(taskId, !!taskId);
@@ -40,8 +41,10 @@ export function ClientTaskDetailsPage() {
   if (!task) {
     return (
       <div className="p-8 text-center text-gray-500">
-        <h2 className="text-2xl font-bold mb-2">Задача не найдена</h2>
-        <button onClick={() => navigate(ROUTES.CLIENT)} className="text-brand-green hover:underline">Вернуться назад</button>
+        <h2 className="text-2xl font-bold mb-2">{t('details.taskNotFound', { defaultValue: 'Задача не найдена' })}</h2>
+        <button onClick={() => navigate(ROUTES.CLIENT)} className="text-brand-green hover:underline">
+          {t('details.goBack', { defaultValue: 'Вернуться назад' })}
+        </button>
       </div>
     );
   }
@@ -94,33 +97,28 @@ export function ClientTaskDetailsPage() {
         className="flex items-center gap-2 text-gray-500 hover:text-gray-800 mb-6 transition-colors"
       >
         <ArrowLeft size={16} />
-        Назад к списку
+        {t('tasks:details.backToList', { defaultValue: 'Назад к списку' })}
       </button>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
         {/* Header */}
         <div className="relative p-6 md:p-8 border-b border-gray-100">
-          {!isFinished && task.stage?.name !== 'На проверке' && (
-            <button
-              onClick={() => setShowRejectModal(true)}
-              title="Отказаться от задачи"
-              className="absolute top-4 right-4 p-1.5 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors z-10"
-            >
-              <X size={18} />
-            </button>
-          )}
+
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2 pr-8">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{task.title}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{translateTaskTitle(task.title, t)}</h1>
                 {isArchived && (
                   <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold uppercase flex items-center gap-1">
-                    <Archive size={14} /> Архив
+                    <Archive size={14} /> {t('tasks:details.archive', { defaultValue: 'Архив' })}
                   </span>
                 )}
               </div>
               <p className="text-gray-500 flex items-center gap-2 text-sm">
-                <Clock size={16} /> Создано {new Date(task.createdAt).toLocaleDateString()}
+                <Clock size={16} /> {t('tasks:details.created', { defaultValue: 'Создано' })} {new Date(task.createdAt).toLocaleDateString()}
+                {task.updatedAt && task.updatedAt !== task.createdAt && (
+                  <> • {t('tasks:details.edited', { defaultValue: 'Изменено' })} {new Date(task.updatedAt).toLocaleDateString()}</>
+                )}
               </p>
             </div>
             
@@ -133,14 +131,30 @@ export function ClientTaskDetailsPage() {
                       disabled={isUpdatingStage}
                       className="px-4 py-2 bg-brand-green text-white hover:bg-brand-green/90 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
-                      <CheckCircle2 size={16} /> Подтвердить
+                      <CheckCircle2 size={16} /> {t('tasks:details.confirm', { defaultValue: 'Подтвердить' })}
                     </button>
                     <button
                       onClick={handleRework}
                       disabled={isUpdatingStage}
                       className="px-4 py-2 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
-                      <Activity size={16} /> На доработку
+                      <Activity size={16} /> {t('tasks:details.toRework', { defaultValue: 'На доработку' })}
+                    </button>
+                  </>
+                )}
+                {!isFinished && task.stage?.name !== 'На проверке' && (
+                  <>
+                    <button
+                      className="px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                      onClick={() => alert('Редактирование задачи будет доступно в следующем обновлении')}
+                    >
+                      {t('tasks:details.editTask', { defaultValue: 'Изменить' })}
+                    </button>
+                    <button
+                      onClick={() => setShowRejectModal(true)}
+                      className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                    >
+                      <XCircle size={16} /> {t('tasks:details.rejectTask', { defaultValue: 'Отказаться от задачи' })}
                     </button>
                   </>
                 )}
@@ -203,7 +217,7 @@ export function ClientTaskDetailsPage() {
                       {icon}
                     </div>
                     <span className={textClasses} style={textStyle}>
-                      {t(`stages.${stage.name}`, { defaultValue: stage.name })}
+                      {translateStageName(stage, t, i18n)}
                     </span>
                   </div>
                 );
@@ -213,8 +227,8 @@ export function ClientTaskDetailsPage() {
               <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700 text-sm flex gap-2">
                 <AlertCircle size={18} className="shrink-0" />
                 <div>
-                  <p className="font-semibold mb-1">{t('taskDetails.cancelled', { defaultValue: 'Задача отменена' })}</p>
-                  {task.lostReason && <p>{t('taskDetails.reason', { defaultValue: 'Причина:' })} {task.lostReason}</p>}
+                  <p className="font-semibold mb-1">{t('tasks:details.cancelled', { defaultValue: 'Задача отменена' })}</p>
+                  {task.lostReason && <p>{t('tasks:details.reason', { defaultValue: 'Причина:' })} {task.lostReason}</p>}
                 </div>
               </div>
             )}
@@ -227,19 +241,19 @@ export function ClientTaskDetailsPage() {
           {/* Left Column */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Описание</h3>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">{t('tasks:details.description', { defaultValue: 'Описание' })}</h3>
               <div className="bg-gray-50 p-4 rounded-xl text-gray-700 text-sm whitespace-pre-wrap min-h-[100px] border border-gray-100">
-                {task.description || <span className="text-gray-400 italic">Описание отсутствует...</span>}
+                {task.description || <span className="text-gray-400 italic">{t('tasks:details.noDescription', { defaultValue: 'Описание отсутствует...' })}</span>}
               </div>
             </div>
 
             {task.services && task.services.length > 0 && (
               <div>
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Связанные услуги</h3>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">{t('tasks:details.relatedServices', { defaultValue: 'Связанные услуги' })}</h3>
                 <div className="flex flex-wrap gap-2">
                   {task.services.map(service => (
                     <span key={service.id} className="px-3 py-1.5 bg-brand-green/10 text-brand-green rounded-lg text-sm font-medium border border-brand-green/20">
-                      {service.title}
+                      {translateServiceName(service, t, i18n)}
                     </span>
                   ))}
                 </div>
@@ -254,7 +268,7 @@ export function ClientTaskDetailsPage() {
             {documents && documents.length > 0 && (
               <div>
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Paperclip size={16} /> Документы
+                  <Paperclip size={16} /> {t('tasks:details.documents', { defaultValue: 'Документы' })}
                 </h3>
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
                   {documents.map(doc => (
@@ -283,24 +297,24 @@ export function ClientTaskDetailsPage() {
             {(task.amount || task.dueDate || task.source) && (
               <div>
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Activity size={16} /> Дополнительная информация
+                  <Activity size={16} /> {t('tasks:details.additionalInfo', { defaultValue: 'Дополнительная информация' })}
                 </h3>
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-3 text-sm">
                   {task.amount && (
                     <div className="flex justify-between border-b border-gray-200 pb-2">
-                      <span className="text-gray-500">Сумма:</span>
+                      <span className="text-gray-500">{t('tasks:details.amount', { defaultValue: 'Сумма:' })}</span>
                       <span className="font-semibold">{task.amount} {task.currency || 'KZT'}</span>
                     </div>
                   )}
                   {task.dueDate && (
                     <div className="flex justify-between border-b border-gray-200 pb-2">
-                      <span className="text-gray-500">Дедлайн:</span>
+                      <span className="text-gray-500">{t('tasks:details.deadline', { defaultValue: 'Дедлайн:' })}</span>
                       <span className="font-semibold">{new Date(task.dueDate).toLocaleDateString()}</span>
                     </div>
                   )}
                   {task.source && (
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Источник:</span>
+                      <span className="text-gray-500">{t('tasks:details.source', { defaultValue: 'Источник:' })}</span>
                       <span className="font-semibold">{task.source}</span>
                     </div>
                   )}
@@ -311,7 +325,7 @@ export function ClientTaskDetailsPage() {
             {/* Документы из истории */}
             <div>
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                <Clock size={16} /> Последние события
+                <Clock size={16} /> {t('tasks:details.recentEvents', { defaultValue: 'Последние события' })}
               </h3>
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-4 max-h-[300px] overflow-y-auto">
                 {task.history && task.history.length > 0 ? (
@@ -327,7 +341,7 @@ export function ClientTaskDetailsPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-400 text-center italic">История пуста</p>
+                  <p className="text-sm text-gray-400 text-center italic">{t('tasks:details.historyEmpty', { defaultValue: 'История пуста' })}</p>
                 )}
               </div>
             </div>

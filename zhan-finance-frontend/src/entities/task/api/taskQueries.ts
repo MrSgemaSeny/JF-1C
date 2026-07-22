@@ -66,6 +66,28 @@ export function useArchiveTaskMutation() {
   });
 }
 
+export function useUpdateTaskDetailsMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<TaskDto> }) => import('./taskApi').then(m => m.updateTaskDetails(id, data)),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
+      queryClient.setQueryData(TASK_QUERY_KEYS.detail(data.id), data);
+    },
+  });
+}
+
+export function useDeleteTaskMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => import('./taskApi').then(m => m.deleteTask(id)),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
+      queryClient.removeQueries({ queryKey: TASK_QUERY_KEYS.detail(id) });
+    },
+  });
+}
+
 export function useCreateTaskMutation() {
   const queryClient = useQueryClient();
 

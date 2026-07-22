@@ -16,6 +16,9 @@ public class Stage extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "name_en")
+    private String nameEn;
+
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
 
@@ -56,6 +59,14 @@ public class Stage extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNameEn() {
+        return nameEn;
+    }
+
+    public void setNameEn(String nameEn) {
+        this.nameEn = nameEn;
     }
 
     public Integer getOrderIndex() {

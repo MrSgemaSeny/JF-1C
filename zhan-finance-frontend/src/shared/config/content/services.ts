@@ -1,10 +1,10 @@
 export interface Service {
   id: string;
-  title: string;
-  description: string;
-  price: string;
-  features: string[];
-  bullets?: string[];
+  titleKey: string;
+  descKey: string;
+  priceKey: string;
+  featuresKeys: string[];
+  bulletsKeys?: string[];
   link?: string;
   image?: string;
 }
@@ -13,24 +13,24 @@ export interface Service {
 export const mockServices: Service[] = [
   {
     id: '1',
-    title: 'Комплексное обслуживание',
-    description: 'Полное ведение бухгалтерского и налогового учета для ТОО и ИП.',
-    price: 'N/A тг/мес',
-    features: ['Обработка первички', 'Сдача всех налоговых отчетов', 'Расчет зарплаты', 'Кадровый учет'],
+    titleKey: 'landing:services.mock.0.title',
+    descKey: 'landing:services.mock.0.desc',
+    priceKey: 'landing:services.mock.0.price',
+    featuresKeys: ['landing:services.mock.0.f0', 'landing:services.mock.0.f1', 'landing:services.mock.0.f2', 'landing:services.mock.0.f3'],
   },
   {
     id: '2',
-    title: 'Восстановление учета',
-    description: 'Приведение в порядок бухгалтерии за прошлые периоды, исправление ошибок.',
-    price: 'N/A тг/мес',
-    features: ['Аудит текущей базы', 'Восстановление документов', 'Сдача доп. отчетов', 'Защита при проверках'],
+    titleKey: 'landing:services.mock.1.title',
+    descKey: 'landing:services.mock.1.desc',
+    priceKey: 'landing:services.mock.1.price',
+    featuresKeys: ['landing:services.mock.1.f0', 'landing:services.mock.1.f1', 'landing:services.mock.1.f2', 'landing:services.mock.1.f3'],
   },
   {
     id: '3',
-    title: 'Разовые консультации',
-    description: 'Помощь по конкретным налогам, оптимизации или открытию/закрытию бизнеса.',
-    price: 'N/A тг/мес',
-    features: ['Выбор режима налогообложения', 'Разбор сложных сделок', 'Легальная оптимизация'],
+    titleKey: 'landing:services.mock.2.title',
+    descKey: 'landing:services.mock.2.desc',
+    priceKey: 'landing:services.mock.2.price',
+    featuresKeys: ['landing:services.mock.2.f0', 'landing:services.mock.2.f1', 'landing:services.mock.2.f2'],
   },
 ];
 
@@ -38,61 +38,61 @@ export const mockServices: Service[] = [
 export const servicesList: Service[] = [
   {
     id: 's1',
-    title: 'Бухгалтерское сопровождение',
-    description: 'Полный учёт операций, составление отчётности, контроль финансов.',
-    price: '',
-    features: [],
-    bullets: ['Полный учет операций', 'Составление отчетности', 'Контроль финансов'],
+    titleKey: 'landing:services.list.0.title',
+    descKey: 'landing:services.list.0.desc',
+    priceKey: 'landing:services.list.0.price',
+    featuresKeys: [],
+    bulletsKeys: ['landing:services.list.0.b0', 'landing:services.list.0.b1', 'landing:services.list.0.b2'],
     link: '/services#solution',
     image: '',
   },
   {
     id: 's2',
-    title: 'Сдача налоговой отчетности',
-    description: 'Своевременная подготовка и сдача всех обязательных форм в налоговую.',
-    price: '',
-    features: [],
-    bullets: ['Подготовка и сдача отчетности', 'Консультации по налогам', 'Работа с налоговыми органами'],
+    titleKey: 'landing:services.list.1.title',
+    descKey: 'landing:services.list.1.desc',
+    priceKey: 'landing:services.list.1.price',
+    featuresKeys: [],
+    bulletsKeys: ['landing:services.list.1.b0', 'landing:services.list.1.b1', 'landing:services.list.1.b2'],
     link: '/services#solution',
     image: '',
   },
   {
     id: 's3',
-    title: 'Кадровый учет и расчет зарплаты',
-    description: 'Ведение кадровых документов, табелей, расчет отпускных и больничных.',
-    price: '',
-    features: [],
-    bullets: ['Кадровые документы', 'Расчёт зарплаты', 'Табели и отпускные'],
+    titleKey: 'landing:services.list.2.title',
+    descKey: 'landing:services.list.2.desc',
+    priceKey: 'landing:services.list.2.price',
+    featuresKeys: [],
+    bulletsKeys: ['landing:services.list.2.b0', 'landing:services.list.2.b1', 'landing:services.list.2.b2'],
     link: '/services#solution',
     image: '',
   },
   {
     id: 's4',
-    title: 'Восстановление бухгалтерского учета',
-    description: 'Приведём в порядок документы, исправим ошибки и пересдадим отчётность.',
-    price: '',
-    features: [],
-    bullets: ['Анализ прошлых периодов', 'Восстановление документов', 'Пересдача отчетности'],
+    titleKey: 'landing:services.list.3.title',
+    descKey: 'landing:services.list.3.desc',
+    priceKey: 'landing:services.list.3.price',
+    featuresKeys: [],
+    bulletsKeys: ['landing:services.list.3.b0', 'landing:services.list.3.b1', 'landing:services.list.3.b2'],
     link: '/services#solution',
     image: '',
   },
   {
     id: 's5',
-    title: 'Обработка первичной документации',
-    description: 'Работа с актами, накладными, счетами и внутренней бухгалтерией.',
-    price: '',
-    features: [],
-    bullets: ['Обработка актов и накладных', 'Ввод первички', 'Сверки с контрагентами'],
+    titleKey: 'landing:services.list.4.title',
+    descKey: 'landing:services.list.4.desc',
+    priceKey: 'landing:services.list.4.price',
+    featuresKeys: [],
+    bulletsKeys: ['landing:services.list.4.b0', 'landing:services.list.4.b1', 'landing:services.list.4.b2'],
     link: '/services#solution',
     image: '',
   },
   {
     id: 's6',
-    title: 'Проверка и анализ контрагентов',
-    description: 'Юридическая проверка надежности партнеров и клиентов до сделки.',
-    price: '',
-    features: [],
-    bullets: ['Проверка контрагентов', 'Анализ рисков', 'Рекомендации по сотрудничеству'],
+    titleKey: 'landing:services.list.5.title',
+    descKey: 'landing:services.list.5.desc',
+    priceKey: 'landing:services.list.5.price',
+    featuresKeys: [],
+    bulletsKeys: ['landing:services.list.5.b0', 'landing:services.list.5.b1', 'landing:services.list.5.b2'],
     link: '/services#solution',
     image: '',
   },

@@ -6,7 +6,7 @@ import { trustStats } from '@/shared/config/content/stats';
 import { useTranslation } from 'react-i18next';
 
 export function Trust() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('landing');
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -26,18 +26,18 @@ export function Trust() {
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           <div className="space-y-8">
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight">
-              {t('trust.title1', { defaultValue: 'Ваш бизнес' })} <br />
-              <span className="text-brand-beige/50">{t('trust.title2', { defaultValue: 'под надежной защитой' })}</span>
+              {t('trust_title1', { defaultValue: 'Ваш бизнес' })} <br />
+              <span className="text-brand-beige/50">{t('trust_title2', { defaultValue: 'под надежной защитой' })}</span>
             </h2>
             <p className="text-xl text-brand-beige/80 leading-relaxed max-w-xl">
-              {t('trust.description', { defaultValue: 'Мы берем на себя полную финансовую ответственность за результаты нашей работы. Наши клиенты не платят штрафы за ошибки в учете.' })}
+              {t('trust_desc', { defaultValue: 'Мы берем на себя полную финансовую ответственность за результаты нашей работы. Наши клиенты не платят штрафы за ошибки в учете.' })}
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-6 lg:gap-8">
             {trustStats.map((stat, i) => (
               <motion.div
-                key={stat.label}
+                key={stat.labelKey}
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: i * 0.1, type: 'spring', bounce: 0.4 }}
@@ -49,10 +49,10 @@ export function Trust() {
                 }`}
               >
                 <div className={`text-5xl lg:text-6xl font-black mb-4 ${i === 0 ? 'text-brand-green' : 'text-brand-beige'}`}>
-                  {t(`trust.stats.${i}.value`, { defaultValue: stat.value })}
+                  {t(stat.valueKey)}
                 </div>
                 <div className={`text-sm font-bold uppercase tracking-widest ${i === 0 ? 'text-brand-green/70' : 'text-brand-beige/60'}`}>
-                  {t(`trust.stats.${i}.label`, { defaultValue: stat.label })}
+                  {t(stat.labelKey)}
                 </div>
               </motion.div>
             ))}

@@ -1,0 +1,25 @@
+{
+  "details": {
+    "taskNotFound": "Задача не найдена",
+    "goBack": "Вернуться назад",
+    "backToList": "Назад к списку",
+    "rejectTask": "Отказаться от задачи",
+    "archive": "Архив",
+    "created": "Создано",
+    "edited": "Изменено",
+    "confirm": "Подтвердить",
+    "toRework": "На доработку",
+    "cancelled": "Задача отменена",
+    "reason": "Причина:",
+    "description": "Описание",
+    "noDescription": "Описание отсутствует...",
+    "relatedServices": "Связанные услуги",
+    "documents": "Документы",
+    "additionalInfo": "Дополнительная информация",
+    "amount": "Сумма:",
+    "deadline": "Дедлайн:",
+    "source": "Источник:",
+    "recentEvents": "Последние события",
+    "historyEmpty": "История пуста"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "details": {
+    "taskNotFound": "Task not found",
+    "goBack": "Go back",
+    "backToList": "Back to list",
+    "rejectTask": "Reject task",
+    "archive": "Archive",
+    "created": "Created",
+    "edited": "Edited",
+    "confirm": "Confirm",
+    "toRework": "Send to rework",
+    "cancelled": "Task cancelled",
+    "reason": "Reason:",
+    "description": "Description",
+    "noDescription": "No description provided...",
+    "relatedServices": "Related services",
+    "documents": "Documents",
+    "additionalInfo": "Additional information",
+    "amount": "Amount:",
+    "deadline": "Deadline:",
+    "source": "Source:",
+    "recentEvents": "Recent events",
+    "historyEmpty": "History is empty"
+  }
+}

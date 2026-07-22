@@ -5,7 +5,9 @@ import { apiRequest } from '@/shared/api/http';
 export interface ServiceDto {
   id: number;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   price: string | null;
   imageUrl: string | null;
   isHighlighted: boolean;

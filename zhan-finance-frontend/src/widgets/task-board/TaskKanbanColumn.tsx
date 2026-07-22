@@ -7,6 +7,7 @@ import {
 import { TaskKanbanCard } from './TaskKanbanCard';
 import type { TaskDto, StageDto } from '@/entities/task/model/types';
 import { Plus } from 'lucide-react';
+import { translateStageName } from '@/shared/i18n/taskTranslator';
 import { useTranslation } from 'react-i18next';
 
 interface TaskKanbanColumnProps {
@@ -18,7 +19,7 @@ interface TaskKanbanColumnProps {
 }
 
 export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenChat }: TaskKanbanColumnProps) {
-  const { t } = useTranslation('crm');
+  const { t, i18n } = useTranslation('crm');
   const { setNodeRef } = useDroppable({
     id: `stage-${stage.id}`,
     data: {
@@ -70,7 +71,7 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
         className="rounded-t-lg px-3 py-2 flex items-center justify-between text-white shadow-sm"
         style={{ backgroundColor: headerColor }}
       >
-        <span className="font-semibold text-sm truncate pr-2">{t(`stages.${stage.name}`, { defaultValue: stage.name })}</span>
+        <span className="font-semibold text-sm truncate pr-2">{translateStageName(stage, t, i18n)}</span>
         <span className="text-xs bg-white/20 px-1.5 py-0.5 rounded-full font-medium">
           {tasks.length}
         </span>

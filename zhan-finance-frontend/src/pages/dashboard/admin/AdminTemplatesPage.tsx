@@ -332,7 +332,7 @@ export function AdminTemplatesPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative z-10"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10"
             >
               <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-red-50/50">
                 <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">

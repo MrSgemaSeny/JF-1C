@@ -17,10 +17,14 @@ public class DeadlineAlertScheduler {
     private static final Logger log = LoggerFactory.getLogger(DeadlineAlertScheduler.class);
     private final TaskRepository taskRepository;
     private final EmailNotificationService emailNotificationService;
+    private final NotificationService notificationService;
+    private final com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
 
-    public DeadlineAlertScheduler(TaskRepository taskRepository, EmailNotificationService emailNotificationService) {
+    public DeadlineAlertScheduler(TaskRepository taskRepository, EmailNotificationService emailNotificationService, NotificationService notificationService, com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.emailNotificationService = emailNotificationService;
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
     }
 
     // Run every day at 8:00 AM
@@ -44,6 +48,12 @@ public class DeadlineAlertScheduler {
         for (Task task : dueToday) {
             if (task.getAssignedTo() != null) {
                 emailNotificationService.sendTaskDeadlineAlertEmail(task.getAssignedTo(), task);
+                notificationService.createNotification(
+                    task.getAssignedTo(),
+                    "🔥 Горит дедлайн!",
+                    "Дедлайн по задаче '" + task.getTitle() + "' наступает сегодня!",
+                    "/employee/tasks"
+                );
                 task.setDeadlineNotifiedAt(now);
                 updatedTasks.add(task);
             }
@@ -52,6 +62,12 @@ public class DeadlineAlertScheduler {
         for (Task task : dueTomorrow) {
             if (task.getAssignedTo() != null) {
                 emailNotificationService.sendTaskDeadlineAlertEmail(task.getAssignedTo(), task);
+                notificationService.createNotification(
+                    task.getAssignedTo(),
+                    "⏰ Приближается дедлайн",
+                    "Дедлайн по задаче '" + task.getTitle() + "' наступает завтра.",
+                    "/employee/tasks"
+                );
                 task.setDeadlineNotifiedAt(now);
                 updatedTasks.add(task);
             }

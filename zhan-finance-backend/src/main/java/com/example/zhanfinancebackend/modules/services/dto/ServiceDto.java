@@ -6,7 +6,9 @@ import java.util.List;
 public record ServiceDto(
         Long id,
         String title,
+        String titleEn,
         String description,
+        String descriptionEn,
         String price,
         String imageUrl,
         Boolean isHighlighted,

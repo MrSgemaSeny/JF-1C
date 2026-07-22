@@ -16,8 +16,10 @@ import { getTaskDocuments, downloadDocument, uploadDocument } from '@/entities/d
 import { GenerateDocumentButton } from '@/entities/document-template/ui/GenerateDocumentButton';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { twMerge } from 'tailwind-merge';
+import { translateTaskTitle, translateServiceName, translateStageName } from '@/shared/i18n/taskTranslator';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
+import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
 
 export interface TaskDetailsModalProps {
   task: TaskDto;
@@ -63,13 +65,14 @@ function IconBtn({
 export function TaskDetailsModal({
   task, onClose, onUpdateTask, userRole, isModal = true,
 }: TaskDetailsModalProps) {
-  const { t } = useTranslation(['crm', 'common']);
+  const { t, i18n } = useTranslation(['modals', 'crm', 'common']);
   const { user } = useAuth();
   const currentUser = user
     ? { id: user.userId, fullName: user.fullName, email: user.email, role: user.role }
     : null;
 
   const taskActions = currentUser ? useTaskActions(task, currentUser) : null;
+  const { data: pipelines } = usePipelinesQuery();
 
   // ── Data state ──────────────────────────────────────────────────────────
   const [comments,  setComments]  = useState<TaskCommentDto[]>([]);
@@ -301,7 +304,28 @@ export function TaskDetailsModal({
       const updated = await archiveTask(task.id);
       onUpdateTask(updated);
       onClose?.();
-    } catch { alert('Ошибка архивирования'); }
+    } catch { alert(t('taskModal.archiveError', { defaultValue: 'Ошибка архивирования' })); }
+    finally { setShowMoreMenu(false); }
+  };
+
+  const handleClientReject = async () => {
+    const reason = window.prompt(t('taskModal.rejectReasonPrompt', { defaultValue: 'Укажите причину отказа от задачи:' }));
+    if (reason === null) return;
+    
+    // Find the LOST stage
+    const pipeline = pipelines?.[0];
+    const lostStage = pipeline?.stages.find(s => s.type === 'LOST');
+    
+    if (!lostStage) {
+      alert(t('taskModal.cancelStageError', { defaultValue: 'Ошибка: Стадия отмены не найдена в процессе' }));
+      return;
+    }
+
+    try {
+      const updated = await updateTaskStage(task.id, lostStage.id, reason || undefined);
+      onUpdateTask(updated);
+      onClose?.();
+    } catch { alert(t('taskModal.cancelError', { defaultValue: 'Ошибка при отмене задачи' })); }
     finally { setShowMoreMenu(false); }
   };
 
@@ -311,7 +335,7 @@ export function TaskDetailsModal({
       await deleteTask(task.id);
       onClose?.();
       window.location.reload();
-    } catch { alert('Ошибка удаления'); }
+    } catch { alert(t('taskModal.deleteError', { defaultValue: 'Ошибка удаления' })); }
     finally { setShowMoreMenu(false); }
   };
 
@@ -332,7 +356,7 @@ export function TaskDetailsModal({
 
   const stage = task.stage;
   const statusBarColor = stage ? getHexColor(stage.color) : '#9ca3af';
-  const statusLabel = stage ? t(`stages.${stage.name}`, { defaultValue: stage.name }) : t('taskPool.noStage', { defaultValue: 'Нет стадии' });
+  const statusLabel = stage ? translateStageName(stage, t, i18n) : t('taskPool.noStage', { defaultValue: 'Нет стадии' });
 
   const doneCount  = task.subtasks?.filter(s => s.status === 'DONE').length ?? 0;
   const totalCount = task.subtasks?.length ?? 0;
@@ -346,7 +370,7 @@ export function TaskDetailsModal({
     <div
       className={twMerge(
         'bg-white flex flex-col overflow-hidden rounded-2xl',
-        isModal ? 'w-[95vw] max-w-[1300px] h-[90vh] shadow-2xl' : 'h-full border border-gray-100',
+        isModal ? 'w-[98vw] max-w-[1500px] h-[90vh] shadow-2xl' : 'h-full border border-gray-100',
       )}
       onClick={e => e.stopPropagation()}
     >
@@ -370,11 +394,14 @@ export function TaskDetailsModal({
               />
             ) : (
               <h2
-                className="text-2xl font-bold text-gray-800 cursor-pointer hover:bg-gray-50 rounded px-1 -ml-1 transition-colors"
-                onClick={() => setEditingTitle(true)}
-                title={t('taskModal.clickToEdit', { defaultValue: 'Нажмите чтобы изменить' })}
+                className={twMerge(
+                  "text-2xl font-bold text-gray-800 rounded px-1 -ml-1 transition-colors",
+                  userRole !== 'EMPLOYEE' ? "cursor-pointer hover:bg-gray-50" : ""
+                )}
+                onClick={() => userRole !== 'EMPLOYEE' && setEditingTitle(true)}
+                title={userRole !== 'EMPLOYEE' ? t('taskModal.clickToEdit', { defaultValue: 'Нажмите чтобы изменить' }) : undefined}
               >
-                {task.title}
+                {translateTaskTitle(task.title, t)}
               </h2>
             )}
           </div>
@@ -392,6 +419,14 @@ export function TaskDetailsModal({
                       className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors"
                     >
                       <Archive size={15} /> {t('taskModal.archive', { defaultValue: 'Архивировать' })}
+                    </button>
+                  )}
+                  {userRole === 'CLIENT' && stage?.type !== 'WON' && stage?.type !== 'LOST' && (
+                    <button
+                      onClick={handleClientReject}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+                    >
+                      {t('taskModal.rejectTask', { defaultValue: 'Отказаться от задачи' })}
                     </button>
                   )}
                   {userRole === 'ADMIN' && (
@@ -458,7 +493,7 @@ export function TaskDetailsModal({
                   className="inline-flex items-center gap-2 text-green-600 bg-white border border-green-200 shadow-sm px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors disabled:opacity-50"
                 >
                   <Check size={16} />
-                  Одобрить отказ
+                  {t('taskModal.approveReassignment', { defaultValue: 'Одобрить отказ' })}
                 </button>
                 <button
                   onClick={handleRejectReassignment}
@@ -466,7 +501,7 @@ export function TaskDetailsModal({
                   className="inline-flex items-center gap-2 text-red-600 bg-white border border-red-200 shadow-sm px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-50 transition-colors disabled:opacity-50"
                 >
                   <X size={16} />
-                  Отклонить отказ
+                  {t('taskModal.rejectReassignment', { defaultValue: 'Отклонить отказ' })}
                 </button>
               </div>
             )}
@@ -489,6 +524,12 @@ export function TaskDetailsModal({
             <Clock size={14} className="text-gray-400" />
             {t('taskModal.created', { defaultValue: 'Создано' })} {new Date(task.createdAt).toLocaleDateString()}
           </span>
+          {task.editedAt && (
+            <span className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+              <Edit2 size={12} className="text-gray-400" />
+              {t('taskModal.edited', { defaultValue: 'Отредактировано:' })} {new Date(task.editedAt).toLocaleString()}
+            </span>
+          )}
           {task.assignedTo ? (
             <span className="flex items-center gap-1.5 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1 rounded-full border border-green-100">
               <UserIcon size={14} className="text-green-600" />
@@ -702,12 +743,12 @@ export function TaskDetailsModal({
             <div>
               <SectionLabel>{t('taskModal.linkedServices', { defaultValue: 'Услуги' })}</SectionLabel>
               <div className="flex flex-wrap gap-2">
-                {task.services.map(s => (
+                {task.services.map(service => (
                   <span
-                    key={s.id}
+                    key={service.id}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold bg-brand-green/10 text-brand-green border border-brand-green/20 shadow-sm"
                   >
-                    <Hash size={14} /> {s.title}
+                    <Hash size={14} /> {translateServiceName(service, t, i18n)}
                   </span>
                 ))}
               </div>

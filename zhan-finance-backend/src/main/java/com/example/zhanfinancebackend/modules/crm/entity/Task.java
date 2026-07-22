@@ -69,6 +69,9 @@ public class Task extends BaseEntity {
     @Column(name = "reassignment_requested")
     private Boolean reassignmentRequested = false;
 
+    @Column(name = "edited_at")
+    private java.time.LocalDateTime editedAt;
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subtask> subtasks = new ArrayList<>();
 
@@ -202,6 +205,14 @@ public class Task extends BaseEntity {
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+
+    public java.time.LocalDateTime getEditedAt() {
+        return editedAt;
+    }
+
+    public void setEditedAt(java.time.LocalDateTime editedAt) {
+        this.editedAt = editedAt;
     }
 
     public User getCreatedBy() {

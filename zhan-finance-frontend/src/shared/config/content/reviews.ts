@@ -1,27 +1,27 @@
 export interface Review {
   id: number;
-  name: string;
-  company: string;
-  text: string;
+  nameKey: string;
+  companyKey: string;
+  textKey: string;
 }
 
 export const reviewsList: Review[] = [
   {
     id: 1,
-    name: 'Имя Фамилия',
-    company: 'ТОО "Пример"',
-    text: 'Передали всю бухгалтерию на аутсорс в Zhan Finance. За год ни одного штрафа, налоги оптимизировали на 20%. Идеально.',
+    nameKey: 'landing:reviews.0.name',
+    companyKey: 'landing:reviews.0.company',
+    textKey: 'landing:reviews.0.text',
   },
   {
     id: 2,
-    name: 'Имя Фамилия',
-    company: 'Сеть Пример',
-    text: 'Очень нравится подход. Всегда на связи, отвечают быстро и по делу. Кадровый учет теперь вообще не вызывает головной боли.',
+    nameKey: 'landing:reviews.1.name',
+    companyKey: 'landing:reviews.1.company',
+    textKey: 'landing:reviews.1.text',
   },
   {
     id: 3,
-    name: 'Имя Фамилия',
-    company: 'ИП "Пример"',
-    text: 'Открывал ИП через ребят, сразу взяли на обслуживание. Очень удобно, когда все в одном месте и не нужно разбираться в кабинете налогоплательщика.',
+    nameKey: 'landing:reviews.2.name',
+    companyKey: 'landing:reviews.2.company',
+    textKey: 'landing:reviews.2.text',
   },
 ];

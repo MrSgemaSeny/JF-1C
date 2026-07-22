@@ -226,6 +226,10 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
           </h3>
         )}
 
+        {task.reassignmentRequested && (
+          <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full" title="Сотрудник отказался от задачи">Отказ</span>
+        )}
+
         <div className="flex items-center gap-1 flex-shrink-0">
           {/* Hidden file input */}
           <input 

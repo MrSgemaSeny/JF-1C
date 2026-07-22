@@ -10,6 +10,8 @@ import { ClientWelcomeScreen } from './ClientWelcomeScreen';
 import { Plus, MessageSquare, Clock, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
+import { translateTaskTitle, translateStageName } from '@/shared/i18n/taskTranslator';
+import { i18n } from 'i18next';
 
 // Mapping internal statuses to client-friendly statuses
 const CLIENT_STATUS_MAP: Record<string, { labelKey: string; color: string; icon: React.ReactNode }> = {
@@ -20,7 +22,7 @@ const CLIENT_STATUS_MAP: Record<string, { labelKey: string; color: string; icon:
   CANCELLED: { labelKey: 'clientDashboard.status.CANCELLED', color: 'bg-red-50 text-red-700 border-red-200', icon: <AlertCircle size={14} /> },
 };
 
-function getClientStatus(stage: StageDto | undefined, t: any): { labelKey: string; dynamicLabel?: string; color: string; hexColor?: string; icon: React.ReactNode } {
+function getClientStatus(stage: StageDto | undefined, t: any, i18nInstance: i18n): { labelKey: string; dynamicLabel?: string; color: string; hexColor?: string; icon: React.ReactNode } {
   if (!stage) return CLIENT_STATUS_MAP.NEW;
   
   const base = (() => {
@@ -28,7 +30,7 @@ function getClientStatus(stage: StageDto | undefined, t: any): { labelKey: strin
     if (stage.type === 'LOST') return CLIENT_STATUS_MAP.CANCELLED;
     if (stage.name === 'Новый') return CLIENT_STATUS_MAP.NEW;
     if (stage.name === 'В работе') return CLIENT_STATUS_MAP.IN_PROGRESS;
-    return { labelKey: '', dynamicLabel: t(`stages.${stage.name}`, { defaultValue: stage.name }), color: '', icon: <Clock size={14} /> };
+    return { labelKey: '', dynamicLabel: translateStageName(stage, t, i18nInstance), color: '', icon: <Clock size={14} /> };
   })();
 
   if (stage.color) {
@@ -43,7 +45,7 @@ import { ROUTES } from '@/shared/config/routes';
 export function ClientOverviewPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -208,7 +210,7 @@ export function ClientOverviewPage() {
                 )
               ) : (
                 displayedTasks.map((task) => {
-                  const status = getClientStatus(task.stage, t);
+                  const status = getClientStatus(task.stage, t, i18n);
                   return (
                     <div 
                       key={task.id}
@@ -233,7 +235,7 @@ export function ClientOverviewPage() {
                           </span>
                         </div>
                         <h4 className="text-base font-semibold text-gray-900 truncate">
-                          {task.title}
+                          {translateTaskTitle(task.title, t)}
                         </h4>
                       </div>
                       

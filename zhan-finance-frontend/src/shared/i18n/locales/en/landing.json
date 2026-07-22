@@ -1,0 +1,201 @@
+{
+  "faq": [
+    { "q": "How to get started?", "a": "Leave a request on the website or call us — we will prepare an implementation plan and cost estimate." },
+    { "q": "What documents are needed?", "a": "Depends on the service: usually a contract, statements, contracts with counterparties, and primary documentation are needed." },
+    { "q": "Can I connect remotely?", "a": "Yes — most processes can be organized remotely using secure channels." }
+  ],
+  "faq_title": "Frequently Asked Questions",
+  "trust_title1": "Your business",
+  "trust_title2": "is securely protected",
+  "trust_desc": "We take full financial responsibility for the results of our work. Our clients do not pay fines for accounting errors.",
+  "stats_about_title": "In figures and facts",
+  "pricing": [
+    {
+      "title": "Start",
+      "subtitle": "Basic set for new entrepreneurs",
+      "price": "from 49,000 ₸/mo",
+      "f0": "Accounting",
+      "f1": "Monthly reporting",
+      "f2": "Phone consultations"
+    },
+    {
+      "title": "Business",
+      "subtitle": "Optimal package for small business",
+      "price": "from 149,000 ₸/mo",
+      "f0": "Full accounting support",
+      "f1": "Tax planning",
+      "f2": "Support during audits"
+    },
+    {
+      "title": "Premium",
+      "subtitle": "Personalized approach and priority support",
+      "price": "Individual",
+      "f0": "Personal manager",
+      "f1": "Legal protection",
+      "f2": "Audit and optimization"
+    }
+  ],
+  "stats": {
+    "trust": [
+      { "value": "12+", "label": "Years in business" },
+      { "value": "350+", "label": "Happy clients" },
+      { "value": "2 bln ₸", "label": "Saved for clients" }
+    ],
+    "about": [
+      {
+        "value": "12+",
+        "label": "years in business",
+        "desc": "Over a decade of continuous practice under constantly changing legislation."
+      },
+      {
+        "value": "350+",
+        "label": "clients supported",
+        "desc": "Small and medium business in IT, construction, logistics, manufacturing, and e-commerce."
+      },
+      {
+        "value": "2 bln ₸",
+        "label": "saved for clients",
+        "desc": "Through legal tax optimization, VAT refunds, audit of overpayments, and prevention of fines."
+      },
+      {
+        "value": "100%",
+        "label": "financial guarantee",
+        "desc": "Our responsibility is secured by an SLA. We reimburse penalties and fines caused by our fault."
+      }
+    ]
+  },
+  "reviews_title1": "What they say",
+  "reviews_title2": "clients",
+  "reviews_desc": "Real stories of companies that entrusted us with their accounting.",
+  "reviews": [
+    {
+      "name": "Name Surname",
+      "company": "LLP \"Example\"",
+      "text": "Outsourced all accounting to Zhan Finance. Zero fines in a year, optimized taxes by 20%. Perfect."
+    },
+    {
+      "name": "Name Surname",
+      "company": "Example Network",
+      "text": "Really like the approach. Always in touch, answer quickly and to the point. HR accounting is no longer a headache."
+    },
+    {
+      "name": "Name Surname",
+      "company": "IE \"Example\"",
+      "text": "Opened IE through the guys, immediately took it for maintenance. Very convenient when everything is in one place."
+    }
+  ],
+  "services": {
+    "mock": [
+      {
+        "title": "Comprehensive Accounting",
+        "desc": "Full accounting and tax accounting for LLP and IE.",
+        "price": "N/A ₸/mo",
+        "f0": "Processing primary documentation",
+        "f1": "Submission of all tax reports",
+        "f2": "Payroll calculation",
+        "f3": "HR accounting"
+      },
+      {
+        "title": "Accounting Recovery",
+        "desc": "Putting bookkeeping in order for past periods, correcting errors.",
+        "price": "N/A ₸/mo",
+        "f0": "Audit of the current database",
+        "f1": "Document recovery",
+        "f2": "Submission of additional reports",
+        "f3": "Defense during audits"
+      },
+      {
+        "title": "One-time Consultations",
+        "desc": "Help on specific taxes, optimization, or opening/closing a business.",
+        "price": "N/A ₸/mo",
+        "f0": "Choosing a tax regime",
+        "f1": "Analysis of complex transactions",
+        "f2": "Legal optimization"
+      }
+    ],
+    "list": [
+      {
+        "title": "Accounting Support",
+        "desc": "Full accounting of operations, reporting, financial control.",
+        "price": "",
+        "b0": "Full accounting of operations",
+        "b1": "Preparation of reports",
+        "b2": "Financial control"
+      },
+      {
+        "title": "Tax Reporting",
+        "desc": "Timely preparation and submission of all mandatory forms to the tax office.",
+        "price": "",
+        "b0": "Preparation and submission of reports",
+        "b1": "Tax consultations",
+        "b2": "Interaction with tax authorities"
+      },
+      {
+        "title": "HR and Payroll",
+        "desc": "Maintaining HR documents, timesheets, calculating vacations and sick leaves.",
+        "price": "",
+        "b0": "HR documents",
+        "b1": "Payroll calculation",
+        "b2": "Timesheets and vacations"
+      },
+      {
+        "title": "Accounting Recovery",
+        "desc": "We will put documents in order, correct errors, and resubmit reports.",
+        "price": "",
+        "b0": "Analysis of past periods",
+        "b1": "Document recovery",
+        "b2": "Resubmission of reports"
+      },
+      {
+        "title": "Primary Documentation Processing",
+        "desc": "Working with acts, invoices, bills, and internal accounting.",
+        "price": "",
+        "b0": "Processing acts and invoices",
+        "b1": "Data entry",
+        "b2": "Reconciliations with counterparties"
+      },
+      {
+        "title": "Counterparty Analysis",
+        "desc": "Legal verification of the reliability of partners and clients before the deal.",
+        "price": "",
+        "b0": "Counterparty verification",
+        "b1": "Risk analysis",
+        "b2": "Recommendations for cooperation"
+      }
+    ]
+  },
+  "team_title": "Team",
+  "team_subtitle": "of experts",
+  "team_desc": "Behind every project are real people with years of experience in accounting, taxes, and law.",
+  "team": [
+    { "name": "ZHARILKAGANOV AMANKELDI NAKMADINOVICH", "role": "Head of company" },
+    { "name": "Kozhamberdieva Alma", "role": "Chief Accountant" },
+    { "name": "Omarova Liza", "role": "Chief Accountant" },
+    { "name": "Seidulla Asem", "role": "Accountant" },
+    { "name": "Tulepbek Malika", "role": "Accountant" },
+    { "name": "Makhanbet Bagila", "role": "Accountant" },
+    { "name": "Abdiraemova Akerke", "role": "Accountant" },
+    { "name": "Musabaev Dauren", "role": "Accountant" },
+    { "name": "Murat Orynbasar", "role": "IT Specialist" }
+  ],
+  "process_badge": "Engineering approach",
+  "process_title": "How we rebuild accounting",
+  "process": [
+    {
+      "title": "Audit and reverse engineering",
+      "text": "We don't just &quot;pick up&quot; the database. We conduct a deep technical audit: check data integrity in 1C, identify gaps in document chains, analyze tax and accounting registers. We find hidden tax risks, stuck balances, and incorrect entries."
+    },
+    {
+      "title": "Data normalization",
+      "text": "Like code refactoring, we rebuild the financial architecture. We restore lost documents, reconcile balances, fix duplicate counterparties. We create a clean master database where every tenge is confirmed."
+    },
+    {
+      "title": "Contour automation",
+      "text": "We integrate 1C with client-banks, CRM systems, e-invoicing systems, and virtual warehouses. We set up automatic bank statement downloads, data parsing, and document routing. This eliminates manual entry (human factor) and radically reduces processing time."
+    },
+    {
+      "title": "Continuous monitoring (SLA)",
+      "text": "The work moves to the routine maintenance stage. A dedicated team is assigned to you. You get transparent reporting showing the current tax burden, declaration status, and payment plan. Every action is strictly governed by internal regulations."
+    }
+  ]
+}

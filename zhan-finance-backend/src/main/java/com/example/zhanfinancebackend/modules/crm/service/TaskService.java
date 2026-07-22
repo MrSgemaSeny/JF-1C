@@ -264,14 +264,20 @@ public class TaskService {
         Task task = getTaskEntity(taskId);
         accessService.assertCanUpdateTaskStage(user, task, task.getStage()); // Using this check for now to ensure they have write access
 
+        boolean isEdited = false;
         if (request.title() != null && !request.title().trim().isEmpty()) {
             task.setTitle(request.title().trim());
+            isEdited = true;
         }
         if (request.description() != null) {
             task.setDescription(request.description().trim());
+            isEdited = true;
         }
         if (request.tags() != null) {
             task.setTags(request.tags());
+        }
+        if (isEdited) {
+            task.setEditedAt(java.time.LocalDateTime.now());
         }
         
         if (request.subtasks() != null) {
@@ -307,6 +313,32 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         logActivity(task, user, "Обновил данные задачи");
         auditService.logAction("UPDATE", "Task", task.getId(), "Task details updated");
+
+        if (user.getRole() == Role.CLIENT) {
+            notificationService.createNotification(
+                user,
+                "Успешное редактирование",
+                "Вы успешно отредактировали вашу задачу!",
+                "/client"
+            );
+
+            if (savedTask.getAssignedTo() != null) {
+                notificationService.createNotification(
+                    savedTask.getAssignedTo(),
+                    "Клиент отредактировал задачу",
+                    "Клиент " + user.getFullName() + " отредактировал задачу: " + savedTask.getTitle(),
+                    "/employee/tasks"
+                );
+                emailNotificationService.sendTaskEditedByClientEmail(savedTask.getAssignedTo(), savedTask, user);
+            }
+
+            notificationService.notifyAdmins(
+                "Клиент отредактировал задачу",
+                "Клиент " + user.getFullName() + " отредактировал задачу: " + savedTask.getTitle(),
+                "/admin/tasks"
+            );
+        }
+
         return taskMapper.mapToDto(savedTask);
     }
 
@@ -621,7 +653,30 @@ public class TaskService {
         TaskComment comment = new TaskComment(task, author, text);
         task.addComment(comment);
         logActivity(task, author, "Оставил комментарий: " + (text.length() > 30 ? text.substring(0, 30) + "..." : text));
-        
+
+        if (author.getRole() != Role.CLIENT && task.getClient() != null) {
+            notificationService.createNotification(
+                task.getClient(),
+                "Новый комментарий",
+                "Новый комментарий к задаче '" + task.getTitle() + "'",
+                "/client/tasks"
+            );
+        } else if (author.getRole() == Role.CLIENT) {
+            if (task.getAssignedTo() != null) {
+                notificationService.createNotification(
+                    task.getAssignedTo(),
+                    "Новый комментарий от клиента",
+                    "Клиент " + author.getFullName() + " оставил комментарий к задаче '" + task.getTitle() + "'",
+                    "/employee/tasks"
+                );
+            }
+            notificationService.notifyAdmins(
+                "Новый комментарий от клиента",
+                "Клиент " + author.getFullName() + " оставил комментарий к задаче '" + task.getTitle() + "'",
+                "/admin/tasks"
+            );
+        }
+
         taskRepository.save(task);
         return taskMapper.mapCommentToDto(comment);
     }
@@ -645,8 +700,10 @@ public class TaskService {
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
-    public void deleteTask(Long taskId) {
+    public void deleteTask(Long taskId, User user) {
         Task task = getTaskEntity(taskId);
+        
+        accessService.assertCanUpdateTaskDetails(user, task);
         
         java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId);
         for (com.example.zhanfinancebackend.modules.documents.entity.Document doc : docs) {
@@ -661,6 +718,26 @@ public class TaskService {
         }
         
         auditService.logAction("DELETE", "Task", task.getId(), "Task deleted: " + task.getTitle());
+        String taskTitle = task.getTitle();
+        
+        if (user.getRole() == Role.CLIENT) {
+            if (task.getAssignedTo() != null) {
+                notificationService.createNotification(
+                    task.getAssignedTo(),
+                    "Клиент удалил задачу",
+                    "Клиент " + user.getFullName() + " удалил задачу: " + taskTitle,
+                    "/employee/tasks"
+                );
+                emailNotificationService.sendTaskDeletedByClientEmail(task.getAssignedTo(), taskTitle, user);
+            }
+
+            notificationService.notifyAdmins(
+                "Клиент удалил задачу",
+                "Клиент " + user.getFullName() + " удалил задачу: " + taskTitle,
+                "/admin/tasks"
+            );
+        }
+        
         taskRepository.delete(task);
     }
 

@@ -33,6 +33,7 @@ public class PipelineController {
                         s.getId(),
                         p.getId(),
                         s.getName(),
+                        s.getNameEn(),
                         s.getOrderIndex(),
                         s.getColor(),
                         s.getType(),

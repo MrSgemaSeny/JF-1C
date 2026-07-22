@@ -5,14 +5,14 @@ import { teamRows } from '@/shared/config/content/team';
 import { useTranslation } from 'react-i18next';
 
 export function Team() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('landing');
   return (
     <Section className="bg-brand-beige py-24 overflow-hidden">
       <Container>
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">
-            {t('team.title1', { defaultValue: 'Команда' })} <br />
-            <span className="text-brand-green/40">{t('team.title2', { defaultValue: 'Zhan Finance' })}</span>
+            {t('team_title', { defaultValue: 'Команда' })} <br />
+            <span className="text-brand-green/40">{t('team_subtitle', { defaultValue: 'экспертов' })}</span>
           </h2>
         </div>
 
@@ -40,7 +40,7 @@ export function Team() {
                     member.highlight ? 'w-56 md:w-72' : 'w-40 md:w-48'
                   }`}>
                     {member.photo ? (
-                      <img src={member.photo} alt={member.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                      <img src={member.photo} alt={t(member.nameKey)} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-brand-green/20">
                         <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
@@ -52,12 +52,12 @@ export function Team() {
                   <h3 className={`font-black uppercase tracking-wider text-brand-green leading-tight mb-2 ${
                     member.highlight ? 'text-xl md:text-2xl' : 'text-sm md:text-base max-w-[200px]'
                   }`}>
-                    {t(`team.members.${rowIndex}_${colIndex}.name`, { defaultValue: member.name })}
+                    {t(member.nameKey)}
                   </h3>
                   <p className={`font-bold uppercase tracking-widest text-brand-green/50 ${
                     member.highlight ? 'text-sm' : 'text-[10px] md:text-xs'
                   }`}>
-                    {t(`team.members.${rowIndex}_${colIndex}.role`, { defaultValue: member.role })}
+                    {t(member.roleKey)}
                   </p>
                 </motion.div>
               ))}

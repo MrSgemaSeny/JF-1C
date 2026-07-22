@@ -63,10 +63,29 @@ public class ContactRequestService {
         // Email самому лиду
         if (request.email() != null && !request.email().isBlank()) {
             try {
-                String subject = "Мы получили вашу заявку - Zhan Finance";
-                String htmlBody = "<h3>Здравствуйте, " + request.name() + "!</h3>" +
-                                  "<p>Мы успешно получили вашу заявку. Наш менеджер скоро свяжется с вами по номеру " + request.phone() + ".</p>" +
-                                  "<p>Спасибо за интерес к Zhan Finance!</p>";
+                String subject = "Ваша заявка принята | Zhan Finance";
+                String htmlBody = String.format(
+                    "<div style=\"font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; padding: 20px;\">" +
+                    "<h2 style=\"color: #047857; margin-top: 0;\">Zhan Finance</h2>" +
+                    "<h3>Здравствуйте, %s!</h3>" +
+                    "<p>Мы успешно получили вашу заявку на нашем сайте.</p>" +
+                    "<div style=\"background-color: #f9fafb; padding: 15px; border-radius: 6px; margin: 20px 0;\">" +
+                    "<p style=\"margin-top: 0;\"><b>Детали вашей заявки:</b></p>" +
+                    "<ul style=\"margin-bottom: 0;\">" +
+                    "<li><b>Имя:</b> %s</li>" +
+                    "<li><b>Телефон:</b> %s</li>" +
+                    "<li><b>Источник:</b> %s</li>" +
+                    "</ul>" +
+                    "</div>" +
+                    "<p>Наш менеджер свяжется с вами в ближайшее рабочее время для уточнения деталей.</p>" +
+                    "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\" />" +
+                    "<p style=\"font-size: 14px; color: #666; margin-bottom: 0;\">С уважением,<br/><b>Команда Zhan Finance</b></p>" +
+                    "</div>",
+                    request.name(),
+                    request.name(),
+                    request.phone(),
+                    request.source() != null ? request.source() : "Сайт"
+                );
                 emailNotificationService.sendHtmlEmail(request.email(), subject, htmlBody);
             } catch (Exception e) {
                 // Игнорируем ошибку отправки письма

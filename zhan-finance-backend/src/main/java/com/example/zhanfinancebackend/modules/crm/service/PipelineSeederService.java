@@ -43,15 +43,15 @@ public class PipelineSeederService {
             long stageCount = stageRepository.count();
             if (stageCount == 0) {
                 List<Stage> savedStages = stageRepository.saveAll(List.of(
-                        createStage(defaultPipeline, "Новый", 0, StageType.OPEN, true, "var(--color-stage-new)"),
-                        createStage(defaultPipeline, "Сбор документов", 1, StageType.OPEN, false, "var(--color-stage-docs)"),
-                        createStage(defaultPipeline, "Предоплата", 2, StageType.OPEN, false, "var(--color-stage-prepay)"),
-                        createStage(defaultPipeline, "В работе", 3, StageType.OPEN, false, "var(--color-stage-active)"),
-                        createStage(defaultPipeline, "Счет выставлен", 4, StageType.OPEN, false, "var(--color-stage-invoice)"),
-                        createStage(defaultPipeline, "Доработка", 5, StageType.OPEN, false, "var(--color-stage-rework)"),
-                        createStage(defaultPipeline, "На проверке", 6, StageType.OPEN, false, "var(--color-stage-review)"),
-                        createStage(defaultPipeline, "Успешно завершено", 7, StageType.WON, false, "var(--color-brand-green)"),
-                        createStage(defaultPipeline, "Отменен", 8, StageType.LOST, false, "var(--color-stage-lost)")
+                        createStage(defaultPipeline, "Новый", "New", 0, StageType.OPEN, true, "var(--color-stage-new)"),
+                        createStage(defaultPipeline, "Сбор документов", "Document Collection", 1, StageType.OPEN, false, "var(--color-stage-docs)"),
+                        createStage(defaultPipeline, "Предоплата", "Prepayment", 2, StageType.OPEN, false, "var(--color-stage-prepay)"),
+                        createStage(defaultPipeline, "В работе", "In Progress", 3, StageType.OPEN, false, "var(--color-stage-active)"),
+                        createStage(defaultPipeline, "Счет выставлен", "Invoiced", 4, StageType.OPEN, false, "var(--color-stage-invoice)"),
+                        createStage(defaultPipeline, "Доработка", "Rework", 5, StageType.OPEN, false, "var(--color-stage-rework)"),
+                        createStage(defaultPipeline, "На проверке", "Review", 6, StageType.OPEN, false, "var(--color-stage-review)"),
+                        createStage(defaultPipeline, "Успешно завершено", "Won", 7, StageType.WON, false, "var(--color-brand-green)"),
+                        createStage(defaultPipeline, "Отменен", "Lost", 8, StageType.LOST, false, "var(--color-stage-lost)")
                 ));
                 
                 // Назначаем задачам без стадии дефолтную стадию "Новый"
@@ -67,7 +67,7 @@ public class PipelineSeederService {
                 boolean hasReviewStage = stageRepository.findAll().stream()
                         .anyMatch(s -> "На проверке".equals(s.getName()));
                 if (!hasReviewStage) {
-                    Stage reviewStage = createStage(defaultPipeline, "На проверке", 5, StageType.OPEN, false, "var(--color-stage-review)");
+                    Stage reviewStage = createStage(defaultPipeline, "На проверке", "Review", 5, StageType.OPEN, false, "var(--color-stage-review)");
                     stageRepository.save(reviewStage);
                     
                     // Shift indices of later stages
@@ -83,7 +83,7 @@ public class PipelineSeederService {
                 boolean hasReworkStage = stageRepository.findAll().stream()
                         .anyMatch(s -> "Доработка".equals(s.getName()));
                 if (!hasReworkStage) {
-                    Stage reworkStage = createStage(defaultPipeline, "Доработка", 5, StageType.OPEN, false, "var(--color-stage-rework)");
+                    Stage reworkStage = createStage(defaultPipeline, "Доработка", "Rework", 5, StageType.OPEN, false, "var(--color-stage-rework)");
                     stageRepository.save(reworkStage);
                     
                     // Shift indices of later stages (which includes 'На проверке' now)
@@ -98,10 +98,11 @@ public class PipelineSeederService {
         }
     }
 
-    private Stage createStage(Pipeline pipeline, String name, int orderIndex, StageType type, boolean isDefault, String color) {
+    private Stage createStage(Pipeline pipeline, String name, String nameEn, int orderIndex, StageType type, boolean isDefault, String color) {
         Stage stage = new Stage();
         stage.setPipeline(pipeline);
         stage.setName(name);
+        stage.setNameEn(nameEn);
         stage.setOrderIndex(orderIndex);
         stage.setType(type);
         stage.setDefault(isDefault);

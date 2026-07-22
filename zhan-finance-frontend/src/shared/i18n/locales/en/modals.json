@@ -1,0 +1,20 @@
+{
+  "reject": {
+    "reasons": {
+      "changedMind": "Changed my mind",
+      "tooExpensive": "Too expensive",
+      "noTime": "No time",
+      "foundAnother": "Found another contractor"
+    },
+    "title": "Task Rejection",
+    "warningTitle": "Warning! This action is irreversible.",
+    "warningDesc": "After rejection, the task will be moved to the archive. The status of the task cannot be changed in the future.",
+    "reasonPrompt": "Please indicate the reason for rejection:",
+    "additionalComments": "Additional comments (optional)",
+    "customReason": "Or write your own reason (required)",
+    "placeholder": "Tell us more about why you decided to reject the task...",
+    "cancel": "Cancel",
+    "submit": "Submit Rejection",
+    "submitting": "Submitting..."
+  }
+}

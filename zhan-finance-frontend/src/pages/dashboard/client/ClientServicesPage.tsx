@@ -8,9 +8,10 @@ import { clsx } from 'clsx';
 import { Briefcase, Calendar, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
 import { useTranslation } from 'react-i18next';
+import { translateServiceName, translateServiceDesc } from '@/shared/i18n/taskTranslator';
 
 export function ClientServicesPage() {
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const { user } = useAuth();
   
   const [services, setServices] = useState<ServiceDto[]>([]);
@@ -106,8 +107,8 @@ export function ClientServicesPage() {
           {services.map(service => (
             <div key={service.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
               <div className="mb-4">
-                <h3 className="text-xl font-bold text-gray-900 leading-tight mb-2">{service.title}</h3>
-                <p className="text-gray-500 text-sm line-clamp-3">{service.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 leading-tight mb-2">{translateServiceName(service, t, i18n)}</h3>
+                <p className="text-gray-500 text-sm line-clamp-3">{translateServiceDesc(service, t, i18n)}</p>
               </div>
               
               <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">

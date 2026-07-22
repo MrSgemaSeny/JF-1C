@@ -36,7 +36,9 @@ public class ServiceService {
         return new ServiceDto(
                 entity.getId(),
                 entity.getTitle(),
+                entity.getTitleEn(),
                 entity.getDescription(),
+                entity.getDescriptionEn(),
                 entity.getPrice(),
                 entity.getImageUrl(),
                 entity.getIsHighlighted(),

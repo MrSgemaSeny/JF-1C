@@ -29,7 +29,7 @@ public class TestEmailController {
             jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom("orkathebestt@gmail.com");
+            helper.setFrom("muratorynbasar0@gmail.com");
             helper.setTo(email);
             helper.setSubject("Тестовое письмо от ZhanFinance");
             helper.setText(html, true);

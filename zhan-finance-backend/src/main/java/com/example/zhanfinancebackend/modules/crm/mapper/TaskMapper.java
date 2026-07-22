@@ -41,14 +41,17 @@ public class TaskMapper {
                 task.getServices() != null ? task.getServices().stream().map(s -> new com.example.zhanfinancebackend.modules.services.dto.ServiceDto(
                         s.getId(),
                         s.getTitle(),
+                        s.getTitleEn(),
                         s.getDescription(),
+                        s.getDescriptionEn(),
                         s.getPrice(),
                         s.getImageUrl(),
                         s.getIsHighlighted(),
                         s.getFeatures() != null ? new java.util.ArrayList<>(s.getFeatures()) : List.of(),
                         s.getCreatedAt() != null ? s.getCreatedAt().atZone(java.time.ZoneOffset.UTC) : null
                 )).toList() : List.of(),
-                task.isArchived()
+                task.isArchived(),
+                task.getEditedAt() != null ? task.getEditedAt().atZone(ZoneOffset.UTC) : null
         );
     }
 
@@ -58,6 +61,7 @@ public class TaskMapper {
                 stage.getId(),
                 stage.getPipeline().getId(),
                 stage.getName(),
+                stage.getNameEn(),
                 stage.getOrderIndex(),
                 stage.getColor(),
                 stage.getType(),

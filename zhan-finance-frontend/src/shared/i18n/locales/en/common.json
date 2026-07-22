@@ -1162,5 +1162,25 @@
         "CANCELED": "Declined"
       }
     }
+  },
+  "serviceNames": {
+    "Бухгалтерское сопровождение": "Accounting Support",
+    "Сдача налоговой отчетности": "Tax Reporting",
+    "Кадровый учет и расчет зарплаты": "HR and Payroll",
+    "Восстановление бухгалтерского учета": "Accounting Restoration",
+    "Обработка первичной документации": "Primary Documentation Processing",
+    "Проверка и анализ контрагентов": "Counterparty Verification"
+  },
+  "serviceDescriptions": {
+    "Полный учёт операций, составление отчётности, контроль финансов.": "Full transaction accounting, reporting, financial control.",
+    "Своевременная подготовка и сдача всех обязательных форм в налоговую.": "Timely preparation and submission of all mandatory tax forms.",
+    "Ведение кадровых документов, табелей, расчет отпускных и больничных.": "Maintenance of HR documents, timesheets, calculation of vacation and sick leave.",
+    "Приведём в порядок документы, исправим ошибки и пересдадим отчётность.": "We will put documents in order, correct errors, and resubmit reports.",
+    "Работа с актами, накладными, счетами и внутренней бухгалтерией.": "Work with acts, invoices, bills, and internal accounting.",
+    "Юридическая проверка надежности партнеров и клиентов до сделки.": "Legal verification of the reliability of partners and clients before the deal."
+  },
+  "taskPrefixes": {
+    "Запрос на услугу": "Service Request",
+    "Заказ услуги": "Service Order"
   }
 }

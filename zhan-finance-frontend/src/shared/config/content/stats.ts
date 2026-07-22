@@ -2,46 +2,46 @@ import { Clock, Users, BarChart, ShieldCheck } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface Stat {
-  value: string;
-  label: string;
+  valueKey: string;
+  labelKey: string;
 }
 
 export interface StatWithIcon extends Stat {
   icon: LucideIcon;
-  description: string;
+  descKey: string;
 }
 
 /** Stats shown on the Trust widget (homepage) */
 export const trustStats: Stat[] = [
-  { value: '12+',        label: 'Лет на рынке' },
-  { value: '350+',       label: 'Довольных клиентов' },
-  { value: '2 млрд ₸',  label: 'Сэкономлено тенге' },
+  { valueKey: 'landing:stats.trust.0.value', labelKey: 'landing:stats.trust.0.label' },
+  { valueKey: 'landing:stats.trust.1.value', labelKey: 'landing:stats.trust.1.label' },
+  { valueKey: 'landing:stats.trust.2.value', labelKey: 'landing:stats.trust.2.label' },
 ];
 
 /** Stats shown on the About page */
 export const aboutStats: StatWithIcon[] = [
   {
     icon: Clock,
-    value: '12+',
-    label: 'лет на рынке',
-    description: 'Больше десятилетия непрерывной практики в условиях постоянно меняющегося законодательства РК.',
+    valueKey: 'landing:stats.about.0.value',
+    labelKey: 'landing:stats.about.0.label',
+    descKey: 'landing:stats.about.0.desc',
   },
   {
     icon: Users,
-    value: '350+',
-    label: 'клиентов на обслуживании',
-    description: 'Малый и средний бизнес в сферах IT, строительства, логистики, производства и e-commerce.',
+    valueKey: 'landing:stats.about.1.value',
+    labelKey: 'landing:stats.about.1.label',
+    descKey: 'landing:stats.about.1.desc',
   },
   {
     icon: BarChart,
-    value: '2 млрд ₸',
-    label: 'сэкономлено клиентам',
-    description: 'За счет легальной налоговой оптимизации, возвратов НДС, аудита переплат и предотвращения штрафов.',
+    valueKey: 'landing:stats.about.2.value',
+    labelKey: 'landing:stats.about.2.label',
+    descKey: 'landing:stats.about.2.desc',
   },
   {
     icon: ShieldCheck,
-    value: '100%',
-    label: 'финансовая гарантия',
-    description: 'Наша ответственность закреплена договором SLA. Мы возмещаем пени и штрафы, возникшие по нашей вине.',
+    valueKey: 'landing:stats.about.3.value',
+    labelKey: 'landing:stats.about.3.label',
+    descKey: 'landing:stats.about.3.desc',
   },
 ];

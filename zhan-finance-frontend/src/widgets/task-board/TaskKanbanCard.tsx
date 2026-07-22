@@ -67,8 +67,9 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
         <span className="text-sm font-medium text-gray-800 leading-tight">
           {task.title}
         </span>
-        {/* Placeholder for red badge (e.g. overdue count) */}
-        {/* <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">1</span> */}
+        {task.reassignmentRequested && (
+          <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full" title={t('kanban.rejectedTooltip', { defaultValue: 'Сотрудник отказался от задачи' })}>{t('kanban.rejected', { defaultValue: 'Отказ' })}</span>
+        )}
       </div>
 
       {/* Amount and Icons */}

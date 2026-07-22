@@ -171,12 +171,12 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ApiResponse<Void> deleteTask(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
     ) {
-        taskService.deleteTask(id);
+        taskService.deleteTask(id, principal.getUser());
         return ApiResponse.success(null);
     }
 

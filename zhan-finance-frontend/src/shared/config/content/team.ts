@@ -1,6 +1,6 @@
 export interface TeamMember {
-  name: string;
-  role: string;
+  nameKey: string;
+  roleKey: string;
   photo: string;
   highlight?: boolean;
 }
@@ -8,22 +8,22 @@ export interface TeamMember {
 export const teamRows: TeamMember[][] = [
   [
     {
-      name: 'ЖАРИЛКАГАНОВ АМАНКЕЛЬДИ НАКМАДИНОВИЧ',
-      role: 'Руководитель компании',
+      nameKey: 'landing:team.0.name',
+      roleKey: 'landing:team.0.role',
       photo: '',
       highlight: true,
     },
   ],
   [
-    { name: 'Кожамбердиева Алма', role: 'Главный бухгалтер',       photo: '' },
-    { name: 'Омарова Лиза', role: 'Главный бухгалтер',     photo: '' },
+    { nameKey: 'landing:team.1.name', roleKey: 'landing:team.1.role', photo: '' },
+    { nameKey: 'landing:team.2.name', roleKey: 'landing:team.2.role', photo: '' },
   ],
   [
-    { name: 'Сейдулла Асем', role: 'Бугхалтер',  photo: '' },
-    { name: 'Тулепбек Малика', role: 'Бугхалтер',     photo: '' },
-    { name: 'Маханбет Багила', role: 'Бугхалтер',     photo: '' },
-    { name: 'Абдираемова Акерке', role: 'Бугхалтер',   photo: '' },
-    { name: 'Мусабаев Даурен', role: 'Бугхалтер',    photo: '' },
-    { name: 'Мұрат Орынбасар', role: 'IT-специалист',   photo: '' },
+    { nameKey: 'landing:team.3.name', roleKey: 'landing:team.3.role', photo: '' },
+    { nameKey: 'landing:team.4.name', roleKey: 'landing:team.4.role', photo: '' },
+    { nameKey: 'landing:team.5.name', roleKey: 'landing:team.5.role', photo: '' },
+    { nameKey: 'landing:team.6.name', roleKey: 'landing:team.6.role', photo: '' },
+    { nameKey: 'landing:team.7.name', roleKey: 'landing:team.7.role', photo: '' },
+    { nameKey: 'landing:team.8.name', roleKey: 'landing:team.8.role', photo: '' },
   ],
 ];

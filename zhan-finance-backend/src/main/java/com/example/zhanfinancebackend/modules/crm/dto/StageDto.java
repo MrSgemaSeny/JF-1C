@@ -6,6 +6,7 @@ public record StageDto(
         Long id,
         Long pipelineId,
         String name,
+        String nameEn,
         Integer orderIndex,
         String color,
         StageType type,
