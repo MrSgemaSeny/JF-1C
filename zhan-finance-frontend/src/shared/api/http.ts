@@ -121,7 +121,8 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   try {
     return await rawRequest<T>(path, init, token);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
+    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google');
+    if (error instanceof ApiError && error.status === 401 && !isAuthRoute) {
       if (!refreshPromise) {
         refreshPromise = onUnauthorized().finally(() => {
           refreshPromise = null;
@@ -198,7 +199,8 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
   try {
     return await rawDownload(path, init, token);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
+    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google');
+    if (error instanceof ApiError && error.status === 401 && !isAuthRoute) {
       if (!refreshPromise) {
         refreshPromise = onUnauthorized().finally(() => {
           refreshPromise = null;
