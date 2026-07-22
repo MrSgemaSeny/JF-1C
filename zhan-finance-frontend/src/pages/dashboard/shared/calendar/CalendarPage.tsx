@@ -18,7 +18,7 @@ const COLORS = [
 
 export function CalendarPage() {
   const { user } = useAuth();
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [events, setEvents] = useState<CalendarEventDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -237,7 +237,7 @@ export function CalendarPage() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h3 className="font-bold text-lg text-gray-900">
-                События на {new Date(selectedDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {t('calendarWidget.eventsOn', { defaultValue: 'События на' })} {new Date(selectedDate).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
@@ -249,7 +249,7 @@ export function CalendarPage() {
               <div className="space-y-3 mb-8">
                 {selectedDayEvents.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4 bg-white rounded-xl border border-dashed border-gray-200">
-                    На этот день нет запланированных событий
+                    {t('calendarWidget.noEvents', { defaultValue: 'На этот день нет запланированных событий' })}
                   </p>
                 ) : (
                   selectedDayEvents.map(e => {
@@ -269,7 +269,7 @@ export function CalendarPage() {
                           )}
                           {e.type === 'TASK' && (
                             <span className="inline-block mt-2 text-[10px] uppercase tracking-wider font-bold text-brand-green bg-brand-green/10 px-2 py-0.5 rounded">
-                              Задача в системе
+                              {t('calendarWidget.systemTask', { defaultValue: 'Задача в системе' })}
                             </span>
                           )}
                         </div>
@@ -277,7 +277,7 @@ export function CalendarPage() {
                           <button 
                             onClick={() => handleDeleteEvent(e.id, false)}
                             className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100"
-                            title="Удалить"
+                            title={t('common:actions.delete', { defaultValue: 'Удалить' })}
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -292,16 +292,16 @@ export function CalendarPage() {
               <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                 <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Plus className="w-4 h-4 text-brand-green" />
-                  Добавить событие
+                  {t('calendarWidget.addEvent', { defaultValue: 'Добавить событие' })}
                 </h4>
                 <form onSubmit={handleSaveEvent} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1">Название события</label>
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1">{t('calendarWidget.eventTitle', { defaultValue: 'Название события' })}</label>
                     <input
                       type="text"
                       value={title}
                       onChange={e => setTitle(e.target.value)}
-                      placeholder="Напр. Оплата ИПН"
+                      placeholder={t('calendarWidget.eventTitlePlaceholder', { defaultValue: 'Напр. Оплата ИПН' })}
                       className="w-full text-base font-medium border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none placeholder-gray-400"
                       required
                     />
@@ -309,7 +309,7 @@ export function CalendarPage() {
                   
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Время</label>
+                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {t('calendarWidget.time', { defaultValue: 'Время' })}</label>
                       <input
                         type="time"
                         value={time}
@@ -319,25 +319,25 @@ export function CalendarPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Tag className="w-3.5 h-3.5" /> Цвет метки</label>
+                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Tag className="w-3.5 h-3.5" /> {t('calendarWidget.color', { defaultValue: 'Цвет метки' })}</label>
                       <select
                         value={color}
                         onChange={e => setColor(e.target.value)}
                         className="w-full text-base font-medium border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none appearance-none"
                       >
                         {COLORS.map(c => (
-                          <option key={c.value} value={c.value}>{c.label}</option>
+                          <option key={c.value} value={c.value}>{t(`calendarWidget.colors.${c.value}`, { defaultValue: c.label })}</option>
                         ))}
                       </select>
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><AlignLeft className="w-3.5 h-3.5" /> Описание</label>
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><AlignLeft className="w-3.5 h-3.5" /> {t('calendarWidget.description', { defaultValue: 'Описание' })}</label>
                     <textarea
                       value={description}
                       onChange={e => setDescription(e.target.value)}
-                      placeholder="Дополнительное описание (опционально)..."
+                      placeholder={t('calendarWidget.descriptionPlaceholder', { defaultValue: 'Дополнительное описание (опционально)...' })}
                       className="w-full text-base border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green min-h-[100px] resize-none transition-all outline-none placeholder-gray-400"
                     />
                   </div>
@@ -348,7 +348,7 @@ export function CalendarPage() {
                       disabled={isSaving || !title.trim()}
                       className="w-full flex items-center justify-center gap-2 bg-brand-green text-white py-2.5 rounded-xl font-medium hover:bg-brand-green/90 transition-colors disabled:opacity-50"
                     >
-                      {isSaving ? <Spinner className="w-4 h-4" /> : 'Сохранить'}
+                      {isSaving ? <Spinner className="w-4 h-4" /> : t('calendarWidget.save', { defaultValue: 'Сохранить' })}
                     </button>
                   </div>
                 </form>

@@ -122,7 +122,24 @@
     "currentMonth": "Current Month",
     "openFull": "Open full calendar",
     "eventsOn": "Events on",
-    "noEvents": "No events scheduled for this day"
+    "noEvents": "No events scheduled for this day",
+    "addEvent": "Add Event",
+    "eventTitle": "Event Title",
+    "eventTitlePlaceholder": "e.g. Tax payment",
+    "time": "Time",
+    "color": "Label Color",
+    "description": "Description",
+    "descriptionPlaceholder": "Additional description (optional)...",
+    "save": "Save",
+    "saving": "Saving...",
+    "systemTask": "System Task",
+    "colors": {
+      "BLUE": "Blue",
+      "RED": "Red (Deadline)",
+      "GREEN": "Green",
+      "YELLOW": "Yellow",
+      "PURPLE": "Purple"
+    }
   },
   "sidebar": {
     "logout": "Logout",

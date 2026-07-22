@@ -228,7 +228,7 @@ export function MiniCalendarWidget() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h3 className="font-bold text-lg text-gray-900">
-                {t('calendarWidget.eventsOn')} {new Date(selectedDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {t('calendarWidget.eventsOn')} {new Date(selectedDate).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
@@ -260,7 +260,7 @@ export function MiniCalendarWidget() {
                           )}
                           {e.type === 'TASK' && (
                             <span className="inline-block mt-2 text-[10px] uppercase tracking-wider font-bold text-brand-green bg-brand-green/10 px-2 py-0.5 rounded">
-                              Задача в системе
+                              {t('calendarWidget.systemTask', { defaultValue: 'Задача в системе' })}
                             </span>
                           )}
                         </div>
@@ -268,7 +268,7 @@ export function MiniCalendarWidget() {
                           <button 
                             onClick={() => handleDeleteEvent(e.id, false)}
                             className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100"
-                            title="Удалить"
+                            title={t('common:actions.delete', { defaultValue: 'Удалить' })}
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -283,7 +283,7 @@ export function MiniCalendarWidget() {
               <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                 <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Plus className="w-4 h-4 text-brand-green" />
-                  Добавить событие
+                  {t('calendarWidget.addEvent', { defaultValue: 'Добавить событие' })}
                 </h4>
                 <form onSubmit={handleSaveEvent} className="space-y-4">
                   <div>
@@ -291,7 +291,7 @@ export function MiniCalendarWidget() {
                       type="text"
                       value={title}
                       onChange={e => setTitle(e.target.value)}
-                      placeholder="Название события (напр. Оплата ИПН)"
+                      placeholder={t('calendarWidget.eventTitlePlaceholder', { defaultValue: 'Название события (напр. Оплата ИПН)' })}
                       className="w-full text-sm font-medium border-0 border-b-2 border-gray-100 focus:border-brand-green focus:ring-0 px-0 py-2 transition-colors bg-transparent placeholder-gray-400"
                       required
                     />
@@ -315,7 +315,7 @@ export function MiniCalendarWidget() {
                         className="flex-1 text-sm border-gray-200 rounded-lg focus:ring-brand-green focus:border-brand-green"
                       >
                         {COLORS.map(c => (
-                          <option key={c.value} value={c.value}>{c.value === 'BLUE' ? 'Синий' : c.value === 'RED' ? 'Красный' : c.value === 'GREEN' ? 'Зеленый' : c.value === 'YELLOW' ? 'Желтый' : 'Фиолетовый'}</option>
+                          <option key={c.value} value={c.value}>{t(`calendarWidget.colors.${c.value}`, { defaultValue: c.value })}</option>
                         ))}
                       </select>
                     </div>
@@ -327,7 +327,7 @@ export function MiniCalendarWidget() {
                     <textarea
                       value={description}
                       onChange={e => setDescription(e.target.value)}
-                      placeholder="Описание (необязательно)"
+                      placeholder={t('calendarWidget.descriptionPlaceholder', { defaultValue: 'Описание (необязательно)' })}
                       rows={2}
                       className="flex-1 text-sm border-gray-200 rounded-lg focus:ring-brand-green focus:border-brand-green resize-none"
                     />
@@ -338,7 +338,7 @@ export function MiniCalendarWidget() {
                     disabled={isSaving || !title.trim()}
                     className="w-full mt-4 bg-brand-green hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
                   >
-                    {isSaving ? 'Сохранение...' : 'Сохранить'}
+                    {isSaving ? t('calendarWidget.saving', { defaultValue: 'Сохранение...' }) : t('calendarWidget.save', { defaultValue: 'Сохранить' })}
                   </button>
                 </form>
               </div>
