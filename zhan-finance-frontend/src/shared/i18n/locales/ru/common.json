@@ -614,7 +614,7 @@
       "phoneLabel": "Телефон",
       "phonePlaceholder": "+7 (777) 000-00-00",
       "companyLabel": "Название ИП / ТОО (можно оставить пустым)",
-      "companyPlaceholder": "ТОО Zhan Finance",
+      "companyPlaceholder": "Например: ИП Иванов, ТОО Пример",
       "saving": "Сохраняем...",
       "saveBtn": "Сохранить и продолжить",
       "skip": "Пропустить →"

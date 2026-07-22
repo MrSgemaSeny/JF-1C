@@ -328,7 +328,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
                     disabled={isSubmitting}
                     error={validationErrors.companyName}
                     icon={<Building2 className="w-5 h-5" />}
-                    placeholder="OOO Пример"
+                    placeholder={t('auth.register.companyPlaceholder', { defaultValue: 'Например: ИП Иванов, ТОО Пример' })}
                   />
                 </>
               )}
