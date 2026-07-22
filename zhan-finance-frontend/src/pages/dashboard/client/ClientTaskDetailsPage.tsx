@@ -6,7 +6,7 @@ import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
 import type { StageDto } from '@/entities/task/model/types';
 import { TaskRejectModal } from '@/widgets/task-reject/TaskRejectModal';
 import { Spinner } from '@/shared/ui/Spinner';
-import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip } from 'lucide-react';
+import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip, MoreVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 import { translateTaskTitle, translateServiceName, translateStageName } from '@/shared/i18n/taskTranslator';
@@ -165,10 +165,10 @@ export function ClientTaskDetailsPage() {
                     <div className="relative" ref={moreMenuRef}>
                       <button
                         onClick={() => setShowMoreMenu(prev => !prev)}
-                        className="px-3 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-bold transition-colors flex items-center justify-center min-w-[38px]"
+                        className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors flex items-center justify-center"
                         title={t('common:more', { defaultValue: 'Ещё' })}
                       >
-                        ...
+                        <MoreVertical size={18} />
                       </button>
                       {showMoreMenu && (
                         <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden">
