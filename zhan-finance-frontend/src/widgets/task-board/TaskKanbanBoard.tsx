@@ -46,6 +46,20 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   const startX = React.useRef(0);
   const scrollLeft = React.useRef(0);
 
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (!scrollContainerRef.current) return;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    scrollContainerRef.current.scrollLeft += e.deltaY * 1.5;
+  }, []);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
+
   const { data: pipelines, isLoading: isLoadingPipelines } = usePipelinesQuery();
   const { mutateAsync: updateTaskStage } = useUpdateTaskStage();
 
@@ -293,20 +307,6 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       scrollContainerRef.current.scrollLeft = scrollLeft.current - dx;
     }
   };
-
-  const handleWheel = useCallback((e: WheelEvent) => {
-    if (!scrollContainerRef.current) return;
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-    e.preventDefault();
-    scrollContainerRef.current.scrollLeft += e.deltaY * 1.5;
-  }, []);
-
-  useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, [handleWheel]);
 
   return (
     <div 
