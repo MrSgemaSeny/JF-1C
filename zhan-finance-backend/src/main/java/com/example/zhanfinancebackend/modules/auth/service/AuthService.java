@@ -148,7 +148,7 @@ public class AuthService {
     }
 
     public com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse checkEmail(String email) {
-        return userRepository.findByEmail(email.toLowerCase().trim())
+        return userRepository.findByEmailIgnoreCase(email.trim())
                 .map(user -> new com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse(true, user.getAuthProvider()))
                 .orElse(new com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse(false, null));
     }
