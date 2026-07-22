@@ -26,7 +26,19 @@ export function ClientTaskDetailsPage() {
   const { mutateAsync: updateStage, isPending: isUpdatingStage } = useUpdateTaskStage();
 
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const moreMenuRef = React.useRef<HTMLDivElement>(null);
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
+
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setShowMoreMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   React.useEffect(() => {
     if (taskId) {
@@ -143,20 +155,36 @@ export function ClientTaskDetailsPage() {
                   </>
                 )}
                 {!isFinished && task.stage?.name !== 'На проверке' && (
-                  <>
+                  <div className="flex items-center gap-2">
                     <button
                       className="px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
                       onClick={() => alert('Редактирование задачи будет доступно в следующем обновлении')}
                     >
                       {t('tasks:details.editTask', { defaultValue: 'Изменить' })}
                     </button>
-                    <button
-                      onClick={() => setShowRejectModal(true)}
-                      className="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
-                    >
-                      <XCircle size={16} /> {t('tasks:details.rejectTask', { defaultValue: 'Отказаться от задачи' })}
-                    </button>
-                  </>
+                    <div className="relative" ref={moreMenuRef}>
+                      <button
+                        onClick={() => setShowMoreMenu(prev => !prev)}
+                        className="px-3 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-bold transition-colors flex items-center justify-center min-w-[38px]"
+                        title={t('common:more', { defaultValue: 'Ещё' })}
+                      >
+                        ...
+                      </button>
+                      {showMoreMenu && (
+                        <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden">
+                          <button
+                            onClick={() => {
+                              setShowMoreMenu(false);
+                              setShowRejectModal(true);
+                            }}
+                            className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
+                          >
+                            <XCircle size={16} /> {t('tasks:details.rejectTask', { defaultValue: 'Отказаться от задачи' })}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
