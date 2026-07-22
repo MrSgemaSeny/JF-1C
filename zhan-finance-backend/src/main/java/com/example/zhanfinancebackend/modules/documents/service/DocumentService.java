@@ -80,6 +80,14 @@ public class DocumentService {
             throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Недопустимый тип файла: " + contentType);
         }
 
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null) {
+            String lowerCaseName = originalFilename.toLowerCase();
+            if (lowerCaseName.endsWith(".html") || lowerCaseName.endsWith(".htm") || lowerCaseName.endsWith(".svg") || lowerCaseName.endsWith(".exe") || lowerCaseName.endsWith(".js") || lowerCaseName.endsWith(".sh")) {
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Данный тип файла запрещен к загрузке.");
+            }
+        }
+
         String storageKey = storageService.store(file);
 
         Document document = new Document(

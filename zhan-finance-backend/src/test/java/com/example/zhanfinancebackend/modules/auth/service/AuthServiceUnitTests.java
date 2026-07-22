@@ -52,6 +52,8 @@ class AuthServiceUnitTests {
     private ClientService clientService;
     @Mock
     private com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
+    @Mock
+    private com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
 
     @InjectMocks
     private AuthService authService;

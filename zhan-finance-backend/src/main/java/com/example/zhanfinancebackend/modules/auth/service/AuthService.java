@@ -30,6 +30,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final ClientService clientService;
     private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
+    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
 
     public AuthService(
             UserRepository userRepository,
@@ -38,7 +39,8 @@ public class AuthService {
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
             ClientService clientService,
-            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService
+            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService,
+            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -47,6 +49,7 @@ public class AuthService {
         this.refreshTokenService = refreshTokenService;
         this.clientService = clientService;
         this.notificationService = notificationService;
+        this.emailNotificationService = emailNotificationService;
     }
 
     @Transactional
@@ -99,6 +102,7 @@ public class AuthService {
                     savedUser.getFullName() + " (" + savedUser.getEmail() + ") зарегистрировался как клиент",
                     "/admin/employees"
             );
+            emailNotificationService.sendWelcomeEmail(savedUser);
             RefreshToken refreshToken = refreshTokenService.create(savedUser);
             return response(savedUser, refreshToken.getToken());
         }
