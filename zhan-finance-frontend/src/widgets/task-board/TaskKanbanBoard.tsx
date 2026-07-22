@@ -232,6 +232,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       return;
     }
 
+    const overStageIdStr = overContainer.replace('stage-', '');
+    const overStageId = parseInt(overStageIdStr, 10);
+    const overStage = stages.find(s => s.id === overStageId);
+
+    if (userRole === 'EMPLOYEE' && overStage && (overStage.type === 'WON' || overStage.type === 'LOST')) {
+      return;
+    }
+
     setColumns((prev) => {
       const activeItems = prev[activeContainer];
       const overItems = prev[overContainer];
