@@ -63,28 +63,68 @@ public class EmailNotificationService {
         }
     }
 
+    /**
+     * Unified formal corporate HTML template generator for Zhan Finance.
+     */
+    public String buildFormalEmailHtml(String headerTitle, String recipientName, String contentHtml, String buttonText, String buttonUrl) {
+        String buttonHtml = "";
+        if (buttonText != null && buttonUrl != null && !buttonText.isBlank() && !buttonUrl.isBlank()) {
+            buttonHtml = String.format(
+                "<div style=\"margin-top: 24px; margin-bottom: 16px;\">" +
+                "  <a href=\"%s\" style=\"display: inline-block; padding: 12px 24px; background-color: #047857; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;\">%s</a>" +
+                "</div>",
+                buttonUrl, buttonText
+            );
+        }
+
+        return String.format(
+            "<div style=\"font-family: Arial, sans-serif; color: #333333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\">" +
+            "  <div style=\"background-color: #047857; padding: 24px; text-align: left;\">" +
+            "    <h1 style=\"color: #ffffff; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: 0.5px;\">Zhan Finance</h1>" +
+            "  </div>" +
+            "  <div style=\"padding: 24px;\">" +
+            "    <h2 style=\"color: #111827; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;\">%s</h2>" +
+            "    <p style=\"margin-top: 0; margin-bottom: 16px;\">Здравствуйте, <b>%s</b>!</p>" +
+            "    %s" +
+            "    %s" +
+            "    <hr style=\"border: none; border-top: 1px solid #e5e7eb; margin: 24px 0 16px 0;\" />" +
+            "    <p style=\"font-size: 13px; color: #6b7280; margin: 0;\">" +
+            "      С уважением,<br/>" +
+            "      <b style=\"color: #374151;\">Команда Zhan Finance</b>" +
+            "    </p>" +
+            "  </div>" +
+            "</div>",
+            headerTitle,
+            recipientName,
+            contentHtml,
+            buttonHtml
+        );
+    }
+
     public void sendTaskAssignedEmail(com.example.zhanfinancebackend.modules.auth.entity.User assignee, com.example.zhanfinancebackend.modules.crm.entity.Task task) {
         if (assignee.getEmail() == null || assignee.getEmail().isBlank()) return;
 
         String subject = "Вам назначена новая задача: " + task.getTitle();
         String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
         
-        String html = String.format(
-            "<h2>Новая задача</h2>" +
-            "<p>Здравствуйте, <b>%s</b>!</p>" +
-            "<p>Вам была назначена новая задача: <b>%s</b></p>" +
-            "<p><b>Клиент:</b> %s</p>" +
-            "<p><b>Дедлайн:</b> %s</p>" +
-            "<p><b>Описание:</b><br/>%s</p>" +
-            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Открыть систему</a>",
-            assignee.getFullName(),
+        String contentHtml = String.format(
+            "<p>Вам была назначена новая задача в рабочей системе.</p>" +
+            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
+            "  <p style=\"margin-top: 0; margin-bottom: 8px;\"><b>Детали задачи:</b></p>" +
+            "  <ul style=\"margin: 0; padding-left: 20px;\">" +
+            "    <li><b>Название:</b> %s</li>" +
+            "    <li><b>Клиент:</b> %s</li>" +
+            "    <li><b>Дедлайн:</b> %s</li>" +
+            "    <li><b>Описание:</b> %s</li>" +
+            "  </ul>" +
+            "</div>",
             task.getTitle(),
-            task.getClient().getFullName(),
+            task.getClient() != null ? task.getClient().getFullName() : "Не указан",
             deadlineStr,
-            task.getDescription() != null ? task.getDescription() : "",
-            frontendUrl
+            task.getDescription() != null && !task.getDescription().isBlank() ? task.getDescription() : "Отсутствует"
         );
 
+        String html = buildFormalEmailHtml("Новая задача в системе", assignee.getFullName(), contentHtml, "Открыть задачу", frontendUrl);
         sendHtmlEmail(assignee.getEmail(), subject, html);
     }
 
@@ -94,44 +134,52 @@ public class EmailNotificationService {
         String subject = "🚨 Приближается дедлайн по задаче: " + task.getTitle();
         String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
         
-        String html = String.format(
-            "<h2>Горит Дедлайн!</h2>" +
-            "<p>Здравствуйте, <b>%s</b>!</p>" +
-            "<p>Напоминаем, что срок выполнения задачи <b>%s</b> от клиента <b>%s</b> скоро истекает.</p>" +
-            "<p><b>Дедлайн:</b> <span style=\"color: red; font-weight: bold;\">%s</span></p>" +
-            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Посмотреть задачу</a>",
-            user.getFullName(),
+        String contentHtml = String.format(
+            "<p>Напоминаем, что срок выполнения задачи скоро истекает. Пожалуйста, проверьте статус выполнения.</p>" +
+            "<div style=\"background-color: #fef2f2; padding: 16px; border-radius: 8px; border: 1px solid #fee2e2; margin: 16px 0;\">" +
+            "  <p style=\"margin-top: 0; margin-bottom: 8px; color: #991b1b;\"><b>Параметры дедлайна:</b></p>" +
+            "  <ul style=\"margin: 0; padding-left: 20px; color: #7f1d1d;\">" +
+            "    <li><b>Задача:</b> %s</li>" +
+            "    <li><b>Клиент:</b> %s</li>" +
+            "    <li><b>Дедлайн:</b> <span style=\"color: #dc2626; font-weight: bold;\">%s</span></li>" +
+            "  </ul>" +
+            "</div>",
             task.getTitle(),
-            task.getClient().getFullName(),
-            deadlineStr,
-            frontendUrl
+            task.getClient() != null ? task.getClient().getFullName() : "Не указан",
+            deadlineStr
         );
 
+        String html = buildFormalEmailHtml("Внимание: Горит Дедлайн!", user.getFullName(), contentHtml, "Посмотреть задачу", frontendUrl);
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+
     public void sendTaskStatusUpdatedEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task, String oldStatus, String newStatus, String lostReason) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Обновлен статус задачи: " + task.getTitle();
         
-        String lostReasonHtml = (lostReason != null && !lostReason.isBlank()) 
-            ? "<p><b>Причина:</b> " + lostReason + "</p>"
+        String lostReasonItem = (lostReason != null && !lostReason.isBlank()) 
+            ? "<li><b>Причина отмены:</b> " + lostReason + "</li>"
             : "";
 
-        String html = String.format(
-            "<h2>Статус задачи изменен</h2>" +
-            "<p>Здравствуйте, <b>%s</b>!</p>" +
-            "<p>Статус задачи <b>%s</b> был изменен с <b>%s</b> на <b>%s</b>.</p>" +
-            "%s" +
-            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Посмотреть задачу</a>",
-            user.getFullName(),
+        String contentHtml = String.format(
+            "<p>Статус вашей задачи был успешно изменен в системе.</p>" +
+            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
+            "  <p style=\"margin-top: 0; margin-bottom: 8px;\"><b>Информация о статусе:</b></p>" +
+            "  <ul style=\"margin: 0; padding-left: 20px;\">" +
+            "    <li><b>Задача:</b> %s</li>" +
+            "    <li><b>Предыдущий статус:</b> %s</li>" +
+            "    <li><b>Новый статус:</b> <span style=\"color: #047857; font-weight: bold;\">%s</span></li>" +
+            "    %s" +
+            "  </ul>" +
+            "</div>",
             task.getTitle(),
             oldStatus,
             newStatus,
-            lostReasonHtml,
-            frontendUrl
+            lostReasonItem
         );
 
+        String html = buildFormalEmailHtml("Изменение статуса задачи", user.getFullName(), contentHtml, "Посмотреть задачу", frontendUrl);
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
@@ -141,16 +189,19 @@ public class EmailNotificationService {
 
         String subject = "✅ Ваша задача успешно завершена: " + task.getTitle();
         
-        String html = String.format(
-            "<h2>Задача завершена!</h2>" +
-            "<p>Здравствуйте, <b>%s</b>!</p>" +
-            "<p>С радостью сообщаем, что задача <b>%s</b> была успешно завершена.</p>" +
-            "<p>Во вложении к этому письму вы найдете все необходимые документы, подготовленные в рамках этой задачи.</p>" +
-            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Перейти в личный кабинет</a>",
-            user.getFullName(),
-            task.getTitle(),
-            frontendUrl
+        String contentHtml = String.format(
+            "<p>С радостью сообщаем, что работа по вашей задаче полностью завершена.</p>" +
+            "<div style=\"background-color: #ecfdf5; padding: 16px; border-radius: 8px; border: 1px solid #d1fae5; margin: 16px 0;\">" +
+            "  <p style=\"margin-top: 0; margin-bottom: 8px; color: #065f46;\"><b>Результат выполнения:</b></p>" +
+            "  <ul style=\"margin: 0; padding-left: 20px; color: #047857;\">" +
+            "    <li><b>Задача:</b> %s</li>" +
+            "    <li><b>Документы:</b> Итоговые файлы прикреплены во вложении к данному письму</li>" +
+            "  </ul>" +
+            "</div>",
+            task.getTitle()
         );
+
+        String html = buildFormalEmailHtml("Задача успешно выполнена!", user.getFullName(), contentHtml, "Перейти в личный кабинет", frontendUrl);
 
         try {
             jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
@@ -188,30 +239,30 @@ public class EmailNotificationService {
     }
 
     public void sendWelcomeEmail(com.example.zhanfinancebackend.modules.auth.entity.User user) {
-        String subject = "Добро пожаловать в Zhan Finance";
-        String html = """
-                <div style="font-family:sans-serif">
-                  <h2>Добро пожаловать, %s!</h2>
-                  <p>Вы успешно зарегистрировались в системе Zhan Finance через Google-аккаунт.</p>
-                  <p>Вы можете войти в личный кабинет и начать работу прямо сейчас.</p>
-                </div>
-                """.formatted(user.getFullName());
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
+        String subject = "Добро пожаловать в Zhan Finance";
+        String contentHtml = 
+            "<p>Вы успешно зарегистрировались в системе Zhan Finance.</p>" +
+            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
+            "  <p style=\"margin: 0;\">Вам открыт доступ в личный кабинет для работы с бухгалтерскими и финансовыми услугами.</p>" +
+            "</div>";
+
+        String html = buildFormalEmailHtml("Добро пожаловать в Zhan Finance!", user.getFullName(), contentHtml, "Войти в личный кабинет", frontendUrl + "/login");
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
     public void sendAccountApprovedEmail(com.example.zhanfinancebackend.modules.auth.entity.User user) {
-        String subject = "Аккаунт подтвержден";
-        String html = """
-                <div style="font-family:sans-serif">
-                  <h2>Здравствуйте, %s!</h2>
-                  <p>Ваш аккаунт сотрудника был успешно подтвержден администратором.</p>
-                  <p>Теперь вы можете войти в систему и начать работу.</p>
-                  <br/>
-                  <p><a href="%s" style="padding:10px 20px; background-color:#1a73e8; color:white; text-decoration:none; border-radius:5px;">Войти в систему</a></p>
-                </div>
-                """.formatted(user.getFullName(), frontendUrl + "/login");
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
+        String subject = "Аккаунт сотрудника подтвержден";
+        String contentHtml = 
+            "<p>Ваш аккаунт сотрудника был успешно подтвержден администратором.</p>" +
+            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
+            "  <p style=\"margin: 0;\">Теперь вы можете войти в рабочую систему и приступить к выполнению задач.</p>" +
+            "</div>";
+
+        String html = buildFormalEmailHtml("Подтверждение аккаунта", user.getFullName(), contentHtml, "Войти в систему", frontendUrl + "/login");
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
@@ -219,17 +270,19 @@ public class EmailNotificationService {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Клиент отредактировал задачу: " + task.getTitle();
-        String html = String.format(
-            "<h2>Обновление задачи</h2>" +
-            "<p>Здравствуйте, <b>%s</b>!</p>" +
-            "<p>Клиент <b>%s</b> внес изменения в задачу <b>%s</b>.</p>" +
-            "<br/><a href=\"%s\" style=\"padding: 10px 20px; background-color: #047857; color: white; text-decoration: none; border-radius: 5px;\">Посмотреть задачу</a>",
-            user.getFullName(),
-            client.getFullName(),
-            task.getTitle(),
-            frontendUrl
+        String contentHtml = String.format(
+            "<p>Клиент внес изменения в параметры задачи.</p>" +
+            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
+            "  <ul style=\"margin: 0; padding-left: 20px;\">" +
+            "    <li><b>Клиент:</b> %s</li>" +
+            "    <li><b>Обновленная задача:</b> %s</li>" +
+            "  </ul>" +
+            "</div>",
+            client != null ? client.getFullName() : "Клиент",
+            task.getTitle()
         );
 
+        String html = buildFormalEmailHtml("Обновление задачи клиентом", user.getFullName(), contentHtml, "Посмотреть задачу", frontendUrl);
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
@@ -237,15 +290,19 @@ public class EmailNotificationService {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Клиент удалил задачу: " + taskTitle;
-        String html = String.format(
-            "<h2>Удаление задачи</h2>" +
-            "<p>Здравствуйте, <b>%s</b>!</p>" +
-            "<p>Клиент <b>%s</b> удалил свою задачу <b>%s</b>.</p>",
-            user.getFullName(),
-            client.getFullName(),
+        String contentHtml = String.format(
+            "<p>Обратите внимание, задача была отменена и удалена клиентом.</p>" +
+            "<div style=\"background-color: #fef2f2; padding: 16px; border-radius: 8px; border: 1px solid #fee2e2; margin: 16px 0;\">" +
+            "  <ul style=\"margin: 0; padding-left: 20px; color: #991b1b;\">" +
+            "    <li><b>Клиент:</b> %s</li>" +
+            "    <li><b>Удаленная задача:</b> %s</li>" +
+            "  </ul>" +
+            "</div>",
+            client != null ? client.getFullName() : "Клиент",
             taskTitle
         );
 
+        String html = buildFormalEmailHtml("Удаление задачи", user.getFullName(), contentHtml, null, null);
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 }
