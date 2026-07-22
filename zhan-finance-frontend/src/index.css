@@ -23,6 +23,13 @@
   body {
     @apply bg-brand-beige text-brand-green font-sans antialiased selection:bg-brand-green selection:text-brand-beige;
     overflow-x: clip;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
 
