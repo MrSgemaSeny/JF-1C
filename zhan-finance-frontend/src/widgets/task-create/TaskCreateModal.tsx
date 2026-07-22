@@ -7,6 +7,7 @@ import { uploadDocument } from '@/entities/document/api/documentApi';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { translateServiceName } from '@/shared/i18n/taskTranslator';
+import { DatePicker } from '@/shared/ui/DatePicker';
 interface TaskCreateModalProps {
   onClose: () => void;
   onCreated: () => void;
@@ -162,12 +163,10 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('taskCreate.deadline', { defaultValue: 'Желаемый срок (Дедлайн)' })}</label>
-                <input
-                  type="date"
-                  min={new Date().toISOString().split('T')[0]}
+                <DatePicker
                   value={dueDate}
-                  onChange={e => setDueDate(e.target.value)}
-                  className="w-full sm:w-auto px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
+                  onChange={setDueDate}
+                  min={new Date().toISOString().split('T')[0]}
                 />
               </div>
             </div>

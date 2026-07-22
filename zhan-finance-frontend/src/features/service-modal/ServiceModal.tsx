@@ -6,6 +6,7 @@ import { Input } from '@/shared/ui/Input/Input';
 import { Textarea } from '@/shared/ui/Input/Textarea';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
+import { DatePicker } from '@/shared/ui/DatePicker';
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 10;
@@ -164,14 +165,14 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
                       placeholder={t('serviceModal.orderForm.commentPlaceholder', { defaultValue: 'Например: нужно ведение ИП на УСН...' })}
                       label={t('serviceModal.orderForm.comment', { defaultValue: 'Дополнительный комментарий' })}
                     />
-                    <Input
-                      id="preferredDate"
-                      type="date"
-                      value={preferredDate}
-                      onChange={(e) => setPreferredDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      label={t('serviceModal.orderForm.date', { defaultValue: 'Желаемая дата звонка (необязательно)' })}
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('serviceModal.orderForm.date', { defaultValue: 'Желаемая дата звонка (необязательно)' })}</label>
+                      <DatePicker
+                        value={preferredDate}
+                        onChange={setPreferredDate}
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
 
                     {/* File Attachment Section - AVAILABLE TO ALL */}
                     <div className="space-y-3">

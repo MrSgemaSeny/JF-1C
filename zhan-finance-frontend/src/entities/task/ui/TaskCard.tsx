@@ -7,6 +7,7 @@ import { uploadDocument } from '@/entities/document/api/documentApi';
 
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useTranslation } from 'react-i18next';
+import { DatePicker } from '@/shared/ui/DatePicker';
 
 interface TaskCardProps {
   task: TaskDto;
@@ -441,19 +442,18 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
             </button>
           )}
 
-          {/* Native date input for editing */}
+          {/* Custom DatePicker for editing */}
           {isEditingDueDate && (
-            <input
-              ref={dueDateInputRef}
-              type="date"
-              min={new Date().toISOString().split('T')[0]}
-              defaultValue={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
-              onChange={handleDueDateChange}
-              onBlur={() => setIsEditingDueDate(false)}
-              onClick={(e) => e.stopPropagation()}
-              autoFocus
-              className="text-xs border border-brand-green bg-brand-green/5 text-gray-700 rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green shadow-sm transition-all w-[125px]"
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <DatePicker
+                value={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
+                onChange={(newDate) => {
+                  setIsEditingDueDate(false);
+                  onUpdateTask({ ...task, dueDate: newDate ? new Date(newDate).toISOString() : null });
+                }}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
           )}
 
           {/* Created date */}
