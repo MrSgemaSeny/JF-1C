@@ -32,10 +32,10 @@ export function Offices() {
             className="group flex flex-col items-center cursor-pointer"
           >
             <div className="relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-transform duration-500 group-hover:scale-105 w-72 h-72 md:w-96 md:h-96 shadow-lg group-hover:shadow-2xl">
-              <img src={shymkentImg} alt={t('offices.shymkent', { defaultValue: 'Офис в Шымкенте' })} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
+              <img src={shymkentImg} alt={t('offices.shymkent_title', { defaultValue: 'Офис в г. Шымкент' })} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
             </div>
-            <h3 className="font-black uppercase tracking-wider text-brand-green text-xl md:text-2xl transition-colors duration-300 group-hover:text-brand-green/70 underline-offset-8 group-hover:underline">
-              {t('offices.shymkent', { defaultValue: 'Офис в Шымкенте' })}
+            <h3 className="font-black uppercase tracking-wider text-brand-green text-xl md:text-2xl transition-colors duration-300 group-hover:text-brand-green/70 underline-offset-8 group-hover:underline text-center">
+              {t('offices.shymkent_title', { defaultValue: 'Офис в г. Шымкент' })}
             </h3>
           </motion.a>
 
@@ -51,10 +51,10 @@ export function Offices() {
             className="group flex flex-col items-center cursor-pointer"
           >
             <div className="relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-transform duration-500 group-hover:scale-105 w-72 h-72 md:w-96 md:h-96 shadow-lg group-hover:shadow-2xl">
-              <img src={almatyImg} alt={t('offices.almaty', { defaultValue: 'Офис в Алматы' })} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
+              <img src={almatyImg} alt={t('offices.almaty_title', { defaultValue: 'Офис в г. Алматы' })} className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-110" />
             </div>
-            <h3 className="font-black uppercase tracking-wider text-brand-green text-xl md:text-2xl transition-colors duration-300 group-hover:text-brand-green/70 underline-offset-8 group-hover:underline">
-              {t('offices.almaty', { defaultValue: 'Офис в Алматы' })}
+            <h3 className="font-black uppercase tracking-wider text-brand-green text-xl md:text-2xl transition-colors duration-300 group-hover:text-brand-green/70 underline-offset-8 group-hover:underline text-center">
+              {t('offices.almaty_title', { defaultValue: 'Офис в г. Алматы' })}
             </h3>
           </motion.a>
         </div>
