@@ -12,22 +12,18 @@ export function ClientWelcomeScreen({ onCreateRequest }: ClientWelcomeScreenProp
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-in fade-in duration-700 zoom-in-95 mt-4">
-      <div className="bg-gradient-to-br from-brand-green to-brand-green-dark p-8 md:p-12 text-white relative overflow-hidden">
-        {/* Background Decorative Pattern */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
-
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+      <div className="bg-white p-8 md:p-12 border-b border-gray-100">
+        <div className="max-w-2xl">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
             {t('clientDashboard.welcomeNew', { defaultValue: `Добро пожаловать в Zhan Finance, ${user?.fullName || 'Гость'}!` })}
           </h1>
-          <p className="text-brand-green-light text-lg mb-8 max-w-xl leading-relaxed">
+          <p className="text-gray-500 text-base mb-8 max-w-xl leading-relaxed">
             {t('clientDashboard.welcomeDesc', { defaultValue: 'Мы помогаем вашему бизнесу расти, берем на себя бухгалтерию, налоги и финансы. Создайте свою первую заявку прямо сейчас, и наша команда приступит к работе.' })}
           </p>
 
           <button
             onClick={onCreateRequest}
-            className="bg-white text-brand-green font-semibold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2 group"
+            className="bg-brand-green text-white font-semibold py-3 px-6 rounded-xl hover:bg-brand-green-dark transition-colors flex items-center gap-2 group w-fit"
           >
             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
             {t('clientDashboard.createFirstRequest', { defaultValue: 'Заказать услугу' })}
