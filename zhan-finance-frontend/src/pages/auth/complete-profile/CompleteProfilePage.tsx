@@ -6,6 +6,7 @@ import { ApiError } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
 import { updateMyProfile } from '@/entities/user/api/userApi';
 import { useTranslation } from 'react-i18next';
+import LogoImage from '@/shared/assets/icons/logo.png';
 
 export function CompleteProfilePage() {
   const { t } = useTranslation(['common']);
@@ -44,9 +45,7 @@ export function CompleteProfilePage() {
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-brand-green flex items-center justify-center text-brand-beige font-black text-xl">
-            Z
-          </div>
+          <img src={LogoImage} alt="Zhan Finance Logo" className="w-10 h-10 rounded-xl object-contain" />
           <span className="font-black text-xl uppercase tracking-wide text-brand-green">Zhan Finance</span>
         </div>
 

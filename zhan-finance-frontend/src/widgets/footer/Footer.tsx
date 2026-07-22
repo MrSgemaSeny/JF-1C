@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, User, Briefcase, Send } from "lucide-react";
 import { ContactForm } from "@/features/contact-form/ContactForm";
 import { ROUTES } from "@/shared/config/routes";
 import { useTranslation } from "react-i18next";
+import LogoImage from "@/shared/assets/icons/logo.png";
 
 export function Footer() {
   const { t } = useTranslation('common');
@@ -12,9 +13,7 @@ export function Footer() {
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 mb-20">
           <div className="space-y-12">
             <div>
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-beige text-brand-green font-black text-3xl mb-6">
-                Z
-              </div>
+              <img src={LogoImage} alt="Zhan Finance Logo" className="w-16 h-16 rounded-2xl object-contain mb-6 bg-white" />
               <h2 className="text-4xl md:text-5xl font-black uppercase leading-[1.1] tracking-tight">
                 {t('footer.slogan1')}
                 <br />

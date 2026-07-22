@@ -28,6 +28,7 @@ import { useNotifications } from '@/features/notifications/NotificationContext';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { API_BASE_URL, getSecureImageUrl } from '@/shared/api/http';
 import { twMerge } from 'tailwind-merge';
+import LogoImage from '@/shared/assets/icons/logo.png';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
   'Overview':            <LayoutDashboard size={16} />,
@@ -103,9 +104,7 @@ export function DashboardSidebar({
         {/* Logo area */}
         <div className="flex items-center justify-between px-4 lg:px-6 py-4 border-b border-gray-100 min-h-[64px]">
           <Link to="/" className="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0" onClick={() => { if (window.innerWidth < 1024) onMobileClose(); }}>
-            <div className="w-8 h-8 rounded-lg bg-brand-green flex items-center justify-center shrink-0">
-              <span className="text-white text-xs font-bold leading-none">ZF</span>
-            </div>
+            <img src={LogoImage} alt="Zhan Finance Logo" className="w-8 h-8 rounded shrink-0 object-contain" />
             {!isDesktopCollapsed && (
               <span className="text-base font-bold text-gray-900 tracking-tight whitespace-nowrap truncate transition-opacity">
                 Zhan Finance

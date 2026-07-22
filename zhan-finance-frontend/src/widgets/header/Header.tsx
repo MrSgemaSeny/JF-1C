@@ -6,6 +6,7 @@ import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+import LogoImage from '@/shared/assets/icons/logo.png';
 
 export function Header() {
   const { t } = useTranslation('common');
@@ -48,9 +49,7 @@ export function Header() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to={ROUTES.HOME} className="flex items-center gap-3 group relative z-50">
-            <div className="w-10 h-10 rounded-xl bg-brand-green flex items-center justify-center text-brand-beige font-black text-xl group-hover:scale-105 transition-transform shadow-lg">
-              Z
-            </div>
+            <img src={LogoImage} alt="Zhan Finance Logo" className="w-10 h-10 rounded-xl object-contain shadow-lg group-hover:scale-105 transition-transform" />
             <div className="flex flex-col">
               <span className="font-black text-xl leading-none uppercase tracking-wide text-brand-green transition-colors">
                 Zhan
