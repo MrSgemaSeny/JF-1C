@@ -394,6 +394,7 @@ export function ClientChatPage() {
                   placeholder={t('clientChat.inputPlaceholder')}
                   className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none focus:ring-0 resize-none text-sm px-3 py-2.5"
                   rows={1}
+                  spellCheck={false}
                 />
                 <button
                   type="submit"

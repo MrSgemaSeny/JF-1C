@@ -242,6 +242,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
               placeholder="Введите сообщение..."
               className="flex-1 max-h-32 min-h-[40px] bg-transparent border-none focus:ring-0 resize-none text-sm px-2 py-2"
               rows={1}
+              spellCheck={false}
             />
             <button
               type="submit"
