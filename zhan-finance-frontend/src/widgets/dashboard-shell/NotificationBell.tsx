@@ -7,6 +7,7 @@ import { clsx } from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import { ru, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
+import { translateNotificationTitle, translateNotificationMessage } from '@/shared/i18n/notificationTranslator';
 
 export function NotificationBell() {
   const { t, i18n } = useTranslation(['common']);
@@ -54,7 +55,7 @@ export function NotificationBell() {
                 className="text-xs font-medium text-brand-green hover:text-green-700 flex items-center gap-1 transition-colors"
               >
                 <Check size={14} />
-                Прочитать все
+                {t('notifications.markAllAsRead', { defaultValue: 'Прочитать все' })}
               </button>
             )}
           </div>
@@ -86,14 +87,14 @@ export function NotificationBell() {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2 mb-1">
                         <h4 className={clsx("text-sm truncate", !notification.read ? "font-bold text-gray-900" : "font-medium text-gray-700")}>
-                          {notification.title}
+                          {translateNotificationTitle(notification.title, i18n.language)}
                         </h4>
                         <span className="text-[10px] text-gray-400 whitespace-nowrap shrink-0">
                           {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: i18n.language === 'en' ? enUS : ru })}
                         </span>
                       </div>
                       <p className={clsx("text-xs line-clamp-2", !notification.read ? "text-gray-700" : "text-gray-500")}>
-                        {notification.message}
+                        {translateNotificationMessage(notification.message, i18n.language, t)}
                       </p>
                       {!notification.read && (
                         <button
@@ -101,7 +102,7 @@ export function NotificationBell() {
                           className="mt-2 text-[11px] font-semibold text-brand-green hover:text-green-700 flex items-center gap-1 transition-colors"
                         >
                           <CheckCircle2 size={12} />
-                          Отметить прочитанным
+                          {t('notifications.confirm', { defaultValue: 'Отметить прочитанным' })}
                         </button>
                       )}
                     </div>

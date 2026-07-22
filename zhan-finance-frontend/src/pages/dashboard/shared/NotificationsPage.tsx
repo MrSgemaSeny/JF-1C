@@ -4,13 +4,14 @@ import { Bell, Check, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { Spinner } from '@/shared/ui/Spinner';
 import { twMerge } from 'tailwind-merge';
 import { useTranslation } from 'react-i18next';
+import { translateNotificationTitle, translateNotificationMessage } from '@/shared/i18n/notificationTranslator';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ROUTES } from '@/shared/config/routes';
 
 export function NotificationsPage() {
   const { notifications, loading, refresh, markAsRead, markAllAsRead, unreadCount } = useNotifications();
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -113,7 +114,7 @@ export function NotificationsPage() {
                       "text-base font-semibold truncate",
                       !notification.read ? "text-gray-900" : "text-gray-700"
                     )}>
-                      {notification.title}
+                      {translateNotificationTitle(notification.title, i18n.language)}
                     </h4>
                     <div className="flex items-center gap-1.5 text-xs text-gray-400 whitespace-nowrap">
                       <Clock size={12} />
@@ -124,7 +125,7 @@ export function NotificationsPage() {
                     "text-sm leading-relaxed mb-3",
                     !notification.read ? "text-gray-600 font-medium" : "text-gray-500"
                   )}>
-                    {notification.message}
+                    {translateNotificationMessage(notification.message, i18n.language, t)}
                   </p>
                   <div className="flex items-center gap-3">
                     {!notification.read && (
