@@ -41,6 +41,11 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   const [chatClientId, setChatClientId] = useState<number | null>(null);
   const [chatClientName, setChatClientName] = useState<string>('');
 
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const isDraggingScroll = React.useRef(false);
+  const startX = React.useRef(0);
+  const scrollLeft = React.useRef(0);
+
   const { data: pipelines, isLoading: isLoadingPipelines } = usePipelinesQuery();
   const { mutateAsync: updateTaskStage } = useUpdateTaskStage();
 
@@ -254,8 +259,50 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     setChatClientName(clientName);
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Do not initiate drag-to-scroll if clicking on a button, input, or an element that is likely a draggable task card
+    // Dnd-kit handles sorting, so we want to let it do its job if the user clicks on a task card
+    if (target.closest('button') || target.closest('input') || target.closest('.task-kanban-card') || target.closest('a')) {
+      return;
+    }
+
+    isDraggingScroll.current = true;
+    if (scrollContainerRef.current) {
+      startX.current = e.pageX - scrollContainerRef.current.offsetLeft;
+      scrollLeft.current = scrollContainerRef.current.scrollLeft;
+      scrollContainerRef.current.style.cursor = 'grabbing';
+      scrollContainerRef.current.style.userSelect = 'none';
+    }
+  };
+
+  const handleMouseLeaveOrUp = () => {
+    isDraggingScroll.current = false;
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.cursor = '';
+      scrollContainerRef.current.style.userSelect = '';
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingScroll.current) return;
+    if (scrollContainerRef.current) {
+      e.preventDefault();
+      const x = e.pageX - scrollContainerRef.current.offsetLeft;
+      const walk = (x - startX.current) * 1.5; // Scroll speed multiplier
+      scrollContainerRef.current.scrollLeft = scrollLeft.current - walk;
+    }
+  };
+
   return (
-    <div className="flex-1 overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 snap-x snap-mandatory hide-scrollbar">
+    <div 
+      ref={scrollContainerRef}
+      onMouseDown={handleMouseDown}
+      onMouseLeave={handleMouseLeaveOrUp}
+      onMouseUp={handleMouseLeaveOrUp}
+      onMouseMove={handleMouseMove}
+      className="flex-1 overflow-x-auto pb-4 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 snap-x snap-mandatory hide-scrollbar select-none"
+    >
       <div className="flex gap-4 items-start min-h-[calc(100vh-200px)]">
         <DndContext
           sensors={sensors}

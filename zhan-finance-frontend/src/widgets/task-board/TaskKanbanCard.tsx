@@ -54,6 +54,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
       {...listeners}
       onClick={onClick}
       className={`
+        task-kanban-card
         rounded-md p-3 mb-2 cursor-pointer
         shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_2px_5px_rgba(0,0,0,0.15)]
         transition-shadow border flex flex-col gap-2 relative
