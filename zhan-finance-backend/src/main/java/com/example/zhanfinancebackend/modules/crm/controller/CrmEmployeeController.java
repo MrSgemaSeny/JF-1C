@@ -24,7 +24,7 @@ public class CrmEmployeeController {
 
     @GetMapping
     public ApiResponse<List<EmployeeDto>> getEmployees() {
-        List<EmployeeDto> employees = userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADMIN)).stream()
+        List<EmployeeDto> employees = userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
                 .map(u -> new EmployeeDto(
                         u.getId(),
                         u.getFullName(),

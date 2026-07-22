@@ -456,6 +456,11 @@ public class TaskService {
             assignee = userRepository.findById(assigneeId)
                     .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
         }
+        if (assignee != null && assignee.getRole() != Role.EMPLOYEE) {
+            throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                    ErrorCode.BAD_REQUEST, "Задачу можно назначить только на сотрудника."
+            );
+        }
         Long oldAssigneeId = task.getAssignedTo() != null ? task.getAssignedTo().getId() : null;
         Long newAssigneeId = assignee != null ? assignee.getId() : null;
 

@@ -6,9 +6,9 @@ export function useTaskActions(task: TaskDto, currentUser: UserDto) {
   const isAdmin = currentUser.role === 'ADMIN';
   const isEmployee = currentUser.role === 'EMPLOYEE';
 
-  const canAssign = isAdmin; // Only admins can arbitrarily assign tasks to ANYONE
-  const canTake = (isEmployee || isAdmin) && isUnassigned; // Employees & Admins can take unassigned tasks
-  const canDrop = (isEmployee || isAdmin) && isAssignedToMe; // Employees & Admins can drop their OWN tasks
+  const canAssign = isAdmin; // Only admins can arbitrarily assign tasks to EMPLOYEES
+  const canTake = isEmployee && isUnassigned; // Only Employees can take unassigned tasks
+  const canDrop = isEmployee && isAssignedToMe; // Only Employees can drop their OWN tasks
   
   return {
     canAssign,
