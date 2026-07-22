@@ -34,6 +34,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [showGooglePrompt, setShowGooglePrompt] = useState(false);
+  const [googlePromptShownFor, setGooglePromptShownFor] = useState<string | null>(null);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
@@ -56,17 +57,8 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
     }
   };
 
-  const handleEmailBlur = async () => {
-    if (!email.trim() || showGooglePrompt) return;
-    try {
-      const res = await checkEmail(email);
-      if (res.exists && res.provider === 'GOOGLE') {
-        setShowGooglePrompt(true);
-      }
-    } catch (e) {
-      // Игнорируем ошибки при проверке, если не вышло, пусть при сабмите ругается
-    }
-  };
+  // Убрали onBlur, чтобы не бесить пользователя раньше времени,
+  // теперь проверка будет строго при попытке отправить форму (handleSubmit).
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -80,6 +72,24 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
     if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
       setValidationErrors({ password: t('auth.register.passwordFormatError') });
       return;
+    }
+
+    // Проверка перед регистрацией: если это GMAIL или уже есть в базе как GOOGLE
+    if (googlePromptShownFor !== email) {
+      try {
+        const res = await checkEmail(email);
+        if (res.exists && res.provider === 'GOOGLE') {
+          setShowGooglePrompt(true);
+          setGooglePromptShownFor(email);
+          return;
+        } else if (!res.exists && email.toLowerCase().endsWith('@gmail.com')) {
+          setShowGooglePrompt(true);
+          setGooglePromptShownFor(email);
+          return;
+        }
+      } catch (e) {
+        // если ошибка сети, просто продолжаем обычную регистрацию
+      }
     }
 
     setIsSubmitting(true);
@@ -149,11 +159,11 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           </div>
           
           <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Этот e-mail уже привязан к аккаунту Google
+            Регистрация через Google
           </h2>
           <p className="text-gray-500 mb-8 font-medium">{email}</p>
           <p className="text-brand-green/70 mb-6 text-sm">
-            Хотите войти через Google вместо регистрации нового аккаунта?
+            Мы заметили, что у вас аккаунт Google. Хотите зарегистрироваться / войти через Google в один клик? Это быстрее и безопаснее!
           </p>
 
           <div className="w-full flex justify-center mb-6">
@@ -211,7 +221,6 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onBlur={handleEmailBlur}
             disabled={isSubmitting}
             error={validationErrors.email}
             icon={<Mail className="w-5 h-5" />}
