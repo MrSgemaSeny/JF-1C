@@ -5,6 +5,7 @@ public record EmployeeStatsDto(
         String employeeName,
         long activeTasks,
         long doneTasks,
-        long overdueTasks
+        long overdueTasks,
+        double avgCompletionDays
 ) {
 }

@@ -134,8 +134,14 @@ public class TaskService {
 
         task.setDueDate(request.dueDate());
 
-        Pipeline pipeline = pipelineRepository.findByIsDefaultTrue()
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default pipeline not found"));
+        Pipeline pipeline;
+        if (request.pipelineId() != null) {
+            pipeline = pipelineRepository.findById(request.pipelineId())
+                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Pipeline not found"));
+        } else {
+            pipeline = pipelineRepository.findByIsDefaultTrue()
+                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default pipeline not found"));
+        }
         Stage defaultStage = stageRepository.findByPipelineIdAndIsDefaultTrue(pipeline.getId()).orElse(null);
         if (defaultStage == null) {
             defaultStage = stageRepository.findByPipelineIdOrderByOrderIndexAsc(pipeline.getId()).stream().findFirst()

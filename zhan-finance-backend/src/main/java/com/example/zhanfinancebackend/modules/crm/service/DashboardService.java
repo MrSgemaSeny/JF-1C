@@ -69,48 +69,58 @@ public class DashboardService {
             
         List<User> employees = userRepository.findAllByRole(Role.EMPLOYEE);
         List<Map<String, Object>> empStatsRaw = taskRepository.getEmployeeTaskStats();
-        
+        List<Map<String, Object>> avgDaysPerEmpList = taskRepository.getAverageCompletionDaysPerEmployee();
+        Map<Long, Double> empAvgDaysMap = new java.util.HashMap<>();
+        for (Map<String, Object> row : avgDaysPerEmpList) {
+            Number empIdNum = getNumberIgnoreCase(row, "empId");
+            Number avgNum = getNumberIgnoreCase(row, "avgDays");
+            if (empIdNum != null && avgNum != null) {
+                empAvgDaysMap.put(empIdNum.longValue(), Math.round(avgNum.doubleValue() * 10.0) / 10.0);
+            }
+        }
+
         Map<Long, com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto> empStatsMap = new java.util.HashMap<>();
         for (User emp : employees) {
+            double empAvg = empAvgDaysMap.getOrDefault(emp.getId(), 0.0);
             empStatsMap.put(emp.getId(), new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
                     emp.getId(),
                     emp.getFullName() != null && !emp.getFullName().isBlank() ? emp.getFullName() : emp.getEmail(),
-                    0, 0, 0
+                    0, 0, 0, empAvg
             ));
         }
-        
+
         for (Map<String, Object> row : empStatsRaw) {
             Number empIdNum = getNumberIgnoreCase(row, "empid");
             if (empIdNum == null) continue;
             Long empId = empIdNum.longValue();
-            
+
             Object stageObj = getObjectIgnoreCase(row, "stagetype");
             String stageTypeStr = stageObj != null ? stageObj.toString() : null;
-            
+
             Number countNum = getNumberIgnoreCase(row, "taskcount");
             long count = countNum != null ? countNum.longValue() : 0;
-            
+
             Number overdueNum = getNumberIgnoreCase(row, "overduecount");
             long overdue = overdueNum != null ? overdueNum.longValue() : 0;
-            
+
             com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto dto = empStatsMap.get(empId);
             if (dto != null) {
                 long newDone = dto.doneTasks();
                 long newActive = dto.activeTasks();
                 long newOverdue = dto.overdueTasks() + overdue;
-                
+
                 if ("WON".equals(stageTypeStr)) {
                     newDone += count;
                 } else if (!"LOST".equals(stageTypeStr)) {
                     newActive += count;
                 }
-                
+
                 empStatsMap.put(empId, new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
-                        dto.employeeId(), dto.employeeName(), newActive, newDone, newOverdue
+                        dto.employeeId(), dto.employeeName(), newActive, newDone, newOverdue, dto.avgCompletionDays()
                 ));
             }
         }
-                
+
         return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, wonTasks, lostTasks, avgCompletionDays, tasksByStatus, tasksByLostReason, userRepository.count(), newRequestsToday, totalRevenue, expectedRevenue, new java.util.ArrayList<>(empStatsMap.values()));
     }
 
@@ -132,17 +142,20 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public EmployeeDashboardDto getEmployeeDashboard(User employee) {
         long clientsCount = userRepository.countByAssignedEmployee(employee);
-        
+
         long tasksCount = taskRepository.countTasksForEmployee(employee);
-        
+
         List<Map<String, Object>> statusList = taskRepository.countTasksByStatusForEmployee(employee);
         Map<String, Long> tasksByStatus = statusList.stream()
             .collect(Collectors.toMap(
                 m -> m.get("statusName") != null ? m.get("statusName").toString() : "Unknown",
                 m -> ((Number) m.get("count")).longValue()
             ));
-                
-        return new EmployeeDashboardDto(clientsCount, tasksCount, tasksByStatus);
+
+        Double empAvgDaysRaw = taskRepository.getAverageCompletionDaysForEmployee(employee.getId());
+        double avgCompletionDays = empAvgDaysRaw != null ? Math.round(empAvgDaysRaw * 10.0) / 10.0 : 0.0;
+
+        return new EmployeeDashboardDto(clientsCount, tasksCount, tasksByStatus, avgCompletionDays);
     }
 
     @Cacheable(value = "dashboard_client", key = "#client.id")

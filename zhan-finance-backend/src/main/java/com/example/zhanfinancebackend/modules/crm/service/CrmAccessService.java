@@ -81,7 +81,7 @@ public class CrmAccessService {
             if (newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
                 return true;
             }
-            if (task.getStage() != null && (task.getStage().isPreFinal() || "На проверке".equals(task.getStage().getName()))) {
+            if (task.getStage() != null && task.getStage().isPreFinal()) {
                 return newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON ||
                        newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.OPEN;
             }

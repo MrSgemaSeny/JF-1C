@@ -11,6 +11,7 @@ export interface StageDto {
   color?: string;
   type: StageType;
   isDefault: boolean;
+  isPreFinal?: boolean;
 }
 
 export interface PipelineDto {
@@ -110,6 +111,7 @@ export interface TaskCreateRequest {
   dueDate?: string;
   subtasks?: { title: string; status?: string }[];
   serviceIds?: number[];
+  pipelineId?: number;
 }
 
 export interface TaskRequestCreateRequest {

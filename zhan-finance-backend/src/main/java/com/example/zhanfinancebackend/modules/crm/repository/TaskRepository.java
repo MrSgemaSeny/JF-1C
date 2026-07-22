@@ -68,6 +68,12 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     @Query(value = "SELECT AVG(EXTRACT(EPOCH FROM (t.closed_at - t.created_at))/86400.0) FROM tasks t INNER JOIN stages s ON t.stage_id = s.id WHERE s.type = 'WON' AND t.closed_at IS NOT NULL AND t.created_at IS NOT NULL", nativeQuery = true)
     Double getAverageCompletionDays();
 
+    @Query(value = "SELECT COALESCE(t.assigned_to_id, c.assigned_employee_id) as empId, AVG(EXTRACT(EPOCH FROM (t.closed_at - t.created_at))/86400.0) as avgDays FROM tasks t LEFT JOIN app_users c ON t.client_id = c.id INNER JOIN stages s ON t.stage_id = s.id WHERE s.type = 'WON' AND t.closed_at IS NOT NULL AND t.created_at IS NOT NULL GROUP BY COALESCE(t.assigned_to_id, c.assigned_employee_id)", nativeQuery = true)
+    List<java.util.Map<String, Object>> getAverageCompletionDaysPerEmployee();
+
+    @Query(value = "SELECT AVG(EXTRACT(EPOCH FROM (t.closed_at - t.created_at))/86400.0) FROM tasks t LEFT JOIN app_users c ON t.client_id = c.id INNER JOIN stages s ON t.stage_id = s.id WHERE s.type = 'WON' AND t.closed_at IS NOT NULL AND t.created_at IS NOT NULL AND COALESCE(t.assigned_to_id, c.assigned_employee_id) = :employeeId", nativeQuery = true)
+    Double getAverageCompletionDaysForEmployee(@Param("employeeId") Long employeeId);
+
     @Query("SELECT COALESCE(t.lostReason, 'Не указана') as reason, COUNT(t.id) as count FROM Task t WHERE t.stage.type = 'LOST' AND t.archived = false GROUP BY COALESCE(t.lostReason, 'Не указана')")
     List<java.util.Map<String, Object>> countTasksByLostReason();
 
