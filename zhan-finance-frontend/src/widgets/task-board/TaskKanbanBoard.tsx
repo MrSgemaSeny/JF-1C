@@ -261,15 +261,16 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    // Do not initiate drag-to-scroll if clicking on a button, input, or an element that is likely a draggable task card
-    // Dnd-kit handles sorting, so we want to let it do its job if the user clicks on a task card
-    if (target.closest('button') || target.closest('input') || target.closest('.task-kanban-card') || target.closest('a')) {
-      return;
-    }
+    if (
+      target.closest('button') ||
+      target.closest('input') ||
+      target.closest('.task-kanban-card') ||
+      target.closest('a')
+    ) return;
 
     isDraggingScroll.current = true;
     if (scrollContainerRef.current) {
-      startX.current = e.pageX - scrollContainerRef.current.offsetLeft;
+      startX.current = e.pageX;
       scrollLeft.current = scrollContainerRef.current.scrollLeft;
       scrollContainerRef.current.style.cursor = 'grabbing';
       scrollContainerRef.current.style.userSelect = 'none';
@@ -288,11 +289,24 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     if (!isDraggingScroll.current) return;
     if (scrollContainerRef.current) {
       e.preventDefault();
-      const x = e.pageX - scrollContainerRef.current.offsetLeft;
-      const walk = (x - startX.current) * 1.5; // Scroll speed multiplier
-      scrollContainerRef.current.scrollLeft = scrollLeft.current - walk;
+      const dx = e.pageX - startX.current;
+      scrollContainerRef.current.scrollLeft = scrollLeft.current - dx;
     }
   };
+
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (!scrollContainerRef.current) return;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    scrollContainerRef.current.scrollLeft += e.deltaY * 1.5;
+  }, []);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
 
   return (
     <div 
