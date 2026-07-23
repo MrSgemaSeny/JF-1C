@@ -56,19 +56,19 @@ export function EmployeeOverviewPage() {
       color: 'bg-white',
     },
     {
-      label: 'В работе',
+      label: t('employeeOverview.statInProgress', { defaultValue: 'В работе' }),
       value: (data.tasksByStatus['IN_PROGRESS'] ?? 0) + (data.tasksByStatus['NEW'] ?? 0),
       icon: <Clock size={20} className="text-blue-500" />,
       color: 'bg-white border-l-4 border-l-blue-500',
     },
     {
-      label: 'На проверке',
+      label: t('employeeOverview.statOnReview', { defaultValue: 'На проверке' }),
       value: data.tasksByStatus['ON_REVIEW'] ?? 0,
       icon: <AlertCircle size={20} className="text-orange-500" />,
       color: 'bg-white border-l-4 border-l-orange-500',
     },
     {
-      label: 'Завершено',
+      label: t('employeeOverview.statDone', { defaultValue: 'Завершено' }),
       value: data.tasksByStatus['DONE'] ?? 0,
       icon: <CheckCircle2 size={20} className="text-emerald-500" />,
       color: 'bg-white border-l-4 border-l-emerald-500',
@@ -109,7 +109,7 @@ export function EmployeeOverviewPage() {
                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                  <div className="flex items-center gap-2">
                    <Flame className="text-red-500" size={18} />
-                   <h2 className="text-sm font-bold text-gray-900">Горящие задачи</h2>
+                   <h2 className="text-sm font-bold text-gray-900">{t('employeeOverview.urgentTasks', { defaultValue: 'Горящие задачи' })}</h2>
                    <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">{data.urgentTasks.length}</span>
                  </div>
                </div>
@@ -132,10 +132,10 @@ export function EmployeeOverviewPage() {
              <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                <div className="flex items-center gap-2">
                  <Target className="text-blue-500" size={18} />
-                 <h2 className="text-sm font-bold text-gray-900">План в работе</h2>
+                 <h2 className="text-sm font-bold text-gray-900">{t('employeeOverview.plannedTasks', { defaultValue: 'План в работе' })}</h2>
                </div>
                <button onClick={() => navigate(ROUTES.EMPLOYEE_TASKS)} className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors">
-                 Все задачи <ArrowRight size={14} />
+                 {t('employeeOverview.allTasks', { defaultValue: 'Все задачи' })} <ArrowRight size={14} />
                </button>
              </div>
              <div className="p-4">
@@ -150,7 +150,7 @@ export function EmployeeOverviewPage() {
                  />
                ) : (
                  <div className="text-center py-8 text-gray-400 text-sm">
-                   Нет запланированных задач на ближайшее время
+                   {t('employeeOverview.noPlannedTasks', { defaultValue: 'Нет запланированных задач на ближайшее время' })}
                  </div>
                )}
              </div>
@@ -162,7 +162,7 @@ export function EmployeeOverviewPage() {
                <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
                  <History className="text-gray-500" size={18} />
-                 <h2 className="text-sm font-bold text-gray-900">Недавно завершенные</h2>
+                 <h2 className="text-sm font-bold text-gray-900">{t('employeeOverview.recentHistory', { defaultValue: 'Недавно завершенные' })}</h2>
                </div>
                <div className="p-4">
                  <TaskGridBoard 
@@ -187,7 +187,7 @@ export function EmployeeOverviewPage() {
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bell size={16} className="text-gray-400" />
-                <h2 className="text-sm font-bold text-gray-900">Уведомления</h2>
+                <h2 className="text-sm font-bold text-gray-900">{t('employeeOverview.notifications', { defaultValue: 'Уведомления' })}</h2>
                 {unreadCount > 0 && (
                   <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">{unreadCount}</span>
                 )}
@@ -204,7 +204,7 @@ export function EmployeeOverviewPage() {
                   </div>
                 ))
               ) : (
-                <div className="p-6 text-center text-sm text-gray-400">Нет новых уведомлений</div>
+                <div className="p-6 text-center text-sm text-gray-400">{t('employeeOverview.noNewNotifications', { defaultValue: 'Нет новых уведомлений' })}</div>
               )}
             </div>
           </div>

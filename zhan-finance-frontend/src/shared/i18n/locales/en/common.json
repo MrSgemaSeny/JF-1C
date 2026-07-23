@@ -519,11 +519,11 @@
     "title": "My Dashboard",
     "subtitle": "Summary of your work",
     "loadError": "Failed to load data",
-    "statClients": "My clients",
-    "statTasks": "Total tasks",
+    "statClients": "My Clients",
+    "statTasks": "Total Tasks",
     "statActive": "Active",
     "statReview": "On review",
-    "statDone": "Completed",
+    "statDone": "Done",
     "taskStats": "Task statistics",
     "status": {
       "NEW": "New",
@@ -531,7 +531,16 @@
       "ON_REVIEW": "On review",
       "DONE": "Done",
       "CANCELLED": "Cancelled"
-    }
+    },
+    "statInProgress": "In Progress",
+    "statOnReview": "On Review",
+    "urgentTasks": "Urgent Tasks",
+    "plannedTasks": "Planned Tasks",
+    "allTasks": "All Tasks",
+    "noPlannedTasks": "No planned tasks for the near future",
+    "recentHistory": "Recently Completed",
+    "notifications": "Notifications",
+    "noNewNotifications": "No new notifications"
   },
   "employeeTasks": {
     "title": "My Tasks",
@@ -1222,5 +1231,15 @@
   "taskPrefixes": {
     "Запрос на услугу": "Service Request",
     "Заказ услуги": "Service Order"
+  },
+  "weeklySummary": {
+    "title": "Weekly Summary and Current Status",
+    "subtitle": "Automatic daily updated metrics",
+    "currentWeek": "Current Week",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "deadlines": "Deadlines",
+    "documents": "Documents",
+    "revenue": "Revenue from Closed Tasks"
   }
 }

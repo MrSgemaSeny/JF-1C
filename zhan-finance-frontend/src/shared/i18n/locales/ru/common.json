@@ -525,7 +525,7 @@
     "statTasks": "Всего задач",
     "statActive": "Активных",
     "statReview": "На проверке",
-    "statDone": "Выполнено",
+    "statDone": "Завершено",
     "taskStats": "Статистика задач",
     "status": {
       "NEW": "Новая",
@@ -533,7 +533,16 @@
       "ON_REVIEW": "На проверке",
       "DONE": "Выполнено",
       "CANCELLED": "Отменена"
-    }
+    },
+    "statInProgress": "В работе",
+    "statOnReview": "На проверке",
+    "urgentTasks": "Горящие задачи",
+    "plannedTasks": "План в работе",
+    "allTasks": "Все задачи",
+    "noPlannedTasks": "Нет запланированных задач на ближайшее время",
+    "recentHistory": "Недавно завершенные",
+    "notifications": "Уведомления",
+    "noNewNotifications": "Нет новых уведомлений"
   },
   "employeeTasks": {
     "title": "Мои задачи",
@@ -1204,5 +1213,15 @@
         "CANCELED": "Отказ"
       }
     }
+  },
+  "weeklySummary": {
+    "title": "Итоги недели и текущий статус",
+    "subtitle": "Автоматическая сводка показателей с ежедневным обновлением",
+    "currentWeek": "Текущая неделя",
+    "completed": "Завершено",
+    "inProgress": "В процессе",
+    "deadlines": "Дедлайны",
+    "documents": "Документы",
+    "revenue": "Выручка по закрытым задачам"
   }
 }
