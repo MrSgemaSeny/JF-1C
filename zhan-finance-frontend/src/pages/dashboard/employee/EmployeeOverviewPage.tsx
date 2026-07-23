@@ -1,34 +1,36 @@
 import { useEffect, useState } from 'react';
 import { apiRequest } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
-import { Users, ClipboardList, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Users, ClipboardList, CheckCircle2, Clock, Flame, Target, History, Bell, ArrowRight, AlertCircle } from 'lucide-react';
 import { MiniCalendarWidget } from '../shared/calendar/MiniCalendarWidget';
 import { useTranslation } from 'react-i18next';
+import { WeeklySummaryWidget } from '@/widgets/dashboard/WeeklySummaryWidget';
+import { TaskGridBoard } from '@/widgets/task-board/TaskGridBoard';
+import type { TaskDto } from '@/entities/task/model/types';
+import { useNotifications } from '@/features/notifications/NotificationContext';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/shared/config/routes';
 
 interface EmployeeDashboardDto {
   totalClients: number;
   totalTasks: number;
   tasksByStatus: Record<string, number>;
+  avgCompletionDays: number;
+  urgentTasks: TaskDto[];
+  plannedTasks: TaskDto[];
+  recentHistory: TaskDto[];
 }
 
 async function getEmployeeDashboard(): Promise<EmployeeDashboardDto> {
   return apiRequest<EmployeeDashboardDto>('/api/crm/dashboard/employee');
 }
 
-import { WeeklySummaryWidget } from '@/widgets/dashboard/WeeklySummaryWidget';
-
 export function EmployeeOverviewPage() {
   const { t } = useTranslation(['common']);
+  const navigate = useNavigate();
   const [data, setData] = useState<EmployeeDashboardDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const STATUS_CONFIG: Record<string, { label: string; color: string; textColor: string }> = {
-    NEW:         { label: t('employeeOverview.status.NEW'),        color: 'bg-gray-300',  textColor: 'text-gray-600' },
-    IN_PROGRESS: { label: t('employeeOverview.status.IN_PROGRESS'),  color: 'bg-blue-500',  textColor: 'text-blue-600' },
-    ON_REVIEW:   { label: t('employeeOverview.status.ON_REVIEW'), color: 'bg-amber-500', textColor: 'text-amber-600' },
-    DONE:        { label: t('employeeOverview.status.DONE'),       color: 'bg-green-500', textColor: 'text-green-600' },
-    CANCELLED:   { label: t('employeeOverview.status.CANCELLED'),    color: 'bg-red-400',   textColor: 'text-red-500' },
-  };
+  const { notifications, unreadCount } = useNotifications();
 
   useEffect(() => {
     getEmployeeDashboard()
@@ -40,103 +42,172 @@ export function EmployeeOverviewPage() {
   if (isLoading) return <Spinner />;
   if (!data) return <div className="p-6 text-red-500">{t('employeeOverview.loadError')}</div>;
 
-  const activeTasks = (data.tasksByStatus['NEW'] ?? 0) + (data.tasksByStatus['IN_PROGRESS'] ?? 0);
-  const onReviewTasks = data.tasksByStatus['ON_REVIEW'] ?? 0;
-  const doneTasks = data.tasksByStatus['DONE'] ?? 0;
-
   const statCards = [
     {
-      label: t('employeeOverview.statClients'),
+      label: t('employeeOverview.statClients', { defaultValue: 'Мои клиенты' }),
       value: data.totalClients,
-      icon: <Users size={22} className="text-blue-500" />,
-      bg: 'bg-blue-50',
+      icon: <Users size={20} className="text-gray-500" />,
+      color: 'bg-white',
     },
     {
-      label: t('employeeOverview.statTasks'),
+      label: t('employeeOverview.statTasks', { defaultValue: 'Всего задач' }),
       value: data.totalTasks,
-      icon: <ClipboardList size={22} className="text-amber-500" />,
-      bg: 'bg-amber-50',
+      icon: <ClipboardList size={20} className="text-gray-500" />,
+      color: 'bg-white',
     },
     {
-      label: t('employeeOverview.statActive'),
-      value: activeTasks,
-      icon: <AlertCircle size={22} className="text-indigo-500" />,
-      bg: 'bg-indigo-50',
+      label: 'В работе',
+      value: (data.tasksByStatus['IN_PROGRESS'] ?? 0) + (data.tasksByStatus['NEW'] ?? 0),
+      icon: <Clock size={20} className="text-blue-500" />,
+      color: 'bg-white border-l-4 border-l-blue-500',
     },
     {
-      label: t('employeeOverview.statReview'),
-      value: onReviewTasks,
-      icon: <Clock size={22} className="text-orange-500" />,
-      bg: 'bg-orange-50',
+      label: 'На проверке',
+      value: data.tasksByStatus['ON_REVIEW'] ?? 0,
+      icon: <AlertCircle size={20} className="text-orange-500" />,
+      color: 'bg-white border-l-4 border-l-orange-500',
     },
     {
-      label: t('employeeOverview.statDone'),
-      value: doneTasks,
-      icon: <CheckCircle2 size={22} className="text-green-500" />,
-      bg: 'bg-green-50',
+      label: 'Завершено',
+      value: data.tasksByStatus['DONE'] ?? 0,
+      icon: <CheckCircle2 size={20} className="text-emerald-500" />,
+      color: 'bg-white border-l-4 border-l-emerald-500',
     },
   ];
 
+  const recentNotifications = notifications.slice(0, 5);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 pb-12 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{t('employeeOverview.title')}</h1>
-        <p className="text-sm text-gray-500 mt-1">{t('employeeOverview.subtitle')}</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('employeeOverview.title', { defaultValue: 'Обзор' })}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('employeeOverview.subtitle', { defaultValue: 'Ваш рабочий пульт' })}</p>
       </div>
 
       <WeeklySummaryWidget />
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {statCards.map((card) => (
-          <div key={card.label} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center flex-shrink-0`}>
-                {card.icon}
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 font-medium leading-tight">{card.label}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-0.5">{card.value}</p>
-              </div>
+      {/* Stat cards in Stripe/Vercel style */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        {statCards.map((card, idx) => (
+          <div key={idx} className={`rounded-xl shadow-sm border border-gray-200 p-4 ${card.color}`}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{card.label}</span>
+              {card.icon}
             </div>
+            <p className="text-3xl font-bold text-gray-900">{card.value}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Task status breakdown */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-6">{t('employeeOverview.taskStats')}</h2>
-            
-            <div className="space-y-4">
-              {['NEW', 'IN_PROGRESS', 'ON_REVIEW', 'DONE', 'CANCELLED'].map((status) => {
-                const count = data.tasksByStatus[status] ?? 0;
-                const total = data.totalTasks || 1; // prevent div by zero
-                const percent = Math.round((count / total) * 100);
-                const config = STATUS_CONFIG[status];
-                
-                return (
-                  <div key={status} className="flex items-center gap-2 md:gap-4">
-                    <div className="w-24 md:w-28 shrink-0 text-xs md:text-sm font-medium text-gray-600 truncate">{config.label}</div>
-                    <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full transition-all duration-500 ${config.color}`} 
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
-                    <div className={`w-12 text-right text-sm font-bold ${config.textColor}`}>
-                      {count}
-                    </div>
-                  </div>
-                );
-              })}
+          
+          {/* Urgent Tasks */}
+          {data.urgentTasks.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden relative">
+               <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+               <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                 <div className="flex items-center gap-2">
+                   <Flame className="text-red-500" size={18} />
+                   <h2 className="text-sm font-bold text-gray-900">Горящие задачи</h2>
+                   <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">{data.urgentTasks.length}</span>
+                 </div>
+               </div>
+               <div className="p-4 bg-gray-50/50">
+                 <TaskGridBoard 
+                   initialTasks={data.urgentTasks} 
+                   userRole="EMPLOYEE" 
+                   onBatchSave={async () => {}} 
+                   compact={true} 
+                   maxRows={4}
+                   gridColsClass="grid-cols-1 xl:grid-cols-2"
+                 />
+               </div>
             </div>
+          )}
+
+          {/* Planned Tasks */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+               <div className="flex items-center gap-2">
+                 <Target className="text-blue-500" size={18} />
+                 <h2 className="text-sm font-bold text-gray-900">План в работе</h2>
+               </div>
+               <button onClick={() => navigate(ROUTES.EMPLOYEE_TASKS)} className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors">
+                 Все задачи <ArrowRight size={14} />
+               </button>
+             </div>
+             <div className="p-4">
+               {data.plannedTasks.length > 0 ? (
+                 <TaskGridBoard 
+                   initialTasks={data.plannedTasks} 
+                   userRole="EMPLOYEE" 
+                   onBatchSave={async () => {}} 
+                   compact={true} 
+                   maxRows={6}
+                   gridColsClass="grid-cols-1 xl:grid-cols-2"
+                 />
+               ) : (
+                 <div className="text-center py-8 text-gray-400 text-sm">
+                   Нет запланированных задач на ближайшее время
+                 </div>
+               )}
+             </div>
           </div>
+
+          {/* Recent History */}
+          {data.recentHistory.length > 0 && (
+             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+               <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+               <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+                 <History className="text-gray-500" size={18} />
+                 <h2 className="text-sm font-bold text-gray-900">Недавно завершенные</h2>
+               </div>
+               <div className="p-4">
+                 <TaskGridBoard 
+                   initialTasks={data.recentHistory} 
+                   userRole="EMPLOYEE" 
+                   onBatchSave={async () => {}} 
+                   compact={true} 
+                   maxRows={4}
+                   gridColsClass="grid-cols-1 xl:grid-cols-2"
+                 />
+               </div>
+             </div>
+          )}
+
         </div>
 
         <div className="space-y-6">
           <MiniCalendarWidget />
+          
+          {/* Notifications Feed */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bell size={16} className="text-gray-400" />
+                <h2 className="text-sm font-bold text-gray-900">Уведомления</h2>
+                {unreadCount > 0 && (
+                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">{unreadCount}</span>
+                )}
+              </div>
+            </div>
+            <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+              {recentNotifications.length > 0 ? (
+                recentNotifications.map(notification => (
+                  <div key={notification.id} className={`p-4 hover:bg-gray-50 transition-colors ${!notification.read ? 'bg-blue-50/30' : ''}`}>
+                    <p className="text-sm text-gray-800">{notification.message}</p>
+                    <span className="text-xs text-gray-400 mt-2 block">
+                      {new Date(notification.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="p-6 text-center text-sm text-gray-400">Нет новых уведомлений</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

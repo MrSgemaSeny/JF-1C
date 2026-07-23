@@ -26,12 +26,14 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final ClientProfileRepository clientProfileRepository;
     private final com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository contactRequestRepository;
+    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
 
-    public DashboardService(TaskRepository taskRepository, UserRepository userRepository, ClientProfileRepository clientProfileRepository, com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository contactRequestRepository) {
+    public DashboardService(TaskRepository taskRepository, UserRepository userRepository, ClientProfileRepository clientProfileRepository, com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository contactRequestRepository, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
         this.contactRequestRepository = contactRequestRepository;
+        this.taskMapper = taskMapper;
     }
 
     @Cacheable(value = "dashboard_admin")
@@ -138,7 +140,6 @@ public class DashboardService {
         return null;
     }
 
-    @Cacheable(value = "dashboard_employee", key = "#employee.id")
     @Transactional(readOnly = true)
     public EmployeeDashboardDto getEmployeeDashboard(User employee) {
         long clientsCount = userRepository.countByAssignedEmployee(employee);
@@ -155,7 +156,55 @@ public class DashboardService {
         Double empAvgDaysRaw = taskRepository.getAverageCompletionDaysForEmployee(employee.getId());
         double avgCompletionDays = empAvgDaysRaw != null ? Math.round(empAvgDaysRaw * 10.0) / 10.0 : 0.0;
 
-        return new EmployeeDashboardDto(clientsCount, tasksCount, tasksByStatus, avgCompletionDays);
+        List<Task> allEmployeeTasks = taskRepository.findAllByEmployeeWithDetails(employee);
+        
+        List<Task> allOpenTasks = allEmployeeTasks.stream()
+                .filter(t -> t.getStage() == null || (t.getStage().getType() != com.example.zhanfinancebackend.modules.crm.entity.StageType.WON && t.getStage().getType() != com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST))
+                .toList();
+
+        LocalDate today = LocalDate.now();
+        java.time.DayOfWeek dayOfWeek = today.getDayOfWeek();
+
+        // Urgent tasks: due today or overdue
+        List<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> urgentTasks = allOpenTasks.stream()
+                .filter(t -> t.getDueDate() != null && !t.getDueDate().isAfter(today))
+                .sorted(java.util.Comparator.comparing(Task::getDueDate))
+                .limit(10)
+                .map(taskMapper::mapToDto)
+                .toList();
+
+        // Planned tasks:
+        List<Task> plannedList;
+        if (dayOfWeek == java.time.DayOfWeek.MONDAY) {
+            LocalDate endOfWeek = today.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
+            plannedList = allOpenTasks.stream()
+                    .filter(t -> t.getDueDate() != null && !t.getDueDate().isAfter(endOfWeek))
+                    .toList();
+        } else if (dayOfWeek == java.time.DayOfWeek.FRIDAY) {
+            LocalDate nextWeekEnd = today.plusWeeks(1).with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
+            plannedList = allOpenTasks.stream()
+                    .filter(t -> t.getDueDate() != null && !t.getDueDate().isAfter(nextWeekEnd))
+                    .toList();
+        } else {
+            plannedList = allOpenTasks;
+        }
+
+        List<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> plannedTasks = plannedList.stream()
+                .sorted(java.util.Comparator.comparing(t -> t.getDueDate() == null ? LocalDate.MAX : t.getDueDate()))
+                .limit(10)
+                .map(taskMapper::mapToDto)
+                .toList();
+
+        // Recent history: completed in the last 7 days
+        List<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> recentHistory = allEmployeeTasks.stream()
+                .filter(t -> t.getStage() != null && t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON)
+                .filter(t -> t.getClosedAt() != null && t.getClosedAt().isAfter(today.minusDays(7)))
+                .sorted(java.util.Comparator.comparing(Task::getClosedAt).reversed())
+                .limit(10)
+                .map(taskMapper::mapToDto)
+                .toList();
+
+        return new EmployeeDashboardDto(clientsCount, tasksCount, tasksByStatus, avgCompletionDays, urgentTasks, plannedTasks, recentHistory);
     }
 
     @Cacheable(value = "dashboard_client", key = "#client.id")

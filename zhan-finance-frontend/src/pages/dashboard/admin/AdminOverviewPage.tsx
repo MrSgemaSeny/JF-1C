@@ -65,36 +65,36 @@ export function AdminOverviewPage() {
       label: t('adminDashboard.newRequests'),
       value: data.newRequestsToday,
       icon: <Users size={22} className="text-pink-500" />,
-      bg: 'bg-pink-50',
+      color: 'border-l-4 border-l-pink-500',
     },
     {
       label: t('adminDashboard.totalClients'),
       value: data.totalClients,
       icon: <Users size={22} className="text-blue-500" />,
-      bg: 'bg-blue-50',
+      color: 'border-l-4 border-l-blue-500',
     },
     {
       label: t('adminDashboard.totalEmployees'),
       value: data.totalEmployees,
       icon: <UserCheck size={22} className="text-purple-500" />,
-      bg: 'bg-purple-50',
+      color: 'border-l-4 border-l-purple-500',
     },
     {
       label: t('adminDashboard.totalTasks'),
       value: data.totalTasks,
       icon: <ClipboardList size={22} className="text-amber-500" />,
-      bg: 'bg-amber-50',
+      color: 'border-l-4 border-l-amber-500',
     },
     {
       label: t('adminDashboard.wonTasks'),
       value: data.wonTasks,
-      icon: <CheckCircle2 size={22} className="text-green-500" />,
-      bg: 'bg-green-50',
+      icon: <CheckCircle2 size={22} className="text-emerald-500" />,
+      color: 'border-l-4 border-l-emerald-500',
     },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 pb-12 animate-in fade-in duration-500">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">{t('adminDashboard.title')}</h1>
         <p className="text-sm text-gray-500 mt-1">{t('adminDashboard.subtitle')}</p>
@@ -102,18 +102,14 @@ export function AdminOverviewPage() {
 
       <WeeklySummaryWidget />
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {statCards.map((card) => (
-          <div key={card.label} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">{card.label}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{card.value}</p>
-              </div>
-              <div className={`w-11 h-11 rounded-xl ${card.bg} flex items-center justify-center`}>
-                {card.icon}
-              </div>
+          <div key={card.label} className={`bg-white rounded-xl shadow-sm border border-gray-200 p-4 ${card.color}`}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{card.label}</span>
+              {card.icon}
             </div>
+            <p className="text-3xl font-bold text-gray-900">{card.value}</p>
           </div>
         ))}
       </div>
@@ -138,58 +134,6 @@ export function AdminOverviewPage() {
            </div>
         </div>
       </div>
-
-      {/* Employee Workload */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-900">{t('adminDashboard.workload')}</h2>
-          <p className="text-sm text-gray-500">{t('adminDashboard.workloadDesc')}</p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.employee')}</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.inProgress')}</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.overdue')}</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{t('adminDashboard.completed')}</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {data.employeeStats.map(stat => (
-                <tr key={stat.employeeId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {stat.employeeName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {stat.activeTasks}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${stat.overdueTasks > 0 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {stat.overdueTasks}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {stat.doneTasks}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-              {data.employeeStats.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-6 py-4 text-center text-gray-500 text-sm">
-                    {t('adminDashboard.noEmployees')}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Task distribution */}

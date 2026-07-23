@@ -19,6 +19,9 @@ interface TaskGridBoardProps {
   initialTasks: TaskDto[];
   onBatchSave: (tasks: TaskDto[]) => Promise<void>;
   userRole: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
+  compact?: boolean;
+  maxRows?: number;
+  gridColsClass?: string;
 }
 
 export interface TaskGridBoardRef {
@@ -28,7 +31,7 @@ export interface TaskGridBoardRef {
 
 type SortOption = 'newest' | 'oldest' | 'deadline_asc' | 'deadline_desc';
 
-export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({ initialTasks, onBatchSave, userRole }, ref) => {
+export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({ initialTasks, onBatchSave, userRole, compact, maxRows, gridColsClass }, ref) => {
   const { t } = useTranslation(['crm', 'common']);
   
   const STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -144,8 +147,12 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
       }
     });
 
+    if (compact && maxRows) {
+      result = result.slice(0, maxRows);
+    }
+
     return result;
-  }, [tasks, statusFilter, sortBy]);
+  }, [tasks, statusFilter, sortBy, compact, maxRows]);
 
   const hasActiveFilters = statusFilter !== 'ALL';
 
@@ -298,19 +305,21 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
     <div className="pb-20 relative">
       {/* Filter Toolbar */}
       <div className="flex flex-wrap items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
-        <button
-          onClick={toggleSelectAll}
-          className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white px-3 py-1.5 border rounded-lg shadow-2xs cursor-pointer"
-        >
-          {selectedIds.size > 0 && selectedIds.size === filteredAndSorted.length ? (
-            <CheckSquare size={16} className="text-blue-600" />
-          ) : (
-            <Square size={16} className="text-gray-400" />
-          )}
-          <span>Выбрать все ({filteredAndSorted.length})</span>
-        </button>
+        {!compact && (
+          <button
+            onClick={toggleSelectAll}
+            className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white px-3 py-1.5 border rounded-lg shadow-2xs cursor-pointer"
+          >
+            {selectedIds.size > 0 && selectedIds.size === filteredAndSorted.length ? (
+              <CheckSquare size={16} className="text-blue-600" />
+            ) : (
+              <Square size={16} className="text-gray-400" />
+            )}
+            <span>Выбрать все ({filteredAndSorted.length})</span>
+          </button>
+        )}
 
-        <Filter size={16} className="text-gray-400 ml-2" />
+        <Filter size={16} className={compact ? "text-gray-400" : "text-gray-400 ml-2"} />
         
         <select
           value={statusFilter}
@@ -353,25 +362,27 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className={`grid gap-6 ${gridColsClass || 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
         {filteredAndSorted.map((task) => {
           const isSelected = selectedIds.has(task.id);
           return (
             <div key={task.id} className="relative group">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSelectOne(task.id);
-                }}
-                className="absolute top-3 right-3 z-20 p-1 bg-white/90 rounded-md shadow-xs hover:bg-white transition-colors cursor-pointer"
-                title="Выбрать задачу"
-              >
-                {isSelected ? (
-                  <CheckSquare size={18} className="text-blue-600" />
-                ) : (
-                  <Square size={18} className="text-gray-400 opacity-60 group-hover:opacity-100" />
-                )}
-              </button>
+              {!compact && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSelectOne(task.id);
+                  }}
+                  className="absolute top-3 right-3 z-20 p-1 bg-white/90 rounded-md shadow-xs hover:bg-white transition-colors cursor-pointer"
+                  title="Выбрать задачу"
+                >
+                  {isSelected ? (
+                    <CheckSquare size={18} className="text-blue-600" />
+                  ) : (
+                    <Square size={18} className="text-gray-400 opacity-60 group-hover:opacity-100" />
+                  )}
+                </button>
+              )}
 
               <div className={isSelected ? 'ring-2 ring-blue-500 rounded-xl' : ''}>
                 <TaskCard 
