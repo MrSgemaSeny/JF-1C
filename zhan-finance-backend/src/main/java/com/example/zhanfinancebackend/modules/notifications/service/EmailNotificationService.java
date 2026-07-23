@@ -50,7 +50,7 @@ public class EmailNotificationService {
             helper.setFrom(fromAddress);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(htmlBody, true); // true indicates HTML content
+            helper.setText(htmlBody, true);
             
             mailSender.send(message);
             log.info("Sent email to: {}", to);
@@ -64,36 +64,46 @@ public class EmailNotificationService {
     }
 
     /**
-     * Unified formal corporate HTML template generator for Zhan Finance.
+     * Master-шаблон. Табличная верстка гарантирует, что дизайн не развалится в десктопном Outlook.
      */
     public String buildFormalEmailHtml(String headerTitle, String recipientName, String contentHtml, String buttonText, String buttonUrl) {
         String buttonHtml = "";
         if (buttonText != null && buttonUrl != null && !buttonText.isBlank() && !buttonUrl.isBlank()) {
             buttonHtml = String.format(
-                "<div style=\"margin-top: 24px; margin-bottom: 16px;\">" +
-                "  <a href=\"%s\" style=\"display: inline-block; padding: 12px 24px; background-color: #047857; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;\">%s</a>" +
-                "</div>",
+                "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 32px; margin-bottom: 8px;\">" +
+                "  <tr><td align=\"center\">" +
+                "    <a href=\"%s\" style=\"display: inline-block; padding: 14px 32px; background-color: #047857; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(4, 120, 87, 0.2);\">%s</a>" +
+                "  </td></tr>" +
+                "</table>",
                 buttonUrl, buttonText
             );
         }
 
         return String.format(
-            "<div style=\"font-family: Arial, sans-serif; color: #333333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\">" +
-            "  <div style=\"background-color: #047857; padding: 24px; text-align: left;\">" +
-            "    <h1 style=\"color: #ffffff; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: 0.5px;\">Zhan Finance</h1>" +
-            "  </div>" +
-            "  <div style=\"padding: 24px;\">" +
-            "    <h2 style=\"color: #111827; font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 16px;\">%s</h2>" +
-            "    <p style=\"margin-top: 0; margin-bottom: 16px;\">Здравствуйте, <b>%s</b>!</p>" +
-            "    %s" +
-            "    %s" +
-            "    <hr style=\"border: none; border-top: 1px solid #e5e7eb; margin: 24px 0 16px 0;\" />" +
-            "    <p style=\"font-size: 13px; color: #6b7280; margin: 0;\">" +
-            "      С уважением,<br/>" +
-            "      <b style=\"color: #374151;\">Команда Zhan Finance</b>" +
-            "    </p>" +
-            "  </div>" +
-            "</div>",
+            "<!DOCTYPE html>" +
+            "<html><head><meta charset=\"UTF-8\"></head>" +
+            "<body style=\"margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">" +
+            "  <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f3f4f6; padding: 40px 20px;\">" +
+            "    <tr><td align=\"center\">" +
+            "      <table width=\"100%%\" max-width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\">" +
+            "        <tr><td style=\"background-color: #047857; padding: 32px 40px; text-align: center;\">" +
+            "          <h1 style=\"color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;\">Zhan Finance</h1>" +
+            "        </td></tr>" +
+            "        <tr><td style=\"padding: 40px;\">" +
+            "          <h2 style=\"color: #111827; font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 24px;\">%s</h2>" +
+            "          <p style=\"color: #374151; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Здравствуйте, <b style=\"color: #111827;\">%s</b>!</p>" +
+            "          %s" +
+            "          %s" +
+            "          <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 32px; border-top: 1px solid #e5e7eb;\">" +
+            "            <tr><td style=\"padding-top: 24px;\">" +
+            "              <p style=\"font-size: 14px; color: #6b7280; line-height: 20px; margin: 0;\">С уважением,<br/><b style=\"color: #374151;\">Команда Zhan Finance</b></p>" +
+            "            </td></tr>" +
+            "          </table>" +
+            "        </td></tr>" +
+            "      </table>" +
+            "    </td></tr>" +
+            "  </table>" +
+            "</body></html>",
             headerTitle,
             recipientName,
             contentHtml,
@@ -108,16 +118,18 @@ public class EmailNotificationService {
         String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
         
         String contentHtml = String.format(
-            "<p>Вам была назначена новая задача в рабочей системе.</p>" +
-            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
-            "  <p style=\"margin-top: 0; margin-bottom: 8px;\"><b>Детали задачи:</b></p>" +
-            "  <ul style=\"margin: 0; padding-left: 20px;\">" +
-            "    <li><b>Название:</b> %s</li>" +
-            "    <li><b>Клиент:</b> %s</li>" +
-            "    <li><b>Дедлайн:</b> %s</li>" +
-            "    <li><b>Описание:</b> %s</li>" +
-            "  </ul>" +
-            "</div>",
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Вам была назначена новая задача в рабочей системе.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <p style=\"color: #111827; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 16px;\">Детали задачи</p>" +
+            "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px; width: 30%%;\">Название:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">%s</td></tr>" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px;\">Клиент:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">%s</td></tr>" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px;\">Дедлайн:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">%s</td></tr>" +
+            "      <tr><td style=\"color: #6b7280; font-size: 14px; vertical-align: top;\">Описание:</td><td style=\"color: #111827; font-size: 15px; font-weight: 500; line-height: 22px;\">%s</td></tr>" +
+            "    </table>" +
+            "  </td></tr>" +
+            "</table>",
             task.getTitle(),
             task.getClient() != null ? task.getClient().getFullName() : "Не указан",
             deadlineStr,
@@ -135,15 +147,17 @@ public class EmailNotificationService {
         String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
         
         String contentHtml = String.format(
-            "<p>Напоминаем, что срок выполнения задачи скоро истекает. Пожалуйста, проверьте статус выполнения.</p>" +
-            "<div style=\"background-color: #fef2f2; padding: 16px; border-radius: 8px; border: 1px solid #fee2e2; margin: 16px 0;\">" +
-            "  <p style=\"margin-top: 0; margin-bottom: 8px; color: #991b1b;\"><b>Параметры дедлайна:</b></p>" +
-            "  <ul style=\"margin: 0; padding-left: 20px; color: #7f1d1d;\">" +
-            "    <li><b>Задача:</b> %s</li>" +
-            "    <li><b>Клиент:</b> %s</li>" +
-            "    <li><b>Дедлайн:</b> <span style=\"color: #dc2626; font-weight: bold;\">%s</span></li>" +
-            "  </ul>" +
-            "</div>",
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Напоминаем, что срок выполнения задачи скоро истекает. Пожалуйста, проверьте статус выполнения.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <p style=\"color: #991b1b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 16px;\">Параметры дедлайна</p>" +
+            "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #7f1d1d; font-size: 14px; width: 30%%;\">Задача:</td><td style=\"padding-bottom: 12px; color: #7f1d1d; font-size: 15px; font-weight: 600;\">%s</td></tr>" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #7f1d1d; font-size: 14px;\">Клиент:</td><td style=\"padding-bottom: 12px; color: #7f1d1d; font-size: 15px; font-weight: 600;\">%s</td></tr>" +
+            "      <tr><td style=\"color: #7f1d1d; font-size: 14px;\">Дедлайн:</td><td style=\"color: #dc2626; font-size: 15px; font-weight: 700;\">%s</td></tr>" +
+            "    </table>" +
+            "  </td></tr>" +
+            "</table>",
             task.getTitle(),
             task.getClient() != null ? task.getClient().getFullName() : "Не указан",
             deadlineStr
@@ -158,25 +172,27 @@ public class EmailNotificationService {
 
         String subject = "Обновлен статус задачи: " + task.getTitle();
         
-        String lostReasonItem = (lostReason != null && !lostReason.isBlank()) 
-            ? "<li><b>Причина отмены:</b> " + lostReason + "</li>"
+        String lostReasonRow = (lostReason != null && !lostReason.isBlank()) 
+            ? "<tr><td style=\"padding-top: 12px; color: #6b7280; font-size: 14px; vertical-align: top;\">Причина отмены:</td><td style=\"padding-top: 12px; color: #111827; font-size: 15px; font-weight: 500;\">" + lostReason + "</td></tr>"
             : "";
 
         String contentHtml = String.format(
-            "<p>Статус вашей задачи был успешно изменен в системе.</p>" +
-            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
-            "  <p style=\"margin-top: 0; margin-bottom: 8px;\"><b>Информация о статусе:</b></p>" +
-            "  <ul style=\"margin: 0; padding-left: 20px;\">" +
-            "    <li><b>Задача:</b> %s</li>" +
-            "    <li><b>Предыдущий статус:</b> %s</li>" +
-            "    <li><b>Новый статус:</b> <span style=\"color: #047857; font-weight: bold;\">%s</span></li>" +
-            "    %s" +
-            "  </ul>" +
-            "</div>",
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Статус вашей задачи был успешно изменен в системе.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <p style=\"color: #111827; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 16px;\">Информация о статусе</p>" +
+            "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px; width: 40%%;\">Задача:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">%s</td></tr>" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px;\">Предыдущий статус:</td><td style=\"padding-bottom: 12px; color: #4b5563; font-size: 15px;\">%s</td></tr>" +
+            "      <tr><td style=\"color: #6b7280; font-size: 14px;\">Новый статус:</td><td style=\"color: #047857; font-size: 15px; font-weight: 700;\">%s</td></tr>" +
+            "      %s" +
+            "    </table>" +
+            "  </td></tr>" +
+            "</table>",
             task.getTitle(),
             oldStatus,
             newStatus,
-            lostReasonItem
+            lostReasonRow
         );
 
         String html = buildFormalEmailHtml("Изменение статуса задачи", user.getFullName(), contentHtml, "Посмотреть задачу", frontendUrl);
@@ -190,14 +206,16 @@ public class EmailNotificationService {
         String subject = "✅ Ваша задача успешно завершена: " + task.getTitle();
         
         String contentHtml = String.format(
-            "<p>С радостью сообщаем, что работа по вашей задаче полностью завершена.</p>" +
-            "<div style=\"background-color: #ecfdf5; padding: 16px; border-radius: 8px; border: 1px solid #d1fae5; margin: 16px 0;\">" +
-            "  <p style=\"margin-top: 0; margin-bottom: 8px; color: #065f46;\"><b>Результат выполнения:</b></p>" +
-            "  <ul style=\"margin: 0; padding-left: 20px; color: #047857;\">" +
-            "    <li><b>Задача:</b> %s</li>" +
-            "    <li><b>Документы:</b> Итоговые файлы прикреплены во вложении к данному письму</li>" +
-            "  </ul>" +
-            "</div>",
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">С радостью сообщаем, что работа по вашей задаче полностью завершена.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #ecfdf5; border-radius: 8px; border: 1px solid #a7f3d0;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <p style=\"color: #065f46; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 16px;\">Результат выполнения</p>" +
+            "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #047857; font-size: 14px; width: 30%%;\">Задача:</td><td style=\"padding-bottom: 12px; color: #065f46; font-size: 15px; font-weight: 600;\">%s</td></tr>" +
+            "      <tr><td style=\"color: #047857; font-size: 14px;\">Документы:</td><td style=\"color: #065f46; font-size: 15px; font-weight: 600;\">Итоговые файлы прикреплены во вложении</td></tr>" +
+            "    </table>" +
+            "  </td></tr>" +
+            "</table>",
             task.getTitle()
         );
 
@@ -243,10 +261,12 @@ public class EmailNotificationService {
 
         String subject = "Добро пожаловать в Zhan Finance";
         String contentHtml = 
-            "<p>Вы успешно зарегистрировались в системе Zhan Finance.</p>" +
-            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
-            "  <p style=\"margin: 0;\">Вам открыт доступ в личный кабинет для работы с бухгалтерскими и финансовыми услугами.</p>" +
-            "</div>";
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Вы успешно зарегистрировались в системе Zhan Finance.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <p style=\"color: #166534; font-size: 15px; line-height: 24px; margin: 0;\">Вам открыт доступ в личный кабинет для работы с бухгалтерскими и финансовыми услугами.</p>" +
+            "  </td></tr>" +
+            "</table>";
 
         String html = buildFormalEmailHtml("Добро пожаловать в Zhan Finance!", user.getFullName(), contentHtml, "Войти в личный кабинет", frontendUrl + "/login");
         sendHtmlEmail(user.getEmail(), subject, html);
@@ -257,10 +277,12 @@ public class EmailNotificationService {
 
         String subject = "Аккаунт сотрудника подтвержден";
         String contentHtml = 
-            "<p>Ваш аккаунт сотрудника был успешно подтвержден администратором.</p>" +
-            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
-            "  <p style=\"margin: 0;\">Теперь вы можете войти в рабочую систему и приступить к выполнению задач.</p>" +
-            "</div>";
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Ваш аккаунт сотрудника был успешно подтвержден администратором.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <p style=\"color: #374151; font-size: 15px; line-height: 24px; margin: 0;\">Теперь вы можете войти в рабочую систему и приступить к выполнению задач.</p>" +
+            "  </td></tr>" +
+            "</table>";
 
         String html = buildFormalEmailHtml("Подтверждение аккаунта", user.getFullName(), contentHtml, "Войти в систему", frontendUrl + "/login");
         sendHtmlEmail(user.getEmail(), subject, html);
@@ -271,13 +293,15 @@ public class EmailNotificationService {
 
         String subject = "Клиент отредактировал задачу: " + task.getTitle();
         String contentHtml = String.format(
-            "<p>Клиент внес изменения в параметры задачи.</p>" +
-            "<div style=\"background-color: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #f3f4f6; margin: 16px 0;\">" +
-            "  <ul style=\"margin: 0; padding-left: 20px;\">" +
-            "    <li><b>Клиент:</b> %s</li>" +
-            "    <li><b>Обновленная задача:</b> %s</li>" +
-            "  </ul>" +
-            "</div>",
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Клиент внес изменения в параметры задачи.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f0f9ff; border-radius: 8px; border: 1px solid #bae6fd;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #0369a1; font-size: 14px; width: 30%%;\">Клиент:</td><td style=\"padding-bottom: 12px; color: #075985; font-size: 15px; font-weight: 600;\">%s</td></tr>" +
+            "      <tr><td style=\"color: #0369a1; font-size: 14px;\">Обновленная задача:</td><td style=\"color: #075985; font-size: 15px; font-weight: 600;\">%s</td></tr>" +
+            "    </table>" +
+            "  </td></tr>" +
+            "</table>",
             client != null ? client.getFullName() : "Клиент",
             task.getTitle()
         );
@@ -291,13 +315,15 @@ public class EmailNotificationService {
 
         String subject = "Клиент удалил задачу: " + taskTitle;
         String contentHtml = String.format(
-            "<p>Обратите внимание, задача была отменена и удалена клиентом.</p>" +
-            "<div style=\"background-color: #fef2f2; padding: 16px; border-radius: 8px; border: 1px solid #fee2e2; margin: 16px 0;\">" +
-            "  <ul style=\"margin: 0; padding-left: 20px; color: #991b1b;\">" +
-            "    <li><b>Клиент:</b> %s</li>" +
-            "    <li><b>Удаленная задача:</b> %s</li>" +
-            "  </ul>" +
-            "</div>",
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Обратите внимание, задача была отменена и удалена клиентом.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #991b1b; font-size: 14px; width: 30%%;\">Клиент:</td><td style=\"padding-bottom: 12px; color: #7f1d1d; font-size: 15px; font-weight: 600;\">%s</td></tr>" +
+            "      <tr><td style=\"color: #991b1b; font-size: 14px;\">Удаленная задача:</td><td style=\"color: #7f1d1d; font-size: 15px; font-weight: 600;\">%s</td></tr>" +
+            "    </table>" +
+            "  </td></tr>" +
+            "</table>",
             client != null ? client.getFullName() : "Клиент",
             taskTitle
         );
