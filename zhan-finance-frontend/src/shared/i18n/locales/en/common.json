@@ -287,6 +287,29 @@
       "CANCELLED": "Cancelled"
     }
   },
+  "adminTemplates": {
+    "title": "Document Templates",
+    "subtitle": "Manage documents and forms for automatic generation. Upload .docx files with tags for auto-filling with client and project data.",
+    "uploadNew": "Upload new",
+    "templateName": "Template name",
+    "templateNamePlaceholder": "Example: Service Agreement",
+    "description": "Description",
+    "descriptionPlaceholder": "Brief description of the template",
+    "docxFile": "File (.docx)",
+    "filePrompt": "Click or drag file here",
+    "uploading": "Uploading...",
+    "saveTemplate": "Save template",
+    "availableTemplates": "Available templates",
+    "pcs": "pcs",
+    "loadingTemplates": "Loading templates...",
+    "noTemplates": "No templates uploaded",
+    "noTemplatesDesc": "Upload your first .docx template with tags using the form on the left.",
+    "cheatSheetTitle": "Tag Cheat Sheet",
+    "cheatSheetDesc": "Insert these variables directly into your .docx file text. During generation, they will be replaced with real values.",
+    "clientData": "Client Data",
+    "taskData": "Task Data",
+    "systemValues": "System Values"
+  },
   "adminCourses": {
     "title": "Course Management",
     "createCourse": "Create Course",

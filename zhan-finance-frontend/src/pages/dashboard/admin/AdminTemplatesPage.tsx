@@ -7,7 +7,7 @@ import { useToast } from '@/shared/ui/Toast/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function AdminTemplatesPage() {
-  const { t } = useTranslation(['crm']);
+  const { t } = useTranslation(['common']);
   const toast = useToast();
   const [templates, setTemplates] = useState<DocumentTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,10 +89,10 @@ export function AdminTemplatesPage() {
           <div className="p-2.5 bg-gradient-to-r from-brand-green to-emerald-500 rounded-xl text-white shadow-lg shadow-emerald-200">
             <FileSignature size={28} />
           </div>
-          Шаблоны документов
+          {t('adminTemplates.title', { defaultValue: 'Шаблоны документов' })}
         </h1>
         <p className="mt-3 text-base text-gray-500 max-w-2xl leading-relaxed">
-          Управляйте документами и формами для автоматической генерации. Загружайте файлы <span className="font-medium text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">.docx</span> с тегами для автозаполнения клиентскими и проектными данными.
+          {t('adminTemplates.subtitle', { defaultValue: 'Управляйте документами и формами для автоматической генерации. Загружайте файлы .docx с тегами для автозаполнения клиентскими и проектными данными.' })}
         </p>
       </motion.div>
 
@@ -109,34 +109,34 @@ export function AdminTemplatesPage() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             
             <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
-              <Upload size={20} className="text-emerald-500" /> Загрузить новый
+              <Upload size={20} className="text-emerald-500" /> {t('adminTemplates.uploadNew', { defaultValue: 'Загрузить новый' })}
             </h2>
             
             <form onSubmit={handleUpload} className="space-y-5 relative z-10">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Название шаблона <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t('adminTemplates.templateName', { defaultValue: 'Название шаблона' })} <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   required
                   value={uploadName}
                   onChange={(e) => setUploadName(e.target.value)}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none text-gray-800"
-                  placeholder="Например: Договор оказания услуг"
+                  placeholder={t('adminTemplates.templateNamePlaceholder', { defaultValue: 'Например: Договор оказания услуг' })}
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Описание</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t('adminTemplates.description', { defaultValue: 'Описание' })}</label>
                 <textarea
                   value={uploadDescription}
                   onChange={(e) => setUploadDescription(e.target.value)}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none h-24 resize-none text-gray-800"
-                  placeholder="Краткое описание шаблона"
+                  placeholder={t('adminTemplates.descriptionPlaceholder', { defaultValue: 'Краткое описание шаблона' })}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Файл (.docx) <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t('adminTemplates.docxFile', { defaultValue: 'Файл (.docx)' })} <span className="text-red-500">*</span></label>
                 <div className="relative group">
                   <input
                     type="file"
@@ -148,7 +148,7 @@ export function AdminTemplatesPage() {
                   <div className={`w-full px-4 py-4 border-2 border-dashed rounded-xl text-center transition-colors flex flex-col items-center justify-center gap-2 relative z-10 ${uploadFile ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300 bg-gray-50 group-hover:border-emerald-400 group-hover:bg-gray-100'}`}>
                     <FileText size={24} className={uploadFile ? 'text-emerald-500' : 'text-gray-400'} />
                     <span className={`text-sm font-medium ${uploadFile ? 'text-emerald-700' : 'text-gray-500'}`}>
-                      {uploadFile ? uploadFile.name : 'Нажмите или перетащите файл'}
+                      {uploadFile ? uploadFile.name : t('adminTemplates.filePrompt', { defaultValue: 'Нажмите или перетащите файл' })}
                     </span>
                   </div>
                 </div>
@@ -162,12 +162,12 @@ export function AdminTemplatesPage() {
                 {isUploading ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Загрузка...
+                    {t('adminTemplates.uploading', { defaultValue: 'Загрузка...' })}
                   </div>
                 ) : (
                   <>
                     <Upload size={18} />
-                    Сохранить шаблон
+                    {t('adminTemplates.saveTemplate', { defaultValue: 'Сохранить шаблон' })}
                   </>
                 )}
               </button>
@@ -181,14 +181,14 @@ export function AdminTemplatesPage() {
                 <AlertCircle size={20} />
               </div>
               <div>
-                <h3 className="text-base font-bold text-amber-900">Шпаргалка по тегам</h3>
+                <h3 className="text-base font-bold text-amber-900">{t('adminTemplates.cheatSheetTitle', { defaultValue: 'Шпаргалка по тегам' })}</h3>
                 <p className="text-sm text-amber-700/80 mt-1.5 mb-5 leading-relaxed">
-                  Вставляйте эти переменные прямо в текст <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-800">.docx</code> файла. При генерации они заменятся на реальные значения.
+                  {t('adminTemplates.cheatSheetDesc', { defaultValue: 'Вставляйте эти переменные прямо в текст .docx файла. При генерации они заменятся на реальные значения.' })}
                 </p>
                 
                 <div className="space-y-5">
                   <div className="bg-white/60 p-3 rounded-xl border border-amber-100 hover:bg-white transition-colors">
-                    <p className="text-xs font-bold uppercase tracking-wider text-amber-900/60 mb-2">Данные клиента</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-amber-900/60 mb-2">{t('adminTemplates.clientData', { defaultValue: 'Данные клиента' })}</p>
                     <ul className="text-[13px] text-amber-900 space-y-1.5 font-mono">
                       <li className="flex items-center gap-2 before:content-[''] before:w-1 before:h-1 before:bg-amber-400 before:rounded-full">{`{{CLIENT_NAME}}`}</li>
                       <li className="flex items-center gap-2 before:content-[''] before:w-1 before:h-1 before:bg-amber-400 before:rounded-full">{`{{CLIENT_IIN}}`}</li>
@@ -198,7 +198,7 @@ export function AdminTemplatesPage() {
                     </ul>
                   </div>
                   <div className="bg-white/60 p-3 rounded-xl border border-amber-100 hover:bg-white transition-colors">
-                    <p className="text-xs font-bold uppercase tracking-wider text-amber-900/60 mb-2">Данные задачи</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-amber-900/60 mb-2">{t('adminTemplates.taskData', { defaultValue: 'Данные задачи' })}</p>
                     <ul className="text-[13px] text-amber-900 space-y-1.5 font-mono">
                       <li className="flex items-center gap-2 before:content-[''] before:w-1 before:h-1 before:bg-amber-400 before:rounded-full">{`{{TASK_TITLE}}`}</li>
                       <li className="flex items-center gap-2 before:content-[''] before:w-1 before:h-1 before:bg-amber-400 before:rounded-full">{`{{TASK_AMOUNT}}`}</li>
@@ -208,7 +208,7 @@ export function AdminTemplatesPage() {
                     </ul>
                   </div>
                   <div className="bg-white/60 p-3 rounded-xl border border-amber-100 hover:bg-white transition-colors">
-                    <p className="text-xs font-bold uppercase tracking-wider text-amber-900/60 mb-2">Системные значения</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-amber-900/60 mb-2">{t('adminTemplates.systemValues', { defaultValue: 'Системные значения' })}</p>
                     <ul className="text-[13px] text-amber-900 space-y-1.5 font-mono">
                       <li className="flex items-center gap-2 before:content-[''] before:w-1 before:h-1 before:bg-amber-400 before:rounded-full">{`{{DATE_TODAY}}`}</li>
                       <li className="flex items-center gap-2 before:content-[''] before:w-1 before:h-1 before:bg-amber-400 before:rounded-full">{`{{DATE_TODAY_SHORT}}`}</li>
@@ -231,15 +231,15 @@ export function AdminTemplatesPage() {
         >
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 overflow-hidden flex flex-col h-full min-h-[500px]">
             <div className="px-6 py-5 border-b border-gray-100 bg-white/50 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Доступные шаблоны</h2>
-              <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold">{templates.length} шт</span>
+              <h2 className="text-xl font-bold text-gray-900">{t('adminTemplates.availableTemplates', { defaultValue: 'Доступные шаблоны' })}</h2>
+              <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold">{templates.length} {t('adminTemplates.pcs', { defaultValue: 'шт' })}</span>
             </div>
             
             <div className="flex-1 p-4">
               {isLoading ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 py-20">
                   <div className="w-10 h-10 border-4 border-gray-200 border-t-emerald-500 rounded-full animate-spin"></div>
-                  <p className="font-medium text-gray-500">Загрузка шаблонов...</p>
+                  <p className="font-medium text-gray-500">{t('adminTemplates.loadingTemplates', { defaultValue: 'Загрузка шаблонов...' })}</p>
                 </div>
               ) : error ? (
                 <div className="h-full flex flex-col items-center justify-center p-12 text-center">
@@ -257,9 +257,9 @@ export function AdminTemplatesPage() {
                   <div className="bg-gray-50 p-6 rounded-full mb-6">
                     <FileText size={64} className="text-gray-300" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">Нет загруженных шаблонов</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">{t('adminTemplates.noTemplates', { defaultValue: 'Нет загруженных шаблонов' })}</h3>
                   <p className="text-gray-500 max-w-sm mx-auto leading-relaxed">
-                    Загрузите первый <code className="bg-gray-100 px-1 rounded text-gray-700">.docx</code> шаблон, чтобы сотрудники могли быстро генерировать документы.
+                    {t('adminTemplates.noTemplatesDesc', { defaultValue: 'Загрузите первый .docx шаблон, чтобы сотрудники могли быстро генерировать документы.' })}
                   </p>
                 </motion.div>
               ) : (
