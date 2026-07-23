@@ -41,6 +41,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   const [selectedTaskForModal, setSelectedTaskForModal] = useState<TaskDto | null>(null);
   const [chatClientId, setChatClientId] = useState<number | null>(null);
   const [chatClientName, setChatClientName] = useState<string>('');
+  const [selectedLabelId, setSelectedLabelId] = useState<number | null>(null);
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const thumbRef = React.useRef<HTMLDivElement>(null);
@@ -384,8 +385,6 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     e.preventDefault();
     el.scrollLeft = scrollLeft.current - (e.pageX - startX.current);
   };
-
-  const [selectedLabelId, setSelectedLabelId] = useState<number | null>(null);
 
   const displayTasksForStage = (stageTasks: TaskDto[]) => {
     if (!selectedLabelId) return stageTasks;
