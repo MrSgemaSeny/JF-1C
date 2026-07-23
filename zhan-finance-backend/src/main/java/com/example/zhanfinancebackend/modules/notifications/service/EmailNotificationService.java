@@ -1,12 +1,24 @@
 package com.example.zhanfinancebackend.modules.notifications.service;
 
+import com.example.zhanfinancebackend.modules.auth.entity.User;
+import com.example.zhanfinancebackend.modules.crm.entity.Task;
+import com.example.zhanfinancebackend.modules.documents.entity.Document;
+import com.example.zhanfinancebackend.modules.documents.service.StorageService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class EmailNotificationService {
@@ -44,8 +56,8 @@ public class EmailNotificationService {
     @Async
     public void sendHtmlEmail(String to, String subject, String htmlBody) {
         try {
-            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
-            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
             helper.setFrom(fromAddress);
             helper.setTo(to);
@@ -54,9 +66,9 @@ public class EmailNotificationService {
             
             mailSender.send(message);
             log.info("Sent email to: {}", to);
-        } catch (org.springframework.mail.MailAuthenticationException e) {
+        } catch (MailAuthenticationException e) {
             log.warn("Mocking email to {}. (SMTP authentication failed - skipping real email)", to);
-        } catch (jakarta.mail.MessagingException e) {
+        } catch (MessagingException e) {
             log.error("Failed to send email to: {}", to, e);
         } catch (Exception e) {
             log.error("Error sending email: ", e);
@@ -79,22 +91,22 @@ public class EmailNotificationService {
             );
         }
 
-        return String.format(
+        String template = 
             "<!DOCTYPE html>" +
             "<html><head><meta charset=\"UTF-8\"></head>" +
             "<body style=\"margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">" +
-            "  <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f3f4f6; padding: 40px 20px;\">" +
+            "  <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f3f4f6; padding: 40px 20px;\">" +
             "    <tr><td align=\"center\">" +
-            "      <table width=\"100%%\" max-width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\">" +
+            "      <table width=\"100%\" max-width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\">" +
             "        <tr><td style=\"background-color: #047857; padding: 32px 40px; text-align: center;\">" +
             "          <h1 style=\"color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;\">Zhan Finance</h1>" +
             "        </td></tr>" +
             "        <tr><td style=\"padding: 40px;\">" +
-            "          <h2 style=\"color: #111827; font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 24px;\">%s</h2>" +
-            "          <p style=\"color: #374151; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Здравствуйте, <b style=\"color: #111827;\">%s</b>!</p>" +
-            "          %s" +
-            "          %s" +
-            "          <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 32px; border-top: 1px solid #e5e7eb;\">" +
+            "          <h2 style=\"color: #111827; font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 24px;\">{HEADER_TITLE}</h2>" +
+            "          <p style=\"color: #374151; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Здравствуйте, <b style=\"color: #111827;\">{RECIPIENT_NAME}</b>!</p>" +
+            "          {CONTENT_HTML}" +
+            "          {BUTTON_HTML}" +
+            "          <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 32px; border-top: 1px solid #e5e7eb;\">" +
             "            <tr><td style=\"padding-top: 24px;\">" +
             "              <p style=\"font-size: 14px; color: #6b7280; line-height: 20px; margin: 0;\">С уважением,<br/><b style=\"color: #374151;\">Команда Zhan Finance</b></p>" +
             "            </td></tr>" +
@@ -103,19 +115,21 @@ public class EmailNotificationService {
             "      </table>" +
             "    </td></tr>" +
             "  </table>" +
-            "</body></html>",
-            headerTitle,
-            recipientName,
-            contentHtml,
-            buttonHtml
-        );
+            "</body></html>";
+            
+        return template
+            .replace("{HEADER_TITLE}", headerTitle != null ? headerTitle : "")
+            .replace("{RECIPIENT_NAME}", recipientName != null ? recipientName : "")
+            .replace("{CONTENT_HTML}", contentHtml != null ? contentHtml : "")
+            .replace("{BUTTON_HTML}", buttonHtml != null ? buttonHtml : "");
     }
 
-    public void sendTaskAssignedEmail(com.example.zhanfinancebackend.modules.auth.entity.User assignee, com.example.zhanfinancebackend.modules.crm.entity.Task task) {
+    @Async
+    public void sendTaskAssignedEmail(User assignee, Task task) {
         if (assignee.getEmail() == null || assignee.getEmail().isBlank()) return;
 
         String subject = "Вам назначена новая задача: " + task.getTitle();
-        String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
+        String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
         
         String contentHtml = String.format(
             "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Вам была назначена новая задача в рабочей системе.</p>" +
@@ -140,11 +154,12 @@ public class EmailNotificationService {
         sendHtmlEmail(assignee.getEmail(), subject, html);
     }
 
-    public void sendTaskDeadlineAlertEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task) {
+    @Async
+    public void sendTaskDeadlineAlertEmail(User user, Task task) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "🚨 Приближается дедлайн по задаче: " + task.getTitle();
-        String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
+        String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
         
         String contentHtml = String.format(
             "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Напоминаем, что срок выполнения задачи скоро истекает. Пожалуйста, проверьте статус выполнения.</p>" +
@@ -167,7 +182,8 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    public void sendTaskStatusUpdatedEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task, String oldStatus, String newStatus, String lostReason) {
+    @Async
+    public void sendTaskStatusUpdatedEmail(User user, Task task, String oldStatus, String newStatus, String lostReason) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Обновлен статус задачи: " + task.getTitle();
@@ -200,7 +216,7 @@ public class EmailNotificationService {
     }
 
     @Async
-    public void sendTaskCompletedEmailWithDocuments(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task, java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> documents, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService) {
+    public void sendTaskCompletedEmailWithDocuments(User user, Task task, List<Document> documents, StorageService storageService) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "✅ Ваша задача успешно завершена: " + task.getTitle();
@@ -222,8 +238,8 @@ public class EmailNotificationService {
         String html = buildFormalEmailHtml("Задача успешно выполнена!", user.getFullName(), contentHtml, "Перейти в личный кабинет", frontendUrl);
 
         try {
-            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
-            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
             helper.setFrom(fromAddress);
             helper.setTo(user.getEmail());
@@ -231,14 +247,14 @@ public class EmailNotificationService {
             helper.setText(html, true);
             
             if (documents != null && !documents.isEmpty() && storageService != null) {
-                for (com.example.zhanfinancebackend.modules.documents.entity.Document doc : documents) {
+                for (Document doc : documents) {
                     try {
                         if (doc.getStorageKey() == null || doc.getStorageKey().isBlank()) {
                             log.warn("Document {} has no storageKey, skipping attachment", doc.getId());
                             continue;
                         }
                         byte[] fileData = storageService.loadAsBytes(doc.getStorageKey());
-                        helper.addAttachment(doc.getFileName(), new org.springframework.core.io.ByteArrayResource(fileData));
+                        helper.addAttachment(doc.getFileName(), new ByteArrayResource(fileData));
                     } catch (Exception e) {
                         log.warn("Failed to attach document {} to email: {}", doc.getFileName(), e.getMessage());
                     }
@@ -247,16 +263,17 @@ public class EmailNotificationService {
             
             mailSender.send(message);
             log.info("Sent completed task email with documents to: {}", user.getEmail());
-        } catch (org.springframework.mail.MailAuthenticationException e) {
+        } catch (MailAuthenticationException e) {
             log.warn("Mocking email to {}. (SMTP authentication failed - skipping real email)", user.getEmail());
-        } catch (jakarta.mail.MessagingException e) {
+        } catch (MessagingException e) {
             log.error("Failed to send email to: {}", user.getEmail(), e);
         } catch (Exception e) {
             log.error("Error sending email: ", e);
         }
     }
 
-    public void sendWelcomeEmail(com.example.zhanfinancebackend.modules.auth.entity.User user) {
+    @Async
+    public void sendWelcomeEmail(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Добро пожаловать в Zhan Finance";
@@ -272,7 +289,8 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    public void sendAccountApprovedEmail(com.example.zhanfinancebackend.modules.auth.entity.User user) {
+    @Async
+    public void sendAccountApprovedEmail(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Аккаунт сотрудника подтвержден";
@@ -288,7 +306,8 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    public void sendTaskEditedByClientEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, com.example.zhanfinancebackend.modules.crm.entity.Task task, com.example.zhanfinancebackend.modules.auth.entity.User client) {
+    @Async
+    public void sendTaskEditedByClientEmail(User user, Task task, User client) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Клиент отредактировал задачу: " + task.getTitle();
@@ -310,7 +329,8 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    public void sendTaskDeletedByClientEmail(com.example.zhanfinancebackend.modules.auth.entity.User user, String taskTitle, com.example.zhanfinancebackend.modules.auth.entity.User client) {
+    @Async
+    public void sendTaskDeletedByClientEmail(User user, String taskTitle, User client) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Клиент удалил задачу: " + taskTitle;
