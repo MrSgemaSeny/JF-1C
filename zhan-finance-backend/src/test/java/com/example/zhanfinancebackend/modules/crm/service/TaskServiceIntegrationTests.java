@@ -91,6 +91,7 @@ class TaskServiceIntegrationTests {
             stageRepository.save(preFinalStage);
             
             stageRepository.save(new Stage(pipeline, "DONE", 2, null, StageType.WON));
+            stageRepository.save(new Stage(pipeline, "CANCELLED", 3, null, StageType.LOST));
         }
     }
 
@@ -205,5 +206,74 @@ class TaskServiceIntegrationTests {
                 .andExpect(status().isOk());
 
         assertThat(taskRepository.findById(task.getId())).isEmpty();
+    }
+
+    @Test
+    void taskWorkflow_ClientRejectFlow() throws Exception {
+        // STEP 1: Client requests task
+        MvcResult createResult = mockMvc.perform(
+                post("/api/crm/tasks/request")
+                        .header("Authorization", "Bearer " + clientToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "title": "Reject test task",
+                                "description": "Test description"
+                            }
+                            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.stage.type").value("OPEN"))
+                .andReturn();
+
+        long taskId = objectMapper
+                .readTree(createResult.getResponse().getContentAsString())
+                .get("data").get("id").asLong();
+
+        // STEP 2: Employee assigns to self
+        mockMvc.perform(
+                patch("/api/crm/tasks/{id}/assign", taskId)
+                        .param("assigneeId", String.valueOf(employee.getId()))
+                        .header("Authorization", "Bearer " + employeeToken))
+                .andExpect(status().isOk());
+
+        // STEP 3: Employee moves task to PreFinal stage
+        Stage preFinalStage = stageRepository.findAll().stream().filter(Stage::isPreFinal).findFirst().orElseGet(() -> {
+            Stage s = stageRepository.findAll().stream().filter(st -> st.getType() == StageType.OPEN).findFirst().orElseThrow();
+            s.setPreFinal(true);
+            return stageRepository.save(s);
+        });
+        mockMvc.perform(
+                patch("/api/crm/tasks/{id}/stage", taskId)
+                        .header("Authorization", "Bearer " + employeeToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "stageId": %d
+                            }
+                            """.formatted(preFinalStage.getId())))
+                .andExpect(status().isOk());
+
+        // STEP 4: Client rejects the task (moves to LOST)
+        Stage lostStage = stageRepository.findAll().stream().filter(s -> s.getType() == StageType.LOST).findFirst().orElseGet(() -> {
+            Pipeline p = pipelineRepository.findAll().get(0);
+            return stageRepository.save(new Stage(p, "CANCELLED", 3, null, StageType.LOST));
+        });
+        mockMvc.perform(
+                patch("/api/crm/tasks/{id}/stage", taskId)
+                        .header("Authorization", "Bearer " + clientToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "stageId": %d,
+                                "lostReason": "Client rejected the work"
+                            }
+                            """.formatted(lostStage.getId())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.stage.type").value("LOST"))
+                .andExpect(jsonPath("$.data.lostReason").value("Client rejected the work"));
+
+        // STEP 5: Verify notification was sent (interaction with mock)
+        org.mockito.Mockito.verify(emailNotificationService, org.mockito.Mockito.atLeastOnce())
+                .sendTaskStatusUpdatedEmail(org.mockito.Mockito.any(), org.mockito.Mockito.any(), org.mockito.Mockito.anyString(), org.mockito.Mockito.anyString(), org.mockito.Mockito.eq("Client rejected the work"));
     }
 }

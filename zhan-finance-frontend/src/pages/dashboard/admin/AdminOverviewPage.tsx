@@ -10,6 +10,7 @@ interface EmployeeStatsDto {
   activeTasks: number;
   doneTasks: number;
   overdueTasks: number;
+  avgCompletionDays?: number;
 }
 
 interface AdminDashboardDto {
@@ -226,6 +227,7 @@ export function AdminOverviewPage() {
                 <th className="pb-3 font-medium text-center">{t('adminDashboard.completed')}</th>
                 <th className="pb-3 font-medium text-center">{t('adminDashboard.inProgress')}</th>
                 <th className="pb-3 font-medium text-center">{t('adminDashboard.overdue')}</th>
+                <th className="pb-3 font-medium text-center">{t('adminDashboard.avgCloseTime')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -263,6 +265,11 @@ export function AdminOverviewPage() {
                     ) : (
                       <span className="text-gray-400">-</span>
                     )}
+                  </td>
+                  <td className="py-3 text-center">
+                    <span className="text-gray-700 font-medium text-sm">
+                      {emp.avgCompletionDays ? emp.avgCompletionDays.toFixed(1) + ' дн.' : '-'}
+                    </span>
                   </td>
                 </tr>
               ))}

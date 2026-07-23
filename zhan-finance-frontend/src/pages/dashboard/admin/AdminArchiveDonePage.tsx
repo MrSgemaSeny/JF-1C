@@ -25,7 +25,7 @@ export function AdminArchiveDonePage() {
 
   if (isLoading) return <Spinner />;
 
-  const doneTasks = tasks?.filter(t => t.stage?.type === 'WON') || [];
+  const doneTasks = tasks || [];
 
   return (
     <div className="h-full flex flex-col w-full">

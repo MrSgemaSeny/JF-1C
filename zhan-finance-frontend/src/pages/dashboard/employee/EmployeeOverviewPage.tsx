@@ -73,6 +73,12 @@ export function EmployeeOverviewPage() {
       icon: <CheckCircle2 size={20} className="text-emerald-500" />,
       color: 'bg-white border-l-4 border-l-emerald-500',
     },
+    {
+      label: t('employeeOverview.statAvgTime', { defaultValue: 'Среднее время (дн)' }),
+      value: data.avgCompletionDays.toFixed(1),
+      icon: <Clock size={20} className="text-purple-500" />,
+      color: 'bg-white border-l-4 border-l-purple-500',
+    },
   ];
 
   const recentNotifications = notifications.slice(0, 5);
@@ -87,7 +93,7 @@ export function EmployeeOverviewPage() {
       <WeeklySummaryWidget />
 
       {/* Stat cards in Stripe/Vercel style */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {statCards.map((card, idx) => (
           <div key={idx} className={`rounded-xl shadow-sm border border-gray-200 p-4 ${card.color}`}>
             <div className="flex items-center justify-between mb-3">
