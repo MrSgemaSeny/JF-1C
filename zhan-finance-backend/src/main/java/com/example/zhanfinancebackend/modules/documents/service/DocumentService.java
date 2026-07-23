@@ -240,6 +240,48 @@ public class DocumentService {
         documentRepository.delete(document);
     }
 
+    @Transactional
+    public DocumentDto confirmDocument(Long documentId, String clientIp, User actor) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Document not found"));
+
+        documentAccessService.assertCanRead(actor, document);
+
+        document.setStatus("CONFIRMED");
+        document.setConfirmedAt(java.time.LocalDateTime.now());
+        document.setConfirmedIp(clientIp != null ? clientIp : "127.0.0.1");
+
+        Document saved = documentRepository.save(document);
+
+        notificationService.notifyAdmins(
+                "Документ подтвержден клиентом",
+                "Клиент " + actor.getFullName() + " подтвердил документ: " + saved.getFileName(),
+                "/admin/documents"
+        );
+
+        return mapToDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] generateZipArchive(List<Long> documentIds, User actor) {
+        List<Document> documents = documentRepository.findAllById(documentIds);
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        try (java.util.zip.ZipOutputStream zos = new java.util.zip.ZipOutputStream(baos)) {
+            for (Document doc : documents) {
+                documentAccessService.assertCanRead(actor, doc);
+                byte[] fileBytes = storageService.loadAsBytes(doc.getStorageKey());
+                java.util.zip.ZipEntry entry = new java.util.zip.ZipEntry(doc.getFileName());
+                zos.putNextEntry(entry);
+                zos.write(fileBytes);
+                zos.closeEntry();
+            }
+            zos.finish();
+        } catch (java.io.IOException e) {
+            throw new ApiException(ErrorCode.INTERNAL_ERROR, "Ошибка создания ZIP архива: " + e.getMessage());
+        }
+        return baos.toByteArray();
+    }
+
     private DocumentDto mapToDto(Document document) {
         return new DocumentDto(
                 document.getId(),
@@ -250,7 +292,10 @@ public class DocumentService {
                 document.getContentType(),
                 document.getFileSize(),
                 document.getStatus(),
-                document.getCreatedAt()
+                document.getCreatedAt(),
+                document.getConfirmedAt(),
+                document.getConfirmedIp(),
+                document.getFolder()
         );
     }
 }

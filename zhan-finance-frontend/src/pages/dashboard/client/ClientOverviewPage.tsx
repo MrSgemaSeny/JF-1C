@@ -5,6 +5,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { MiniCalendarWidget } from '../shared/calendar/MiniCalendarWidget';
 
+import { WeeklySummaryWidget } from '@/widgets/dashboard/WeeklySummaryWidget';
 import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
 import { ClientWelcomeScreen } from './ClientWelcomeScreen';
 import { Plus, MessageSquare, Clock, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
@@ -115,6 +116,8 @@ export function ClientOverviewPage() {
           {t('clientDashboard.subtitle')}
         </p>
       </div>
+
+      <WeeklySummaryWidget />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
-import { getDocuments, uploadDocument, downloadDocument, deleteDocument } from '@/entities/document/api/documentApi';
+import { getDocuments, uploadDocument, downloadDocument, deleteDocument, confirmDocument, downloadZipDocuments } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
-import { Upload, Download, Trash2, FileText, FileSpreadsheet, File as FileIcon, FileImage, FileArchive } from 'lucide-react';
+import { Upload, Download, Trash2, FileText, FileSpreadsheet, File as FileIcon, FileImage, FileArchive, CheckCircle2, ShieldCheck, Folder } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useTranslation } from 'react-i18next';
+
+const FOLDERS = ['Все', 'Акты ВР', 'Отчеты', 'Договоры', 'Разное'];
 
 export function ClientDocumentsPage() {
   const { user } = useAuth();
@@ -15,6 +17,12 @@ export function ClientDocumentsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [selectedFolder, setSelectedFolder] = useState<string>('Все');
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [isConfirmingId, setIsConfirmingId] = useState<number | null>(null);
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -92,6 +100,32 @@ export function ClientDocumentsPage() {
     }
   };
 
+  const handleConfirm = async (docId: number) => {
+    setIsConfirmingId(docId);
+    try {
+      await confirmDocument(docId);
+      await fetchDocuments();
+    } catch (err) {
+      console.error('Failed to confirm document', err);
+      alert('Ошибка подписи документа');
+    } finally {
+      setIsConfirmingId(null);
+    }
+  };
+
+  const handleBulkZipDownload = async () => {
+    if (selectedIds.size === 0) return;
+    setIsDownloadingZip(true);
+    try {
+      await downloadZipDocuments(Array.from(selectedIds));
+    } catch (err) {
+      console.error('Failed zip download', err);
+      alert('Ошибка скачивания ZIP архива');
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  };
+
   const handleDelete = async (id: number) => {
     if (!window.confirm(t('documents.confirmDelete'))) return;
     try {
@@ -100,6 +134,23 @@ export function ClientDocumentsPage() {
     } catch (err) {
       console.error('Failed to delete', err);
       alert('Failed to delete document');
+    }
+  };
+
+  const toggleSelectOne = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (filteredDocs: DocumentDto[]) => {
+    if (selectedIds.size === filteredDocs.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredDocs.map(d => d.id)));
     }
   };
 
@@ -121,13 +172,54 @@ export function ClientDocumentsPage() {
     return { label: type.split('/').pop()?.toUpperCase() || 'FILE', icon: FileIcon, color: 'text-gray-500' };
   };
 
+  const filteredDocuments = documents.filter(doc => {
+    if (selectedFolder === 'Все') return true;
+    const docFolder = doc.folder || 'Разное';
+    if (selectedFolder === 'Акты ВР') return docFolder.includes('Акт') || doc.fileName.toLowerCase().includes('акт');
+    if (selectedFolder === 'Отчеты') return docFolder.includes('Отчет') || doc.fileName.toLowerCase().includes('отчет');
+    if (selectedFolder === 'Договоры') return docFolder.includes('Договор') || doc.fileName.toLowerCase().includes('договор');
+    return docFolder === 'Разное';
+  });
+
   return (
-    <div className="h-full w-full flex flex-col max-w-[1440px] px-4 md:px-8 mx-auto space-y-8 pb-12 pt-6">
+    <div className="h-full w-full flex flex-col max-w-[1440px] px-4 md:px-8 mx-auto space-y-6 pb-12 pt-6">
       
-      {/* Header aligned to the left */}
-      <div className="flex flex-col items-start border-b border-gray-200 pb-6 shrink-0">
-        <h1 className="text-3xl font-bold text-gray-900">{t('documents.title')}</h1>
-        <p className="text-gray-500 text-base mt-2">{t('documents.subtitle')}</p>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-6 gap-4 shrink-0">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{t('documents.title')}</h1>
+          <p className="text-gray-500 text-base mt-1">{t('documents.subtitle')}</p>
+        </div>
+
+        {selectedIds.size > 0 && (
+          <button
+            onClick={handleBulkZipDownload}
+            disabled={isDownloadingZip}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-semibold text-xs transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+          >
+            <FileArchive size={16} />
+            <span>{isDownloadingZip ? 'Формируем ZIP...' : `Скачать выбранные (${selectedIds.size}) в ZIP`}</span>
+          </button>
+        )}
+      </div>
+
+      {/* Folders Navigation Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {FOLDERS.map(f => (
+          <button
+            key={f}
+            onClick={() => setSelectedFolder(f)}
+            className={clsx(
+              "px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap border",
+              selectedFolder === f
+                ? "bg-brand-green text-white border-brand-green shadow-xs"
+                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+            )}
+          >
+            <Folder size={14} className={selectedFolder === f ? "text-white" : "text-gray-400"} />
+            {f}
+          </button>
+        ))}
       </div>
 
       {error && (
@@ -136,31 +228,79 @@ export function ClientDocumentsPage() {
         </div>
       )}
 
+      {/* Upload Zone */}
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+        className={clsx(
+          "border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2",
+          isDragging ? "border-brand-green bg-green-50/50" : "border-gray-200 bg-white hover:bg-gray-50/50"
+        )}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="hidden"
+          onChange={handleFileSelect}
+          disabled={isUploading}
+        />
+        <div className="p-3 bg-brand-green/10 text-brand-green rounded-full">
+          <Upload size={20} />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-gray-900">
+            {isUploading ? 'Загрузка документа...' : 'Перетащите файл или нажмите для загрузки'}
+          </p>
+          <p className="text-xs text-gray-400 mt-0.5">PDF, DOCX, XLSX, PNG, JPG до 20 МБ</p>
+        </div>
+      </div>
+
       {isLoading && documents.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
           <Spinner className="w-10 h-10 text-brand-green" />
         </div>
       ) : (
         <>
-          {documents.length > 0 && (
+          {filteredDocuments.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex-1 shadow-sm flex flex-col min-h-0">
               <div className="overflow-auto flex-1">
                 <table className="w-full text-left text-sm whitespace-nowrap">
                   <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                     <tr>
+                      <th className="px-4 py-4 w-10 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.size === filteredDocuments.length && filteredDocuments.length > 0}
+                          onChange={() => toggleSelectAll(filteredDocuments)}
+                          className="rounded border-gray-300 text-brand-green focus:ring-brand-green cursor-pointer"
+                        />
+                      </th>
                       <th className="px-6 py-4 font-semibold text-gray-600">Файл</th>
                       <th className="px-6 py-4 font-semibold text-gray-600">{t('documents.fileType', { defaultValue: 'Тип' })}</th>
+                      <th className="px-6 py-4 font-semibold text-gray-600">Статус подписи</th>
                       <th className="px-6 py-4 font-semibold text-gray-600">Размер</th>
-                      <th className="px-6 py-4 font-semibold text-gray-600">Дата</th>
                       <th className="px-6 py-4 font-semibold text-gray-600 text-right">Действия</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {documents.map((doc) => {
+                    {filteredDocuments.map((doc) => {
                       const info = getDocTypeInfo(doc.contentType);
                       const Icon = info.icon;
+                      const isSelected = selectedIds.has(doc.id);
+                      const isConfirmed = doc.status === 'CONFIRMED';
+
                       return (
-                        <tr key={doc.id} className="hover:bg-gray-50 transition-colors">
+                        <tr key={doc.id} className={clsx("hover:bg-gray-50 transition-colors", isSelected && "bg-blue-50/40")}>
+                          <td className="px-4 py-4 text-center">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleSelectOne(doc.id)}
+                              className="rounded border-gray-300 text-brand-green focus:ring-brand-green cursor-pointer"
+                            />
+                          </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
                               <Icon className={clsx("w-6 h-6", info.color)} />
@@ -174,27 +314,41 @@ export function ClientDocumentsPage() {
                               {info.label}
                             </span>
                           </td>
+                          <td className="px-6 py-4">
+                            {isConfirmed ? (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full font-semibold text-xs">
+                                <ShieldCheck size={14} />
+                                Подписано {doc.confirmedAt ? new Date(doc.confirmedAt).toLocaleDateString() : ''}
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => handleConfirm(doc.id)}
+                                disabled={isConfirmingId === doc.id}
+                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-green hover:bg-brand-green/90 text-white rounded-full font-semibold text-xs transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
+                              >
+                                <CheckCircle2 size={14} />
+                                {isConfirmingId === doc.id ? 'Подтверждаем...' : 'Подтвердить'}
+                              </button>
+                            )}
+                          </td>
                           <td className="px-6 py-4 text-gray-500 text-sm">
                             {formatFileSize(doc.fileSize)}
                           </td>
-                          <td className="px-6 py-4 text-gray-500 text-sm">
-                            {new Date(doc.createdAt).toLocaleDateString()}
-                          </td>
                           <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-3">
+                            <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() => handleDownload(doc)}
-                                className="p-2 text-gray-500 hover:text-brand-green hover:bg-green-50 rounded-lg transition-colors"
-                                title={t('documents.downloadTitle')}
+                                className="p-2 text-gray-500 hover:text-brand-green hover:bg-green-50 rounded-lg transition-colors cursor-pointer"
+                                title="Скачать документ"
                               >
-                                <Download size={20} />
+                                <Download size={18} />
                               </button>
                               <button
                                 onClick={() => handleDelete(doc.id)}
-                                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                title={t('documents.deleteTitle')}
+                                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                title="Удалить"
                               >
-                                <Trash2 size={20} />
+                                <Trash2 size={18} />
                               </button>
                             </div>
                           </td>
@@ -207,55 +361,15 @@ export function ClientDocumentsPage() {
             </div>
           )}
 
-          {/* Practical Upload Zone */}
-          <div 
-            className={clsx(
-              "border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center cursor-pointer bg-white transition-colors shrink-0",
-              documents.length === 0 ? "flex-1 mt-0" : "p-10 mt-8",
-              isDragging ? "border-brand-green bg-green-50" : "border-gray-300 hover:bg-gray-50"
-            )}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              className="hidden"
-              accept=".pdf,.xlsx,.xml,.csv,.docx,.doc,.png,.jpg,.jpeg,.zip"
-            />
-            
-            {isUploading ? (
-              <div className="flex flex-col items-center">
-                <Spinner className="w-10 h-10 text-brand-green mb-4" />
-                <p className="text-base font-medium text-gray-700">{t('documents.uploading')}</p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center">
-                {documents.length === 0 ? (
-                  <>
-                    <Upload className="w-16 h-16 text-gray-300 mb-4" />
-                    <p className="text-xl font-medium text-gray-900 mb-2">{t('documents.emptyTitle')}</p>
-                    <p className="text-sm text-gray-500 mb-6">{t('documents.emptySubtitle')}</p>
-                    <div className="px-6 py-3 bg-brand-green text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors">
-                      {t('documents.uploadTitle')}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-12 h-12 text-gray-400 mb-4" />
-                    <p className="text-lg font-medium text-gray-900 mb-2">{t('documents.uploadTitle')}</p>
-                    <p className="text-sm text-gray-500">{t('documents.uploadSubtitle')}</p>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+          {filteredDocuments.length === 0 && (
+            <div className="text-center py-12 text-gray-400 bg-white border border-gray-200 rounded-2xl">
+              <FileText size={48} className="mx-auto mb-3 text-gray-300" />
+              <p className="text-base font-semibold text-gray-700">Нет документов в этой категории</p>
+              <p className="text-xs text-gray-400 mt-1">Загрузите новый файл или выберите другую категорию</p>
+            </div>
+          )}
         </>
       )}
-
     </div>
   );
 }

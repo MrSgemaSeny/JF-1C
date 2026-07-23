@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class DashboardController {
 
     private final DashboardService dashboardService;
+    private final com.example.zhanfinancebackend.modules.crm.service.DashboardSummaryService dashboardSummaryService;
 
-    public DashboardController(DashboardService dashboardService) {
+    public DashboardController(DashboardService dashboardService, com.example.zhanfinancebackend.modules.crm.service.DashboardSummaryService dashboardSummaryService) {
         this.dashboardService = dashboardService;
+        this.dashboardSummaryService = dashboardSummaryService;
     }
 
     @GetMapping("/admin")
@@ -38,5 +40,13 @@ public class DashboardController {
     @PreAuthorize("hasRole('CLIENT')")
     public ApiResponse<ClientDashboardDto> getClientDashboard(@AuthenticationPrincipal UserPrincipal principal) {
         return ApiResponse.success(dashboardService.getClientDashboard(principal.getUser()));
+    }
+
+    @GetMapping("/weekly-summary")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ApiResponse<com.example.zhanfinancebackend.modules.crm.dto.WeeklySummaryDto> getWeeklySummary(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return ApiResponse.success(dashboardSummaryService.getWeeklySummary(principal.getUser()));
     }
 }

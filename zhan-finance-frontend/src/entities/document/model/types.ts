@@ -8,6 +8,9 @@ export interface DocumentDto {
   fileSize: number;
   status: string;
   createdAt: string;
+  confirmedAt?: string;
+  confirmedIp?: string;
+  folder?: string;
 }
 
 export interface DocumentUploadResponse {

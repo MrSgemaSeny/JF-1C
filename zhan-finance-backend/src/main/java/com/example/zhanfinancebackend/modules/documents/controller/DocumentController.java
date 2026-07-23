@@ -104,4 +104,26 @@ public class DocumentController {
         documentService.deleteDocument(id, principal.getUser());
         return ApiResponse.success(null);
     }
+
+    @PostMapping("/{id}/confirm")
+    @Operation(summary = "Client confirms/signs a document")
+    public ApiResponse<DocumentDto> confirmDocument(
+            @PathVariable Long id,
+            jakarta.servlet.http.HttpServletRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        String clientIp = request.getRemoteAddr();
+        return ApiResponse.success(documentService.confirmDocument(id, clientIp, principal.getUser()));
+    }
+
+    @GetMapping("/download-zip")
+    @Operation(summary = "Download selected documents as a ZIP archive")
+    public ResponseEntity<byte[]> downloadZip(
+            @RequestParam("ids") List<Long> ids,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        byte[] zipBytes = documentService.generateZipArchive(ids, principal.getUser());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"documents_archive.zip\"")
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .body(zipBytes);
+    }
 }

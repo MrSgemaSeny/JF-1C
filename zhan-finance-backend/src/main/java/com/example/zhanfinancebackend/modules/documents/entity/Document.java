@@ -42,6 +42,15 @@ public class Document {
     @Column(name = "status", length = 50)
     private String status = "UPLOADED";
 
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
+
+    @Column(name = "confirmed_ip", length = 45)
+    private String confirmedIp;
+
+    @Column(name = "folder", length = 128)
+    private String folder = "Разное";
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "generated_from_template_id")
     private DocumentTemplate generatedFromTemplate;
@@ -79,6 +88,12 @@ public class Document {
     public void setTask(Task task) { this.task = task; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public LocalDateTime getConfirmedAt() { return confirmedAt; }
+    public void setConfirmedAt(LocalDateTime confirmedAt) { this.confirmedAt = confirmedAt; }
+    public String getConfirmedIp() { return confirmedIp; }
+    public void setConfirmedIp(String confirmedIp) { this.confirmedIp = confirmedIp; }
+    public String getFolder() { return folder; }
+    public void setFolder(String folder) { this.folder = folder; }
     public DocumentTemplate getGeneratedFromTemplate() { return generatedFromTemplate; }
     public void setGeneratedFromTemplate(DocumentTemplate generatedFromTemplate) { this.generatedFromTemplate = generatedFromTemplate; }
     public LocalDateTime getCreatedAt() { return createdAt; }

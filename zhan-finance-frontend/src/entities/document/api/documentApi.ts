@@ -59,6 +59,38 @@ export async function downloadDocument(id: number, fileName: string): Promise<vo
   const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export async function confirmDocument(id: number): Promise<DocumentDto> {
+  return apiRequest<DocumentDto>(`/api/documents/${id}/confirm`, {
+    method: 'POST',
+  });
+}
+
+export async function downloadZipDocuments(ids: number[], zipName = 'documents_archive.zip'): Promise<void> {
+  const token = getAccessToken();
+  const query = ids.join(',');
+  const response = await fetch(`${API_BASE_URL}/api/documents/download-zip?ids=${query}`, {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to download zip: ${response.status}`);
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = zipName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }

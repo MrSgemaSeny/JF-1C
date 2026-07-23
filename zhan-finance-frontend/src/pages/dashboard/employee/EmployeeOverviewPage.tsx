@@ -15,6 +15,8 @@ async function getEmployeeDashboard(): Promise<EmployeeDashboardDto> {
   return apiRequest<EmployeeDashboardDto>('/api/crm/dashboard/employee');
 }
 
+import { WeeklySummaryWidget } from '@/widgets/dashboard/WeeklySummaryWidget';
+
 export function EmployeeOverviewPage() {
   const { t } = useTranslation(['common']);
   const [data, setData] = useState<EmployeeDashboardDto | null>(null);
@@ -81,6 +83,8 @@ export function EmployeeOverviewPage() {
         <h1 className="text-2xl font-bold text-gray-900">{t('employeeOverview.title')}</h1>
         <p className="text-sm text-gray-500 mt-1">{t('employeeOverview.subtitle')}</p>
       </div>
+
+      <WeeklySummaryWidget />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

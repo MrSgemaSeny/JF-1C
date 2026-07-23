@@ -42,6 +42,8 @@ const getDynamicColor = (index: number) => {
   return colors[index % colors.length];
 };
 
+import { WeeklySummaryWidget } from '@/widgets/dashboard/WeeklySummaryWidget';
+
 export function AdminOverviewPage() {
   const { t } = useTranslation(['common']);
   const [data, setData] = useState<AdminDashboardDto | null>(null);
@@ -97,6 +99,8 @@ export function AdminOverviewPage() {
         <h1 className="text-2xl font-bold text-gray-900">{t('adminDashboard.title')}</h1>
         <p className="text-sm text-gray-500 mt-1">{t('adminDashboard.subtitle')}</p>
       </div>
+
+      <WeeklySummaryWidget />
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
         {statCards.map((card) => (

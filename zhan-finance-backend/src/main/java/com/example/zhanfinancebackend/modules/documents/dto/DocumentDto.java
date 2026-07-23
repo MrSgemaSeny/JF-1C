@@ -12,6 +12,9 @@ public class DocumentDto {
     private Long fileSize;
     private String status;
     private LocalDateTime createdAt;
+    private LocalDateTime confirmedAt;
+    private String confirmedIp;
+    private String folder;
     
     public DocumentDto(Long id, Long userId, String clientName, Long taskId, String fileName, String contentType, Long fileSize, String status, LocalDateTime createdAt) {
         this.id = id;
@@ -23,6 +26,21 @@ public class DocumentDto {
         this.fileSize = fileSize;
         this.status = status;
         this.createdAt = createdAt;
+    }
+
+    public DocumentDto(Long id, Long userId, String clientName, Long taskId, String fileName, String contentType, Long fileSize, String status, LocalDateTime createdAt, LocalDateTime confirmedAt, String confirmedIp, String folder) {
+        this.id = id;
+        this.userId = userId;
+        this.clientName = clientName;
+        this.taskId = taskId;
+        this.fileName = fileName;
+        this.contentType = contentType;
+        this.fileSize = fileSize;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.confirmedAt = confirmedAt;
+        this.confirmedIp = confirmedIp;
+        this.folder = folder;
     }
 
     public Long getId() { return id; }
@@ -42,4 +60,10 @@ public class DocumentDto {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getConfirmedAt() { return confirmedAt; }
+    public void setConfirmedAt(LocalDateTime confirmedAt) { this.confirmedAt = confirmedAt; }
+    public String getConfirmedIp() { return confirmedIp; }
+    public void setConfirmedIp(String confirmedIp) { this.confirmedIp = confirmedIp; }
+    public String getFolder() { return folder; }
+    public void setFolder(String folder) { this.folder = folder; }
 }
