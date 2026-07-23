@@ -85,7 +85,12 @@ class TaskServiceIntegrationTests {
             Stage openStage = new Stage(pipeline, "NEW", 0, null, StageType.OPEN);
             openStage.setDefault(true);
             stageRepository.save(openStage);
-            stageRepository.save(new Stage(pipeline, "DONE", 1, null, StageType.WON));
+            
+            Stage preFinalStage = new Stage(pipeline, "ON_REVIEW", 1, null, StageType.OPEN);
+            preFinalStage.setPreFinal(true);
+            stageRepository.save(preFinalStage);
+            
+            stageRepository.save(new Stage(pipeline, "DONE", 2, null, StageType.WON));
         }
     }
 
@@ -118,11 +123,28 @@ class TaskServiceIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.assignedTo.id").value(employee.getId()));
 
-        // STEP 3: Employee completes
-        Stage doneStage = stageRepository.findAll().stream().filter(s -> s.getType() == StageType.WON).findFirst().orElseThrow();
+        // STEP 3: Employee moves task to PreFinal stage (e.g., On Review)
+        Stage preFinalStage = stageRepository.findAll().stream().filter(Stage::isPreFinal).findFirst().orElseGet(() -> {
+            Stage s = stageRepository.findAll().stream().filter(st -> st.getType() == StageType.OPEN).findFirst().orElseThrow();
+            s.setPreFinal(true);
+            return stageRepository.save(s);
+        });
         mockMvc.perform(
                 patch("/api/crm/tasks/{id}/stage", taskId)
                         .header("Authorization", "Bearer " + employeeToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "stageId": %d
+                            }
+                            """.formatted(preFinalStage.getId())))
+                .andExpect(status().isOk());
+
+        // STEP 4: Client completes the task (moves to WON)
+        Stage doneStage = stageRepository.findAll().stream().filter(s -> s.getType() == StageType.WON).findFirst().orElseThrow();
+        mockMvc.perform(
+                patch("/api/crm/tasks/{id}/stage", taskId)
+                        .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                             {
@@ -132,7 +154,7 @@ class TaskServiceIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.stage.type").value("WON"));
 
-        // STEP 4: Verify client sees updated task
+        // STEP 5: Verify client sees updated task
         mockMvc.perform(
                 get("/api/crm/tasks/{id}", taskId)
                         .header("Authorization", "Bearer " + clientToken))
