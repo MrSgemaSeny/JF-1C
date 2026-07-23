@@ -12,6 +12,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto;
+
 public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
 
     @Query("SELECT SUM(t.amount) FROM Task t WHERE t.stage.type = 'WON' AND t.archived = false")
@@ -56,8 +58,8 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
            "where t.id in :ids")
     List<Task> findAllByIdInWithDetails(@Param("ids") List<Long> ids);
 
-    @Query("SELECT new com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto(t.client.id, COUNT(t.id)) FROM Task t WHERE t.archived = false GROUP BY t.client.id")
-    List<com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto> getClientStats();
+    @Query("SELECT new ClientStatsDto(t.client.id, COUNT(t.id)) FROM Task t WHERE t.archived = false GROUP BY t.client.id")
+    List<ClientStatsDto> getClientStats();
 
     @Query("SELECT s.name as statusName, COUNT(t.id) as count FROM Task t LEFT JOIN t.stage s WHERE t.archived = false GROUP BY s.name")
     List<java.util.Map<String, Object>> countTasksByStatus();

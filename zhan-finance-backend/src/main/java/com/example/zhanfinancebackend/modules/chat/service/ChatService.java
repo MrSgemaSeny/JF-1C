@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+
 @Service
 public class ChatService {
 
@@ -50,9 +52,9 @@ public class ChatService {
         validateAccess(currentUserId, receiverId);
 
         User sender = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Sender not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sender not found"));
         User receiver = userRepository.findById(receiverId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Receiver not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Receiver not found"));
 
         ChatMessage message = new ChatMessage(sender, receiver, request.content());
         ChatMessage saved = chatMessageRepository.save(message);
@@ -73,7 +75,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatContactDto> getContacts(Long currentUserId) {
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<User> usersToInclude = new ArrayList<>();
 
@@ -114,9 +116,9 @@ public class ChatService {
 
     private void validateAccess(Long currentUserId, Long otherUserId) {
         User currentUser = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         User otherUser = userRepository.findById(otherUserId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Other user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Other user not found"));
 
         if (currentUser.getRole() == Role.ADMIN) {
             return; // Admin can chat with anyone
@@ -151,7 +153,7 @@ public class ChatService {
     @Transactional
     public void deleteMessage(Long currentUserId, Long messageId) {
         ChatMessage message = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Message not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found"));
         
         if (!message.getSender().getId().equals(currentUserId)) {
             throw new org.springframework.security.access.AccessDeniedException("You can only delete your own messages");

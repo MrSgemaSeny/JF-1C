@@ -19,16 +19,22 @@ import java.util.stream.Collectors;
 
 import java.time.LocalDate;
 
+import com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskDto;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+import com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper;
+import com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository;
+
 @Service
 public class DashboardService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ClientProfileRepository clientProfileRepository;
-    private final com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository contactRequestRepository;
-    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
+    private final ContactRequestRepository contactRequestRepository;
+    private final TaskMapper taskMapper;
 
-    public DashboardService(TaskRepository taskRepository, UserRepository userRepository, ClientProfileRepository clientProfileRepository, com.example.zhanfinancebackend.modules.landing.repository.ContactRequestRepository contactRequestRepository, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper) {
+    public DashboardService(TaskRepository taskRepository, UserRepository userRepository, ClientProfileRepository clientProfileRepository, ContactRequestRepository contactRequestRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
@@ -43,8 +49,8 @@ public class DashboardService {
         long employeesCount = userRepository.countByRole(Role.EMPLOYEE);
         
         long tasksCount = taskRepository.count();
-        long wonTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.WON);
-        long lostTasks = taskRepository.countTasksByStageType(com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST);
+        long wonTasks = taskRepository.countTasksByStageType(StageType.WON);
+        long lostTasks = taskRepository.countTasksByStageType(StageType.LOST);
         
         long newRequestsToday = contactRequestRepository.countByCreatedAtAfter(LocalDate.now().atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
         java.math.BigDecimal totalRevenue = taskRepository.sumWonAmount();
@@ -81,10 +87,10 @@ public class DashboardService {
             }
         }
 
-        Map<Long, com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto> empStatsMap = new java.util.HashMap<>();
+        Map<Long, EmployeeStatsDto> empStatsMap = new java.util.HashMap<>();
         for (User emp : employees) {
             double empAvg = empAvgDaysMap.getOrDefault(emp.getId(), 0.0);
-            empStatsMap.put(emp.getId(), new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
+            empStatsMap.put(emp.getId(), new EmployeeStatsDto(
                     emp.getId(),
                     emp.getFullName() != null && !emp.getFullName().isBlank() ? emp.getFullName() : emp.getEmail(),
                     0, 0, 0, empAvg
@@ -105,7 +111,7 @@ public class DashboardService {
             Number overdueNum = getNumberIgnoreCase(row, "overduecount");
             long overdue = overdueNum != null ? overdueNum.longValue() : 0;
 
-            com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto dto = empStatsMap.get(empId);
+            EmployeeStatsDto dto = empStatsMap.get(empId);
             if (dto != null) {
                 long newDone = dto.doneTasks();
                 long newActive = dto.activeTasks();
@@ -117,7 +123,7 @@ public class DashboardService {
                     newActive += count;
                 }
 
-                empStatsMap.put(empId, new com.example.zhanfinancebackend.modules.crm.dto.EmployeeStatsDto(
+                empStatsMap.put(empId, new EmployeeStatsDto(
                         dto.employeeId(), dto.employeeName(), newActive, newDone, newOverdue, dto.avgCompletionDays()
                 ));
             }
@@ -159,14 +165,14 @@ public class DashboardService {
         List<Task> allEmployeeTasks = taskRepository.findAllByEmployeeWithDetails(employee);
         
         List<Task> allOpenTasks = allEmployeeTasks.stream()
-                .filter(t -> t.getStage() == null || (t.getStage().getType() != com.example.zhanfinancebackend.modules.crm.entity.StageType.WON && t.getStage().getType() != com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST))
+                .filter(t -> t.getStage() == null || (t.getStage().getType() != StageType.WON && t.getStage().getType() != StageType.LOST))
                 .toList();
 
         LocalDate today = LocalDate.now();
         java.time.DayOfWeek dayOfWeek = today.getDayOfWeek();
 
         // Urgent tasks: due today or overdue
-        List<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> urgentTasks = allOpenTasks.stream()
+        List<TaskDto> urgentTasks = allOpenTasks.stream()
                 .filter(t -> t.getDueDate() != null && !t.getDueDate().isAfter(today))
                 .sorted(java.util.Comparator.comparing(Task::getDueDate))
                 .limit(10)
@@ -189,15 +195,15 @@ public class DashboardService {
             plannedList = allOpenTasks;
         }
 
-        List<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> plannedTasks = plannedList.stream()
+        List<TaskDto> plannedTasks = plannedList.stream()
                 .sorted(java.util.Comparator.comparing(t -> t.getDueDate() == null ? LocalDate.MAX : t.getDueDate()))
                 .limit(10)
                 .map(taskMapper::mapToDto)
                 .toList();
 
         // Recent history: completed in the last 7 days
-        List<com.example.zhanfinancebackend.modules.crm.dto.TaskDto> recentHistory = allEmployeeTasks.stream()
-                .filter(t -> t.getStage() != null && t.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON)
+        List<TaskDto> recentHistory = allEmployeeTasks.stream()
+                .filter(t -> t.getStage() != null && t.getStage().getType() == StageType.WON)
                 .filter(t -> t.getClosedAt() != null && t.getClosedAt().isAfter(today.minusDays(7)))
                 .sorted(java.util.Comparator.comparing(Task::getClosedAt).reversed())
                 .limit(10)

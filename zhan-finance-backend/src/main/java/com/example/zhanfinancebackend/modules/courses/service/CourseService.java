@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.courses.entity.Chapter;
+import com.example.zhanfinancebackend.modules.courses.entity.CourseStatus;
+
 @Service
 public class CourseService {
 
@@ -26,7 +29,7 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public List<Course> getPublishedCourses() {
-        List<Course> courses = courseRepository.findAllByStatus(com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED);
+        List<Course> courses = courseRepository.findAllByStatus(CourseStatus.PUBLISHED);
         courses.forEach(this::initializeCourse);
         return courses;
     }
@@ -43,7 +46,7 @@ public class CourseService {
     @Transactional(readOnly = true)
     public Course getPublishedCourseById(Long id) {
         Course course = getCourseById(id);
-        if (course.getStatus() != com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED) {
+        if (course.getStatus() != CourseStatus.PUBLISHED) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.FORBIDDEN, "Course is not published");
         }
@@ -53,7 +56,7 @@ public class CourseService {
     private void initializeCourse(Course course) {
         if (course.getChapters() != null) {
             course.getChapters().size();
-            for (com.example.zhanfinancebackend.modules.courses.entity.Chapter chapter : course.getChapters()) {
+            for (Chapter chapter : course.getChapters()) {
                 if (chapter.getLessons() != null) {
                     chapter.getLessons().size();
                 }
@@ -67,7 +70,7 @@ public class CourseService {
         course.setTitle(title);
         course.setDescription(description);
         course.setThumbnail(thumbnail);
-        course.setStatus(isPublished ? com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED : com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.DRAFT);
+        course.setStatus(isPublished ? CourseStatus.PUBLISHED : CourseStatus.DRAFT);
         course.setCreatedBy(admin);
         course = courseRepository.save(course);
         initializeCourse(course);
@@ -80,7 +83,7 @@ public class CourseService {
         if (title != null) course.setTitle(title);
         if (description != null) course.setDescription(description);
         if (thumbnail != null) course.setThumbnail(thumbnail);
-        course.setStatus(isPublished ? com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED : com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.DRAFT);
+        course.setStatus(isPublished ? CourseStatus.PUBLISHED : CourseStatus.DRAFT);
         return courseRepository.save(course);
     }
 
@@ -90,9 +93,9 @@ public class CourseService {
     }
 
     @Transactional
-    public com.example.zhanfinancebackend.modules.courses.entity.Chapter createChapter(Long courseId, String title, int orderIndex) {
+    public Chapter createChapter(Long courseId, String title, int orderIndex) {
         Course course = getCourseById(courseId);
-        com.example.zhanfinancebackend.modules.courses.entity.Chapter chapter = new com.example.zhanfinancebackend.modules.courses.entity.Chapter();
+        Chapter chapter = new Chapter();
         chapter.setCourse(course);
         chapter.setTitle(title);
         chapter.setOrderIndex(orderIndex);

@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
+
 @Component
 public class HibernateAuditListener implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener {
 
@@ -85,8 +87,8 @@ public class HibernateAuditListener implements PostInsertEventListener, PostUpda
 
     private Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof com.example.zhanfinancebackend.modules.auth.security.UserPrincipal) {
-            return ((com.example.zhanfinancebackend.modules.auth.security.UserPrincipal) auth.getPrincipal()).getId();
+        if (auth != null && auth.getPrincipal() instanceof UserPrincipal) {
+            return ((UserPrincipal) auth.getPrincipal()).getId();
         }
         return null;
     }

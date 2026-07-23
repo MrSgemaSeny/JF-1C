@@ -6,9 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.courses.entity.CourseStatus;
+
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findAllByStatus(com.example.zhanfinancebackend.modules.courses.entity.CourseStatus status);
+    List<Course> findAllByStatus(CourseStatus status);
 
     @org.springframework.data.jpa.repository.Query("select c from Course c where c.status = 'PUBLISHED' and (lower(c.title) like lower(concat('%', :query, '%')) or lower(c.description) like lower(concat('%', :query, '%')))")
     List<Course> searchPublishedCourses(@org.springframework.data.repository.query.Param("query") String query);

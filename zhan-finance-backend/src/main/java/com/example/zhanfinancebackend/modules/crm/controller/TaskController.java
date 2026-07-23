@@ -18,16 +18,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import com.example.zhanfinancebackend.common.exception.ApiException;
+import com.example.zhanfinancebackend.common.exception.ErrorCode;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskActivityDto;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskBatchOperationRequest;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskBatchUpdateRequest;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskCommentDto;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskUpdateRequest;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+import com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper;
+import com.example.zhanfinancebackend.modules.documents.dto.DocumentDto;
+import com.example.zhanfinancebackend.modules.documents.service.DocumentGeneratorService;
+
 @RestController
 @RequestMapping("/api/crm/tasks")
 public class TaskController {
 
     private final TaskService taskService;
     private final CrmAccessService accessService;
-    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
-    private final com.example.zhanfinancebackend.modules.documents.service.DocumentGeneratorService documentGeneratorService;
+    private final TaskMapper taskMapper;
+    private final DocumentGeneratorService documentGeneratorService;
 
-    public TaskController(TaskService taskService, CrmAccessService accessService, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper, com.example.zhanfinancebackend.modules.documents.service.DocumentGeneratorService documentGeneratorService) {
+    public TaskController(TaskService taskService, CrmAccessService accessService, TaskMapper taskMapper, DocumentGeneratorService documentGeneratorService) {
         this.taskService = taskService;
         this.accessService = accessService;
         this.taskMapper = taskMapper;
@@ -62,7 +74,7 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<List<TaskDto>> getArchivedTasks(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam com.example.zhanfinancebackend.modules.crm.entity.StageType stageType
+            @RequestParam StageType stageType
     ) {
         return ApiResponse.success(taskService.getArchivedTasks(stageType));
     }
@@ -113,7 +125,7 @@ public class TaskController {
     public ApiResponse<TaskDto> updateTaskDetails(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
-            @Valid @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskUpdateRequest request
+            @Valid @RequestBody TaskUpdateRequest request
     ) {
         return ApiResponse.success(taskService.updateTaskDetails(id, request, principal.getUser()));
     }
@@ -143,14 +155,14 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
     public ApiResponse<List<TaskDto>> batchUpdateTasks(
             @AuthenticationPrincipal UserPrincipal principal,
-            @Valid @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskBatchUpdateRequest request
+            @Valid @RequestBody TaskBatchUpdateRequest request
     ) {
         return ApiResponse.success(taskService.batchUpdateTasks(request, principal.getUser()));
     }
 
     @GetMapping("/{id}/comments")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.TaskCommentDto>> getTaskComments(
+    public ApiResponse<List<TaskCommentDto>> getTaskComments(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
     ) {
@@ -159,15 +171,15 @@ public class TaskController {
 
     @PostMapping("/{id}/comments")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ApiResponse<com.example.zhanfinancebackend.modules.crm.dto.TaskCommentDto> addComment(
+    public ApiResponse<TaskCommentDto> addComment(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
             @RequestBody java.util.Map<String, String> body
     ) {
         String text = body.get("text");
         if (text == null || text.trim().isEmpty()) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(
-                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST, 
+            throw new ApiException(
+                    ErrorCode.BAD_REQUEST, 
                     "Текст комментария не может быть пустым"
             );
         }
@@ -186,7 +198,7 @@ public class TaskController {
 
     @GetMapping("/{id}/history")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.TaskActivityDto>> getTaskHistory(
+    public ApiResponse<List<TaskActivityDto>> getTaskHistory(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
     ) {
@@ -195,15 +207,15 @@ public class TaskController {
 
     @PostMapping("/{id}/documents/generate")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    public ApiResponse<com.example.zhanfinancebackend.modules.documents.dto.DocumentDto> generateDocument(
+    public ApiResponse<DocumentDto> generateDocument(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
             @RequestBody java.util.Map<String, String> body
     ) {
         String templateIdStr = body.get("templateId");
         if (templateIdStr == null || templateIdStr.isBlank()) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(
-                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST,
+            throw new ApiException(
+                    ErrorCode.BAD_REQUEST,
                     "templateId is required"
             );
         }
@@ -252,7 +264,7 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<Void> batchUpdateTasks(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskBatchOperationRequest request
+            @RequestBody TaskBatchOperationRequest request
     ) {
         taskService.batchUpdateTasks(request, principal.getUser());
         return ApiResponse.success(null);

@@ -17,6 +17,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -79,9 +81,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                 String targetUserIdStr = parts[3];
                                 if (principal instanceof UsernamePasswordAuthenticationToken auth) {
                                     Object p = auth.getPrincipal();
-                                    if (p instanceof com.example.zhanfinancebackend.modules.auth.security.UserPrincipal) {
-                                        com.example.zhanfinancebackend.modules.auth.security.UserPrincipal userPrincipal = 
-                                            (com.example.zhanfinancebackend.modules.auth.security.UserPrincipal) p;
+                                    if (p instanceof UserPrincipal) {
+                                        UserPrincipal userPrincipal = 
+                                            (UserPrincipal) p;
                                         boolean isAdminOrEmployee = userPrincipal.getAuthorities().stream()
                                                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_EMPLOYEE"));
                                         if (!isAdminOrEmployee && !String.valueOf(userPrincipal.getId()).equals(targetUserIdStr)) {

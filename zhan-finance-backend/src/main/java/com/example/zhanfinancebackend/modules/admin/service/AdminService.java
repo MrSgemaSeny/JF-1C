@@ -12,6 +12,16 @@ import org.springframework.stereotype.Service;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import com.example.zhanfinancebackend.common.exception.ApiException;
+import com.example.zhanfinancebackend.common.exception.ErrorCode;
+import com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest;
+import com.example.zhanfinancebackend.modules.auth.mapper.UserMapper;
+import com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto;
+import com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto;
+import com.example.zhanfinancebackend.modules.crm.entity.Task;
+import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
+
 @Service
 public class AdminService {
 
@@ -19,18 +29,18 @@ public class AdminService {
     private final ClientProfileRepository clientRepository;
     private final TaskRepository taskRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
-    private final com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper;
-    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
-    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
+    private final UserMapper userMapper;
+    private final EmailNotificationService emailNotificationService;
+    private final NotificationService notificationService;
 
     public AdminService(
             UserRepository userRepository,
             ClientProfileRepository clientRepository,
             TaskRepository taskRepository,
             org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
-            com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper,
-            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService,
-            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService
+            UserMapper userMapper,
+            EmailNotificationService emailNotificationService,
+            NotificationService notificationService
     ) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
@@ -56,11 +66,11 @@ public class AdminService {
 
     public void approveEmployee(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ApiException(
-                        com.example.zhanfinancebackend.common.exception.ErrorCode.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new ApiException(
+                        ErrorCode.NOT_FOUND, "User not found"));
         if (user.getRole() != Role.EMPLOYEE && user.getRole() != Role.ADMIN) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(
-                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST,
+            throw new ApiException(
+                    ErrorCode.BAD_REQUEST,
                     "Only employees can be approved");
         }
         user.setEnabled(true);
@@ -86,7 +96,7 @@ public class AdminService {
                 .toList();
     }
 
-    public List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto> getEmployeeWorkloads() {
+    public List<EmployeeWorkloadDto> getEmployeeWorkloads() {
         return userRepository.getEmployeeWorkloads();
     }
 
@@ -97,7 +107,7 @@ public class AdminService {
         // This will be replaced in DashboardService, but since it's duplicated in AdminService...
         // Wait, AdminService also has getAdminDashboard which fetches ALL tasks. I should defer this or redirect to DashboardService.
         // I will change it to return empty or just use DashboardService here later.
-        java.util.List<com.example.zhanfinancebackend.modules.crm.entity.Task> allTasks = taskRepository.findAll();
+        java.util.List<Task> allTasks = taskRepository.findAll();
         long tasksCount = allTasks.size();
         
         java.util.Map<String, Long> tasksByStatus = allTasks.stream()
@@ -106,7 +116,7 @@ public class AdminService {
         return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, 0L, 0L, 0.0, tasksByStatus, java.util.Collections.emptyMap(), userRepository.count(), 0L, java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO, java.util.Collections.emptyList());
     }
 
-    public List<com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto> getClientStats() {
+    public List<ClientStatsDto> getClientStats() {
         return taskRepository.getClientStats();
     }
 
@@ -116,10 +126,10 @@ public class AdminService {
                 .toList();
     }
 
-    public void createLearner(com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest request) {
+    public void createLearner(RegisterRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(
-                    com.example.zhanfinancebackend.common.exception.ErrorCode.BAD_REQUEST, "Email уже используется");
+            throw new ApiException(
+                    ErrorCode.BAD_REQUEST, "Email уже используется");
         }
         User user = new User(
                 request.fullName(),

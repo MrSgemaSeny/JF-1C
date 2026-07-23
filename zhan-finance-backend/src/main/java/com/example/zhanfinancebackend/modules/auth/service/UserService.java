@@ -24,17 +24,24 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.example.zhanfinancebackend.common.exception.BadRequestException;
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+import com.example.zhanfinancebackend.modules.auth.mapper.UserMapper;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
+import com.example.zhanfinancebackend.modules.documents.service.StorageService;
+
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final ClientProfileRepository clientProfileRepository;
     private final PasswordEncoder passwordEncoder;
-    private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
-    private final com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper;
-    private final com.example.zhanfinancebackend.modules.crm.repository.TaskRepository taskRepository;
+    private final StorageService storageService;
+    private final UserMapper userMapper;
+    private final TaskRepository taskRepository;
 
-    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService, com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper, com.example.zhanfinancebackend.modules.crm.repository.TaskRepository taskRepository) {
+    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, StorageService storageService, UserMapper userMapper, TaskRepository taskRepository) {
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
         this.passwordEncoder = passwordEncoder;
@@ -46,14 +53,14 @@ public class UserService {
     @Transactional
     public void softDeleteUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setDeletedAt(java.time.Instant.now());
         userRepository.save(user);
 
         // Unassign open tasks back to task pool
         var tasks = taskRepository.findAllByEmployeeWithDetails(user);
         for (var task : tasks) {
-            if (task.getStage() == null || task.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.OPEN) {
+            if (task.getStage() == null || task.getStage().getType() == StageType.OPEN) {
                 task.setAssignedTo(null);
                 taskRepository.save(task);
             }
@@ -63,7 +70,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserProfileDto getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         ClientProfile clientProfile = null;
         if (user.getRole() == Role.CLIENT) {
@@ -79,7 +86,7 @@ public class UserService {
     @Transactional
     public UserProfileDto updateProfile(Long userId, UpdateProfileRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (request.fullName() != null && !request.fullName().isBlank()) {
             user.setFullName(request.fullName());
@@ -104,7 +111,7 @@ public class UserService {
     public void updateLocale(Long userId, String locale) {
         if (locale == null || locale.isBlank() || locale.length() > 10) return;
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setLocale(locale);
         userRepository.save(user);
     }
@@ -112,14 +119,14 @@ public class UserService {
     @Transactional
     public void updatePassword(Long userId, UpdatePasswordRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getAuthProvider() == AuthProvider.GOOGLE && user.getPasswordHash() == null) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Пользователи Google не могут менять пароль таким образом");
+            throw new BadRequestException("Пользователи Google не могут менять пароль таким образом");
         }
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Неверный текущий пароль");
+            throw new BadRequestException("Неверный текущий пароль");
         }
 
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
@@ -129,19 +136,19 @@ public class UserService {
     @Transactional
     public UserProfileDto uploadAvatar(Long userId, MultipartFile file) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getAuthProvider() == AuthProvider.GOOGLE) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Пользователи Google не могут менять аватарку локально");
+            throw new BadRequestException("Пользователи Google не могут менять аватарку локально");
         }
 
         if (file.isEmpty()) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Файл пуст");
+            throw new BadRequestException("Файл пуст");
         }
 
         String contentType = file.getContentType();
         if (contentType == null || (!contentType.startsWith("image/"))) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Допустимы только изображения");
+            throw new BadRequestException("Допустимы только изображения");
         }
 
         // Remove old avatar if exists

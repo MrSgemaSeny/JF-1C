@@ -22,6 +22,11 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.example.zhanfinancebackend.common.exception.UnauthorizedException;
+import com.example.zhanfinancebackend.modules.auth.entity.AuthProvider;
+import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
+
 @Service
 public class GoogleAuthService {
 
@@ -32,8 +37,8 @@ public class GoogleAuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final ClientService clientService;
-    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
-    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
+    private final NotificationService notificationService;
+    private final EmailNotificationService emailNotificationService;
 
     public GoogleAuthService(
 
@@ -41,8 +46,8 @@ public class GoogleAuthService {
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
             ClientService clientService,
-            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService,
-            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService
+            NotificationService notificationService,
+            EmailNotificationService emailNotificationService
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
@@ -61,11 +66,11 @@ public class GoogleAuthService {
                     .build();
             idToken = verifier.verify(credential);
         } catch (IOException | java.security.GeneralSecurityException e) {
-            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Google authentication failed: " + e.getMessage());
+            throw new UnauthorizedException("Google authentication failed: " + e.getMessage());
         }
 
         if (idToken == null) {
-            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException(com.example.zhanfinancebackend.common.exception.ErrorCode.INVALID_GOOGLE_TOKEN.name());
+            throw new UnauthorizedException(ErrorCode.INVALID_GOOGLE_TOKEN.name());
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
@@ -80,7 +85,7 @@ public class GoogleAuthService {
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
             if (!user.isEnabled()) {
-                throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException(com.example.zhanfinancebackend.common.exception.ErrorCode.ACCOUNT_NOT_ACTIVATED.name());
+                throw new UnauthorizedException(ErrorCode.ACCOUNT_NOT_ACTIVATED.name());
             }
             // Update avatar and provider if they login via Google
             boolean updated = false;
@@ -88,8 +93,8 @@ public class GoogleAuthService {
                 user.setAvatarUrl(picture);
                 updated = true;
             }
-            if (user.getAuthProvider() != com.example.zhanfinancebackend.modules.auth.entity.AuthProvider.GOOGLE) {
-                user.setAuthProvider(com.example.zhanfinancebackend.modules.auth.entity.AuthProvider.GOOGLE);
+            if (user.getAuthProvider() != AuthProvider.GOOGLE) {
+                user.setAuthProvider(AuthProvider.GOOGLE);
                 updated = true;
             }
             if (updated) {
@@ -106,7 +111,7 @@ public class GoogleAuthService {
                     UUID.randomUUID().toString(),
                     assignedRole
             );
-            user.setAuthProvider(com.example.zhanfinancebackend.modules.auth.entity.AuthProvider.GOOGLE);
+            user.setAuthProvider(AuthProvider.GOOGLE);
             if (picture != null) {
                 user.setAvatarUrl(picture);
             }

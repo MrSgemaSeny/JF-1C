@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.services.entity.ServiceEntity;
+
 @Entity
 @Table(name = "tasks")
 @EntityListeners(AuditingEntityListener.class)
@@ -86,7 +88,7 @@ public class Task extends BaseEntity {
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id")
     )
-    private List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services = new ArrayList<>();
+    private List<ServiceEntity> services = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -314,11 +316,11 @@ public class Task extends BaseEntity {
         activity.setTask(this);
     }
 
-    public List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> getServices() {
+    public List<ServiceEntity> getServices() {
         return services;
     }
 
-    public void setServices(List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services) {
+    public void setServices(List<ServiceEntity> services) {
         this.services.clear();
         if (services != null) {
             this.services.addAll(services);

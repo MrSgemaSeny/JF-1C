@@ -14,6 +14,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.core.io.Resource;
 
+import com.example.zhanfinancebackend.common.exception.BadRequestException;
+
 @Service
 public class DocumentTemplateService {
 
@@ -28,7 +30,7 @@ public class DocumentTemplateService {
     @Transactional
     public DocumentTemplateDto uploadTemplate(String name, String description, MultipartFile file, User actor) {
         if (!"application/vnd.openxmlformats-officedocument.wordprocessingml.document".equals(file.getContentType())) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Only .docx templates are allowed");
+            throw new BadRequestException("Only .docx templates are allowed");
         }
 
         String storageKey = storageService.store(file);

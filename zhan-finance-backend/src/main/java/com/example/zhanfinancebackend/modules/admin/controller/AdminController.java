@@ -11,15 +11,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest;
+import com.example.zhanfinancebackend.modules.auth.service.UserService;
+import com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto;
+import com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto;
+
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final AdminService adminService;
-    private final com.example.zhanfinancebackend.modules.auth.service.UserService userService;
+    private final UserService userService;
 
-    public AdminController(AdminService adminService, com.example.zhanfinancebackend.modules.auth.service.UserService userService) {
+    public AdminController(AdminService adminService, UserService userService) {
         this.adminService = adminService;
         this.userService = userService;
     }
@@ -37,7 +42,7 @@ public class AdminController {
     }
 
     @GetMapping("/employees/workload")
-    public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto>> getEmployeeWorkload() {
+    public ApiResponse<List<EmployeeWorkloadDto>> getEmployeeWorkload() {
         return ApiResponse.success(adminService.getEmployeeWorkloads());
     }
 
@@ -69,7 +74,7 @@ public class AdminController {
     }
 
     @GetMapping("/clients/stats")
-    public ApiResponse<List<com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto>> getClientStats() {
+    public ApiResponse<List<ClientStatsDto>> getClientStats() {
         return ApiResponse.success(adminService.getClientStats());
     }
 
@@ -79,7 +84,7 @@ public class AdminController {
     }
 
     @PostMapping("/learners")
-    public ApiResponse<Void> createLearner(@jakarta.validation.Valid @RequestBody com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest request) {
+    public ApiResponse<Void> createLearner(@jakarta.validation.Valid @RequestBody RegisterRequest request) {
         adminService.createLearner(request);
         return ApiResponse.success(null, "Обучающийся успешно создан");
     }

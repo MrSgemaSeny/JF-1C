@@ -12,19 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
+import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
+
 @Service
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final EmailNotificationService emailNotificationService;
-    private final com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @org.springframework.beans.factory.annotation.Value("${app.frontend.url}")
     private String frontendUrl;
 
     public NotificationService(NotificationRepository notificationRepository, 
                                EmailNotificationService emailNotificationService,
-                               com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository) {
+                               UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
         this.emailNotificationService = emailNotificationService;
         this.userRepository = userRepository;
@@ -44,7 +48,7 @@ public class NotificationService {
 
     @Transactional
     public void notifyAdmins(String title, String message, String relativeLink) {
-        List<User> admins = userRepository.findAllByRole(com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN);
+        List<User> admins = userRepository.findAllByRole(Role.ADMIN);
         for (User admin : admins) {
             createNotification(admin, title, message, relativeLink);
         }
@@ -60,7 +64,7 @@ public class NotificationService {
     @Transactional
     public NotificationDto markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Notification not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
         if (!notification.getUser().getId().equals(userId)) {
             throw new org.springframework.security.access.AccessDeniedException("Access denied");

@@ -16,6 +16,9 @@ import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
+import com.example.zhanfinancebackend.common.exception.BadRequestException;
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+
 @Service
 @ConditionalOnProperty(name = "app.storage.type", havingValue = "db", matchIfMissing = true)
 public class DatabaseStorageService implements StorageService {
@@ -32,7 +35,7 @@ public class DatabaseStorageService implements StorageService {
     public String store(MultipartFile file) {
         try {
             if (file.isEmpty()) {
-                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Failed to store empty file.");
+                throw new BadRequestException("Failed to store empty file.");
             }
             
             String originalFilename = StringUtils.cleanPath(file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown");
@@ -82,11 +85,11 @@ public class DatabaseStorageService implements StorageService {
                 try {
                     return localStorageService.loadAsBytes("avatars/" + storageKey);
                 } catch (Exception ex) {
-                    throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+                    throw new ResourceNotFoundException("Could not read file: " + storageKey);
                 }
             }
         }
-        throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+        throw new ResourceNotFoundException("Could not read file: " + storageKey);
     }
 
     @Override
@@ -109,11 +112,11 @@ public class DatabaseStorageService implements StorageService {
                 try {
                     return localStorageService.loadAsResource("avatars/" + storageKey);
                 } catch (Exception ex) {
-                    throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+                    throw new ResourceNotFoundException("Could not read file: " + storageKey);
                 }
             }
         }
-        throw new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Could not read file: " + storageKey);
+        throw new ResourceNotFoundException("Could not read file: " + storageKey);
     }
 
     @Override

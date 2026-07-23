@@ -7,6 +7,9 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import org.springframework.stereotype.Service;
 
+import com.example.zhanfinancebackend.modules.crm.entity.Stage;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+
 @Service
 public class CrmAccessService {
 
@@ -64,12 +67,12 @@ public class CrmAccessService {
         }
     }
 
-    public boolean canUpdateTaskStage(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.Stage newStage) {
+    public boolean canUpdateTaskStage(User actor, Task task, Stage newStage) {
         if (actor.getRole() == Role.ADMIN) {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
-            if (newStage != null && (newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON || newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST)) {
+            if (newStage != null && (newStage.getType() == StageType.WON || newStage.getType() == StageType.LOST)) {
                 return false;
             }
             return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
@@ -78,19 +81,19 @@ public class CrmAccessService {
             if (!sameUser(actor, task.getClient()) || newStage == null) {
                 return false;
             }
-            if (newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
+            if (newStage.getType() == StageType.LOST) {
                 return true;
             }
             if (task.getStage() != null && task.getStage().isPreFinal()) {
-                return newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.WON ||
-                       newStage.getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.OPEN;
+                return newStage.getType() == StageType.WON ||
+                       newStage.getType() == StageType.OPEN;
             }
             return false;
         }
         return false;
     }
 
-    public void assertCanUpdateTaskStage(User actor, Task task, com.example.zhanfinancebackend.modules.crm.entity.Stage newStage) {
+    public void assertCanUpdateTaskStage(User actor, Task task, Stage newStage) {
         if (!canUpdateTaskStage(actor, task, newStage)) {
             throw new org.springframework.security.access.AccessDeniedException("Task stage update denied");
         }

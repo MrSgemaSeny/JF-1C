@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.zhanfinancebackend.common.response.ApiResponse;
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.courses.entity.Chapter;
+
 @RestController
 @RequestMapping("/api/admin/courses")
 @PreAuthorize("hasRole('ADMIN')")
@@ -95,7 +97,7 @@ public class AdminCourseController {
 
 
     @PostMapping("/{courseId}/chapters")
-    public ApiResponse<com.example.zhanfinancebackend.modules.courses.entity.Chapter> createChapter(
+    public ApiResponse<Chapter> createChapter(
             @PathVariable Long courseId,
             @RequestParam("title") String title,
             @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex) {

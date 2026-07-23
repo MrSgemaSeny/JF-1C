@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
+
 @Component
 public class DeadlineAlertScheduler {
 
@@ -18,9 +20,9 @@ public class DeadlineAlertScheduler {
     private final TaskRepository taskRepository;
     private final EmailNotificationService emailNotificationService;
     private final NotificationService notificationService;
-    private final com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public DeadlineAlertScheduler(TaskRepository taskRepository, EmailNotificationService emailNotificationService, NotificationService notificationService, com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository) {
+    public DeadlineAlertScheduler(TaskRepository taskRepository, EmailNotificationService emailNotificationService, NotificationService notificationService, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.emailNotificationService = emailNotificationService;
         this.notificationService = notificationService;

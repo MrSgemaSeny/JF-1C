@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+
 @Service
 public class CalendarService {
 
@@ -129,7 +131,7 @@ public class CalendarService {
     @Transactional
     public void deleteEvent(User user, Long id) {
         CalendarEvent event = eventRepository.findById(id)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Event not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
                 
         if (!event.getUser().getId().equals(user.getId())) {
             throw new org.springframework.security.access.AccessDeniedException("Not your event");

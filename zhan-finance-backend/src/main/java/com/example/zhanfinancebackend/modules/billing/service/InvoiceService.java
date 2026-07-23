@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+
 @Service
 public class InvoiceService {
 
@@ -106,7 +108,7 @@ public class InvoiceService {
 
     private Invoice get(User user, Long id) {
         Invoice invoice = invoiceRepository.findByIdWithClient(id)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Invoice not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
         invoiceAccessService.assertCanRead(user, invoice);
         return invoice;
     }
@@ -117,7 +119,7 @@ public class InvoiceService {
         }
         return userRepository.findById(clientId)
                 .filter(user -> user.getRole() == Role.CLIENT)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
     }
 
     private InvoiceDto toDto(Invoice invoice) {

@@ -10,15 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.zhanfinancebackend.modules.courses.entity.Chapter;
+import com.example.zhanfinancebackend.modules.courses.repository.ChapterRepository;
+
 @Service
 public class LessonService {
 
     private final LessonRepository lessonRepository;
-    private final com.example.zhanfinancebackend.modules.courses.repository.ChapterRepository chapterRepository;
+    private final ChapterRepository chapterRepository;
     private final CourseRepository courseRepository;
     private final StorageService storageService;
 
-    public LessonService(LessonRepository lessonRepository, com.example.zhanfinancebackend.modules.courses.repository.ChapterRepository chapterRepository, CourseRepository courseRepository, StorageService storageService) {
+    public LessonService(LessonRepository lessonRepository, ChapterRepository chapterRepository, CourseRepository courseRepository, StorageService storageService) {
         this.lessonRepository = lessonRepository;
         this.chapterRepository = chapterRepository;
         this.courseRepository = courseRepository;
@@ -39,9 +42,9 @@ public class LessonService {
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
 
-        com.example.zhanfinancebackend.modules.courses.entity.Chapter chapter;
+        Chapter chapter;
         if (course.getChapters().isEmpty()) {
-            chapter = new com.example.zhanfinancebackend.modules.courses.entity.Chapter();
+            chapter = new Chapter();
             chapter.setCourse(course);
             chapter.setTitle("Default Chapter");
             chapter.setOrderIndex(0);
@@ -56,7 +59,7 @@ public class LessonService {
 
     @Transactional
     public Lesson createLessonForChapter(Long chapterId, String title, String description, LessonType type, int orderIndex) {
-        com.example.zhanfinancebackend.modules.courses.entity.Chapter chapter = chapterRepository.findById(chapterId)
+        Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Chapter not found"));
 

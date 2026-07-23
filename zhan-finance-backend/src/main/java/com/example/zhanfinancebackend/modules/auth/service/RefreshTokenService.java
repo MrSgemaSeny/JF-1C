@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.example.zhanfinancebackend.common.exception.UnauthorizedException;
+
 @Service
 public class RefreshTokenService {
 
@@ -52,9 +54,9 @@ public class RefreshTokenService {
     @Transactional(readOnly = true)
     public RefreshToken verify(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Invalid refresh token"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
         if (refreshToken.getExpiresAt().isBefore(Instant.now())) {
-            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Refresh token expired");
+            throw new UnauthorizedException("Refresh token expired");
         }
         return refreshToken;
     }

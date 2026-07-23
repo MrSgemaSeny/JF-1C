@@ -7,17 +7,21 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
+import com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto;
+import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmailIgnoreCase(String email);
 
     boolean existsByEmailIgnoreCase(String email);
 
-    long countByRole(com.example.zhanfinancebackend.modules.auth.entity.Role role);
+    long countByRole(Role role);
 
     long countByAssignedEmployee(User employee);
 
-    List<User> findAllByRole(com.example.zhanfinancebackend.modules.auth.entity.Role role);
+    List<User> findAllByRole(Role role);
     
     List<User> findAllByAssignedEmployee(User employee);
 
@@ -27,12 +31,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT e FROM User e WHERE e.role = 'EMPLOYEE' AND NOT EXISTS (SELECT c FROM User c WHERE c.assignedEmployee = e)")
     List<User> findUnassignedEmployees();
 
-    @Query("SELECT new com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto(u.id, u.fullName, u.email, CAST(COUNT(t.id) AS int)) " +
+    @Query("SELECT new EmployeeWorkloadDto(u.id, u.fullName, u.email, CAST(COUNT(t.id) AS int)) " +
            "FROM User u " +
-           "LEFT JOIN Task t ON t.assignedTo = u AND (t.stage IS NULL OR t.stage.type != com.example.zhanfinancebackend.modules.crm.entity.StageType.WON) " +
+           "LEFT JOIN Task t ON t.assignedTo = u AND (t.stage IS NULL OR t.stage.type != StageType.WON) " +
            "WHERE u.role = 'EMPLOYEE' " +
            "GROUP BY u.id, u.fullName, u.email")
-    List<com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto> getEmployeeWorkloads();
+    List<EmployeeWorkloadDto> getEmployeeWorkloads();
 
     @Query(value = """
         SELECT u.* FROM app_users u
@@ -44,7 +48,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     """, nativeQuery = true)
     Optional<User> findLeastLoadedEmployee();
     
-    List<User> findAllByRoleIn(List<com.example.zhanfinancebackend.modules.auth.entity.Role> roles);
+    List<User> findAllByRoleIn(List<Role> roles);
 
     @org.springframework.data.jpa.repository.Query("select u from User u where lower(u.fullName) like lower(concat('%', :query, '%')) or lower(u.email) like lower(concat('%', :query, '%'))")
     List<User> searchUsers(@org.springframework.data.repository.query.Param("query") String query);

@@ -20,6 +20,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.zhanfinancebackend.common.exception.ConflictException;
+import com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse;
+import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
+
 @Service
 public class AuthService {
 
@@ -29,8 +34,8 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final ClientService clientService;
-    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
-    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
+    private final NotificationService notificationService;
+    private final EmailNotificationService emailNotificationService;
 
     public AuthService(
             UserRepository userRepository,
@@ -39,8 +44,8 @@ public class AuthService {
             JwtService jwtService,
             RefreshTokenService refreshTokenService,
             ClientService clientService,
-            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService,
-            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService
+            NotificationService notificationService,
+            EmailNotificationService emailNotificationService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -55,7 +60,7 @@ public class AuthService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new com.example.zhanfinancebackend.common.exception.ConflictException(ErrorCode.EMAIL_ALREADY_REGISTERED.name());
+            throw new ConflictException(ErrorCode.EMAIL_ALREADY_REGISTERED.name());
         }
 
         Role assignedRole = request.role() != null ? request.role() : Role.CLIENT;
@@ -147,9 +152,9 @@ public class AuthService {
         );
     }
 
-    public com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse checkEmail(String email) {
+    public CheckEmailResponse checkEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email.trim())
-                .map(user -> new com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse(true, user.getAuthProvider()))
-                .orElse(new com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse(false, null));
+                .map(user -> new CheckEmailResponse(true, user.getAuthProvider()))
+                .orElse(new CheckEmailResponse(false, null));
     }
 }

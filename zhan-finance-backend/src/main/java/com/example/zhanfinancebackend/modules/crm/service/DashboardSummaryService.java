@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
+
 @Service
 public class DashboardSummaryService {
 
@@ -40,10 +42,10 @@ public class DashboardSummaryService {
         List<String> highlights = new ArrayList<>();
 
         for (Task t : allTasks) {
-            if (user.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT && t.getClient() != null && !t.getClient().getId().equals(user.getId())) {
+            if (user.getRole() == Role.CLIENT && t.getClient() != null && !t.getClient().getId().equals(user.getId())) {
                 continue;
             }
-            if (user.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.EMPLOYEE && t.getAssignedTo() != null && !t.getAssignedTo().getId().equals(user.getId())) {
+            if (user.getRole() == Role.EMPLOYEE && t.getAssignedTo() != null && !t.getAssignedTo().getId().equals(user.getId())) {
                 continue;
             }
 

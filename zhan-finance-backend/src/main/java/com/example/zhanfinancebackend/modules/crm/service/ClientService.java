@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+
 @Service
 public class ClientService {
 
@@ -52,21 +54,21 @@ public class ClientService {
     public ClientDto getClient(Long id) {
         return clientProfileRepository.findByIdWithUser(id)
                 .map(this::mapToDto)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client profile not found"));
     }
 
     @Transactional(readOnly = true)
     public ClientProfile getClientProfileEntity(Long id) {
         return clientProfileRepository.findByIdWithUser(id)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client profile not found"));
     }
 
     @Transactional
     public void assignEmployeeToClient(Long clientId, Long employeeId) {
         User client = userRepository.findById(clientId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
         User employee = userRepository.findById(employeeId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Employee not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
         client.setAssignedEmployee(employee);
         userRepository.save(client);
@@ -75,7 +77,7 @@ public class ClientService {
     @Transactional
     public ClientDto updateClientProfile(Long userId, String companyName, String phone, String notes) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         ClientProfile profile = clientProfileRepository.findByUser(user).orElseGet(() -> new ClientProfile(user));
         profile.setCompanyName(companyName);

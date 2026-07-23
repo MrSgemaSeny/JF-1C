@@ -16,6 +16,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.example.zhanfinancebackend.modules.crm.entity.Task;
+
 @Entity
 @Table(name = "invoices")
 @EntityListeners(AuditingEntityListener.class)
@@ -27,7 +29,7 @@ public class Invoice extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
-    private com.example.zhanfinancebackend.modules.crm.entity.Task task;
+    private Task task;
 
     @Column(nullable = false, length = 160)
     private String title;
@@ -56,11 +58,11 @@ public class Invoice extends BaseEntity {
         return user;
     }
 
-    public com.example.zhanfinancebackend.modules.crm.entity.Task getTask() {
+    public Task getTask() {
         return task;
     }
 
-    public void setTask(com.example.zhanfinancebackend.modules.crm.entity.Task task) {
+    public void setTask(Task task) {
         this.task = task;
     }
 

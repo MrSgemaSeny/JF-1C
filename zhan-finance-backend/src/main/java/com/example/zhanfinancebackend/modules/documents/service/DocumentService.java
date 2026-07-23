@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.example.zhanfinancebackend.common.exception.BadRequestException;
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
+import com.example.zhanfinancebackend.modules.crm.service.CrmAccessService;
+
 @Service
 public class DocumentService {
 
@@ -28,7 +33,7 @@ public class DocumentService {
     private final StorageService storageService;
     private final DocumentAccessService documentAccessService;
     private final NotificationService notificationService;
-    private final com.example.zhanfinancebackend.modules.crm.service.CrmAccessService crmAccessService;
+    private final CrmAccessService crmAccessService;
 
     // MVP allowed types
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
@@ -46,7 +51,7 @@ public class DocumentService {
                            StorageService storageService,
                            DocumentAccessService documentAccessService,
                            NotificationService notificationService,
-                           com.example.zhanfinancebackend.modules.crm.service.CrmAccessService crmAccessService) {
+                           CrmAccessService crmAccessService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
@@ -59,13 +64,13 @@ public class DocumentService {
     @Transactional
     public DocumentDto uploadDocument(Long targetUserId, Long taskId, MultipartFile file, User actor) {
         User targetUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Target user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Target user not found"));
 
         documentAccessService.assertCanCreateFor(actor, targetUser);
 
         String contentType = file.getContentType();
         if (contentType == null) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("File type not recognized");
+            throw new BadRequestException("File type not recognized");
         }
         
         java.util.Set<String> ALLOWED_CONTENT_TYPES = java.util.Set.of(
@@ -77,14 +82,14 @@ public class DocumentService {
         );
 
         if (!ALLOWED_CONTENT_TYPES.contains(contentType)) {
-            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Недопустимый тип файла: " + contentType);
+            throw new BadRequestException("Недопустимый тип файла: " + contentType);
         }
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename != null) {
             String lowerCaseName = originalFilename.toLowerCase();
             if (lowerCaseName.endsWith(".html") || lowerCaseName.endsWith(".htm") || lowerCaseName.endsWith(".svg") || lowerCaseName.endsWith(".exe") || lowerCaseName.endsWith(".js") || lowerCaseName.endsWith(".sh")) {
-                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Данный тип файла запрещен к загрузке.");
+                throw new BadRequestException("Данный тип файла запрещен к загрузке.");
             }
         }
 
@@ -101,14 +106,14 @@ public class DocumentService {
 
         if (taskId != null) {
             Task task = taskRepository.findById(taskId)
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Task not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
             document.setTask(task);
         }
 
         document = documentRepository.save(document);
 
         // --- Notification Logic ---
-        if (actor.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT) {
+        if (actor.getRole() == Role.CLIENT) {
             // Notify Assigned Employee if exists
             User employee = targetUser.getAssignedEmployee();
             if (employee != null) {
@@ -139,7 +144,7 @@ public class DocumentService {
                     link
             );
             
-            if (actor.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN) {
+            if (actor.getRole() != Role.ADMIN) {
                 notificationService.notifyAdmins(
                         "Загружен документ",
                         actor.getFullName() + " загрузил файл: " + document.getFileName() + " для клиента " + targetUser.getFullName(),
@@ -154,7 +159,7 @@ public class DocumentService {
     @Transactional(readOnly = true)
     public List<DocumentDto> getUserDocuments(Long targetUserId, User actor) {
         User targetUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Target user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Target user not found"));
 
         // If you can create for them, you can generally read their list
         documentAccessService.assertCanCreateFor(actor, targetUser);
@@ -166,11 +171,11 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public List<DocumentDto> getAllVisibleDocuments(User actor) {
-        if (actor.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN) {
+        if (actor.getRole() == Role.ADMIN) {
             return documentRepository.findAllByOrderByCreatedAtDesc().stream()
                     .map(this::mapToDto)
                     .collect(Collectors.toList());
-        } else if (actor.getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.EMPLOYEE) {
+        } else if (actor.getRole() == Role.EMPLOYEE) {
             return documentRepository.findByUser_AssignedEmployee_IdOrderByCreatedAtDesc(actor.getId()).stream()
                     .map(this::mapToDto)
                     .collect(Collectors.toList());
@@ -184,7 +189,7 @@ public class DocumentService {
         // Technically anyone who can read the task should be able to read its documents.
         // For simplicity, we just fetch them. Ideally we check task access here.
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         
         crmAccessService.assertCanReadTask(actor, task);
 
@@ -200,7 +205,7 @@ public class DocumentService {
         document = documentRepository.save(document);
 
         // --- Notification Logic ---
-        if (actor.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT) {
+        if (actor.getRole() != Role.CLIENT) {
             notificationService.createNotification(
                     document.getUser(),
                     "Статус документа изменен",
@@ -209,7 +214,7 @@ public class DocumentService {
             );
         }
         
-        if (actor.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN) {
+        if (actor.getRole() != Role.ADMIN) {
             notificationService.notifyAdmins(
                  "Статус документа изменен",
                  actor.getFullName() + " изменил статус документа '" + document.getFileName() + "' на: " + status,
@@ -223,7 +228,7 @@ public class DocumentService {
     @Transactional(readOnly = true)
     public Document getDocumentWithAccessCheck(Long documentId, User actor) {
         Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Document not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
 
         documentAccessService.assertCanRead(actor, document);
         return document;
@@ -232,7 +237,7 @@ public class DocumentService {
     @Transactional
     public void deleteDocument(Long documentId, User actor) {
         Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Document not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
 
         documentAccessService.assertCanWrite(actor, document);
         
@@ -243,7 +248,7 @@ public class DocumentService {
     @Transactional
     public DocumentDto confirmDocument(Long documentId, String clientIp, User actor) {
         Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Document not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
 
         documentAccessService.assertCanRead(actor, document);
 

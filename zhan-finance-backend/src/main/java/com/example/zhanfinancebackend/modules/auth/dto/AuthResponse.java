@@ -2,6 +2,8 @@ package com.example.zhanfinancebackend.modules.auth.dto;
 
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 
+import com.example.zhanfinancebackend.modules.auth.entity.AuthProvider;
+
 public record AuthResponse(
         String accessToken,
         String refreshToken,
@@ -12,6 +14,6 @@ public record AuthResponse(
         Role role,
         boolean isNewUser,
         String avatarUrl,
-        com.example.zhanfinancebackend.modules.auth.entity.AuthProvider authProvider,
+        AuthProvider authProvider,
         String locale
 ) {}

@@ -38,39 +38,53 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskBatchOperationRequest;
+import com.example.zhanfinancebackend.modules.crm.dto.TaskUpdateRequest;
+import com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper;
+import com.example.zhanfinancebackend.modules.crm.repository.TaskSpecification;
+import com.example.zhanfinancebackend.modules.crm.repository.UserLabelRepository;
+import com.example.zhanfinancebackend.modules.documents.entity.Document;
+import com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository;
+import com.example.zhanfinancebackend.modules.documents.service.StorageService;
+import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
+import com.example.zhanfinancebackend.modules.services.entity.ServiceEntity;
+import com.example.zhanfinancebackend.modules.services.repository.ServiceRepository;
+
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final CrmAccessService accessService;
-    private final com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService;
-    private final com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService;
+    private final NotificationService notificationService;
+    private final EmailNotificationService emailNotificationService;
     private final AuditService auditService;
-    private final com.example.zhanfinancebackend.modules.services.repository.ServiceRepository serviceRepository;
+    private final ServiceRepository serviceRepository;
     private final StageRepository stageRepository;
     private final PipelineRepository pipelineRepository;
-    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
-    private final com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository;
-    private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
+    private final TaskMapper taskMapper;
+    private final DocumentRepository documentRepository;
+    private final StorageService storageService;
     private final ClientService clientService;
-    private final com.example.zhanfinancebackend.modules.crm.repository.UserLabelRepository userLabelRepository;
+    private final UserLabelRepository userLabelRepository;
 
     public TaskService(
             TaskRepository taskRepository,
             UserRepository userRepository,
             CrmAccessService accessService,
-            com.example.zhanfinancebackend.modules.notifications.service.NotificationService notificationService,
-            com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService emailNotificationService,
+            NotificationService notificationService,
+            EmailNotificationService emailNotificationService,
             AuditService auditService,
-            com.example.zhanfinancebackend.modules.services.repository.ServiceRepository serviceRepository,
+            ServiceRepository serviceRepository,
             StageRepository stageRepository,
             PipelineRepository pipelineRepository,
-            com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper,
-            com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository,
-            com.example.zhanfinancebackend.modules.documents.service.StorageService storageService,
+            TaskMapper taskMapper,
+            DocumentRepository documentRepository,
+            StorageService storageService,
             ClientService clientService,
-            com.example.zhanfinancebackend.modules.crm.repository.UserLabelRepository userLabelRepository
+            UserLabelRepository userLabelRepository
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -95,14 +109,14 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks(Long clientId, Long assignedToId, Long stageId, Boolean unassigned) {
-        org.springframework.data.jpa.domain.Specification<Task> spec = com.example.zhanfinancebackend.modules.crm.repository.TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
+        org.springframework.data.jpa.domain.Specification<Task> spec = TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
         return taskRepository.findAll(spec).stream().map(taskMapper::mapToDto).toList();
     }
 
     @Transactional(readOnly = true)
     public org.springframework.data.domain.Page<TaskDto> getAllTasksPaged(Long clientId, Long assignedToId, Long stageId, Boolean unassigned, int page, int size) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by("id").descending());
-        org.springframework.data.jpa.domain.Specification<Task> spec = com.example.zhanfinancebackend.modules.crm.repository.TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
+        org.springframework.data.jpa.domain.Specification<Task> spec = TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
         return taskRepository.findAll(spec, pageable).map(taskMapper::mapToDto);
     }
 
@@ -124,7 +138,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public Task getTaskEntity(Long id) {
         return taskRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
     }
 
     @Transactional(readOnly = true)
@@ -136,7 +150,7 @@ public class TaskService {
     @Transactional
     public TaskDto createTask(TaskCreateRequest request, User creator) {
         User client = userRepository.findById(request.clientId())
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
 
         accessService.assertCanCreateTaskFor(creator, client);
 
@@ -148,21 +162,21 @@ public class TaskService {
         Pipeline pipeline;
         if (request.pipelineId() != null) {
             pipeline = pipelineRepository.findById(request.pipelineId())
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Pipeline not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Pipeline not found"));
         } else {
             pipeline = pipelineRepository.findByIsDefaultTrue()
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default pipeline not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Default pipeline not found"));
         }
         Stage defaultStage = stageRepository.findByPipelineIdAndIsDefaultTrue(pipeline.getId()).orElse(null);
         if (defaultStage == null) {
             defaultStage = stageRepository.findByPipelineIdOrderByOrderIndexAsc(pipeline.getId()).stream().findFirst()
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default stage not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Default stage not found"));
         }
         task.setStage(defaultStage);
 
         if (request.assignedToId() != null) {
             User assignee = userRepository.findById(request.assignedToId())
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
             task.setAssignedTo(assignee);
         } else if (client.getAssignedEmployee() != null) {
             task.setAssignedTo(client.getAssignedEmployee());
@@ -179,14 +193,14 @@ public class TaskService {
         }
         
         if (request.serviceIds() != null && !request.serviceIds().isEmpty()) {
-            List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services = serviceRepository.findAllById(request.serviceIds());
+            List<ServiceEntity> services = serviceRepository.findAllById(request.serviceIds());
             task.setServices(services);
         }
 
         Task savedTask = taskRepository.save(task);
         auditService.logAction("CREATE", "Task", savedTask.getId(), "Task created: " + savedTask.getTitle());
 
-        if (creator.getRole() != com.example.zhanfinancebackend.modules.auth.entity.Role.CLIENT) {
+        if (creator.getRole() != Role.CLIENT) {
             notificationService.createNotification(
                     client,
                     "Новая задача",
@@ -218,18 +232,18 @@ public class TaskService {
     @Transactional
     public TaskDto requestTask(TaskRequestCreateRequest request, User client) {
         User managedClient = userRepository.findById(client.getId())
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Client not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
 
         Task task = new Task(request.title(), managedClient, managedClient);
         task.setDescription(request.description());
         task.setDueDate(request.dueDate());
 
         Pipeline pipeline = pipelineRepository.findByIsDefaultTrue()
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default pipeline not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Default pipeline not found"));
         Stage defaultStage = stageRepository.findByPipelineIdAndIsDefaultTrue(pipeline.getId()).orElse(null);
         if (defaultStage == null) {
             defaultStage = stageRepository.findByPipelineIdOrderByOrderIndexAsc(pipeline.getId()).stream().findFirst()
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Default stage not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Default stage not found"));
         }
         task.setStage(defaultStage);
 
@@ -248,7 +262,7 @@ public class TaskService {
         }
 
         if (request.serviceIds() != null && !request.serviceIds().isEmpty()) {
-            List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services = serviceRepository.findAllById(request.serviceIds());
+            List<ServiceEntity> services = serviceRepository.findAllById(request.serviceIds());
             task.setServices(services);
         }
 
@@ -277,7 +291,7 @@ public class TaskService {
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
-    public TaskDto updateTaskDetails(Long taskId, com.example.zhanfinancebackend.modules.crm.dto.TaskUpdateRequest request, User user) {
+    public TaskDto updateTaskDetails(Long taskId, TaskUpdateRequest request, User user) {
         Task task = getTaskEntity(taskId);
         accessService.assertCanUpdateTaskStage(user, task, task.getStage()); // Using this check for now to ensure they have write access
 
@@ -316,7 +330,7 @@ public class TaskService {
             }
             
             java.util.List<Subtask> updatedSubtasks = new java.util.ArrayList<>();
-            for (com.example.zhanfinancebackend.modules.crm.dto.SubtaskDto stDto : request.subtasks()) {
+            for (SubtaskDto stDto : request.subtasks()) {
                 if (stDto.id() != null && stDto.id() > 0 && existingMap.containsKey(stDto.id())) {
                     Subtask st = existingMap.get(stDto.id());
                     st.setTitle(stDto.title());
@@ -372,7 +386,7 @@ public class TaskService {
     public TaskDto updateTaskStage(Long taskId, Long stageId, String lostReason, User user) {
         Task task = getTaskEntity(taskId);
         Stage newStage = stageRepository.findById(stageId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Stage not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Stage not found"));
 
         accessService.assertCanUpdateTaskStage(user, task, newStage);
 
@@ -428,7 +442,7 @@ public class TaskService {
                 }
 
                 if (newStage.getType() == StageType.WON) {
-                    java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
+                    java.util.List<Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
                     emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
                 } else if (newStage.getType() == StageType.LOST) {
                     emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), lostReason);
@@ -480,10 +494,10 @@ public class TaskService {
         User assignee = null;
         if (assigneeId != null) {
             assignee = userRepository.findById(assigneeId)
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
         }
         if (assignee != null && assignee.getRole() != Role.EMPLOYEE) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(
+            throw new ApiException(
                     ErrorCode.BAD_REQUEST, "Задачу можно назначить только на сотрудника."
             );
         }
@@ -492,7 +506,7 @@ public class TaskService {
 
         if (user.getRole() == Role.EMPLOYEE) {
             if (assigneeId != null && !assigneeId.equals(user.getId())) {
-                throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                throw new ApiException(
                         ErrorCode.FORBIDDEN, "Сотрудники могут назначать задачи только на себя."
                 );
             }
@@ -536,7 +550,7 @@ public class TaskService {
     public TaskDto requestReassignment(Long taskId, User user) {
         Task task = getTaskEntity(taskId);
         if (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(user.getId())) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(ErrorCode.FORBIDDEN, "Вы можете отказаться только от своих задач");
+            throw new ApiException(ErrorCode.FORBIDDEN, "Вы можете отказаться только от своих задач");
         }
         task.setReassignmentRequested(true);
         Task savedTask = taskRepository.save(task);
@@ -555,7 +569,7 @@ public class TaskService {
     public TaskDto approveReassignment(Long taskId, User admin) {
         Task task = getTaskEntity(taskId);
         if (admin.getRole() != Role.ADMIN) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(ErrorCode.FORBIDDEN, "Только администратор может подтвердить отказ");
+            throw new ApiException(ErrorCode.FORBIDDEN, "Только администратор может подтвердить отказ");
         }
         User oldAssignee = task.getAssignedTo();
         task.setAssignedTo(null);
@@ -579,7 +593,7 @@ public class TaskService {
     public TaskDto rejectReassignment(Long taskId, User admin) {
         Task task = getTaskEntity(taskId);
         if (admin.getRole() != Role.ADMIN) {
-            throw new com.example.zhanfinancebackend.common.exception.ApiException(ErrorCode.FORBIDDEN, "Только администратор может отклонить отказ");
+            throw new ApiException(ErrorCode.FORBIDDEN, "Только администратор может отклонить отказ");
         }
         task.setReassignmentRequested(false);
         Task savedTask = taskRepository.save(task);
@@ -616,7 +630,7 @@ public class TaskService {
             
             if (dto.stage() != null && dto.stage().id() != null) {
                 Stage stage = stageRepository.findById(dto.stage().id())
-                        .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Stage not found: " + dto.stage().id()));
+                        .orElseThrow(() -> new ResourceNotFoundException("Stage not found: " + dto.stage().id()));
                 
                 accessService.assertCanUpdateTaskStage(user, task, stage);
                 
@@ -653,7 +667,7 @@ public class TaskService {
 
                 // Add WON/LOST email notifications for batch updates
                 if (stage.getType() == StageType.WON) {
-                    java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
+                    java.util.List<Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
                     emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
                 } else if (stage.getType() == StageType.LOST) {
                     emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, "Неизвестно", stage.getName(), null);
@@ -661,12 +675,12 @@ public class TaskService {
             }
             if (dto.assignedToId() != null) {
                  if (user.getRole() == Role.EMPLOYEE && !dto.assignedToId().equals(user.getId())) {
-                     throw new com.example.zhanfinancebackend.common.exception.ApiException(
+                     throw new ApiException(
                              ErrorCode.FORBIDDEN, "Сотрудники могут назначать задачи только на себя."
                      );
                  }
                  User assignee = userRepository.findById(dto.assignedToId())
-                    .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Assignee not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
                  task.setAssignedTo(assignee);
             }
             updated.add(task);
@@ -736,8 +750,8 @@ public class TaskService {
         
         accessService.assertCanUpdateTaskDetails(user, task);
         
-        java.util.List<com.example.zhanfinancebackend.modules.documents.entity.Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId);
-        for (com.example.zhanfinancebackend.modules.documents.entity.Document doc : docs) {
+        java.util.List<Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId);
+        for (Document doc : docs) {
             try {
                 if (doc.getStorageKey() != null && !doc.getStorageKey().isBlank()) {
                     storageService.delete(doc.getStorageKey());
@@ -776,7 +790,7 @@ public class TaskService {
     public TaskDto toggleTaskUserLabel(Long taskId, Long labelId, User user) {
         Task task = getTaskEntity(taskId);
         UserLabel label = userLabelRepository.findById(labelId)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Label not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Label not found"));
 
         if (!label.getUser().getId().equals(user.getId())) {
             throw new org.springframework.security.access.AccessDeniedException("Label access denied");
@@ -796,7 +810,7 @@ public class TaskService {
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
-    public void batchUpdateTasks(com.example.zhanfinancebackend.modules.crm.dto.TaskBatchOperationRequest request, User user) {
+    public void batchUpdateTasks(TaskBatchOperationRequest request, User user) {
         if (request.taskIds() == null || request.taskIds().isEmpty()) return;
         List<Task> tasks = taskRepository.findAllByIdInWithDetails(request.taskIds());
 

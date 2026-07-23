@@ -17,6 +17,8 @@ import com.example.zhanfinancebackend.modules.documents.entity.Document;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+
 @RestController
 public class FileDownloadController {
 
@@ -36,7 +38,7 @@ public class FileDownloadController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Resource> downloadFile(@PathVariable String storageKey, @AuthenticationPrincipal UserPrincipal principal) {
         Document document = documentRepository.findByStorageKey(storageKey)
-            .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("File not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("File not found"));
         
         documentAccessService.assertCanRead(principal.getUser(), document);
         return serveResource(storageKey);

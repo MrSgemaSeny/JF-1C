@@ -22,16 +22,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.zhanfinancebackend.modules.courses.entity.CourseStatus;
+import com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper;
+
 @Service
 public class GlobalSearchService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper;
+    private final TaskMapper taskMapper;
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
 
-    public GlobalSearchService(TaskRepository taskRepository, UserRepository userRepository, com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper, CourseRepository courseRepository, LessonRepository lessonRepository) {
+    public GlobalSearchService(TaskRepository taskRepository, UserRepository userRepository, TaskMapper taskMapper, CourseRepository courseRepository, LessonRepository lessonRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.taskMapper = taskMapper;
@@ -109,7 +112,7 @@ public class GlobalSearchService {
             .filter(l -> {
                 if (user.getRole() == Role.ADMIN) return true;
                 if (l.getChapter() != null && l.getChapter().getCourse() != null) {
-                    return l.getChapter().getCourse().getStatus() == com.example.zhanfinancebackend.modules.courses.entity.CourseStatus.PUBLISHED;
+                    return l.getChapter().getCourse().getStatus() == CourseStatus.PUBLISHED;
                 }
                 return false;
             })

@@ -11,6 +11,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import com.example.zhanfinancebackend.common.audit.BaseEntity;
+import com.example.zhanfinancebackend.modules.services.dto.ServiceDto;
+
 @Component
 public class TaskMapper {
 
@@ -53,8 +56,8 @@ public class TaskMapper {
                 task.isReassignmentRequested(),
                 task.getSubtasks() != null ? task.getSubtasks().stream().map(this::mapSubtaskToDto).toList() : List.of(),
                 task.getTags() != null ? new java.util.ArrayList<>(task.getTags()) : List.of(),
-                task.getServices() != null ? task.getServices().stream().map(com.example.zhanfinancebackend.common.audit.BaseEntity::getId).toList() : List.of(),
-                task.getServices() != null ? task.getServices().stream().map(s -> new com.example.zhanfinancebackend.modules.services.dto.ServiceDto(
+                task.getServices() != null ? task.getServices().stream().map(BaseEntity::getId).toList() : List.of(),
+                task.getServices() != null ? task.getServices().stream().map(s -> new ServiceDto(
                         s.getId(),
                         s.getTitle(),
                         s.getTitleEn(),

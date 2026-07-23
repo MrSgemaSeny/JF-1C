@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
+
 @Service
 public class SubscriptionService {
 
@@ -60,7 +62,7 @@ public class SubscriptionService {
 
     private Subscription get(User user, Long id) {
         return subscriptionRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Subscription not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found"));
     }
 
     private SubscriptionDto toDto(Subscription subscription) {
