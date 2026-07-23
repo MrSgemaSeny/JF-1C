@@ -36,17 +36,21 @@ public class TaskController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ApiResponse<List<TaskDto>> getTasks(
+    public ApiResponse<?> getTasks(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(required = false) Long clientId,
             @RequestParam(required = false) Long assignedToId,
             @RequestParam(required = false) Long stageId,
-            @RequestParam(required = false) Boolean unassigned
+            @RequestParam(required = false) Boolean unassigned,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
     ) {
         User user = principal.getUser();
 
         if (user.getRole() == Role.ADMIN || user.getRole() == Role.EMPLOYEE) {
-            // Админ и сотрудник видят все задачи, с опциональными фильтрами
+            if (page != null && size != null) {
+                return ApiResponse.success(taskService.getAllTasksPaged(clientId, assignedToId, stageId, unassigned, page, size));
+            }
             return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, stageId, unassigned));
         }
 

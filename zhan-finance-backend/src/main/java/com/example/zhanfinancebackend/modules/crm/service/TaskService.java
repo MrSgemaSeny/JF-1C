@@ -96,6 +96,13 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<TaskDto> getAllTasksPaged(Long clientId, Long assignedToId, Long stageId, Boolean unassigned, int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by("id").descending());
+        org.springframework.data.jpa.domain.Specification<Task> spec = com.example.zhanfinancebackend.modules.crm.repository.TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
+        return taskRepository.findAll(spec, pageable).map(taskMapper::mapToDto);
+    }
+
+    @Transactional(readOnly = true)
     public List<TaskDto> getTasksForClient(User client) {
         return taskRepository.findAllByClientWithDetails(client.getId()).stream().map(taskMapper::mapToDto).toList();
     }

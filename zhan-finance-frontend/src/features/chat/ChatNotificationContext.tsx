@@ -29,7 +29,7 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      const interval = setInterval(fetchUnreadCount, 60000);
+      const interval = setInterval(fetchUnreadCount, 30000);
       
       // Setup Stomp client
       const token = user.accessToken;
