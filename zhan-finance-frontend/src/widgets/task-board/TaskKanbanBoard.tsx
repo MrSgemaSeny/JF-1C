@@ -22,6 +22,7 @@ import { getTask } from '@/entities/task/api/taskApi';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import { ChatDrawer } from '@/widgets/chat/ChatDrawer';
 import { useTranslation } from 'react-i18next';
+import { UserLabelManager } from '@/features/labels/ui/UserLabelManager';
 
 interface TaskKanbanBoardProps {
   initialTasks: TaskDto[];
@@ -384,8 +385,21 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     el.scrollLeft = scrollLeft.current - (e.pageX - startX.current);
   };
 
+  const [selectedLabelId, setSelectedLabelId] = useState<number | null>(null);
+
+  const displayTasksForStage = (stageTasks: TaskDto[]) => {
+    if (!selectedLabelId) return stageTasks;
+    return stageTasks.filter(t => t.userLabels?.some(l => l.id === selectedLabelId));
+  };
+
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
+      {/* ── Фильтр по меткам сотрудника ── */}
+      <UserLabelManager
+        selectedLabelId={selectedLabelId}
+        onSelectLabel={setSelectedLabelId}
+      />
+
       {/* ── Канбан-доска ── */}
       <div
         ref={scrollContainerRef}
@@ -407,7 +421,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
               <TaskKanbanColumn
                 key={stage.id}
                 stage={stage}
-                tasks={columns[`stage-${stage.id}`] || []}
+                tasks={displayTasksForStage(columns[`stage-${stage.id}`] || [])}
                 onTaskClick={(id) => ref && 'current' in ref && ref.current?.openTaskModal(id)}
                 userRole={userRole}
                 onOpenChat={handleOpenChat}

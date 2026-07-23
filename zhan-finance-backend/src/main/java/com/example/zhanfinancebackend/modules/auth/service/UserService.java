@@ -32,13 +32,32 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
     private final com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper;
+    private final com.example.zhanfinancebackend.modules.crm.repository.TaskRepository taskRepository;
 
-    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService, com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper) {
+    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, com.example.zhanfinancebackend.modules.documents.service.StorageService storageService, com.example.zhanfinancebackend.modules.auth.mapper.UserMapper userMapper, com.example.zhanfinancebackend.modules.crm.repository.TaskRepository taskRepository) {
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
         this.passwordEncoder = passwordEncoder;
         this.storageService = storageService;
         this.userMapper = userMapper;
+        this.taskRepository = taskRepository;
+    }
+
+    @Transactional
+    public void softDeleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("User not found"));
+        user.setDeletedAt(java.time.Instant.now());
+        userRepository.save(user);
+
+        // Unassign open tasks back to task pool
+        var tasks = taskRepository.findAllByEmployeeWithDetails(user);
+        for (var task : tasks) {
+            if (task.getStage() == null || task.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.OPEN) {
+                task.setAssignedTo(null);
+                taskRepository.save(task);
+            }
+        }
     }
 
     @Transactional(readOnly = true)

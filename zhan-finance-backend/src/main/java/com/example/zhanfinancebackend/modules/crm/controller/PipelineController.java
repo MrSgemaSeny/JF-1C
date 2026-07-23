@@ -51,6 +51,7 @@ public class PipelineController {
         Stage stage = new Stage(pipeline, request.name(), nextOrderIndex, request.color() != null ? request.color() : "#3b82f6", request.type());
         if (request.nameEn() != null) stage.setNameEn(request.nameEn());
         stage.setPreFinal(request.isPreFinal());
+        stage.setSlaHours(request.slaHours());
 
         Stage saved = stageRepository.save(stage);
         return ApiResponse.success(mapToStageDto(pipelineId, saved));
@@ -68,6 +69,7 @@ public class PipelineController {
         if (request.type() != null) stage.setType(request.type());
         if (request.isPreFinal() != null) stage.setPreFinal(request.isPreFinal());
         if (request.orderIndex() != null) stage.setOrderIndex(request.orderIndex());
+        if (request.slaHours() != null) stage.setSlaHours(request.slaHours());
 
         Stage updated = stageRepository.save(stage);
         return ApiResponse.success(mapToStageDto(pipelineId, updated));
@@ -92,7 +94,8 @@ public class PipelineController {
                 s.getColor(),
                 s.getType(),
                 s.isDefault(),
-                s.isPreFinal()
+                s.isPreFinal(),
+                s.getSlaHours()
         );
     }
 }

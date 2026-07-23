@@ -237,4 +237,24 @@ public class TaskController {
     ) {
         return ApiResponse.success(taskService.rejectReassignment(id, principal.getUser()));
     }
+
+    @PostMapping("/{id}/labels/{labelId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ApiResponse<TaskDto> toggleUserLabel(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id,
+            @PathVariable Long labelId
+    ) {
+        return ApiResponse.success(taskService.toggleTaskUserLabel(id, labelId, principal.getUser()));
+    }
+
+    @PostMapping("/batch")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ApiResponse<Void> batchUpdateTasks(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody com.example.zhanfinancebackend.modules.crm.dto.TaskBatchOperationRequest request
+    ) {
+        taskService.batchUpdateTasks(request, principal.getUser());
+        return ApiResponse.success(null);
+    }
 }

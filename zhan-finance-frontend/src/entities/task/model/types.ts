@@ -2,6 +2,13 @@ import type { ServiceDto } from '@/entities/service/api/servicesApi';
 
 export type StageType = 'OPEN' | 'WON' | 'LOST';
 
+export interface UserLabelDto {
+  id: number;
+  userId: number;
+  name: string;
+  color: string;
+}
+
 export interface StageDto {
   id: number;
   pipelineId: number;
@@ -11,6 +18,7 @@ export interface StageDto {
   color?: string;
   type: StageType;
   isDefault: boolean;
+  slaHours?: number;
 }
 
 export interface PipelineDto {
@@ -99,6 +107,8 @@ export interface TaskDto {
   history?: TaskActivityDto[];
   archived: boolean;
   editedAt?: string;
+  userLabels?: UserLabelDto[];
+  isSlaBreached?: boolean;
 }
 
 export interface TaskCreateRequest {

@@ -25,6 +25,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.TaskActivity;
 import com.example.zhanfinancebackend.modules.crm.entity.Stage;
 import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import com.example.zhanfinancebackend.modules.crm.entity.Pipeline;
+import com.example.zhanfinancebackend.modules.crm.entity.UserLabel;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.StageRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.PipelineRepository;
@@ -53,6 +54,7 @@ public class TaskService {
     private final com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository;
     private final com.example.zhanfinancebackend.modules.documents.service.StorageService storageService;
     private final ClientService clientService;
+    private final com.example.zhanfinancebackend.modules.crm.repository.UserLabelRepository userLabelRepository;
 
     public TaskService(
             TaskRepository taskRepository,
@@ -67,7 +69,8 @@ public class TaskService {
             com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper taskMapper,
             com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository,
             com.example.zhanfinancebackend.modules.documents.service.StorageService storageService,
-            ClientService clientService
+            ClientService clientService,
+            com.example.zhanfinancebackend.modules.crm.repository.UserLabelRepository userLabelRepository
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -82,6 +85,7 @@ public class TaskService {
         this.documentRepository = documentRepository;
         this.storageService = storageService;
         this.clientService = clientService;
+        this.userLabelRepository = userLabelRepository;
     }
 
     @Transactional(readOnly = true)
@@ -373,8 +377,9 @@ public class TaskService {
         accessService.assertCanUpdateTaskStage(user, task, newStage);
 
         if (task.getStage() == null || !task.getStage().getId().equals(stageId)) {
-            String oldStage = task.getStage() != null ? task.getStage().getName() : "None";
-            logActivity(task, user, "Изменил стадию с " + oldStage + " на " + newStage.getName());
+            Stage oldStageObj = task.getStage();
+            String oldStage = oldStageObj != null ? oldStageObj.getName() : "None";
+            logStageActivity(task, user, "Изменил стадию с " + oldStage + " на " + newStage.getName(), oldStageObj, newStage);
             auditService.logAction("UPDATE_STAGE", "Task", task.getId(), "Stage changed from " + oldStage + " to " + newStage.getName());
 
             if (user.getRole() == Role.CLIENT) {
@@ -767,8 +772,65 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
+    @Transactional
+    public TaskDto toggleTaskUserLabel(Long taskId, Long labelId, User user) {
+        Task task = getTaskEntity(taskId);
+        UserLabel label = userLabelRepository.findById(labelId)
+                .orElseThrow(() -> new com.example.zhanfinancebackend.common.exception.ResourceNotFoundException("Label not found"));
+
+        if (!label.getUser().getId().equals(user.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException("Label access denied");
+        }
+
+        if (task.getUserLabels().contains(label)) {
+            task.getUserLabels().remove(label);
+            logActivity(task, user, "Снял метку '" + label.getName() + "'");
+        } else {
+            task.getUserLabels().add(label);
+            logActivity(task, user, "Добавил метку '" + label.getName() + "'");
+        }
+
+        Task saved = taskRepository.save(task);
+        return taskMapper.mapToDto(saved);
+    }
+
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
+    public void batchUpdateTasks(com.example.zhanfinancebackend.modules.crm.dto.TaskBatchOperationRequest request, User user) {
+        if (request.taskIds() == null || request.taskIds().isEmpty()) return;
+        List<Task> tasks = taskRepository.findAllByIdInWithDetails(request.taskIds());
+
+        Stage newStage = request.stageId() != null ? stageRepository.findById(request.stageId()).orElse(null) : null;
+        User assignee = request.assignedToId() != null ? userRepository.findById(request.assignedToId()).orElse(null) : null;
+        UserLabel label = request.labelId() != null ? userLabelRepository.findById(request.labelId()).orElse(null) : null;
+
+        for (Task task : tasks) {
+            if (newStage != null) {
+                Stage oldStage = task.getStage();
+                task.setStage(newStage);
+                logStageActivity(task, user, "Пакетное изменение стадии на " + newStage.getName(), oldStage, newStage);
+            }
+            if (assignee != null) {
+                task.setAssignedTo(assignee);
+                logActivity(task, user, "Пакетное переназначение на " + assignee.getFullName());
+            }
+            if (label != null && label.getUser().getId().equals(user.getId())) {
+                if (!task.getUserLabels().contains(label)) {
+                    task.getUserLabels().add(label);
+                    logActivity(task, user, "Пакетное добавление метки '" + label.getName() + "'");
+                }
+            }
+            taskRepository.save(task);
+        }
+    }
+
     private void logActivity(Task task, User actor, String actionText) {
         TaskActivity activity = new TaskActivity(task, actor, actionText);
+        task.addActivity(activity);
+    }
+
+    private void logStageActivity(Task task, User actor, String actionText, Stage fromStage, Stage toStage) {
+        TaskActivity activity = new TaskActivity(task, actor, actionText, fromStage, toStage);
         task.addActivity(activity);
     }
 }

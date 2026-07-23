@@ -147,6 +147,26 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
         </span>
       )}
 
+      {/* SLA warning badge & Personal Labels */}
+      {(task.isSlaBreached || (task.userLabels && task.userLabels.length > 0)) && (
+        <div className="flex flex-wrap items-center gap-1 mt-1">
+          {task.isSlaBreached && (
+            <span className="bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded border border-red-300 flex items-center gap-1" title="Превышено время нахождения на текущем этапе (SLA)">
+              SLA просрочен
+            </span>
+          )}
+          {task.userLabels?.map((lbl) => (
+            <span
+              key={lbl.id}
+              style={{ backgroundColor: lbl.color }}
+              className="text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-xs"
+            >
+              {lbl.name}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Tags */}
       {task.tags && task.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1.5">

@@ -10,6 +10,11 @@ import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useApiData } from '@/shared/hooks/useApiData';
 import { useTranslation } from 'react-i18next';
 
+import { labelsApi } from '@/features/labels/api/labelsApi';
+import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
+import { CheckSquare, Square, UserCheck, Layers, Tag } from 'lucide-react';
+import type { UserLabelDto } from '@/entities/task/model/types';
+
 interface TaskGridBoardProps {
   initialTasks: TaskDto[];
   onBatchSave: (tasks: TaskDto[]) => Promise<void>;
@@ -41,6 +46,21 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
   const [isSaving, setIsSaving] = useState(false);
   const [createdTaskIds, setCreatedTaskIds] = useState<Set<number>>(new Set());
   const [selectedTaskForModal, setSelectedTaskForModal] = useState<TaskDto | null>(null);
+
+  // Batch selection state
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [batchStageId, setBatchStageId] = useState<number | null>(null);
+  const [batchAssigneeId, setBatchAssigneeId] = useState<number | null>(null);
+  const [batchLabelId, setBatchLabelId] = useState<number | null>(null);
+  const [myLabels, setMyLabels] = useState<UserLabelDto[]>([]);
+  const [isApplyingBatch, setIsApplyingBatch] = useState(false);
+
+  const { data: pipelines } = usePipelinesQuery();
+  const stages = pipelines?.[0]?.stages || [];
+
+  useEffect(() => {
+    labelsApi.getMyLabels().then(setMyLabels).catch(() => {});
+  }, []);
 
   const { data: employees } = useApiData(userRole === 'ADMIN' ? getEmployees : async () => []);
 
@@ -212,11 +232,85 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
     setSortBy('newest');
   };
 
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredAndSorted.length && filteredAndSorted.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredAndSorted.map(t => t.id)));
+    }
+  };
+
+  const toggleSelectOne = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleApplyBatch = async () => {
+    if (selectedIds.size === 0) return;
+    if (!batchStageId && !batchAssigneeId && !batchLabelId) {
+      alert('Выберите хотя бы одно действие (стадию, исполнителя или метку)');
+      return;
+    }
+
+    setIsApplyingBatch(true);
+    try {
+      await labelsApi.batchUpdateTasks({
+        taskIds: Array.from(selectedIds),
+        stageId: batchStageId || undefined,
+        assignedToId: batchAssigneeId || undefined,
+        labelId: batchLabelId || undefined,
+      });
+
+      setTasks(prev => prev.map(t => {
+        if (!selectedIds.has(t.id)) return t;
+        const copy = { ...t };
+        if (batchStageId) copy.stageId = batchStageId;
+        if (batchAssigneeId && employees) {
+          const emp = employees.find(e => e.id === batchAssigneeId);
+          if (emp) copy.assignedTo = { id: emp.id, fullName: emp.fullName, email: emp.email };
+        }
+        if (batchLabelId) {
+          const lbl = myLabels.find(l => l.id === batchLabelId);
+          if (lbl && !copy.userLabels?.some(l => l.id === lbl.id)) {
+            copy.userLabels = [...(copy.userLabels || []), lbl];
+          }
+        }
+        return copy;
+      }));
+
+      setSelectedIds(new Set());
+      setBatchStageId(null);
+      setBatchAssigneeId(null);
+      setBatchLabelId(null);
+    } catch (e) {
+      console.error(e);
+      alert('Ошибка пакетного обновления');
+    } finally {
+      setIsApplyingBatch(false);
+    }
+  };
+
   return (
-    <div className="pb-20">
+    <div className="pb-20 relative">
       {/* Filter Toolbar */}
       <div className="flex flex-wrap items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
-        <Filter size={16} className="text-gray-400" />
+        <button
+          onClick={toggleSelectAll}
+          className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 bg-white px-3 py-1.5 border rounded-lg shadow-2xs cursor-pointer"
+        >
+          {selectedIds.size > 0 && selectedIds.size === filteredAndSorted.length ? (
+            <CheckSquare size={16} className="text-blue-600" />
+          ) : (
+            <Square size={16} className="text-gray-400" />
+          )}
+          <span>Выбрать все ({filteredAndSorted.length})</span>
+        </button>
+
+        <Filter size={16} className="text-gray-400 ml-2" />
         
         <select
           value={statusFilter}
@@ -260,17 +354,38 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredAndSorted.map((task) => (
-          <TaskCard 
-            key={task.id} 
-            task={task} 
-            onClick={() => handleTaskClick(task.id)}
-            onUpdateTask={handleUpdateTask}
-            onDeleteTask={handleDeleteTask}
-            userRole={userRole}
-            employees={employees}
-          />
-        ))}
+        {filteredAndSorted.map((task) => {
+          const isSelected = selectedIds.has(task.id);
+          return (
+            <div key={task.id} className="relative group">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSelectOne(task.id);
+                }}
+                className="absolute top-3 right-3 z-20 p-1 bg-white/90 rounded-md shadow-xs hover:bg-white transition-colors cursor-pointer"
+                title="Выбрать задачу"
+              >
+                {isSelected ? (
+                  <CheckSquare size={18} className="text-blue-600" />
+                ) : (
+                  <Square size={18} className="text-gray-400 opacity-60 group-hover:opacity-100" />
+                )}
+              </button>
+
+              <div className={isSelected ? 'ring-2 ring-blue-500 rounded-xl' : ''}>
+                <TaskCard 
+                  task={task} 
+                  onClick={() => handleTaskClick(task.id)}
+                  onUpdateTask={handleUpdateTask}
+                  onDeleteTask={handleDeleteTask}
+                  userRole={userRole}
+                  employees={employees}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {filteredAndSorted.length === 0 && (
@@ -279,6 +394,87 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
           <button onClick={clearFilters} className="text-sm text-gray-900 hover:underline mt-2">
             {t('kanban.resetFilters', { defaultValue: 'Сбросить фильтры' })}
           </button>
+        </div>
+      )}
+
+      {/* Floating Bulk Operations Toolbar */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-4 border border-gray-800 animate-in fade-in slide-in-from-bottom-5">
+          <div className="flex items-center gap-2 pr-3 border-r border-gray-700">
+            <CheckSquare size={18} className="text-blue-400" />
+            <span className="text-xs font-bold text-gray-100 whitespace-nowrap">
+              {selectedIds.size} задач выбрано
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Change Stage */}
+            {stages.length > 0 && (
+              <div className="flex items-center gap-1">
+                <Layers size={14} className="text-gray-400" />
+                <select
+                  value={batchStageId || ''}
+                  onChange={(e) => setBatchStageId(e.target.value ? Number(e.target.value) : null)}
+                  className="bg-gray-800 text-xs text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
+                >
+                  <option value="">Сменить стадию...</option>
+                  {stages.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Change Assignee */}
+            {employees && employees.length > 0 && (
+              <div className="flex items-center gap-1">
+                <UserCheck size={14} className="text-gray-400" />
+                <select
+                  value={batchAssigneeId || ''}
+                  onChange={(e) => setBatchAssigneeId(e.target.value ? Number(e.target.value) : null)}
+                  className="bg-gray-800 text-xs text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
+                >
+                  <option value="">Назначить сотрудника...</option>
+                  {employees.map(e => (
+                    <option key={e.id} value={e.id}>{e.fullName}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Apply Label */}
+            {myLabels.length > 0 && (
+              <div className="flex items-center gap-1">
+                <Tag size={14} className="text-gray-400" />
+                <select
+                  value={batchLabelId || ''}
+                  onChange={(e) => setBatchLabelId(e.target.value ? Number(e.target.value) : null)}
+                  className="bg-gray-800 text-xs text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
+                >
+                  <option value="">Добавить метку...</option>
+                  {myLabels.map(l => (
+                    <option key={l.id} value={l.id}>{l.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <button
+              onClick={handleApplyBatch}
+              disabled={isApplyingBatch}
+              className="ml-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+            >
+              {isApplyingBatch ? 'Применяем...' : 'Применить'}
+            </button>
+
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="text-gray-400 hover:text-white p-1 ml-1 cursor-pointer"
+              title="Снять выбор"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
       )}
 

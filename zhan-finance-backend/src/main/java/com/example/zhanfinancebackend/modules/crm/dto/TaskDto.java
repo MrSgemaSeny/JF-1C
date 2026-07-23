@@ -1,13 +1,11 @@
 package com.example.zhanfinancebackend.modules.crm.dto;
 
 import com.example.zhanfinancebackend.modules.auth.dto.UserDto;
-
 import com.example.zhanfinancebackend.modules.services.dto.ServiceDto;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import java.math.BigDecimal;
 import com.example.zhanfinancebackend.modules.crm.entity.LeadSource;
 
@@ -37,6 +35,8 @@ public record TaskDto(
         List<Long> serviceIds,
         List<ServiceDto> services,
         boolean archived,
-        ZonedDateTime editedAt
+        ZonedDateTime editedAt,
+        List<UserLabelDto> userLabels,
+        boolean isSlaBreached
 ) {
 }

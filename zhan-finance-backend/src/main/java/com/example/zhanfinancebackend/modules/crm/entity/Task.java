@@ -88,6 +88,14 @@ public class Task extends BaseEntity {
     )
     private List<com.example.zhanfinancebackend.modules.services.entity.ServiceEntity> services = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "task_user_labels",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
+    private List<UserLabel> userLabels = new ArrayList<>();
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskComment> comments = new ArrayList<>();
 
@@ -314,6 +322,17 @@ public class Task extends BaseEntity {
         this.services.clear();
         if (services != null) {
             this.services.addAll(services);
+        }
+    }
+
+    public List<UserLabel> getUserLabels() {
+        return userLabels;
+    }
+
+    public void setUserLabels(List<UserLabel> userLabels) {
+        this.userLabels.clear();
+        if (userLabels != null) {
+            this.userLabels.addAll(userLabels);
         }
     }
 }

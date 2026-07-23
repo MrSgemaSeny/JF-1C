@@ -25,6 +25,14 @@ public class TaskActivity {
     @Column(name = "action_text", nullable = false, columnDefinition = "TEXT")
     private String actionText;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_stage_id")
+    private Stage fromStage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_stage_id")
+    private Stage toStage;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
@@ -36,6 +44,14 @@ public class TaskActivity {
         this.task = task;
         this.actor = actor;
         this.actionText = actionText;
+    }
+
+    public TaskActivity(Task task, User actor, String actionText, Stage fromStage, Stage toStage) {
+        this.task = task;
+        this.actor = actor;
+        this.actionText = actionText;
+        this.fromStage = fromStage;
+        this.toStage = toStage;
     }
 
     public Long getId() {
@@ -68,6 +84,22 @@ public class TaskActivity {
 
     public void setActionText(String actionText) {
         this.actionText = actionText;
+    }
+
+    public Stage getFromStage() {
+        return fromStage;
+    }
+
+    public void setFromStage(Stage fromStage) {
+        this.fromStage = fromStage;
+    }
+
+    public Stage getToStage() {
+        return toStage;
+    }
+
+    public void setToStage(Stage toStage) {
+        this.toStage = toStage;
     }
 
     public Instant getCreatedAt() {

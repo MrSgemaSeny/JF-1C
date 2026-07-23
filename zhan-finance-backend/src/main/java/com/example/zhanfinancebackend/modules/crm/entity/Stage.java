@@ -35,6 +35,9 @@ public class Stage extends BaseEntity {
     @Column(name = "is_pre_final", nullable = false, columnDefinition = "boolean default false")
     private boolean isPreFinal = false;
 
+    @Column(name = "sla_hours")
+    private Integer slaHours;
+
     public Stage() {}
 
     public Stage(Pipeline pipeline, String name, Integer orderIndex, String color, StageType type) {
@@ -107,5 +110,13 @@ public class Stage extends BaseEntity {
 
     public void setPreFinal(boolean preFinal) {
         isPreFinal = preFinal;
+    }
+
+    public Integer getSlaHours() {
+        return slaHours;
+    }
+
+    public void setSlaHours(Integer slaHours) {
+        this.slaHours = slaHours;
     }
 }

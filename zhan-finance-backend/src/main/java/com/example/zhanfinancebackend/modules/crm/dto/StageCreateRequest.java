@@ -10,5 +10,6 @@ public record StageCreateRequest(
         String color,
         @NotNull StageType type,
         boolean isPreFinal,
-        Integer orderIndex
+        Integer orderIndex,
+        Integer slaHours
 ) {}

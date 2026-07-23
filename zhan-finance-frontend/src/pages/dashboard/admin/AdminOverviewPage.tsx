@@ -290,9 +290,22 @@ export function AdminOverviewPage() {
                     </span>
                   </td>
                   <td className="py-3 text-center">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium text-xs">
-                      <Clock size={12} /> {emp.activeTasks}
-                    </span>
+                    {(() => {
+                      let loadBg = "bg-green-50 text-green-700 border-green-200";
+                      let loadLabel = "Низкая нагрузка (<5 задач)";
+                      if (emp.activeTasks >= 10) {
+                        loadBg = "bg-red-50 text-red-700 border-red-200 font-bold";
+                        loadLabel = "Высокая нагрузка (>10 задач)";
+                      } else if (emp.activeTasks >= 5) {
+                        loadBg = "bg-amber-50 text-amber-700 border-amber-200";
+                        loadLabel = "Средняя нагрузка (5-10 задач)";
+                      }
+                      return (
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-medium text-xs ${loadBg}`} title={loadLabel}>
+                          <Clock size={12} /> {emp.activeTasks}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="py-3 text-center">
                     {emp.overdueTasks > 0 ? (

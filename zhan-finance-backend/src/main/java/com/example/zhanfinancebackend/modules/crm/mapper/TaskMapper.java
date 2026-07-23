@@ -6,6 +6,8 @@ import com.example.zhanfinancebackend.modules.crm.dto.*;
 import com.example.zhanfinancebackend.modules.crm.entity.*;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -14,6 +16,20 @@ public class TaskMapper {
 
     public TaskDto mapToDto(Task task) {
         if (task == null) return null;
+
+        boolean isSlaBreached = false;
+        if (task.getStage() != null && task.getStage().getSlaHours() != null && task.getStage().getSlaHours() > 0 
+                && task.getStage().getType() == StageType.OPEN && task.getUpdatedAt() != null) {
+            long hoursInStage = Duration.between(task.getUpdatedAt(), Instant.now()).toHours();
+            if (hoursInStage >= task.getStage().getSlaHours()) {
+                isSlaBreached = true;
+            }
+        }
+
+        List<UserLabelDto> userLabels = task.getUserLabels() != null 
+                ? task.getUserLabels().stream().map(l -> new UserLabelDto(l.getId(), l.getUser().getId(), l.getName(), l.getColor())).toList() 
+                : List.of();
+
         return new TaskDto(
                 task.getId(),
                 task.getTitle(),
@@ -51,7 +67,9 @@ public class TaskMapper {
                         s.getCreatedAt() != null ? s.getCreatedAt().atZone(java.time.ZoneOffset.UTC) : null
                 )).toList() : List.of(),
                 task.isArchived(),
-                task.getEditedAt() != null ? task.getEditedAt().atZone(ZoneOffset.UTC) : null
+                task.getEditedAt() != null ? task.getEditedAt().atZone(ZoneOffset.UTC) : null,
+                userLabels,
+                isSlaBreached
         );
     }
 
@@ -66,7 +84,8 @@ public class TaskMapper {
                 stage.getColor(),
                 stage.getType(),
                 stage.isDefault(),
-                stage.isPreFinal()
+                stage.isPreFinal(),
+                stage.getSlaHours()
         );
     }
 

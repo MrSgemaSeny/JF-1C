@@ -45,6 +45,9 @@ public class User extends BaseEntity {
     @JoinColumn(name = "assigned_employee_id")
     private User assignedEmployee;
 
+    @Column(name = "deleted_at")
+    private java.time.Instant deletedAt;
+
     protected User() {
     }
 
@@ -125,5 +128,17 @@ public class User extends BaseEntity {
 
     public void setAuthProvider(AuthProvider authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public java.time.Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(java.time.Instant deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }

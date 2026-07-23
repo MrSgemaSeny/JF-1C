@@ -11,6 +11,7 @@ public record StageDto(
         String color,
         StageType type,
         boolean isDefault,
-        boolean isPreFinal
+        boolean isPreFinal,
+        Integer slaHours
 ) {
 }

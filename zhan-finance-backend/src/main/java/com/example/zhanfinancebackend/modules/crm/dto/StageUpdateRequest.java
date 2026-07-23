@@ -8,5 +8,6 @@ public record StageUpdateRequest(
         String color,
         StageType type,
         Boolean isPreFinal,
-        Integer orderIndex
+        Integer orderIndex,
+        Integer slaHours
 ) {}

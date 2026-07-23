@@ -17,9 +17,11 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final com.example.zhanfinancebackend.modules.auth.service.UserService userService;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, com.example.zhanfinancebackend.modules.auth.service.UserService userService) {
         this.adminService = adminService;
+        this.userService = userService;
     }
 
     @GetMapping("/employees")
@@ -43,6 +45,12 @@ public class AdminController {
     public ApiResponse<Void> approveEmployee(@PathVariable Long id) {
         adminService.approveEmployee(id);
         return ApiResponse.success(null, "Сотрудник одобрен");
+    }
+
+    @DeleteMapping("/employees/{id}")
+    public ApiResponse<Void> deleteEmployee(@PathVariable Long id) {
+        userService.softDeleteUser(id);
+        return ApiResponse.success(null, "Сотрудник деактивирован");
     }
 
     @GetMapping("/employees/assigned")
