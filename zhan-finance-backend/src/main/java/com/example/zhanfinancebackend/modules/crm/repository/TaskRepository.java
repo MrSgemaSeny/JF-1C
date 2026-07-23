@@ -20,16 +20,16 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     @Query("SELECT SUM(t.amount) FROM Task t WHERE t.stage.type != 'LOST' AND t.archived = false")
     java.math.BigDecimal sumExpectedAmount();
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s where t.archived = false")
+    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.services where t.archived = false")
     List<Task> findAllWithDetails();
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s where (t.client.id = :clientId or t.createdBy.id = :clientId) and t.archived = false")
+    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.services where (t.client.id = :clientId or t.createdBy.id = :clientId) and t.archived = false")
     List<Task> findAllByClientWithDetails(@Param("clientId") Long clientId);
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s where t.assignedTo = :employee and t.archived = false")
+    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.services where t.assignedTo = :employee and t.archived = false")
     List<Task> findAllByEmployeeWithDetails(@Param("employee") User employee);
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s where t.id = :id")
+    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.services where t.id = :id")
     Optional<Task> findByIdWithDetails(@Param("id") Long id);
 
     @Query("select t from Task t left join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s " +

@@ -33,6 +33,7 @@ public class TaskSpecification {
                 root.fetch("assignedTo", JoinType.LEFT);
                 root.fetch("createdBy", JoinType.LEFT);
                 root.fetch("stage", JoinType.LEFT);
+                root.fetch("services", JoinType.LEFT);
                 
                 query.distinct(true);
             }
