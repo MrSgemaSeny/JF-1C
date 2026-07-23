@@ -437,6 +437,15 @@ export function TaskDetailsModal({
                       <Trash2 size={15} /> {t('taskModal.delete', { defaultValue: 'Удалить задачу' })}
                     </button>
                   )}
+                  {taskActions?.canDrop && (
+                    <button
+                      onClick={handleRequestReassignment}
+                      disabled={isAssigning || task.reassignmentRequested}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    >
+                      <XCircle size={15} /> {task.reassignmentRequested ? 'Ожидается отказ' : t('taskModal.drop', { defaultValue: 'Отказаться' })}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -475,16 +484,7 @@ export function TaskDetailsModal({
                 </select>
               </div>
             )}
-            {taskActions.canDrop && (
-              <button
-                onClick={handleRequestReassignment}
-                disabled={isAssigning || task.reassignmentRequested}
-                className="inline-flex items-center gap-2 text-red-600 bg-white border border-red-200 shadow-sm px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-50 transition-colors disabled:opacity-50 ml-auto"
-              >
-                <XCircle size={16} />
-                {task.reassignmentRequested ? 'Ожидается отказ' : t('taskModal.drop', { defaultValue: 'Отказаться' })}
-              </button>
-            )}
+
             {userRole === 'ADMIN' && task.reassignmentRequested && (
               <div className="flex items-center gap-2 ml-auto">
                 <button
