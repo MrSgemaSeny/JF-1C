@@ -11,7 +11,6 @@ export interface StageDto {
   color?: string;
   type: StageType;
   isDefault: boolean;
-  isPreFinal?: boolean;
 }
 
 export interface PipelineDto {

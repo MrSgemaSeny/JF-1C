@@ -138,7 +138,7 @@ export function ClientTaskDetailsPage() {
             
             {!isArchived && (
               <div className="flex flex-wrap items-center gap-3">
-                {(task.stage?.isPreFinal || task.stage?.name === 'На проверке') && (
+                {task.stage?.name === 'На проверке' && (
                   <>
                     <button
                       onClick={handleConfirm}
@@ -156,7 +156,7 @@ export function ClientTaskDetailsPage() {
                     </button>
                   </>
                 )}
-                {!isFinished && !(task.stage?.isPreFinal || task.stage?.name === 'На проверке') && (
+                {!isFinished && task.stage?.name !== 'На проверке' && (
                   <div className="flex items-center gap-2">
                     <button
                       className="px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
