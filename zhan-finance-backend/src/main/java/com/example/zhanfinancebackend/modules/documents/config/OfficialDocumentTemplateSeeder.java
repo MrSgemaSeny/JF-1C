@@ -33,10 +33,6 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (templateRepository.count() > 0) {
-            return;
-        }
-
         User admin = userRepository.findAll().stream().findFirst().orElse(null);
 
         // 1. Act of Completed Works (Form R-1 RK)
@@ -65,6 +61,9 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
     }
 
     private void createTemplateIfAbsent(String name, String description, User admin, byte[] docxBytes) {
+        if (templateRepository.findAll().stream().anyMatch(t -> name.equalsIgnoreCase(t.getName()))) {
+            return;
+        }
         try {
             String storageKey = storageService.store(
                     docxBytes,
