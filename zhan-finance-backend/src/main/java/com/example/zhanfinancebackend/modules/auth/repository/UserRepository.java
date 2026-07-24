@@ -31,9 +31,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT e FROM User e WHERE e.role = 'EMPLOYEE' AND NOT EXISTS (SELECT c FROM User c WHERE c.assignedEmployee = e)")
     List<User> findUnassignedEmployees();
 
-    @Query("SELECT new EmployeeWorkloadDto(u.id, u.fullName, u.email, CAST(COUNT(t.id) AS int)) " +
+    @Query("SELECT new com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto(u.id, u.fullName, u.email, CAST(COUNT(t.id) AS int)) " +
            "FROM User u " +
-           "LEFT JOIN Task t ON t.assignedTo = u AND (t.stage IS NULL OR t.stage.type != StageType.WON) " +
+           "LEFT JOIN Task t ON t.assignedTo = u AND (t.stage IS NULL OR t.stage.type != 'WON') " +
            "WHERE u.role = 'EMPLOYEE' " +
            "GROUP BY u.id, u.fullName, u.email")
     List<EmployeeWorkloadDto> getEmployeeWorkloads();
