@@ -30,11 +30,13 @@ export interface PipelineDto {
 
 
 
+import type { UserRole } from '@/features/auth/authApi';
+
 export interface UserDto {
   id: number;
   fullName: string;
   email: string;
-  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
+  role: UserRole;
 }
 
 export interface ClientInfoDto {

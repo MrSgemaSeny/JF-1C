@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { CourseDto, ChapterDto, LessonDto, createChapter, createLessonForChapter } from '@/entities/course/api/courseApi';
-import { ChevronDown, ChevronRight, Plus, Video, FileText, File, GripVertical } from 'lucide-react';
+import { CourseDto, LessonDto, createChapter, createLessonForChapter } from '@/entities/course/api/courseApi';
+import { ChevronDown, ChevronRight, Plus, Video, FileText, Layers, Edit3, Check, X } from 'lucide-react';
 
 interface CourseCurriculumTabProps {
   course: CourseDto;
@@ -28,7 +28,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
       onReload();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при создании главы');
+      alert('Ошибка при создании модуля');
     }
   };
 
@@ -45,135 +45,198 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
     }
   };
 
-  const getIcon = (lesson: LessonDto) => {
-    const hasVideo = !!lesson.mediaUrl;
-    const hasDocument = !!lesson.fileUrl || (!!lesson.content && lesson.content.trim().length > 0);
-
-    if (hasVideo) {
-      return <Video className="w-4 h-4 text-indigo-500" />;
-    } else if (hasDocument) {
-      return <FileText className="w-4 h-4 text-green-500" />;
-    }
-    return null;
-  };
-
   return (
-    <div className="space-y-4 max-w-4xl">
-      {course.chapters && course.chapters.map((chapter, idx) => {
-        const isExpanded = expandedChapters[chapter.id] !== false; // Default to expanded
-        
-        return (
-          <div key={chapter.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all hover:shadow-sm">
-            {/* Chapter Header */}
-            <div 
-              className="px-4 py-3 bg-gray-50 flex items-center justify-between cursor-pointer border-b border-gray-100"
-              onClick={() => toggleChapter(chapter.id)}
-            >
-              <div className="flex items-center gap-3">
-                <GripVertical className="w-5 h-5 text-gray-400 cursor-grab active:cursor-grabbing" />
-                {isExpanded ? <ChevronDown className="w-5 h-5 text-gray-500" /> : <ChevronRight className="w-5 h-5 text-gray-500" />}
-                <h3 className="font-semibold text-gray-900">Глава {idx + 1}: {chapter.title}</h3>
-              </div>
-              <span className="text-sm text-gray-500">{chapter.lessons?.length || 0} уроков</span>
-            </div>
+    <div className="space-y-6">
+      {/* Curriculum Header Bar */}
+      <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+        <div className="flex items-center gap-2">
+          <Layers className="w-5 h-5 text-brand-green" />
+          <h2 className="text-lg font-bold text-gray-900">Программа курса</h2>
+        </div>
 
-            {/* Lessons List */}
-            {isExpanded && (
-              <div className="bg-white divide-y divide-gray-100">
-                {chapter.lessons && chapter.lessons.map((lesson, lIdx) => (
-                  <div 
-                    key={lesson.id} 
-                    className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 cursor-pointer group"
-                    onClick={() => onEditLesson(lesson)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <GripVertical className="w-4 h-4 text-gray-400 cursor-grab" />
-                      </div>
-                      {getIcon(lesson)}
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-brand-green transition-colors">
-                        Урок {lIdx + 1}: {lesson.title}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+        {!isAddingChapter && (
+          <button 
+            onClick={() => setIsAddingChapter(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-brand-green/10 text-brand-green font-semibold text-xs rounded-xl hover:bg-brand-green hover:text-white transition-all shadow-xs"
+          >
+            <Plus className="w-4 h-4" /> Добавить модуль
+          </button>
+        )}
+      </div>
 
-                {/* Add Lesson inline form */}
-                <div className="px-12 py-3 bg-gray-50/50">
-                  {addingLessonToChapter === chapter.id ? (
-                    <div className="flex items-center gap-2">
-                      <input 
-                        type="text" 
-                        autoFocus
-                        value={newLessonTitle}
-                        onChange={e => setNewLessonTitle(e.target.value)}
-                        placeholder="Название нового урока..."
-                        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-brand-green focus:border-brand-green outline-none"
-                        onKeyDown={e => e.key === 'Enter' && handleAddLesson(chapter.id)}
-                      />
-                      <button 
-                        onClick={() => handleAddLesson(chapter.id)}
-                        className="text-xs bg-brand-green text-white px-3 py-1.5 rounded font-medium hover:bg-brand-green/90"
-                      >
-                        Сохранить
-                      </button>
-                      <button 
-                        onClick={() => setAddingLessonToChapter(null)}
-                        className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1.5"
-                      >
-                        Отмена
-                      </button>
-                    </div>
-                  ) : (
-                    <button 
-                      onClick={() => setAddingLessonToChapter(chapter.id)}
-                      className="w-full py-3 bg-brand-green/10 text-brand-green font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-brand-green/20 transition-colors border border-brand-green/20 border-dashed"
-                    >
-                      <Plus className="w-5 h-5" /> Добавить урок
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
-
-      {/* Add Chapter Button/Form */}
-      <div className="pt-6">
-        {isAddingChapter ? (
-          <div className="bg-white p-6 rounded-2xl border-2 border-brand-green shadow-sm flex flex-col sm:flex-row items-center gap-4">
+      {/* Inline Add Chapter Form */}
+      {isAddingChapter && (
+        <div className="bg-emerald-50/50 border border-emerald-200/70 p-4 rounded-2xl space-y-3 animate-in fade-in zoom-in-95 duration-150">
+          <label className="block text-xs font-bold text-emerald-900 uppercase tracking-wider">
+            Название нового модуля / главы
+          </label>
+          <div className="flex items-center gap-2">
             <input 
               type="text" 
               autoFocus
               value={newChapterTitle}
               onChange={e => setNewChapterTitle(e.target.value)}
-              placeholder="Название новой главы (например, Введение)..."
-              className="w-full sm:flex-1 px-4 py-3 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green outline-none"
+              placeholder="Например: Модуль 1. Основы работы в 1С..."
+              className="flex-1 px-3.5 py-2 text-sm bg-white border border-emerald-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none font-medium"
               onKeyDown={e => e.key === 'Enter' && handleAddChapter()}
             />
-            <div className="flex gap-2 w-full sm:w-auto">
-              <button 
-                onClick={handleAddChapter}
-                className="flex-1 sm:flex-none bg-brand-green text-white px-6 py-3 rounded-xl font-bold text-lg hover:bg-brand-green/90 transition-colors whitespace-nowrap shadow-sm"
-              >
-                Сохранить
-              </button>
-              <button 
-                onClick={() => setIsAddingChapter(false)}
-                className="flex-1 sm:flex-none bg-gray-100 text-gray-600 px-6 py-3 rounded-xl font-bold text-lg hover:bg-gray-200 transition-colors whitespace-nowrap"
-              >
-                Отмена
-              </button>
-            </div>
+            <button 
+              onClick={handleAddChapter}
+              className="inline-flex items-center gap-1 px-4 py-2 bg-brand-green text-white text-xs font-bold rounded-xl hover:bg-brand-green/90 transition-all shadow-sm"
+            >
+              <Check className="w-4 h-4" /> Сохранить
+            </button>
+            <button 
+              onClick={() => setIsAddingChapter(false)}
+              className="inline-flex items-center gap-1 px-3 py-2 text-gray-500 hover:text-gray-700 text-xs font-medium rounded-xl hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-4 h-4" /> Отмена
+            </button>
           </div>
+        </div>
+      )}
+
+      {/* Chapters & Lessons List */}
+      <div className="space-y-4">
+        {course.chapters && course.chapters.length > 0 ? (
+          course.chapters.map((chapter, idx) => {
+            const isExpanded = expandedChapters[chapter.id] !== false;
+            
+            return (
+              <div 
+                key={chapter.id} 
+                className="bg-gray-50/60 border border-gray-200/80 rounded-2xl overflow-hidden transition-all duration-200"
+              >
+                {/* Chapter Card Header */}
+                <div className="px-4 py-3 bg-white flex items-center justify-between border-b border-gray-100">
+                  <div 
+                    className="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0 py-1"
+                    onClick={() => toggleChapter(chapter.id)}
+                  >
+                    <button className="text-gray-400 hover:text-gray-600 transition-colors p-0.5">
+                      {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    </button>
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider shrink-0">
+                      Модуль {idx + 1}
+                    </span>
+                    <h3 className="font-bold text-gray-900 text-sm truncate">{chapter.title}</h3>
+                    <span className="text-xs text-gray-400 font-medium px-2 py-0.5 bg-gray-100 rounded-full shrink-0">
+                      {chapter.lessons?.length || 0} уроков
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAddingLessonToChapter(chapter.id);
+                        if (!isExpanded) toggleChapter(chapter.id);
+                      }}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-brand-green hover:bg-brand-green/10 px-2.5 py-1 rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Урок
+                    </button>
+                  </div>
+                </div>
+
+                {/* Lessons Body */}
+                {isExpanded && (
+                  <div className="p-3 space-y-2">
+                    {chapter.lessons && chapter.lessons.length > 0 ? (
+                      chapter.lessons.map((lesson, lIdx) => {
+                        const isVideo = Boolean(lesson.mediaUrl);
+
+                        return (
+                          <div 
+                            key={lesson.id} 
+                            onClick={() => onEditLesson(lesson)}
+                            className="group flex items-center justify-between px-4 py-3 bg-white border border-gray-100 rounded-xl hover:border-brand-green/40 hover:shadow-xs cursor-pointer transition-all duration-150"
+                          >
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                                isVideo ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'
+                              }`}>
+                                {isVideo ? <Video className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
+                              </div>
+                              
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-semibold text-gray-400">
+                                    {idx + 1}.{lIdx + 1}
+                                  </span>
+                                  <span className="text-sm font-semibold text-gray-800 group-hover:text-brand-green transition-colors truncate">
+                                    {lesson.title}
+                                  </span>
+                                  {lesson.isPreview && (
+                                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 shrink-0">
+                                      Бесплатный
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 shrink-0">
+                              {lesson.durationMinutes && (
+                                <span className="text-xs text-gray-400 font-medium">
+                                  {lesson.durationMinutes} мин
+                                </span>
+                              )}
+                              <span className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-xs font-bold text-brand-green bg-brand-green/10 px-2.5 py-1 rounded-lg transition-all">
+                                <Edit3 className="w-3.5 h-3.5" /> Изменить
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-6 bg-white border border-dashed border-gray-200 rounded-xl">
+                        <p className="text-xs text-gray-400 font-medium">В этом модуле пока нет уроков</p>
+                      </div>
+                    )}
+
+                    {/* Inline Add Lesson Form */}
+                    {addingLessonToChapter === chapter.id && (
+                      <div className="flex items-center gap-2 p-2 bg-emerald-50/60 border border-emerald-200/80 rounded-xl animate-in fade-in duration-150 mt-2">
+                        <input 
+                          type="text" 
+                          autoFocus
+                          value={newLessonTitle}
+                          onChange={e => setNewLessonTitle(e.target.value)}
+                          placeholder="Название нового урока..."
+                          className="flex-1 px-3 py-1.5 text-xs bg-white border border-emerald-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-medium"
+                          onKeyDown={e => e.key === 'Enter' && handleAddLesson(chapter.id)}
+                        />
+                        <button 
+                          onClick={() => handleAddLesson(chapter.id)}
+                          className="px-3 py-1.5 bg-brand-green text-white text-xs font-bold rounded-lg hover:bg-brand-green/90 transition-all shadow-xs"
+                        >
+                          Сохранить
+                        </button>
+                        <button 
+                          onClick={() => setAddingLessonToChapter(null)}
+                          className="px-2.5 py-1.5 text-xs text-gray-500 hover:text-gray-700 font-medium rounded-lg"
+                        >
+                          Отмена
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
         ) : (
-          <button 
-            onClick={() => setIsAddingChapter(true)}
-            className="w-full py-6 bg-brand-green text-white rounded-2xl font-black text-xl hover:bg-brand-green/90 transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:-translate-y-1"
-          >
-            <Plus className="w-8 h-8" /> ДОБАВИТЬ ГЛАВУ
-          </button>
+          <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
+            <p className="text-sm font-semibold text-gray-500 mb-1">Курс пока не содержит модулей</p>
+            <p className="text-xs text-gray-400 mb-4">Нажмите кнопку ниже, чтобы добавить первый обучающий модуль</p>
+            <button 
+              onClick={() => setIsAddingChapter(true)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white text-xs font-bold rounded-xl hover:bg-brand-green/90 shadow-sm transition-all"
+            >
+              <Plus className="w-4 h-4" /> Создать первый модуль
+            </button>
+          </div>
         )}
       </div>
     </div>

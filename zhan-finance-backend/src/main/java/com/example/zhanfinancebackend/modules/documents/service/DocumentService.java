@@ -11,6 +11,7 @@ import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
+import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ public class DocumentService {
     private final StorageService storageService;
     private final DocumentAccessService documentAccessService;
     private final NotificationService notificationService;
+    private final EmailNotificationService emailNotificationService;
     private final CrmAccessService crmAccessService;
 
     // MVP allowed types
@@ -51,6 +53,7 @@ public class DocumentService {
                            StorageService storageService,
                            DocumentAccessService documentAccessService,
                            NotificationService notificationService,
+                           EmailNotificationService emailNotificationService,
                            CrmAccessService crmAccessService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
@@ -58,6 +61,7 @@ public class DocumentService {
         this.storageService = storageService;
         this.documentAccessService = documentAccessService;
         this.notificationService = notificationService;
+        this.emailNotificationService = emailNotificationService;
         this.crmAccessService = crmAccessService;
     }
 
@@ -144,6 +148,8 @@ public class DocumentService {
                     link
             );
             
+            emailNotificationService.sendDocumentAttachedEmail(targetUser, document, document.getTask());
+            
             if (actor.getRole() != Role.ADMIN) {
                 notificationService.notifyAdmins(
                         "Загружен документ",
@@ -164,7 +170,7 @@ public class DocumentService {
         // If you can create for them, you can generally read their list
         documentAccessService.assertCanCreateFor(actor, targetUser);
 
-        return documentRepository.findByUserIdOrderByCreatedAtDesc(targetUserId).stream()
+        return documentRepository.findByUserIdOrTaskClientId(targetUserId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react';
 import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -37,6 +37,12 @@ const AdminInvoicesPage = lazy(() => import('@/pages/dashboard/admin/billing/Adm
 const AdminSubscriptionsPage = lazy(() => import('@/pages/dashboard/admin/billing/AdminSubscriptionsPage').then(m => ({ default: m.AdminSubscriptionsPage })));
 const AdminAuditLogPage = lazy(() => import('@/pages/dashboard/admin/AdminAuditLogPage').then(m => ({ default: m.AdminAuditLogPage })));
 const AdminTemplatesPage = lazy(() => import('@/pages/dashboard/admin/AdminTemplatesPage').then(m => ({ default: m.AdminTemplatesPage })));
+const AdminCuratorsPage = lazy(() => import('@/pages/dashboard/admin/AdminCuratorsPage').then(m => ({ default: m.AdminCuratorsPage })));
+
+// Curator
+const CuratorOverviewPage = lazy(() => import('@/pages/dashboard/curator/CuratorOverviewPage').then(m => ({ default: m.CuratorOverviewPage })));
+const CuratorCoursesPage = lazy(() => import('@/pages/dashboard/curator/CuratorCoursesPage').then(m => ({ default: m.CuratorCoursesPage })));
+const CuratorStudentsPage = lazy(() => import('@/pages/dashboard/curator/CuratorStudentsPage').then(m => ({ default: m.CuratorStudentsPage })));
 
 // Learner
 const LearnerCoursesPage = lazy(() => import('@/pages/dashboard/learner/LearnerCoursesPage').then(m => ({ default: m.LearnerCoursesPage })));
@@ -118,6 +124,9 @@ export function App() {
             {/* Dashboard Entry Point */}
             <Route path={ROUTES.PROFILE} element={<DashboardRedirect />} />
 
+            {/* Legacy Dashboard Route Fallback */}
+            <Route path="/dashboard/*" element={<Navigate to={ROUTES.PROFILE} replace />} />
+
             {/* Dashboard Shell Layout */}
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
@@ -147,6 +156,14 @@ export function App() {
                 <Route path={ROUTES.ADMIN_SUBSCRIPTIONS} element={<AdminSubscriptionsPage />} />
                 <Route path={ROUTES.ADMIN_AUDIT_LOGS} element={<AdminAuditLogPage />} />
                 <Route path={ROUTES.ADMIN_TEMPLATES} element={<AdminTemplatesPage />} />
+                <Route path={ROUTES.ADMIN_CURATORS} element={<AdminCuratorsPage />} />
+              </Route>
+
+              {/* Curator Routes */}
+              <Route element={<RoleProtectedRoute allow={['CURATOR']} />}>
+                <Route path={ROUTES.CURATOR} element={<CuratorOverviewPage />} />
+                <Route path={ROUTES.CURATOR_COURSES} element={<CuratorCoursesPage />} />
+                <Route path={ROUTES.CURATOR_STUDENTS} element={<CuratorStudentsPage />} />
               </Route>
 
               <Route element={<RoleProtectedRoute allow={['EMPLOYEE']} />}>
@@ -178,7 +195,7 @@ export function App() {
               </Route>
               
               {/* Shared Routes for non-learner authenticated users */}
-              <Route element={<RoleProtectedRoute allow={['ADMIN', 'EMPLOYEE', 'CLIENT']} />}>
+              <Route element={<RoleProtectedRoute allow={['ADMIN', 'EMPLOYEE', 'CLIENT', 'CURATOR']} />}>
                 <Route path={ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
                 <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
               </Route>

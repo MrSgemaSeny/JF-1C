@@ -313,7 +313,7 @@ export function ClientTaskDetailsPage() {
                       <button
                         onClick={() => downloadDocument(doc.id, doc.fileName)}
                         className="p-2 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors ml-2"
-                        title="Скачать"
+                        title={t('tasks:details.download', { defaultValue: 'Скачать' })}
                       >
                         <Download size={16} />
                       </button>

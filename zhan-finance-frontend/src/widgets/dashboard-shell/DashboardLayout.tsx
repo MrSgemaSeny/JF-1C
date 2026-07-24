@@ -17,7 +17,7 @@ import { Bell, CheckCircle2, Globe, Mail, LogOut } from 'lucide-react';
 
 function HeaderProfile() {
   const { user, logout } = useAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { unreadCount } = useNotifications();
   const [time, setTime] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +51,7 @@ function HeaderProfile() {
     minute: '2-digit'
   });
 
-  const displayRole = user?.role === 'ADMIN' ? 'Администратор' : user?.role === 'EMPLOYEE' ? 'Сотрудник' : 'Клиент';
+  const displayRole = user?.role ? t(`profile.roles.${user.role}`) : t('profile.roles.CLIENT');
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -59,7 +59,7 @@ function HeaderProfile() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-4 bg-gray-50 px-4 py-1.5 rounded-full border border-gray-100 hover:bg-gray-100 transition-colors focus:outline-none"
       >
-        <div className="flex flex-col text-right">
+        <div className="hidden sm:flex flex-col text-right">
           <span className="text-sm font-bold text-gray-900 capitalize">{dateStr}</span>
           <span className="text-xs font-medium text-gray-500">{timeStr}</span>
         </div>
@@ -77,7 +77,7 @@ function HeaderProfile() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-[340px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute right-0 top-full mt-2 w-[300px] sm:w-[340px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
           <div className="p-4 border-b border-gray-100 flex items-center gap-3 bg-gray-50/50">
             {user?.avatarUrl ? (
               <img src={user.avatarUrl} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
@@ -88,7 +88,7 @@ function HeaderProfile() {
             )}
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-bold text-gray-900 truncate">{user?.fullName}</span>
-              <span className="text-xs font-medium text-brand-green bg-brand-green/10 px-2 py-0.5 rounded-full w-fit mt-1">{displayRole}</span>
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full w-fit mt-1 ${user?.role === 'ADMIN' ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-brand-green bg-brand-green/10'}`}>{displayRole}</span>
             </div>
           </div>
 
@@ -96,7 +96,7 @@ function HeaderProfile() {
             <Link to={ROUTES.NOTIFICATIONS} onClick={() => setIsOpen(false)} className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors">
               <div className="flex items-center gap-3">
                 <Bell size={16} className="text-gray-400" />
-                Уведомления
+                {t('profile.notifications')}
               </div>
               {unreadCount > 0 && <span className="text-xs font-bold bg-red-500 text-white px-2 py-0.5 rounded-full">{unreadCount > 99 ? '99+' : unreadCount}</span>}
             </Link>
@@ -104,7 +104,7 @@ function HeaderProfile() {
               <Link to={user?.role === 'EMPLOYEE' ? ROUTES.EMPLOYEE_TASKS : ROUTES.CLIENT} onClick={() => setIsOpen(false)} className="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mt-1">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 size={16} className="text-gray-400" />
-                  Мои задачи
+                  {t('profile.myTasks')}
                 </div>
               </Link>
             )}
@@ -114,7 +114,7 @@ function HeaderProfile() {
             <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-700">
               <div className="flex items-center gap-3">
                 <Globe size={16} className="text-gray-400" />
-                Язык
+                {t('profile.language')}
               </div>
               <div onClick={(e) => e.stopPropagation()}>
                 <LanguageSwitcher />
@@ -125,11 +125,11 @@ function HeaderProfile() {
           <div className="p-2">
             <a href="mailto:orkathebestt@gmail.com" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors">
               <Mail size={16} className="text-gray-400" />
-              Поддержка
+              {t('profile.support')}
             </a>
             <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors font-medium mt-1">
               <LogOut size={16} className="text-red-500" />
-              Выйти
+              {t('profile.logout')}
             </button>
           </div>
         </div>
@@ -155,16 +155,16 @@ export function DashboardLayout() {
         {/* Mobile Topbar */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-brand-green flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-brand-green flex items-center justify-center shrink-0">
               <span className="text-white text-xs font-bold leading-none">ZF</span>
             </div>
-            <span className="font-bold text-gray-900">Zhan Finance</span>
+            <span className="font-bold text-gray-900 truncate">Zhan Finance</span>
           </div>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
+            <HeaderProfile />
             <button 
               onClick={() => setIsMobileOpen(true)}
-              className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-lg shrink-0"
             >
               <Menu size={24} />
             </button>

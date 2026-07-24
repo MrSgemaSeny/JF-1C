@@ -89,8 +89,12 @@ public class DocumentController {
         Document document = documentService.getDocumentWithAccessCheck(id, principal.getUser());
         Resource resource = storageService.loadAsResource(document.getStorageKey());
         
+        org.springframework.http.ContentDisposition contentDisposition = org.springframework.http.ContentDisposition.attachment()
+                .filename(document.getFileName() != null ? document.getFileName() : "document", java.nio.charset.StandardCharsets.UTF_8)
+                .build();
+        
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .contentType(MediaType.parseMediaType(document.getContentType()))
                 .body(resource);
     }

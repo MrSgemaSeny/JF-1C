@@ -220,7 +220,7 @@ export function LearnerCourseDetailPage() {
         </div>
         <div className="col-span-2 sm:col-span-1 bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col justify-center">
           <div className="flex justify-between items-end mb-2">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">Прогресс</p>
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{t('learnerCourseDetail.progress', { defaultValue: 'Прогресс' })}</p>
             <p className="text-xl font-bold text-brand-green">{progress?.completionPercentage || 0}%</p>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
@@ -235,13 +235,13 @@ export function LearnerCourseDetailPage() {
       {progress?.isCompleted && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-bold text-green-800">Поздравляем! 🎉</h3>
-            <p className="text-sm text-green-700 mt-1">Вы успешно завершили этот курс и освоили все материалы.</p>
+            <h3 className="text-lg font-bold text-green-800">{t('learnerCourseDetail.congrats', { defaultValue: 'Поздравляем! 🎉' })}</h3>
+            <p className="text-sm text-green-700 mt-1">{t('learnerCourseDetail.completedMsg', { defaultValue: 'Вы успешно завершили этот курс и освоили все материалы.' })}</p>
           </div>
           <CourseCertificate 
             courseTitle={course.title} 
-            studentName={user?.fullName || 'Студент'} 
-            date={new Date().toLocaleDateString('ru-RU')} 
+            studentName={user?.fullName || t('learnerCourseDetail.student', { defaultValue: 'Студент' })} 
+            date={new Date().toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} 
           />
         </div>
       )}

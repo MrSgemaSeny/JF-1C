@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 export function Offices() {
   const { t } = useTranslation('common');
   return (
-    <Section className="bg-brand-beige py-24 overflow-hidden">
+    <Section className="bg-brand-beige py-16 lg:py-24 overflow-hidden">
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">

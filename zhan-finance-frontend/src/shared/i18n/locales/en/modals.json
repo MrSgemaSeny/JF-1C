@@ -16,5 +16,15 @@
     "cancel": "Cancel",
     "submit": "Submit Rejection",
     "submitting": "Submitting..."
-  }
+  },
+  "reject.title": "Task rejection",
+  "reject.warningTitle": "Warning! This action is irreversible.",
+  "reject.warningDesc": "After rejection, the task will be moved to the archive. The task status cannot be changed in the future.",
+  "reject.reasonPrompt": "Please specify the reason for rejection:",
+  "reject.additionalComments": "Additional comments (optional)",
+  "reject.customReason": "Or write your own reason (required)",
+  "reject.placeholder": "Tell us more about why you decided to reject the task...",
+  "reject.cancel": "Cancel",
+  "reject.submitting": "Отправка...",
+  "reject.submit": "Submit rejection"
 }

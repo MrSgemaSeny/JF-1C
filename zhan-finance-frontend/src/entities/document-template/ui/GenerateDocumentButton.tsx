@@ -71,7 +71,7 @@ export function GenerateDocumentButton({ taskId, onSuccess }: GenerateDocumentBu
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-100 z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden">
           <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
             <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Выберите шаблон</h4>
           </div>

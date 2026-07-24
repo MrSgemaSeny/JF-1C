@@ -73,8 +73,9 @@ public class AdminCourseController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("type") LessonType type,
             @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex,
+            @RequestParam(value = "durationMinutes", required = false) Integer durationMinutes,
             @RequestParam(value = "file", required = false) MultipartFile file) {
-        return ApiResponse.success(lessonService.createLesson(courseId, title, description, type, orderIndex, file));
+        return ApiResponse.success(lessonService.createLesson(courseId, title, description, type, orderIndex, durationMinutes, file));
     }
 
     @PutMapping("/lessons/{lessonId}")
@@ -84,9 +85,10 @@ public class AdminCourseController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "orderIndex", required = false) Integer orderIndex,
+            @RequestParam(value = "durationMinutes", required = false) Integer durationMinutes,
             @RequestParam(value = "videoFile", required = false) MultipartFile videoFile,
             @RequestParam(value = "documentFile", required = false) MultipartFile documentFile) {
-        return ApiResponse.success(lessonService.updateLesson(lessonId, title, description, content, orderIndex, videoFile, documentFile));
+        return ApiResponse.success(lessonService.updateLesson(lessonId, title, description, content, orderIndex, durationMinutes, videoFile, documentFile));
     }
 
     @DeleteMapping("/lessons/{lessonId}")
@@ -110,7 +112,8 @@ public class AdminCourseController {
             @RequestParam("title") String title,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("type") LessonType type,
-            @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex) {
-        return ApiResponse.success(lessonService.createLessonForChapter(chapterId, title, description, type, orderIndex));
+            @RequestParam(value = "orderIndex", defaultValue = "0") int orderIndex,
+            @RequestParam(value = "durationMinutes", required = false) Integer durationMinutes) {
+        return ApiResponse.success(lessonService.createLessonForChapter(chapterId, title, description, type, orderIndex, durationMinutes));
     }
 }

@@ -21,7 +21,8 @@
     "deadline": "Дедлайн:",
     "source": "Источник:",
     "recentEvents": "Последние события",
-    "historyEmpty": "История пуста"
+    "historyEmpty": "История пуста",
+    "download": "Скачать"
   },
   "editModal": {
     "title": "Редактирование задачи",
@@ -33,5 +34,25 @@
     "cancel": "Отмена",
     "save": "Сохранить изменения",
     "saving": "Сохранение..."
-  }
+  },
+  "details.backToList": "Назад к списку",
+  "details.archive": "Архив",
+  "details.created": "Создано",
+  "details.edited": "Изменено",
+  "details.confirm": "Подтвердить",
+  "details.toRework": "На доработку",
+  "details.editTask": "Изменить",
+  "details.rejectTask": "Отказаться от задачи",
+  "details.cancelled": "Задача отменена",
+  "details.reason": "Причина:",
+  "details.description": "Описание",
+  "details.noDescription": "Описание отсутствует...",
+  "details.relatedServices": "Связанные услуги",
+  "details.documents": "Документы",
+  "details.additionalInfo": "Дополнительная информация",
+  "details.amount": "Сумма:",
+  "details.deadline": "Дедлайн:",
+  "details.source": "Источник:",
+  "details.recentEvents": "Последние события",
+  "details.historyEmpty": "История пуста"
 }

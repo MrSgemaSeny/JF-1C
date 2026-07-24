@@ -26,6 +26,12 @@ export const ROUTES = {
   ADMIN_SUBSCRIPTIONS: '/admin/subscriptions',
   ADMIN_AUDIT_LOGS: '/admin/audit-logs',
   ADMIN_TEMPLATES: '/admin/templates',
+  ADMIN_CURATORS: '/admin/curators',
+
+  // Curator Routes
+  CURATOR: '/curator',
+  CURATOR_COURSES: '/curator/courses',
+  CURATOR_STUDENTS: '/curator/students',
 
   // Shared Dashboard Routes
   SETTINGS: '/settings',

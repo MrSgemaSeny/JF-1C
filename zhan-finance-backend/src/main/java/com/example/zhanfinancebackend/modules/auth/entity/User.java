@@ -48,7 +48,7 @@ public class User extends BaseEntity {
     @Column(name = "deleted_at")
     private java.time.Instant deletedAt;
 
-    protected User() {
+    public User() {
     }
 
     public User(String fullName, String email, String passwordHash, Role role) {

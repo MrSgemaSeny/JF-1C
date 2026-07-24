@@ -21,7 +21,8 @@
     "deadline": "Deadline:",
     "source": "Source:",
     "recentEvents": "Recent events",
-    "historyEmpty": "History is empty"
+    "historyEmpty": "History is empty",
+    "download": "Download"
   },
   "editModal": {
     "title": "Edit Task",
@@ -33,5 +34,25 @@
     "cancel": "Cancel",
     "save": "Save Changes",
     "saving": "Saving..."
-  }
+  },
+  "details.backToList": "Back to list",
+  "details.archive": "Archive",
+  "details.created": "Created",
+  "details.edited": "Edited",
+  "details.confirm": "Confirm",
+  "details.toRework": "To rework",
+  "details.editTask": "Edit",
+  "details.rejectTask": "Reject task",
+  "details.cancelled": "Task cancelled",
+  "details.reason": "Reason:",
+  "details.description": "Description",
+  "details.noDescription": "No description...",
+  "details.relatedServices": "Related services",
+  "details.documents": "Documents",
+  "details.additionalInfo": "Additional information",
+  "details.amount": "Amount:",
+  "details.deadline": "Deadline:",
+  "details.source": "Source:",
+  "details.recentEvents": "Recent events",
+  "details.historyEmpty": "History is empty"
 }

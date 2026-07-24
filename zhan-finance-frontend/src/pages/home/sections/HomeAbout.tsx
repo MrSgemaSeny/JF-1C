@@ -43,8 +43,8 @@ const polaroids = [
 export function HomeAbout() {
   const { t } = useTranslation('common');
   return (
-    <Section className="overflow-hidden min-h-screen flex items-center bg-white relative">
-      <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center relative z-10 w-full">
+    <Section className="overflow-hidden min-h-screen flex items-center bg-white relative py-16 lg:py-0">
+      <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center relative z-10 w-full">
 
         <div className="space-y-8 order-2 lg:order-1">
           <motion.div
@@ -84,7 +84,7 @@ export function HomeAbout() {
           </motion.div>
         </div>
 
-        <div className="relative h-[500px] lg:h-[700px] w-full flex items-center justify-center order-1 lg:order-2">
+        <div className="relative h-[400px] sm:h-[500px] lg:h-[700px] w-full flex items-center justify-center order-1 lg:order-2 scale-[0.65] sm:scale-90 lg:scale-100 origin-center">
           {polaroids.map((p, i) => (
             <motion.div
               key={p.id}

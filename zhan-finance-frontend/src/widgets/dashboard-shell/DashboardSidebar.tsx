@@ -36,11 +36,9 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Chat':                <MessageCircle size={16} />,
   'Employees':           <UserCheck size={16} />,
   'Clients':             <Users size={16} />,
-  'Лиды':                <ClipboardList size={16} />,
-  'Список задач':        <ClipboardList size={16} />,
+  'Leads':               <ClipboardList size={16} />,
   'Tasks':               <ClipboardList size={16} />,
   'Task Pool':           <Briefcase size={16} />,
-  'Мои задачи':          <ClipboardList size={16} />,
   'My Tasks':            <ClipboardList size={16} />,
   'My Clients':          <Users size={16} />,
   'Archive (Done)':      <Archive size={16} />,
@@ -141,10 +139,8 @@ export function DashboardSidebar({
               case 'Employees': i18nKey = 'nav.employees'; break;
               case 'Clients': i18nKey = 'nav.clients'; break;
               case 'My Clients': i18nKey = 'nav.clients'; break;
-              case 'Лиды': i18nKey = 'nav.leads'; break;
-              case 'Список задач': i18nKey = 'nav.tasks'; break;
+              case 'Leads': i18nKey = 'nav.leads'; break;
               case 'Tasks': i18nKey = 'nav.tasks'; break;
-              case 'Мои задачи': i18nKey = 'nav.tasks'; break;
               case 'My Tasks': i18nKey = 'nav.tasks'; break;
               case 'Task Pool': i18nKey = 'nav.taskPool'; break;
               case 'Archive (Done)': i18nKey = 'nav.archiveDone'; break;
@@ -233,7 +229,7 @@ export function DashboardSidebar({
             {!isDesktopCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-800 truncate">{user.email}</p>
-                <p className="text-[11px] text-gray-400 mt-0.5 truncate">{t(`sidebar.roles.${user.role}`, { defaultValue: user.role })}</p>
+                <p className={`text-[11px] mt-0.5 truncate ${user.role === 'ADMIN' ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>{t(`sidebar.roles.${user.role}`, { defaultValue: user.role })}</p>
               </div>
             )}
           </div>

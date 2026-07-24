@@ -37,7 +37,7 @@ public class LessonService {
     }
 
     @Transactional
-    public Lesson createLesson(Long courseId, String title, String description, LessonType type, int orderIndex, MultipartFile file) {
+    public Lesson createLesson(Long courseId, String title, String description, LessonType type, int orderIndex, Integer durationMinutes, MultipartFile file) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
@@ -54,11 +54,11 @@ public class LessonService {
             chapter = course.getChapters().get(0);
         }
 
-        return createLessonForChapter(chapter.getId(), title, description, type, orderIndex);
+        return createLessonForChapter(chapter.getId(), title, description, type, orderIndex, durationMinutes);
     }
 
     @Transactional
-    public Lesson createLessonForChapter(Long chapterId, String title, String description, LessonType type, int orderIndex) {
+    public Lesson createLessonForChapter(Long chapterId, String title, String description, LessonType type, int orderIndex, Integer durationMinutes) {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Chapter not found"));
@@ -68,19 +68,31 @@ public class LessonService {
         lesson.setTitle(title);
         lesson.setDescription(description);
         lesson.setType(type);
-        lesson.setOrderIndex(orderIndex);
+        
+        if (orderIndex <= 0) {
+            int maxOrderIndex = chapter.getLessons().stream()
+                    .mapToInt(Lesson::getOrderIndex)
+                    .max()
+                    .orElse(-1);
+            lesson.setOrderIndex(maxOrderIndex + 1);
+        } else {
+            lesson.setOrderIndex(orderIndex);
+        }
+
+        lesson.setDurationMinutes(durationMinutes != null ? durationMinutes : 0);
 
         chapter.getLessons().add(lesson);
         return lessonRepository.save(lesson);
     }
 
     @Transactional
-    public Lesson updateLesson(Long id, String title, String description, String content, Integer orderIndex, MultipartFile videoFile, MultipartFile documentFile) {
+    public Lesson updateLesson(Long id, String title, String description, String content, Integer orderIndex, Integer durationMinutes, MultipartFile videoFile, MultipartFile documentFile) {
         Lesson lesson = getLessonById(id);
         if (title != null) lesson.setTitle(title);
         if (description != null) lesson.setDescription(description);
         if (content != null) lesson.setContent(content);
         if (orderIndex != null) lesson.setOrderIndex(orderIndex);
+        if (durationMinutes != null) lesson.setDurationMinutes(durationMinutes);
 
         if (videoFile != null && !videoFile.isEmpty()) {
             String filePath = storageService.store(videoFile);

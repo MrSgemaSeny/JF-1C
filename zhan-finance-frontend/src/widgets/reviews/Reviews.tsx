@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 export function Reviews() {
   const { t } = useTranslation('landing');
   return (
-    <Section className="bg-white py-24 overflow-hidden relative">
+    <Section className="bg-white py-16 lg:py-24 overflow-hidden relative">
       <Container>
         <div className="flex flex-col md:flex-row gap-12 items-end mb-16">
           <div className="flex-1">

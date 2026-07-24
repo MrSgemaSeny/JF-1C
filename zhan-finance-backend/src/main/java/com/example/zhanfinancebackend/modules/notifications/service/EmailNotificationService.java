@@ -351,4 +351,32 @@ public class EmailNotificationService {
         String html = buildFormalEmailHtml("Удаление задачи", user.getFullName(), contentHtml, null, null);
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+
+    @Async
+    public void sendDocumentAttachedEmail(User user, Document document, Task task) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+
+        String subject = "Новый документ: " + document.getFileName();
+        
+        String taskInfo = task != null 
+            ? "<tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px; width: 30%;\">Задача:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">" + task.getTitle() + "</td></tr>"
+            : "";
+
+        String contentHtml = String.format(
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Сотрудник загрузил новый документ для вас.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "      %s" +
+            "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px; width: 30%%;\">Файл:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">%s</td></tr>" +
+            "    </table>" +
+            "  </td></tr>" +
+            "</table>",
+            taskInfo,
+            document.getFileName()
+        );
+
+        String html = buildFormalEmailHtml("Новый документ", user.getFullName(), contentHtml, "Перейти в личный кабинет", frontendUrl + "/client");
+        sendHtmlEmail(user.getEmail(), subject, html);
+    }
 }

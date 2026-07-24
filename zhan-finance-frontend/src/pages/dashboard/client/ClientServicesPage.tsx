@@ -64,7 +64,7 @@ export function ClientServicesPage() {
       await loadData();
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
-      alert('Ошибка при отправке запроса. Попробуйте позже.');
+      alert(t('clientServices.requestError', { defaultValue: 'Ошибка при отправке запроса. Попробуйте позже.' }));
       console.error(err);
     } finally {
       setIsSubmitting(false);

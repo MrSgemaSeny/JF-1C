@@ -13,6 +13,8 @@ export function roleHome(role: UserRole): string {
       return ROUTES.CLIENT;
     case 'LEARNER':
       return ROUTES.LEARNER_COURSES;
+    case 'CURATOR':
+      return ROUTES.CURATOR;
     default:
       return ROUTES.HOME;
   }

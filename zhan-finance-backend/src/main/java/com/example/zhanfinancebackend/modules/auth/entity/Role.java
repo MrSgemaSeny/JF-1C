@@ -4,5 +4,6 @@ public enum Role {
     ADMIN,
     EMPLOYEE,
     CLIENT,
-    LEARNER
+    LEARNER,
+    CURATOR
 }

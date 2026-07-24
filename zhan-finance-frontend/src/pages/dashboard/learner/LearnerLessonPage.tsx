@@ -146,8 +146,8 @@ export function LearnerLessonPage() {
                   <FileText className="w-6 h-6 text-blue-500" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-gray-800 font-semibold text-sm">Дополнительный материал</span>
-                  <span className="text-brand-green/70 text-xs">Прикрепленный документ</span>
+                  <span className="text-gray-800 font-semibold text-sm">{t('learnerLesson.additionalMaterial', { defaultValue: 'Дополнительный материал' })}</span>
+                  <span className="text-brand-green/70 text-xs">{t('learnerLesson.attachedDoc', { defaultValue: 'Прикрепленный документ' })}</span>
                 </div>
               </div>
               <a
@@ -156,7 +156,7 @@ export function LearnerLessonPage() {
                 rel="noreferrer"
                 className="bg-brand-green/10 text-brand-green px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-green/20 transition-all active:scale-95 border border-brand-green/10"
               >
-                Скачать / Открыть
+                {t('learnerLesson.downloadOpen', { defaultValue: 'Скачать / Открыть' })}
               </a>
             </div>
           </div>
@@ -177,9 +177,9 @@ export function LearnerLessonPage() {
           {isCompleting ? (
             <Spinner size="sm" className="text-current" />
           ) : progress?.completedLessonIds.includes(lesson.id) ? (
-            'Пройдено ✅'
+            t('learnerLesson.passed', { defaultValue: 'Пройдено ✅' })
           ) : (
-            'Завершить урок и перейти к следующему'
+            t('learnerLesson.completeAndNext', { defaultValue: 'Завершить урок и перейти к следующему' })
           )}
         </button>
       </div>
@@ -198,7 +198,7 @@ export function LearnerLessonPage() {
         <button
           onClick={() => nextLesson && goToLesson(nextLesson.id)}
           disabled={!nextLesson || !(progress?.completedLessonIds.includes(lesson.id))}
-          title={!(progress?.completedLessonIds.includes(lesson.id)) ? "Сначала завершите текущий урок" : undefined}
+          title={!(progress?.completedLessonIds.includes(lesson.id)) ? t('learnerLesson.finishCurrentFirst', { defaultValue: 'Сначала завершите текущий урок' }) : undefined}
           className="flex items-center gap-2 px-6 py-3 bg-white border border-brand-green/10 rounded-xl font-medium text-brand-green hover:bg-brand-green/5 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {t('learnerLesson.next')}

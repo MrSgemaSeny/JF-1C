@@ -7,6 +7,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
+import { useTranslation } from 'react-i18next';
 
 interface ChatDrawerProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface ChatDrawerProps {
 
 export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: ChatDrawerProps) {
   const { user } = useAuth();
+  const { t } = useTranslation(['common']);
   const { refreshUnreadChatCount } = useChatNotifications();
   const [messages, setMessages] = useState<ChatMessageDto[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -169,7 +171,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
               <User className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">{otherUserName || 'Чат'}</h3>
+              <h3 className="font-bold text-sm">{otherUserName || t('nav.chat')}</h3>
               <p className="text-xs text-white/70">Online</p>
             </div>
           </div>
@@ -192,8 +194,8 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
             </div>
           ) : messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2">
-              <p className="text-sm">Нет сообщений</p>
-              <p className="text-xs">Напишите первым!</p>
+              <p className="text-sm">{t('employeeChat.noMessages')}</p>
+              <p className="text-xs">{t('employeeChat.writeFirst')}</p>
             </div>
           ) : (
             messages.map((msg, idx) => {
@@ -239,7 +241,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
                   handleSend(e);
                 }
               }}
-              placeholder="Введите сообщение..."
+              placeholder={t('clientChat.inputPlaceholder')}
               className="flex-1 max-h-32 min-h-[40px] bg-transparent border-none focus:ring-0 resize-none text-sm px-2 py-2"
               rows={1}
               spellCheck={false}

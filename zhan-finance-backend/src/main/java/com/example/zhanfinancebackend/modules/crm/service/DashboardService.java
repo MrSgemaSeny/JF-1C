@@ -184,12 +184,12 @@ public class DashboardService {
         if (dayOfWeek == java.time.DayOfWeek.MONDAY) {
             LocalDate endOfWeek = today.with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
             plannedList = allOpenTasks.stream()
-                    .filter(t -> t.getDueDate() != null && !t.getDueDate().isAfter(endOfWeek))
+                    .filter(t -> t.getDueDate() == null || !t.getDueDate().isAfter(endOfWeek))
                     .toList();
         } else if (dayOfWeek == java.time.DayOfWeek.FRIDAY) {
             LocalDate nextWeekEnd = today.plusWeeks(1).with(java.time.temporal.TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
             plannedList = allOpenTasks.stream()
-                    .filter(t -> t.getDueDate() != null && !t.getDueDate().isAfter(nextWeekEnd))
+                    .filter(t -> t.getDueDate() == null || !t.getDueDate().isAfter(nextWeekEnd))
                     .toList();
         } else {
             plannedList = allOpenTasks;

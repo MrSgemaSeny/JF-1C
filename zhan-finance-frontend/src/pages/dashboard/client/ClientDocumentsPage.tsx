@@ -11,7 +11,7 @@ const FOLDERS = ['Все', 'Акты ВР', 'Отчеты', 'Договоры', 
 
 export function ClientDocumentsPage() {
   const { user } = useAuth();
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'tasks']);
   const [documents, setDocuments] = useState<DocumentDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -107,7 +107,7 @@ export function ClientDocumentsPage() {
       await fetchDocuments();
     } catch (err) {
       console.error('Failed to confirm document', err);
-      alert('Ошибка подписи документа');
+      alert(t('documents.confirmError', { defaultValue: 'Ошибка подписи документа' }));
     } finally {
       setIsConfirmingId(null);
     }
@@ -120,7 +120,7 @@ export function ClientDocumentsPage() {
       await downloadZipDocuments(Array.from(selectedIds));
     } catch (err) {
       console.error('Failed zip download', err);
-      alert('Ошибка скачивания ZIP архива');
+      alert(t('documents.zipError', { defaultValue: 'Ошибка скачивания ZIP архива' }));
     } finally {
       setIsDownloadingZip(false);
     }
@@ -198,7 +198,7 @@ export function ClientDocumentsPage() {
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-semibold text-xs transition-colors shadow-sm cursor-pointer disabled:opacity-50"
           >
             <FileArchive size={16} />
-            <span>{isDownloadingZip ? 'Формируем ZIP...' : `Скачать выбранные (${selectedIds.size}) в ZIP`}</span>
+            <span>{isDownloadingZip ? t('documents.formingZip', { defaultValue: 'Формируем ZIP...' }) : t('documents.downloadSelectedZip', { defaultValue: `Скачать выбранные (${selectedIds.size}) в ZIP`, count: selectedIds.size })}</span>
           </button>
         )}
       </div>
@@ -251,9 +251,9 @@ export function ClientDocumentsPage() {
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">
-            {isUploading ? 'Загрузка документа...' : 'Перетащите файл или нажмите для загрузки'}
+            {isUploading ? t('documents.uploading', { defaultValue: 'Загрузка документа...' }) : t('documents.dragOrClick', { defaultValue: 'Перетащите файл или нажмите для загрузки' })}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">PDF, DOCX, XLSX, PNG, JPG до 20 МБ</p>
+          <p className="text-xs text-gray-400 mt-0.5">{t('documents.formats', { defaultValue: 'PDF, DOCX, XLSX, PNG, JPG до 20 МБ' })}</p>
         </div>
       </div>
 
@@ -265,7 +265,7 @@ export function ClientDocumentsPage() {
         <>
           {filteredDocuments.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex-1 shadow-sm flex flex-col min-h-0">
-              <div className="overflow-auto flex-1">
+              <div className="overflow-x-auto w-full flex-1">
                 <table className="w-full text-left text-sm whitespace-nowrap">
                   <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                     <tr>
@@ -277,11 +277,11 @@ export function ClientDocumentsPage() {
                           className="rounded border-gray-300 text-brand-green focus:ring-brand-green cursor-pointer"
                         />
                       </th>
-                      <th className="px-6 py-4 font-semibold text-gray-600">Файл</th>
+                      <th className="px-6 py-4 font-semibold text-gray-600">{t('documents.file', { defaultValue: 'Файл' })}</th>
                       <th className="px-6 py-4 font-semibold text-gray-600">{t('documents.fileType', { defaultValue: 'Тип' })}</th>
-                      <th className="px-6 py-4 font-semibold text-gray-600">Статус подписи</th>
-                      <th className="px-6 py-4 font-semibold text-gray-600">Размер</th>
-                      <th className="px-6 py-4 font-semibold text-gray-600 text-right">Действия</th>
+                      <th className="px-6 py-4 font-semibold text-gray-600">{t('documents.signatureStatus', { defaultValue: 'Статус подписи' })}</th>
+                      <th className="px-6 py-4 font-semibold text-gray-600">{t('documents.size', { defaultValue: 'Размер' })}</th>
+                      <th className="px-6 py-4 font-semibold text-gray-600 text-right">{t('documents.actions', { defaultValue: 'Действия' })}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -318,7 +318,7 @@ export function ClientDocumentsPage() {
                             {isConfirmed ? (
                               <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full font-semibold text-xs">
                                 <ShieldCheck size={14} />
-                                Подписано {doc.confirmedAt ? new Date(doc.confirmedAt).toLocaleDateString() : ''}
+                                {t('documents.signed', { defaultValue: 'Подписано' })} {doc.confirmedAt ? new Date(doc.confirmedAt).toLocaleDateString() : ''}
                               </span>
                             ) : (
                               <button
@@ -327,7 +327,7 @@ export function ClientDocumentsPage() {
                                 className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-green hover:bg-brand-green/90 text-white rounded-full font-semibold text-xs transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
                               >
                                 <CheckCircle2 size={14} />
-                                {isConfirmingId === doc.id ? 'Подтверждаем...' : 'Подтвердить'}
+                                {isConfirmingId === doc.id ? t('documents.confirming', { defaultValue: 'Подтверждаем...' }) : t('documents.confirm', { defaultValue: 'Подтвердить' })}
                               </button>
                             )}
                           </td>
@@ -339,14 +339,14 @@ export function ClientDocumentsPage() {
                               <button
                                 onClick={() => handleDownload(doc)}
                                 className="p-2 text-gray-500 hover:text-brand-green hover:bg-green-50 rounded-lg transition-colors cursor-pointer"
-                                title="Скачать документ"
+                                title={t('documents.downloadFile', { defaultValue: 'Скачать документ' })}
                               >
                                 <Download size={18} />
                               </button>
                               <button
                                 onClick={() => handleDelete(doc.id)}
                                 className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                title="Удалить"
+                                title={t('documents.delete', { defaultValue: 'Удалить' })}
                               >
                                 <Trash2 size={18} />
                               </button>
@@ -364,8 +364,8 @@ export function ClientDocumentsPage() {
           {filteredDocuments.length === 0 && (
             <div className="text-center py-12 text-gray-400 bg-white border border-gray-200 rounded-2xl">
               <FileText size={48} className="mx-auto mb-3 text-gray-300" />
-              <p className="text-base font-semibold text-gray-700">Нет документов в этой категории</p>
-              <p className="text-xs text-gray-400 mt-1">Загрузите новый файл или выберите другую категорию</p>
+              <p className="text-base font-semibold text-gray-700">{t('documents.emptyCategory', { defaultValue: 'Нет документов в этой категории' })}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('documents.emptyCategoryDesc', { defaultValue: 'Загрузите новый файл или выберите другую категорию' })}</p>
             </div>
           )}
         </>

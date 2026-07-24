@@ -9,7 +9,10 @@ interface CourseCertificateProps {
   date: string;
 }
 
+import { useTranslation } from 'react-i18next';
+
 export function CourseCertificate({ courseTitle, studentName, date }: CourseCertificateProps) {
+  const { t } = useTranslation(['common']);
   const certificateRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -46,7 +49,7 @@ export function CourseCertificate({ courseTitle, studentName, date }: CourseCert
         className="px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shrink-0 flex items-center gap-2 disabled:opacity-50"
       >
         {isGenerating ? <Spinner size="sm" className="text-white" /> : <Download size={18} />}
-        Скачать сертификат
+        {t('courseCertificate.download', { defaultValue: 'Скачать сертификат' })}
       </button>
 
       {/* Hidden certificate template for PDF generation */}
@@ -92,20 +95,20 @@ export function CourseCertificate({ courseTitle, studentName, date }: CourseCert
             justifyContent: 'center',
             alignItems: 'center'
           }}>
-            <h1 style={{ color: '#047857', fontSize: '64px', fontWeight: 'bold', margin: '0 0 20px 0' }}>СЕРТИФИКАТ</h1>
-            <p style={{ fontSize: '24px', color: '#6b7280', margin: '0 0 40px 0' }}>об успешном окончании курса</p>
+            <h1 style={{ color: '#047857', fontSize: '64px', fontWeight: 'bold', margin: '0 0 20px 0' }}>{t('courseCertificate.certificate', { defaultValue: 'СЕРТИФИКАТ' })}</h1>
+            <p style={{ fontSize: '24px', color: '#6b7280', margin: '0 0 40px 0' }}>{t('courseCertificate.subtitle', { defaultValue: 'об успешном окончании курса' })}</p>
             
-            <p style={{ fontSize: '18px', color: '#374151', margin: '0 0 10px 0' }}>Настоящий сертификат подтверждает, что</p>
+            <p style={{ fontSize: '18px', color: '#374151', margin: '0 0 10px 0' }}>{t('courseCertificate.confirms', { defaultValue: 'Настоящий сертификат подтверждает, что' })}</p>
             <h2 style={{ fontSize: '48px', color: '#111827', margin: '0 0 40px 0', borderBottom: '2px solid #047857', paddingBottom: '10px', minWidth: '400px' }}>
               {studentName}
             </h2>
             
-            <p style={{ fontSize: '18px', color: '#374151', margin: '0 0 10px 0' }}>успешно завершил(а) обучение по программе</p>
+            <p style={{ fontSize: '18px', color: '#374151', margin: '0 0 10px 0' }}>{t('courseCertificate.completed', { defaultValue: 'успешно завершил(а) обучение по программе' })}</p>
             <h3 style={{ fontSize: '32px', color: '#047857', margin: '0 0 50px 0' }}>«{courseTitle}»</h3>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 'auto', padding: '0 50px' }}>
               <div style={{ textAlign: 'left' }}>
-                <p style={{ fontSize: '16px', color: '#6b7280', margin: '0 0 5px 0' }}>Дата выдачи</p>
+                <p style={{ fontSize: '16px', color: '#6b7280', margin: '0 0 5px 0' }}>{t('courseCertificate.issueDate', { defaultValue: 'Дата выдачи' })}</p>
                 <p style={{ fontSize: '20px', color: '#111827', margin: 0, borderBottom: '1px solid #111827', paddingBottom: '5px', minWidth: '150px' }}>{date}</p>
               </div>
               <div style={{ textAlign: 'right' }}>

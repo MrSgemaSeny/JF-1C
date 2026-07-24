@@ -37,6 +37,14 @@ export function NotificationsPage() {
     return ROUTES.EMPLOYEE;
   };
 
+  const getResolvedLink = (notification: any) => {
+    let link = notification.link;
+    if (link && link.startsWith('/dashboard/tasks')) {
+       link = link.replace('/dashboard/tasks', user?.role === 'ADMIN' ? '/admin/tasks' : (user?.role === 'EMPLOYEE' ? '/employee/tasks' : '/client/tasks'));
+    }
+    return link ?? getNotificationLink(notification);
+  };
+
   useEffect(() => {
     refresh();
   }, []);
@@ -146,7 +154,7 @@ export function NotificationsPage() {
                         if (!notification.read) {
                           markAsRead(notification.id);
                         }
-                        navigate(notification.link ?? getNotificationLink(notification));
+                        navigate(getResolvedLink(notification));
                       }}
                       className="text-xs font-semibold px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
                     >

@@ -21,10 +21,12 @@ public class DocumentTemplateService {
 
     private final DocumentTemplateRepository templateRepository;
     private final StorageService storageService;
+    private final com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository;
 
-    public DocumentTemplateService(DocumentTemplateRepository templateRepository, StorageService storageService) {
+    public DocumentTemplateService(DocumentTemplateRepository templateRepository, StorageService storageService, com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository) {
         this.templateRepository = templateRepository;
         this.storageService = storageService;
+        this.documentRepository = documentRepository;
     }
 
     @Transactional
@@ -57,6 +59,8 @@ public class DocumentTemplateService {
     public void deleteTemplate(UUID id) {
         DocumentTemplate template = templateRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Template not found"));
+        
+        documentRepository.nullifyTemplateReference(id);
         
         storageService.delete(template.getFilePath());
         templateRepository.delete(template);

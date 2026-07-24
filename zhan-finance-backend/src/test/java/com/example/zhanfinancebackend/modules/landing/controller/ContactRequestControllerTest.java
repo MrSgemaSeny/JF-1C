@@ -14,13 +14,16 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.mock.web.MockMultipartFile;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false) // disable security filters for simple controller test if needed, or use @WithMockUser
@@ -51,5 +54,21 @@ public class ContactRequestControllerTest {
                 .andExpect(jsonPath("$.message").value("Contact request created"))
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.name").value("Ivan Ivanov"));
+    }
+
+    @Test
+    public void uploadFile_ShouldReturnSuccess() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("files", "test.txt", "text/plain", "content".getBytes());
+
+        ContactRequestDto mockResponse = new ContactRequestDto(1L, "Ivan Ivanov", "+7 777 123 4567", null, "Test message", "frontend", ContactRequestStatus.NEW, null, null);
+        
+        when(contactRequestService.uploadFiles(eq(1L), any(org.springframework.web.multipart.MultipartFile[].class)))
+                .thenReturn(java.util.List.of(new com.example.zhanfinancebackend.modules.landing.dto.ContactRequestFileDto(1L, "test.txt", "text/plain", 7L)));
+
+        mockMvc.perform(multipart("/api/contact-requests/1/files")
+                .file(file)
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Files uploaded"));
     }
 }
