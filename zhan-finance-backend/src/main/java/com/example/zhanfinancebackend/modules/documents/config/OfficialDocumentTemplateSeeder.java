@@ -37,7 +37,7 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
 
         // 1. Act of Completed Works (Form R-1 RK)
         createTemplateIfAbsent(
-                "Акт выполненных работ (Форма Р-1 РК)",
+                "Акт выполненных работ (Форма Р-1)",
                 "Официальная форма Р-1 утверждена МФ РК для акта приём-передачи оказанных услуг",
                 admin,
                 generateFormR1Docx()
@@ -45,7 +45,7 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
 
         // 2. Report of Rendered Services
         createTemplateIfAbsent(
-                "Отчет об оказанных услугах (Приложение к АВР)",
+                "Отчет об оказанных услугах (АВР)",
                 "Подробный отчет о выполненных бухгалтерских и юридических работах по задаче",
                 admin,
                 generateServicesReportDocx()
@@ -53,7 +53,7 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
 
         // 3. Client Approval and Signature Sheet
         createTemplateIfAbsent(
-                "Лист согласования и подписи клиента",
+                "Лист согласования и подписи",
                 "Официальный протокол подтверждения приема оказанных услуг клиентом",
                 admin,
                 generateApprovalSheetDocx()
@@ -100,10 +100,14 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
             rSub.setFontSize(11);
 
             XWPFParagraph p1 = doc.createParagraph();
-            XWPFRun rP1 = p1.createRun();
-            rP1.setText("Исполнитель: ТОО \"Zhan Finance\" (БИН: 220340012345, АО \"Kaspi Bank\", БИК: KASPKSKX, ИИК: KZ123456789012345678)\n");
-            rP1.setText("Заказчик: {{CLIENT_COMPANY}} / {{CLIENT_NAME}} (ИИН/БИН: {{CLIENT_IIN}}, Email: {{CLIENT_EMAIL}}, Тел: {{CLIENT_PHONE}})\n");
-            rP1.setText("Договор оказания услуг: № {{DOC_NUMBER}} от {{DATE_TODAY_SHORT}}\n");
+            XWPFRun rP1a = p1.createRun();
+            rP1a.setText("Исполнитель: ТОО \"Zhan Finance\" (БИН: 220340012345, АО \"Kaspi Bank\", БИК: KASPKSKX, ИИК: KZ123456789012345678)");
+            rP1a.addBreak();
+            XWPFRun rP1b = p1.createRun();
+            rP1b.setText("Заказчик: {{CLIENT_COMPANY}} / {{CLIENT_NAME}} (ИИН/БИН: {{CLIENT_IIN}}, Email: {{CLIENT_EMAIL}}, Тел: {{CLIENT_PHONE}})");
+            rP1b.addBreak();
+            XWPFRun rP1c = p1.createRun();
+            rP1c.setText("Договор оказания услуг: № {{DOC_NUMBER}} от {{DATE_TODAY_SHORT}}");
 
             // Table of services
             XWPFTable table = doc.createTable(2, 5);
@@ -122,14 +126,34 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
             dataRow.getCell(4).setText("{{TASK_AMOUNT}}");
 
             XWPFParagraph pFooter = doc.createParagraph();
-            XWPFRun rFoot = pFooter.createRun();
-            rFoot.setText("\nИтого оказано услуг на сумму: {{TASK_AMOUNT}} тенге.\n");
-            rFoot.setText("Работы (услуги) выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.\n\n");
+            XWPFRun rFoot1 = pFooter.createRun();
+            rFoot1.addBreak();
+            rFoot1.setText("Итого оказано услуг на сумму: {{TASK_AMOUNT}} тенге.");
+            rFoot1.addBreak();
+            XWPFRun rFoot2 = pFooter.createRun();
+            rFoot2.setText("Работы (услуги) выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.");
+            rFoot2.addBreak();
+            rFoot2.addBreak();
 
             // Signatures table
             XWPFTable sigTable = doc.createTable(1, 2);
-            sigTable.getRow(0).getCell(0).setText("Сдал (Исполнитель):\n\n__________________ / Директор ТОО Zhan Finance\nМ.П.");
-            sigTable.getRow(0).getCell(1).setText("Принял (Заказчик):\n\n__________________ / {{CLIENT_NAME}}\nМ.П.");
+            XWPFParagraph sigP1 = sigTable.getRow(0).getCell(0).addParagraph();
+            XWPFRun rSig1 = sigP1.createRun();
+            rSig1.setText("Сдал (Исполнитель):");
+            rSig1.addBreak();
+            rSig1.addBreak();
+            rSig1.setText("__________________ / Директор ТОО Zhan Finance");
+            rSig1.addBreak();
+            rSig1.setText("М.П.");
+
+            XWPFParagraph sigP2 = sigTable.getRow(0).getCell(1).addParagraph();
+            XWPFRun rSig2 = sigP2.createRun();
+            rSig2.setText("Принял (Заказчик):");
+            rSig2.addBreak();
+            rSig2.addBreak();
+            rSig2.setText("__________________ / {{CLIENT_NAME}}");
+            rSig2.addBreak();
+            rSig2.setText("М.П.");
 
             doc.write(out);
             return out.toByteArray();
@@ -152,17 +176,28 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
             rSub.setFontSize(11);
 
             XWPFParagraph p1 = doc.createParagraph();
-            XWPFRun rP1 = p1.createRun();
-            rP1.setText("Клиент: {{CLIENT_COMPANY}} ({{CLIENT_NAME}})\n");
-            rP1.setText("Направление услуг: {{TASK_SERVICE}}\n");
-            rP1.setText("Задание: {{TASK_TITLE}}\n");
-            rP1.setText("Описание выполненных работ: {{TASK_DESCRIPTION}}\n");
-            rP1.setText("Стоимость обслуживания: {{TASK_AMOUNT}} тенге\n");
+            XWPFRun rP1a = p1.createRun();
+            rP1a.setText("Клиент: {{CLIENT_COMPANY}} ({{CLIENT_NAME}})");
+            rP1a.addBreak();
+            XWPFRun rP1b = p1.createRun();
+            rP1b.setText("Направление услуг: {{TASK_SERVICE}}");
+            rP1b.addBreak();
+            XWPFRun rP1c = p1.createRun();
+            rP1c.setText("Задание: {{TASK_TITLE}}");
+            rP1c.addBreak();
+            XWPFRun rP1d = p1.createRun();
+            rP1d.setText("Описание выполненных работ: {{TASK_DESCRIPTION}}");
+            rP1d.addBreak();
+            XWPFRun rP1e = p1.createRun();
+            rP1e.setText("Стоимость обслуживания: {{TASK_AMOUNT}} тенге");
 
             XWPFParagraph pSig = doc.createParagraph();
-            XWPFRun rSig = pSig.createRun();
-            rSig.setText("\nОтчет составил специалист ТОО Zhan Finance: _______________\n");
-            rSig.setText("Отчет принял Заказчик {{CLIENT_NAME}}: _______________\n");
+            XWPFRun rSig1 = pSig.createRun();
+            rSig1.addBreak();
+            rSig1.setText("Отчет составил специалист ТОО Zhan Finance: _______________");
+            rSig1.addBreak();
+            XWPFRun rSig2 = pSig.createRun();
+            rSig2.setText("Отчет принял Заказчик {{CLIENT_NAME}}: _______________");
 
             doc.write(out);
             return out.toByteArray();
@@ -179,11 +214,18 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
             rTitle.setFontSize(14);
 
             XWPFParagraph p1 = doc.createParagraph();
-            XWPFRun rP1 = p1.createRun();
-            rP1.setText("Настоящим Клиент {{CLIENT_NAME}} ({{CLIENT_COMPANY}}) подтверждает получение и согласование документов по задаче \"{{TASK_TITLE}}\".\n");
-            rP1.setText("Дата согласования: {{DATE_TODAY}}\n");
-            rP1.setText("Статус подписи: Электронно подтверждено в CRM Zhan Finance.\n\n");
-            rP1.setText("Подпись Клиента: __________________\n");
+            XWPFRun rP1a = p1.createRun();
+            rP1a.setText("Настоящим Клиент {{CLIENT_NAME}} ({{CLIENT_COMPANY}}) подтверждает получение и согласование документов по задаче \"{{TASK_TITLE}}\".");
+            rP1a.addBreak();
+            XWPFRun rP1b = p1.createRun();
+            rP1b.setText("Дата согласования: {{DATE_TODAY}}");
+            rP1b.addBreak();
+            XWPFRun rP1c = p1.createRun();
+            rP1c.setText("Статус подписи: Электронно подтверждено в CRM Zhan Finance.");
+            rP1c.addBreak();
+            rP1c.addBreak();
+            XWPFRun rP1d = p1.createRun();
+            rP1d.setText("Подпись Клиента: __________________");
 
             doc.write(out);
             return out.toByteArray();
