@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiRequest } from '@/shared/api/http';
-import { UserCheck, UserX, Plus, BookOpen, ShieldAlert, CheckCircle } from 'lucide-react';
+import { UserCheck, UserX, Plus, BookOpen, ShieldAlert, CheckCircle, MoreVertical } from 'lucide-react';
 import { Spinner } from '@/shared/ui/Spinner';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 
@@ -31,6 +31,9 @@ export function AdminCuratorsPage() {
 
   // Assign Modal
   const [selectedCurator, setSelectedCurator] = useState<Curator | null>(null);
+
+  // Dropdown Menu State
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   const fetchData = async () => {
     try {
@@ -152,15 +155,33 @@ export function AdminCuratorsPage() {
                 >
                   Курсы
                 </button>
-                <button
-                  onClick={() => handleToggleStatus(c.id)}
-                  className={`px-3 py-2 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1 ${
-                    c.enabled ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'
-                  }`}
-                >
-                  {c.enabled ? <UserX size={14} /> : <UserCheck size={14} />}
-                  <span>{c.enabled ? 'Блок' : 'Разблок'}</span>
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                  >
+                    <MoreVertical size={16} />
+                  </button>
+                  {openMenuId === c.id && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                      <div className="absolute right-0 bottom-full mb-1 w-36 bg-white border border-gray-100 shadow-lg rounded-xl overflow-hidden z-20 py-1">
+                        <button
+                          onClick={() => {
+                            handleToggleStatus(c.id);
+                            setOpenMenuId(null);
+                          }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold transition-colors text-left ${
+                            c.enabled ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'
+                          }`}
+                        >
+                          {c.enabled ? <UserX size={14} /> : <UserCheck size={14} />}
+                          <span>{c.enabled ? 'Заблокировать' : 'Разблокировать'}</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           ))
