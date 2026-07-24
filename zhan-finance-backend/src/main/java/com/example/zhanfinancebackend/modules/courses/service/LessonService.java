@@ -96,8 +96,8 @@ Integer durationMinutes, Boolean isPreview, String mediaUrl, MultipartFile video
         if (durationMinutes != null) lesson.setDurationMinutes(durationMinutes);
         if (isPreview != null) lesson.setIsPreview(isPreview);
         
-        if (mediaUrl != null && !mediaUrl.isEmpty()) {
-            lesson.setMediaUrl(mediaUrl);
+        if (mediaUrl != null) {
+            lesson.setMediaUrl(mediaUrl.isEmpty() ? null : mediaUrl);
         }
 
         if (videoFile != null && !videoFile.isEmpty()) {
