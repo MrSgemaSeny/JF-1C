@@ -130,58 +130,62 @@ export function AdminCuratorsPage() {
           </div>
         ) : (
           curators.map((c) => (
-            <div key={c.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 flex flex-col justify-between">
+            <div key={c.id} className="bg-white p-7 rounded-3xl border border-gray-100 shadow-sm flex flex-col justify-between min-h-[220px] transition-all hover:shadow-md">
               <div>
                 <div className="flex items-start justify-between">
-                  <h3 className="font-bold text-lg text-gray-900">{c.fullName}</h3>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${c.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {c.enabled ? 'Активен' : 'Заблокирован'}
-                  </span>
+                  <div className="pr-2">
+                    <h3 className="font-bold text-xl text-gray-900 mb-1 leading-tight">{c.fullName}</h3>
+                    <p className="text-sm text-gray-500">{c.email}</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${c.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {c.enabled ? 'Активен' : 'Заблокирован'}
+                    </span>
+                    <div className="relative">
+                      <button
+                        onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                        className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <MoreVertical size={18} />
+                      </button>
+                      {openMenuId === c.id && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                          <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-100 shadow-xl rounded-xl overflow-hidden z-20 py-1">
+                            <button
+                              onClick={() => {
+                                handleToggleStatus(c.id);
+                                setOpenMenuId(null);
+                              }}
+                              className={`w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold transition-colors text-left ${
+                                c.enabled ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'
+                              }`}
+                            >
+                              {c.enabled ? <UserX size={15} /> : <UserCheck size={15} />}
+                              <span>{c.enabled ? 'Заблокировать доступ' : 'Разблокировать'}</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500">{c.email}</p>
                 
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-2">
-                    <BookOpen size={14} />
-                    <span>Назначено курсов: {c.assignedCourseIds.length}</span>
+                <div className="mt-6 pt-5 border-t border-gray-50">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 mb-2">
+                    <BookOpen size={16} className="text-brand-green" />
+                    <span>Назначено курсов: <span className="text-gray-900">{c.assignedCourseIds.length}</span></span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
+              <div className="mt-6">
                 <button
                   onClick={() => setSelectedCurator(c)}
-                  className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold rounded-xl transition-colors"
+                  className="w-full py-3 bg-gray-50 hover:bg-brand-green/10 hover:text-brand-green text-gray-700 text-sm font-bold rounded-xl transition-all"
                 >
-                  Курсы
+                  Управление курсами
                 </button>
-                <div className="relative">
-                  <button
-                    onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-                  >
-                    <MoreVertical size={16} />
-                  </button>
-                  {openMenuId === c.id && (
-                    <>
-                      <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                      <div className="absolute right-0 bottom-full mb-1 w-36 bg-white border border-gray-100 shadow-lg rounded-xl overflow-hidden z-20 py-1">
-                        <button
-                          onClick={() => {
-                            handleToggleStatus(c.id);
-                            setOpenMenuId(null);
-                          }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold transition-colors text-left ${
-                            c.enabled ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'
-                          }`}
-                        >
-                          {c.enabled ? <UserX size={14} /> : <UserCheck size={14} />}
-                          <span>{c.enabled ? 'Заблокировать' : 'Разблокировать'}</span>
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
               </div>
             </div>
           ))
