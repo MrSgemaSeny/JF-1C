@@ -21,8 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,14 +67,16 @@ class PipelineIntegrationTests {
 
         Pipeline pipeline = new Pipeline("Test Pipeline");
         pipeline.setDefault(true);
-        pipeline = pipelineRepository.save(pipeline);
 
         Stage s1 = new Stage(pipeline, "New", 0, "#000000", StageType.OPEN);
         s1.setDefault(true);
-        stageRepository.save(s1);
 
         Stage s2 = new Stage(pipeline, "Done", 1, "#ffffff", StageType.WON);
-        stageRepository.save(s2);
+
+        pipeline.addStage(s1);
+        pipeline.addStage(s2);
+
+        pipelineRepository.save(pipeline);
     }
 
     @Test
@@ -86,7 +86,9 @@ class PipelineIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$.data[*].name", hasItem("Test Pipeline")));
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].name").value("Test Pipeline"))
+                .andExpect(jsonPath("$.data[0].stages").isArray())
+                .andExpect(jsonPath("$.data[0].stages", hasSize(2)));
     }
 }
