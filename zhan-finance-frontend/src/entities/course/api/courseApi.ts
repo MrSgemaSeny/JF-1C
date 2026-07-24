@@ -128,13 +128,19 @@ export async function updateLesson(
   content?: string,
   orderIndex?: number,
   videoFile?: File | null,
-  documentFile?: File | null
+  documentFile?: File | null,
+  durationMinutes?: number,
+  isPreview?: boolean,
+  mediaUrl?: string
 ): Promise<LessonDto> {
   const formData = new FormData();
   if (title !== undefined) formData.append('title', title);
   if (description !== undefined) formData.append('description', description);
   if (content !== undefined) formData.append('content', content);
   if (orderIndex !== undefined) formData.append('orderIndex', String(orderIndex));
+  if (durationMinutes !== undefined) formData.append('durationMinutes', String(durationMinutes));
+  if (isPreview !== undefined) formData.append('isPreview', String(isPreview));
+  if (mediaUrl !== undefined) formData.append('mediaUrl', mediaUrl);
   if (videoFile) formData.append('videoFile', videoFile);
   if (documentFile) formData.append('documentFile', documentFile);
 

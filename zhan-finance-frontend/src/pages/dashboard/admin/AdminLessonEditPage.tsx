@@ -14,6 +14,9 @@ export function AdminLessonEditPage() {
   const [lesson, setLesson] = useState<LessonDto | null>(null);
   const [content, setContent] = useState<string>('');
   const [title, setTitle] = useState('');
+  const [durationMinutes, setDurationMinutes] = useState(0);
+  const [isPreview, setIsPreview] = useState(false);
+  const [mediaUrl, setMediaUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -30,6 +33,9 @@ export function AdminLessonEditPage() {
             setLesson(found);
             setTitle(found.title);
             setContent(found.content || '');
+            setDurationMinutes(found.durationMinutes || 0);
+            setIsPreview(found.isPreview || false);
+            setMediaUrl(found.mediaUrl || '');
           }
           setIsLoading(false);
         })
@@ -42,7 +48,7 @@ export function AdminLessonEditPage() {
     setIsSaving(true);
     try {
       // First update the lesson title and basic properties
-      await updateLesson(lesson.id, title, undefined, content, undefined, file || undefined);
+      await updateLesson(lesson.id, title, undefined, content, undefined, file || undefined, undefined, durationMinutes, isPreview, mediaUrl);
 
       alert(t('adminLessonEdit.saveSuccess'));
       // Refresh lesson data to show new file
@@ -112,6 +118,46 @@ export function AdminLessonEditPage() {
                     placeholder={t('adminLessonEdit.mainTextPlaceholder')}
                     className="w-full min-h-[400px] text-lg text-gray-800 outline-none resize-y placeholder-gray-300"
                 />
+            </div>
+
+            {/* Настройки урока */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+                <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">{t('adminLessonEdit.settingsLabel', { defaultValue: 'Настройки урока' })}</h3>
+                
+                <div className="flex flex-col sm:flex-row gap-6">
+                    <div className="flex-1">
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('adminLessonEdit.mediaUrlLabel', { defaultValue: 'Ссылка на видео (YouTube / Vimeo / mp4)' })}</label>
+                        <input
+                            type="text"
+                            value={mediaUrl}
+                            onChange={e => setMediaUrl(e.target.value)}
+                            placeholder="https://..."
+                            className="w-full px-4 py-2.5 text-sm bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-brand-green outline-none transition-all font-medium"
+                        />
+                    </div>
+                    <div className="w-full sm:w-1/3">
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">{t('adminLessonEdit.durationLabel', { defaultValue: 'Длительность (минут)' })}</label>
+                        <input
+                            type="number"
+                            min={0}
+                            value={durationMinutes}
+                            onChange={e => setDurationMinutes(Number(e.target.value))}
+                            className="w-full px-4 py-2.5 text-sm bg-gray-50/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:border-brand-green outline-none transition-all font-medium"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={isPreview}
+                            onChange={e => setIsPreview(e.target.checked)}
+                            className="w-4 h-4 text-brand-green rounded border-gray-300 focus:ring-brand-green"
+                        />
+                        <span className="text-sm font-semibold text-gray-700">{t('adminLessonEdit.isPreviewLabel', { defaultValue: 'Ознакомительный урок (доступен без покупки)' })}</span>
+                    </label>
+                </div>
             </div>
 
             {/* Секция загрузки медиа */}

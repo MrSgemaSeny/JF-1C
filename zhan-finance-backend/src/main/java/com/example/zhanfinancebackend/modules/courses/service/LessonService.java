@@ -86,13 +86,19 @@ public class LessonService {
     }
 
     @Transactional
-    public Lesson updateLesson(Long id, String title, String description, String content, Integer orderIndex, Integer durationMinutes, MultipartFile videoFile, MultipartFile documentFile) {
+    public Lesson updateLesson(Long id, String title, String description, String content, Integer orderIndex, 
+Integer durationMinutes, Boolean isPreview, String mediaUrl, MultipartFile videoFile, MultipartFile documentFile) {
         Lesson lesson = getLessonById(id);
         if (title != null) lesson.setTitle(title);
         if (description != null) lesson.setDescription(description);
         if (content != null) lesson.setContent(content);
         if (orderIndex != null) lesson.setOrderIndex(orderIndex);
         if (durationMinutes != null) lesson.setDurationMinutes(durationMinutes);
+        if (isPreview != null) lesson.setIsPreview(isPreview);
+        
+        if (mediaUrl != null && !mediaUrl.isEmpty()) {
+            lesson.setMediaUrl(mediaUrl);
+        }
 
         if (videoFile != null && !videoFile.isEmpty()) {
             String filePath = storageService.store(videoFile);

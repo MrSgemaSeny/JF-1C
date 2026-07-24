@@ -86,9 +86,12 @@ public class AdminCourseController {
             @RequestParam(value = "content", required = false) String content,
             @RequestParam(value = "orderIndex", required = false) Integer orderIndex,
             @RequestParam(value = "durationMinutes", required = false) Integer durationMinutes,
+            @RequestParam(value = "isPreview", required = false) Boolean isPreview,
+            @RequestParam(value = "mediaUrl", required = false) String mediaUrl,
             @RequestParam(value = "videoFile", required = false) MultipartFile videoFile,
             @RequestParam(value = "documentFile", required = false) MultipartFile documentFile) {
-        return ApiResponse.success(lessonService.updateLesson(lessonId, title, description, content, orderIndex, durationMinutes, videoFile, documentFile));
+        return ApiResponse.success(lessonService.updateLesson(lessonId, title, description, content, orderIndex, 
+            durationMinutes, isPreview, mediaUrl, videoFile, documentFile));
     }
 
     @DeleteMapping("/lessons/{lessonId}")
