@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { FileDown, Zap, Loader2, FileText } from 'lucide-react';
+import { FileDown, Zap, Loader2, FileText, X } from 'lucide-react';
 import { documentTemplateApi } from '../api/documentTemplateApi';
 import { DocumentTemplate } from '../model/types';
-
 import { useToast } from '@/shared/ui/Toast/ToastContext';
 
 interface GenerateDocumentButtonProps {
@@ -30,6 +29,7 @@ export function GenerateDocumentButton({ taskId, onSuccess }: GenerateDocumentBu
         setIsOpen(false);
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -71,37 +71,44 @@ export function GenerateDocumentButton({ taskId, onSuccess }: GenerateDocumentBu
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden">
-          <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Выберите шаблон</h4>
+        <>
+          <div className="fixed inset-0 z-[100] sm:hidden bg-black/40 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+          <div className="fixed sm:absolute bottom-0 left-0 right-0 sm:bottom-auto sm:left-auto sm:right-0 sm:mt-2 w-full sm:w-80 max-h-[80vh] bg-white sm:rounded-lg rounded-t-2xl shadow-2xl border-t sm:border border-gray-100 z-[101] overflow-hidden flex flex-col pb-safe sm:pb-0">
+            <div className="px-4 py-4 sm:py-2 bg-gray-50 border-b border-gray-100 flex justify-between items-center shrink-0">
+              <h4 className="text-sm sm:text-xs font-semibold text-gray-700 sm:text-gray-500 uppercase tracking-wider">Выберите шаблон</h4>
+              <button className="sm:hidden p-1 text-gray-500 hover:text-gray-700 bg-gray-200 rounded-full" onClick={() => setIsOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div className="overflow-y-auto">
+              {isLoading ? (
+                <div className="p-8 text-center">
+                  <Loader2 size={24} className="animate-spin mx-auto text-brand-green" />
+                </div>
+              ) : templates.length === 0 ? (
+                <div className="p-8 text-center text-sm text-gray-500">Нет доступных шаблонов</div>
+              ) : (
+                <ul className="divide-y divide-gray-50">
+                  {templates.map(t => (
+                    <li key={t.id}>
+                      <button
+                        onClick={() => handleGenerate(t.id)}
+                        className="w-full text-left px-4 py-4 sm:py-3 hover:bg-gray-50 transition-colors flex items-start gap-3 group"
+                      >
+                        <FileText size={20} className="text-blue-500 sm:w-4 sm:h-4 mt-0.5 shrink-0" />
+                        <div>
+                          <span className="block text-base sm:text-sm font-medium text-gray-800 sm:text-gray-700 group-hover:text-brand-green">{t.name}</span>
+                          {t.description && <span className="block text-sm sm:text-xs text-gray-500 sm:text-gray-400 mt-1 sm:mt-0.5">{t.description}</span>}
+                        </div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-          <div className="max-h-60 overflow-y-auto">
-            {isLoading ? (
-              <div className="p-4 text-center">
-                <Loader2 size={16} className="animate-spin mx-auto text-brand-green" />
-              </div>
-            ) : templates.length === 0 ? (
-              <div className="p-4 text-center text-xs text-gray-500">Нет доступных шаблонов</div>
-            ) : (
-              <ul className="divide-y divide-gray-50">
-                {templates.map(t => (
-                  <li key={t.id}>
-                    <button
-                      onClick={() => handleGenerate(t.id)}
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-start gap-3 group"
-                    >
-                      <FileText size={16} className="text-blue-500 mt-0.5 shrink-0" />
-                      <div>
-                        <span className="block text-sm font-medium text-gray-700 group-hover:text-brand-green">{t.name}</span>
-                        {t.description && <span className="block text-xs text-gray-400 mt-0.5 truncate">{t.description}</span>}
-                      </div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
