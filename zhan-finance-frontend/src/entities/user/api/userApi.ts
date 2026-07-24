@@ -4,7 +4,7 @@ export interface UserProfileDto {
   id: number;
   email: string;
   fullName: string;
-  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
+  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER' | 'CURATOR';
   phone?: string;
   companyName?: string;
   avatarUrl?: string;
