@@ -9,6 +9,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.Stage;
 import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import com.example.zhanfinancebackend.modules.crm.repository.PipelineRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.StageRepository;
+import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.ClientProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,15 +48,20 @@ class PipelineIntegrationTests {
     private StageRepository stageRepository;
 
     @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
     private ClientProfileRepository clientProfileRepository;
 
     private String adminToken;
 
     @BeforeEach
     void setup() {
+        taskRepository.deleteAll();
+        stageRepository.deleteAll();
+        pipelineRepository.deleteAll();
         clientProfileRepository.deleteAll();
         userRepository.deleteAll();
-        pipelineRepository.deleteAll();
 
         User admin = new User("Admin", "admin_pipeline@test.com", "pass", Role.ADMIN);
         admin = userRepository.save(admin);
@@ -67,14 +73,10 @@ class PipelineIntegrationTests {
 
         Stage s1 = new Stage(pipeline, "New", 0, "#000000", StageType.OPEN);
         s1.setDefault(true);
-        s1 = stageRepository.save(s1);
+        stageRepository.save(s1);
 
         Stage s2 = new Stage(pipeline, "Done", 1, "#ffffff", StageType.WON);
-        s2 = stageRepository.save(s2);
-
-        pipeline.getStages().add(s1);
-        pipeline.getStages().add(s2);
-        pipelineRepository.save(pipeline);
+        stageRepository.save(s2);
     }
 
     @Test
