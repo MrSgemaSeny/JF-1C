@@ -169,7 +169,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                                   </span>
                                   {lesson.isPreview && (
                                     <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 shrink-0">
-                                      Бесплатный
+                                      Ознакомление
                                     </span>
                                   )}
                                 </div>
