@@ -125,13 +125,11 @@ public class TaskService {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by("id").descending());
         return taskRepository.findAllByClientWithDetailsPaged(client.getId(), pageable).map(taskMapper::mapToDto);
     }
-    }
 
     @Transactional(readOnly = true)
     public org.springframework.data.domain.Page<TaskDto> getTasksForEmployee(User employee, int page, int size) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by("id").descending());
         return taskRepository.findAllByEmployeeWithDetailsPaged(employee, pageable).map(taskMapper::mapToDto);
-    }
     }
 
     @Transactional(readOnly = true)
