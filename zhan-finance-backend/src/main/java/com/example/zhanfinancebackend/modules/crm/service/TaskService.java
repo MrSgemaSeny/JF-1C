@@ -459,92 +459,25 @@ public class TaskService {
                 task.setLostReason(lostReason);
                 logActivity(task, user, "Причина отказа: " + lostReason);
             }
+        } else {
+             task.setLostReason(null);
         }
+
+        task.setStage(newStage);
         
         if (newStage.getType() == StageType.WON || newStage.getType() == StageType.LOST) {
-            task.setClosedAt(java.time.LocalDate.now());
+             task.setClosedAt(java.time.LocalDate.now());
         } else {
-            task.setClosedAt(null);
-        }
-        
-        task.setStage(newStage);
-        return taskMapper.mapToDto(taskRepository.save(task));
-    }
-
-    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
-    @Transactional
-    public TaskDto archiveTask(Long taskId, User user) {
-        Task task = getTaskEntity(taskId);
-        // Only allow archive if stage is WON or LOST
-        if (task.getStage() == null || (task.getStage().getType() != StageType.WON && task.getStage().getType() != StageType.LOST)) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "Можно архивировать только завершенные задачи");
-        }
-        // Check access
-        accessService.assertCanUpdateTaskDetails(user, task);
-        
-        if (task.isArchived()) {
-            return taskMapper.mapToDto(task);
-        }
-        
-        task.setArchived(true);
-        logActivity(task, user, "Задача архивирована");
-        return taskMapper.mapToDto(taskRepository.save(task));
-    }
-
-    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
-    @Transactional
-    public TaskDto assignTask(Long taskId, Long assigneeId, User user) {
-        Task task = getTaskEntity(taskId);
-        User assignee = null;
-        if (assigneeId != null) {
-            assignee = userRepository.findById(assigneeId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
-        }
-        if (assignee != null && assignee.getRole() != Role.EMPLOYEE) {
-            throw new ApiException(
-                    ErrorCode.BAD_REQUEST, "Задачу можно назначить только на сотрудника."
-            );
-        }
-        Long oldAssigneeId = task.getAssignedTo() != null ? task.getAssignedTo().getId() : null;
-        Long newAssigneeId = assignee != null ? assignee.getId() : null;
-
-        if (user.getRole() == Role.EMPLOYEE) {
-            if (assigneeId != null && !assigneeId.equals(user.getId())) {
-                throw new ApiException(
-                        ErrorCode.FORBIDDEN, "Сотрудники могут назначать задачи только на себя."
-                );
-            }
-        }
-
-        if (!java.util.Objects.equals(oldAssigneeId, newAssigneeId)) {
-            String oldAssigneeName = task.getAssignedTo() != null ? task.getAssignedTo().getFullName() : "None";
-            String assigneeName = assignee != null ? assignee.getFullName() : "Не назначен";
-            logActivity(task, user, "Назначил исполнителя: " + assigneeName);
-            auditService.logAction("UPDATE_ASSIGNEE", "Task", task.getId(), "Assignee changed from " + oldAssigneeName + " to " + assigneeName);
-        }
-        task.setAssignedTo(assignee);
-
-        if (assignee != null && task.getClient() != null) {
-            clientService.assignEmployeeToClient(task.getClient().getId(), assignee.getId());
+             task.setClosedAt(null);
         }
 
         Task savedTask = taskRepository.save(task);
 
-        if (assignee != null) {
-            notificationService.createNotification(
-                    assignee,
-                    "Новая задача",
-                    "Вам назначена задача: " + savedTask.getTitle(),
-                    "/employee/tasks"
-            );
-            emailNotificationService.sendTaskAssignedEmail(assignee, savedTask);
+        if (user.getRole() != Role.CLIENT) {
+             simpMessagingTemplate.convertAndSend("/topic/tasks/" + savedTask.getClient().getId(), 
+                 java.util.Map.of("type", "TASK_UPDATED", "task", taskMapper.mapToDto(savedTask))
+             );
         }
-
-        notificationService.notifyAdmins(
-                "Смена исполнителя",
-                "Исполнитель задачи '" + task.getTitle() + "' изменен на: " + (assignee != null ? assignee.getFullName() : "Не назначен"),
-                "/admin/tasks"
-        );
 
         return taskMapper.mapToDto(savedTask);
     }

@@ -13,6 +13,7 @@ import {
 } from '@dnd-kit/core';
 
 import { TaskKanbanColumn } from './TaskKanbanColumn';
+import { arrayMove } from '@dnd-kit/sortable';
 import { TaskKanbanCard } from './TaskKanbanCard';
 import type { TaskDto, StageDto } from '@/entities/task/model/types';
 import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';

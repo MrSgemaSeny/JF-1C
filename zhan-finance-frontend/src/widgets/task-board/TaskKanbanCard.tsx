@@ -37,7 +37,6 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
   const style = {
     transition: 'none',
     transform: CSS.Transform.toString(transform),
-    transition,
   };
 
   const amountStr = task.amount ? new Intl.NumberFormat('ru-RU').format(task.amount) : '0';

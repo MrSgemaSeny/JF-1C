@@ -71,7 +71,7 @@ export function ClientOverviewPage() {
       if (user?.userId) {
         const data = await getTasks();
         // Сортировка: новые сверху
-        data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        data.content.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setTasks(data.content);
       }
     } catch (err) {
