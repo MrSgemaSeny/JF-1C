@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -94,4 +96,15 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s " +
            "where t.archived = true and s.type = :stageType")
     List<Task> findArchivedByStageType(@Param("stageType") StageType stageType);
+    @Query(value = "select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.services where t.archived = false",
+           countQuery = "select count(t) from Task t where t.archived = false")
+    Page<Task> findAllWithDetailsPaged(Pageable pageable);
+
+    @Query(value = "select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.services where (t.client.id = :clientId or t.createdBy.id = :clientId) and t.archived = false",
+           countQuery = "select count(t) from Task t where (t.client.id = :clientId or t.createdBy.id = :clientId) and t.archived = false")
+    Page<Task> findAllByClientWithDetailsPaged(@Param("clientId") Long clientId, Pageable pageable);
+
+    @Query(value = "select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch t.services where t.assignedTo = :employee and t.archived = false",
+           countQuery = "select count(t) from Task t where t.assignedTo = :employee and t.archived = false")
+    Page<Task> findAllByEmployeeWithDetailsPaged(@Param("employee") User employee, Pageable pageable);
 }

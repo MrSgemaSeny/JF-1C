@@ -48,26 +48,20 @@ public class TaskController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
-    public ApiResponse<?> getTasks(
+    public ApiResponse<org.springframework.data.domain.Page<com.example.zhanfinancebackend.modules.crm.dto.TaskDto>> getTasks(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(required = false) Long clientId,
             @RequestParam(required = false) Long assignedToId,
             @RequestParam(required = false) Long stageId,
             @RequestParam(required = false) Boolean unassigned,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "500") Integer size
     ) {
         User user = principal.getUser();
-
         if (user.getRole() == Role.ADMIN || user.getRole() == Role.EMPLOYEE) {
-            if (page != null && size != null) {
-                return ApiResponse.success(taskService.getAllTasksPaged(clientId, assignedToId, stageId, unassigned, page, size));
-            }
-            return ApiResponse.success(taskService.getAllTasks(clientId, assignedToId, stageId, unassigned));
+            return ApiResponse.success(taskService.getAllTasksPaged(clientId, assignedToId, stageId, unassigned, page, size));
         }
-
-        // Клиент видит только свои задачи (clientId берется из текущего юзера)
-        return ApiResponse.success(taskService.getTasksForClient(user));
+        return ApiResponse.success(taskService.getTasksForClient(user, page, size));
     }
 
     @GetMapping("/archived")

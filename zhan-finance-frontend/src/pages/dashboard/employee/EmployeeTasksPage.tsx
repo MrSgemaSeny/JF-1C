@@ -14,7 +14,8 @@ import { useTranslation } from 'react-i18next';
 export function EmployeeTasksPage() {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
-  const { data: tasks = [], isLoading } = useTasksQuery({}, !!user?.userId);
+  const { data: tasksData, isLoading } = useTasksQuery({}, !!user?.userId);
+  const tasks = tasksData?.content || [];
   const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
   const boardRef = useRef<TaskGridBoardRef>(null);
   const [searchParams, setSearchParams] = useSearchParams();

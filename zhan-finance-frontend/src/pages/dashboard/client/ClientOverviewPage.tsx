@@ -72,7 +72,7 @@ export function ClientOverviewPage() {
         const data = await getTasks();
         // Сортировка: новые сверху
         data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setTasks(data);
+        setTasks(data.content);
       }
     } catch (err) {
       setError('Failed to load tasks');

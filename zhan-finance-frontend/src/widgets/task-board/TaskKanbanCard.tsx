@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSortable } from '@dnd-kit/sortable';
+import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Phone, Mail, MessageCircle } from 'lucide-react';
 import type { TaskDto } from '@/entities/task/model/types';
@@ -24,9 +24,9 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
     listeners,
     setNodeRef,
     transform,
-    transition,
+    
     isDragging,
-  } = useSortable({
+  } = useDraggable({
     id: task.id,
     data: {
       type: 'Task',
@@ -35,6 +35,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
   });
 
   const style = {
+    transition: 'none',
     transform: CSS.Transform.toString(transform),
     transition,
   };

@@ -1,7 +1,7 @@
 import { apiRequest, apiDownload } from '@/shared/api/http';
-import type { TaskDto, TaskCreateRequest, TaskRequestCreateRequest, TaskFilter } from '../model/types';
+import type { TaskDto, TaskCreateRequest, PageResponse, TaskRequestCreateRequest, TaskFilter } from '../model/types';
 
-export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
+export async function getTasks(filter?: TaskFilter): Promise<PageResponse<TaskDto>> {
   const query = new URLSearchParams();
   if (filter?.stageId) query.append('stageId', filter.stageId.toString());
   if (filter?.clientId) query.append('clientId', filter.clientId.toString());
@@ -9,7 +9,7 @@ export async function getTasks(filter?: TaskFilter): Promise<TaskDto[]> {
   if (filter?.unassigned) query.append('unassigned', 'true');
   
   const queryString = query.toString() ? `?${query.toString()}` : '';
-  return apiRequest<TaskDto[]>(`/api/crm/tasks${queryString}`);
+  return apiRequest<PageResponse<TaskDto>>(`/api/crm/tasks${queryString}`);
 }
 
 export async function getArchivedTasks(stageType: 'WON' | 'LOST'): Promise<TaskDto[]> {

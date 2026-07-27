@@ -147,7 +147,7 @@ export function MiniCalendarWidget() {
       <div 
         key={d} 
         onClick={() => handleDayClick(dateStr)}
-        className={`h-8 flex items-center justify-center rounded-md cursor-pointer transition-all ${cellBg}`}
+        className={`relative h-8 flex items-center justify-center rounded-md cursor-pointer transition-all ${cellBg}`}
       >
         <span className={`text-xs ${textColor}`}>{d}</span>
         {dayEvents.length === 1 && (

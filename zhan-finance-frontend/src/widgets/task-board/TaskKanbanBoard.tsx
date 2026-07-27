@@ -11,7 +11,7 @@ import {
   DragOverEvent,
   DragEndEvent,
 } from '@dnd-kit/core';
-import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+
 import { TaskKanbanColumn } from './TaskKanbanColumn';
 import { TaskKanbanCard } from './TaskKanbanCard';
 import type { TaskDto, StageDto } from '@/entities/task/model/types';
@@ -193,7 +193,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       },
     }),
     useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
+      coordinateGetter: undefined,
     })
   );
 
@@ -247,9 +247,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       const overItems = prev[overContainer];
 
       const activeIndex = activeItems.findIndex(t => t.id === active.id);
-      const overIndex = over.id.toString().startsWith('stage-')
-        ? overItems.length
-        : overItems.findIndex(t => t.id === over.id);
+      const overIndex = overItems.length;
 
       const newActive = [...activeItems];
       const newOver = [...overItems];

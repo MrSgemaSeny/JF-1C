@@ -13,7 +13,8 @@ import { TaskCreateModal } from '@/widgets/task-create/TaskCreateModal';
 
 export function AdminTasksPage() {
   const { t } = useTranslation(['common']);
-  const { data: tasks, isLoading, error, refetch } = useTasksQuery();
+  const { data: tasksData, isLoading, error, refetch } = useTasksQuery();
+  const tasks = tasksData?.content || [];
   const { mutateAsync: batchUpdate } = useBatchUpdateTasksMutation();
   const boardRef = useRef<TaskKanbanBoardRef>(null);
   const [searchParams, setSearchParams] = useSearchParams();

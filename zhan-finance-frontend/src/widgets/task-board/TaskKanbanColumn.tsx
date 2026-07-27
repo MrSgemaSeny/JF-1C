@@ -1,9 +1,5 @@
 import React, { useMemo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
 import { TaskKanbanCard } from './TaskKanbanCard';
 import type { TaskDto, StageDto } from '@/entities/task/model/types';
 import { Plus } from 'lucide-react';
@@ -86,7 +82,7 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
         
 
 
-        <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+        
           {tasks.map((task) => (
             <TaskKanbanCard 
               key={task.id} 
@@ -96,7 +92,7 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
               onOpenChat={onOpenChat}
             />
           ))}
-        </SortableContext>
+        
       </div>
     </div>
   );
