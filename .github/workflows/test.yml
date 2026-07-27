@@ -2,9 +2,9 @@ name: Backend Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "Google-AI-studio" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "Google-AI-studio" ]
 
 jobs:
   test:

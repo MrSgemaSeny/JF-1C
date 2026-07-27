@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - Google-AI-studio
 
 permissions:
   contents: read
