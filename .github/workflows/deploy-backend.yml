@@ -1,4 +1,3 @@
-# .github/workflows/deploy-backend.yml
 name: Deploy Backend to Fly.io
 
 on:
@@ -23,6 +22,10 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Grant execute permission for gradlew
+        working-directory: ./zhan-finance-backend
+        run: chmod +x gradlew
+
       - name: Build (skip tests)
         working-directory: ./zhan-finance-backend
         run: ./gradlew bootJar --no-daemon -x test
@@ -35,3 +38,4 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+

@@ -27,7 +27,6 @@ services:
     networks:
       - jf1c_network
 
-
   backend:
     build:
       context: ./zhan-finance-backend
@@ -37,6 +36,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/zhanfindb?characterEncoding=UTF-8
+      - SPRING_DATASOURCE_USERNAME=test_user
+      - SPRING_DATASOURCE_PASSWORD=pass1
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=change-me-change-me-change-me-change-me-in-production-long-key-needed
@@ -63,7 +64,6 @@ services:
 volumes:
   postgres_data:
   redis_data:
-
 
 networks:
   jf1c_network:
