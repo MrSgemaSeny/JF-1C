@@ -8,6 +8,7 @@ import com.example.zhanfinancebackend.modules.auth.entity.AuthProvider;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.courses.entity.Course;
 import com.example.zhanfinancebackend.modules.courses.entity.CourseCurator;
 import com.example.zhanfinancebackend.modules.courses.repository.CourseCuratorRepository;
@@ -137,7 +138,7 @@ public class AdminCuratorController {
     @Transactional
     public ApiResponse<Void> assignCourse(@PathVariable Long curatorId,
                                           @PathVariable Long courseId,
-                                          @AuthenticationPrincipal User admin) {
+                                          @AuthenticationPrincipal UserPrincipal adminPrincipal) {
         User curator = userRepository.findById(curatorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Curator not found"));
         Course course = courseRepository.findById(courseId)
@@ -148,6 +149,7 @@ public class AdminCuratorController {
         }
 
         if (!courseCuratorRepository.existsByCourseIdAndCuratorId(courseId, curatorId)) {
+            User admin = adminPrincipal.getUser();
             CourseCurator cc = new CourseCurator(course, curator, admin);
             courseCuratorRepository.save(cc);
         }
