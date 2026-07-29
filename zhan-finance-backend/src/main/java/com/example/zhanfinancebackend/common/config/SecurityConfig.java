@@ -81,7 +81,9 @@ public class SecurityConfig {
                                 "/api/services",
                                 "/api/services/highlighted",
                                 "/api/courses/certificates/verify/**",
-                                "/uploads/avatars/**"
+                                "/uploads/avatars/**",
+                                "/actuator/health",
+                                "/actuator/info"
                         ).permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
