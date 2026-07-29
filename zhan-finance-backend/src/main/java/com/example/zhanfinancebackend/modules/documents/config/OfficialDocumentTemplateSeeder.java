@@ -39,6 +39,11 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        if (templateRepository.count() >= 3) {
+            log.info("Official document templates already exist, skipping DOCX generation.");
+            return;
+        }
+
         User admin = userRepository.findAll().stream().findFirst().orElse(null);
 
         // 1. Act of Completed Works (Form R-1 RK)
