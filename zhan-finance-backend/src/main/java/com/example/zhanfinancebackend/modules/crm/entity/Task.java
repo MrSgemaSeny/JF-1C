@@ -104,7 +104,7 @@ public class Task extends BaseEntity {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskActivity> history = new ArrayList<>();
 
-    protected Task() {
+    public Task() {
     }
 
     public Task(String title, User client, User createdBy) {
