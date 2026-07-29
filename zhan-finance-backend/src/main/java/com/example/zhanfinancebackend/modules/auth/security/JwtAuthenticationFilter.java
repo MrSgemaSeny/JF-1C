@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-        } else if (request.getRequestURI().startsWith("/ws/") || request.getRequestURI().startsWith("/uploads/")) {
+        } else if (request.getRequestURI().startsWith("/ws/")) {
             token = request.getParameter("token");
         }
 

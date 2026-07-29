@@ -98,7 +98,10 @@ public class LocalStorageService implements StorageService {
     @Override
     public Resource loadAsResource(String storageKey) {
         try {
-            Path file = rootLocation.resolve(storageKey).normalize();
+            Path file = rootLocation.resolve(storageKey).normalize().toAbsolutePath();
+            if (!file.startsWith(this.rootLocation.toAbsolutePath())) {
+                throw new BadRequestException("Cannot access file outside current directory.");
+            }
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
@@ -113,7 +116,10 @@ public class LocalStorageService implements StorageService {
     @Override
     public void delete(String storageKey) {
         try {
-            Path file = rootLocation.resolve(storageKey).normalize();
+            Path file = rootLocation.resolve(storageKey).normalize().toAbsolutePath();
+            if (!file.startsWith(this.rootLocation.toAbsolutePath())) {
+                throw new BadRequestException("Cannot access file outside current directory.");
+            }
             Files.deleteIfExists(file);
         } catch (IOException e) {
             throw new RuntimeException("Failed to delete file.");
@@ -123,7 +129,10 @@ public class LocalStorageService implements StorageService {
     @Override
     public byte[] loadAsBytes(String storageKey) {
         try {
-            Path file = rootLocation.resolve(storageKey).normalize();
+            Path file = rootLocation.resolve(storageKey).normalize().toAbsolutePath();
+            if (!file.startsWith(this.rootLocation.toAbsolutePath())) {
+                throw new BadRequestException("Cannot access file outside current directory.");
+            }
             if (Files.exists(file) && Files.isReadable(file)) {
                 return Files.readAllBytes(file);
             } else {

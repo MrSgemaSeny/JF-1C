@@ -52,21 +52,34 @@ public class DocumentGeneratorService {
         this.clientProfileRepository = clientProfileRepository;
     }
 
-    @Transactional
     public DocumentDto generateFromTemplate(Long taskId, UUID templateId, User actor) {
+        // 1. Чтение данных из БД (внутри readOnly транзакции)
+        GenerationData data = fetchGenerationData(taskId, templateId, actor);
+
+        // 2. Рендеринг шаблона (БЕЗ ТРАНЗАКЦИИ — не держит соединение Hikari)
+        byte[] renderedDocx = renderDocx(data.templateBytes, data.context);
+
+        // 3. Сохранение результата (внутри транзакции)
+        return saveDocument(data, renderedDocx, actor);
+    }
+
+    @Transactional(readOnly = true)
+    public GenerationData fetchGenerationData(Long taskId, UUID templateId, User actor) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         DocumentTemplate template = templateRepository.findById(templateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Template not found"));
 
         User client = task.getClient();
-        
         documentAccessService.assertCanCreateFor(actor, client != null ? client : actor);
 
         Map<String, Object> context = buildContext(task, client);
-
         byte[] templateBytes = storageService.loadAsBytes(template.getFilePath());
 
+        return new GenerationData(task, template, client, context, templateBytes);
+    }
+
+    public byte[] renderDocx(byte[] templateBytes, Map<String, Object> context) {
         try {
             XWPFTemplate xwpf = XWPFTemplate.compile(new ByteArrayInputStream(templateBytes))
                     .render(context);
@@ -74,46 +87,57 @@ public class DocumentGeneratorService {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             xwpf.write(out);
             xwpf.close();
-
-            String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String clientName = client != null ? client.getFullName() : "Без клиента";
-            
-            String randomHash = UUID.randomUUID().toString().substring(0, 4);
-            String fileName = template.getName() + " - " + clientName + " - " + date + "_" + randomHash + ".docx";
-
-            String storageKey = storageService.store(out.toByteArray(), fileName, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-
-            Document doc = new Document(
-                    client != null ? client : actor,
-                    actor,
-                    fileName,
-                    storageKey,
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    (long) out.size()
-            );
-            doc.setTask(task);
-            doc.setGeneratedFromTemplate(template);
-            
-            doc = documentRepository.save(doc);
-
-            return new DocumentDto(
-                    doc.getId(),
-                    doc.getUser().getId(),
-                    doc.getUser().getFullName(),
-                    doc.getTask() != null ? doc.getTask().getId() : null,
-                    doc.getFileName(),
-                    doc.getContentType(),
-                    doc.getFileSize(),
-                    doc.getStatus(),
-                    doc.getCreatedAt()
-            );
-
+            return out.toByteArray();
         } catch (IOException e) {
             throw new ApiException(ErrorCode.INTERNAL_ERROR, "Ошибка при генерации документа: " + e.getMessage());
         } catch (Exception e) {
             throw new ApiException(ErrorCode.INTERNAL_ERROR, "Критическая ошибка генерации: " + e.getClass().getSimpleName() + " - " + e.getMessage());
         }
     }
+
+    @Transactional
+    public DocumentDto saveDocument(GenerationData data, byte[] renderedDocx, User actor) {
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String clientName = data.client != null ? data.client.getFullName() : "Без клиента";
+        
+        String randomHash = UUID.randomUUID().toString().substring(0, 4);
+        String fileName = data.template.getName() + " - " + clientName + " - " + date + "_" + randomHash + ".docx";
+
+        String storageKey = storageService.store(renderedDocx, fileName, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+        Document doc = new Document(
+                data.client != null ? data.client : actor,
+                actor,
+                fileName,
+                storageKey,
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                (long) renderedDocx.length
+        );
+        doc.setTask(data.task);
+        doc.setGeneratedFromTemplate(data.template);
+        
+        doc = documentRepository.save(doc);
+
+        return new DocumentDto(
+                doc.getId(),
+                doc.getUser().getId(),
+                doc.getUser().getFullName(),
+                doc.getTask() != null ? doc.getTask().getId() : null,
+                doc.getFileName(),
+                doc.getContentType(),
+                doc.getFileSize(),
+                doc.getStatus(),
+                doc.getCreatedAt()
+        );
+    }
+
+    public record GenerationData(
+            Task task,
+            DocumentTemplate template,
+            User client,
+            Map<String, Object> context,
+            byte[] templateBytes
+    ) {}
 
     private Map<String, Object> buildContext(Task task, User client) {
         String blank = "______";

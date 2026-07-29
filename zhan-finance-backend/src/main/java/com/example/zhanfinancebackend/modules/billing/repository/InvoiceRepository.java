@@ -21,4 +21,9 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     @Query("select invoice from Invoice invoice join fetch invoice.user client left join fetch client.assignedEmployee where invoice.id = :id")
     Optional<Invoice> findByIdWithClient(Long id);
+
+    List<Invoice> findByStatusAndDueDateBefore(Invoice.InvoiceStatus status, java.time.LocalDate date);
+
+    @Query("SELECT i.status as status, COUNT(i.id) as count, SUM(i.amount) as totalAmount FROM Invoice i GROUP BY i.status")
+    List<java.util.Map<String, Object>> getFinanceSummaryByStatus();
 }

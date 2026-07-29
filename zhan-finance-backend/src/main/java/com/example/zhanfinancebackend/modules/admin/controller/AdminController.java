@@ -16,6 +16,9 @@ import com.example.zhanfinancebackend.modules.auth.service.UserService;
 import com.example.zhanfinancebackend.modules.crm.dto.ClientStatsDto;
 import com.example.zhanfinancebackend.modules.crm.dto.EmployeeWorkloadDto;
 
+import com.example.zhanfinancebackend.modules.billing.service.InvoiceService;
+import com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto;
+
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
@@ -23,10 +26,17 @@ public class AdminController {
 
     private final AdminService adminService;
     private final UserService userService;
+    private final InvoiceService invoiceService;
 
-    public AdminController(AdminService adminService, UserService userService) {
+    public AdminController(AdminService adminService, UserService userService, InvoiceService invoiceService) {
         this.adminService = adminService;
         this.userService = userService;
+        this.invoiceService = invoiceService;
+    }
+
+    @GetMapping("/finance/summary")
+    public ApiResponse<FinanceSummaryDto> getFinanceSummary() {
+        return ApiResponse.success(invoiceService.getFinanceSummary());
     }
 
     @GetMapping("/employees")

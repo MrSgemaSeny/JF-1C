@@ -1,5 +1,6 @@
 package com.example.zhanfinancebackend.common.config;
 
+import com.example.zhanfinancebackend.modules.auth.security.ApiRateLimitFilter;
 import com.example.zhanfinancebackend.modules.auth.security.AuthRateLimitFilter;
 import com.example.zhanfinancebackend.modules.auth.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import com.example.zhanfinancebackend.common.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.security.config.Customizer;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -33,12 +36,24 @@ public class SecurityConfig {
             HttpSecurity http,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             AuthRateLimitFilter authRateLimitFilter,
+            ApiRateLimitFilter apiRateLimitFilter,
             AuthenticationProvider authenticationProvider,
             CorsConfigurationSource corsConfigurationSource
     ) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .headers(headers -> headers
+                    .contentSecurityPolicy(csp -> csp.policyDirectives(
+                        "default-src 'self'; " +
+                        "script-src 'self' 'unsafe-inline'; " +
+                        "style-src 'self' 'unsafe-inline'; " +
+                        "img-src 'self' data: https:; " +
+                        "connect-src 'self' wss://zhanfinance.fly.dev https://zhanfinance.fly.dev"
+                    ))
+                    .frameOptions(frame -> frame.deny())
+                    .contentTypeOptions(Customizer.withDefaults())
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .exceptionHandling(exceptions -> exceptions
@@ -77,6 +92,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/internal/**").denyAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(apiRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

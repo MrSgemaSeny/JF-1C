@@ -102,6 +102,7 @@ public class Invoice extends BaseEntity {
         DRAFT,
         ISSUED,
         PAID,
+        OVERDUE,
         CANCELED
     }
 }

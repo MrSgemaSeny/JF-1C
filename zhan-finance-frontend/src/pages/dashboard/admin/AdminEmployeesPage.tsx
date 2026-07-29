@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getEmployees, getPendingEmployees, approveEmployee } from '@/entities/employee/api/employeeApi';
+import { getEmployees, getPendingEmployees, approveEmployee, getEmployeeWorkload, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
-import { Check, Clock, UserCheck } from 'lucide-react';
+import { Check, Clock, UserCheck, Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function AdminEmployeesPage() {
@@ -9,17 +9,23 @@ export function AdminEmployeesPage() {
   const [activeTab, setActiveTab] = useState<'ACTIVE' | 'PENDING'>('ACTIVE');
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
   const [pendingEmployees, setPendingEmployees] = useState<EmployeeDto[]>([]);
+  const [workloads, setWorkloads] = useState<Map<number, number>>(new Map());
   const [isLoading, setIsLoading] = useState(false);
 
   async function loadData() {
     setIsLoading(true);
     try {
-      const [empList, pendingList] = await Promise.all([
+      const [empList, pendingList, wlList] = await Promise.all([
         getEmployees(),
-        getPendingEmployees()
+        getPendingEmployees(),
+        getEmployeeWorkload().catch(() => [] as EmployeeWorkloadDto[])
       ]);
       setEmployees(empList);
       setPendingEmployees(pendingList);
+      
+      const wlMap = new Map<number, number>();
+      wlList.forEach(w => wlMap.set(w.employeeId, w.activeTasksCount));
+      setWorkloads(wlMap);
     } catch (e) {
       console.error(e);
     } finally {
@@ -140,9 +146,26 @@ export function AdminEmployeesPage() {
                           {t('adminEmployees.approve')}
                         </button>
                       ) : (
-                        <span className="w-full sm:w-auto inline-flex justify-center items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                          {t('adminEmployees.isActive')}
-                        </span>
+                        <div className="flex items-center justify-end gap-2">
+                          {(() => {
+                            const count = workloads.get(emp.id) ?? 0;
+                            const badgeColor =
+                              count > 7
+                                ? 'bg-red-50 text-red-700 border-red-200'
+                                : count > 3
+                                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                            return (
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border ${badgeColor}`}>
+                                <Briefcase className="w-3 h-3" />
+                                {count} задач
+                              </span>
+                            );
+                          })()}
+                          <span className="w-full sm:w-auto inline-flex justify-center items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                            {t('adminEmployees.isActive')}
+                          </span>
+                        </div>
                       )}
                     </td>
                   </tr>

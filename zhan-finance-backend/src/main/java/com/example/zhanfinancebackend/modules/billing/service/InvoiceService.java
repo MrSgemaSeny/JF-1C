@@ -52,6 +52,48 @@ public class InvoiceService {
         return get(user, id);
     }
 
+    @Transactional(readOnly = true)
+    public com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto getFinanceSummary() {
+        List<java.util.Map<String, Object>> summaryList = invoiceRepository.getFinanceSummaryByStatus();
+        java.util.Map<String, Long> countMap = new java.util.HashMap<>();
+        java.util.Map<String, java.math.BigDecimal> amountMap = new java.util.HashMap<>();
+
+        java.math.BigDecimal totalInvoiced = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal totalPaid = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal totalIssued = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal totalOverdue = java.math.BigDecimal.ZERO;
+
+        for (java.util.Map<String, Object> row : summaryList) {
+            Object statusObj = row.get("status");
+            String status = statusObj != null ? statusObj.toString() : "UNKNOWN";
+            Long count = row.get("count") != null ? ((Number) row.get("count")).longValue() : 0L;
+            java.math.BigDecimal amount = row.get("totalAmount") != null ? (java.math.BigDecimal) row.get("totalAmount") : java.math.BigDecimal.ZERO;
+
+            countMap.put(status, count);
+            amountMap.put(status, amount);
+
+            if (!"CANCELED".equals(status)) {
+                totalInvoiced = totalInvoiced.add(amount);
+            }
+            if ("PAID".equals(status)) {
+                totalPaid = amount;
+            } else if ("ISSUED".equals(status)) {
+                totalIssued = amount;
+            } else if ("OVERDUE".equals(status)) {
+                totalOverdue = amount;
+            }
+        }
+
+        return new com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto(
+                totalInvoiced,
+                totalPaid,
+                totalIssued,
+                totalOverdue,
+                countMap,
+                amountMap
+        );
+    }
+
     @Transactional
     public InvoiceDto create(User user, InvoiceDto request) {
         User client = resolveClient(user, request.clientId());
