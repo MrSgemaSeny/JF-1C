@@ -72,6 +72,7 @@ public class Document {
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
     public User getUploadedBy() { return uploadedBy; }
