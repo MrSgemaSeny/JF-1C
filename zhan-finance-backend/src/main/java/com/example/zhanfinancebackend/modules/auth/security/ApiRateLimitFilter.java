@@ -1,5 +1,7 @@
 package com.example.zhanfinancebackend.modules.auth.security;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
@@ -13,14 +15,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Order(1)
 public class ApiRateLimitFilter extends OncePerRequestFilter {
 
-    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
+    private final Cache<String, Bucket> buckets = Caffeine.newBuilder()
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .maximumSize(10000)
+            .build();
 
     private Bucket createBucket() {
         return Bucket.builder()
@@ -39,13 +43,18 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
         }
 
         String ip = request.getRemoteAddr();
-        String forwardedFor = request.getHeader("X-Forwarded-For");
-        if (forwardedFor != null && !forwardedFor.isEmpty()) {
-            ip = forwardedFor.split(",")[0];
+        String cfIp = request.getHeader("CF-Connecting-IP");
+        if (cfIp != null && !cfIp.trim().isEmpty()) {
+            ip = cfIp.trim();
+        } else {
+            String forwardedFor = request.getHeader("X-Forwarded-For");
+            if (forwardedFor != null && !forwardedFor.isEmpty()) {
+                ip = forwardedFor.split(",")[0].trim();
+            }
         }
 
-        Bucket bucket = buckets.computeIfAbsent(ip, k -> createBucket());
-        if (bucket.tryConsume(1)) {
+        Bucket bucket = buckets.get(ip, k -> createBucket());
+        if (bucket != null && bucket.tryConsume(1)) {
             chain.doFilter(request, response);
         } else {
             response.setStatus(429);

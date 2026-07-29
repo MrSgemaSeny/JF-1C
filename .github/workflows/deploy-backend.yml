@@ -27,9 +27,9 @@ jobs:
         working-directory: ./zhan-finance-backend
         run: chmod +x gradlew
 
-      - name: Build (skip tests)
+      - name: Build and Test
         working-directory: ./zhan-finance-backend
-        run: ./gradlew bootJar --no-daemon -x test
+        run: ./gradlew test bootJar --no-daemon
 
       - name: Setup Flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
