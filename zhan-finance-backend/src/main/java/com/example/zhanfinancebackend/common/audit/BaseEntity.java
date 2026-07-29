@@ -39,6 +39,10 @@ public abstract class BaseEntity {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
