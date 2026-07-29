@@ -19,6 +19,7 @@ export interface StageDto {
   type: StageType;
   isDefault: boolean;
   slaHours?: number;
+  isPreFinal?: boolean;
 }
 
 export interface PipelineDto {
