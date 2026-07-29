@@ -26,15 +26,11 @@ public class InvoiceOverdueScheduler {
     @Transactional
     public void markOverdueInvoices() {
         log.info("Checking for overdue ISSUED invoices...");
-        LocalDate today = LocalDate.now();
-        List<Invoice> overdueInvoices = invoiceRepository.findByStatusAndDueDateBefore(Invoice.InvoiceStatus.ISSUED, today);
+        java.time.LocalDate today = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Almaty"));
+        int updatedCount = invoiceRepository.bulkUpdateInvoiceStatus(Invoice.InvoiceStatus.ISSUED, Invoice.InvoiceStatus.OVERDUE, today);
 
-        if (!overdueInvoices.isEmpty()) {
-            log.info("Found {} overdue invoices. Updating status to OVERDUE.", overdueInvoices.size());
-            for (Invoice invoice : overdueInvoices) {
-                invoice.setStatus(Invoice.InvoiceStatus.OVERDUE);
-            }
-            invoiceRepository.saveAll(overdueInvoices);
+        if (updatedCount > 0) {
+            log.info("Updated {} overdue invoices to OVERDUE status.", updatedCount);
         } else {
             log.info("No overdue invoices found.");
         }

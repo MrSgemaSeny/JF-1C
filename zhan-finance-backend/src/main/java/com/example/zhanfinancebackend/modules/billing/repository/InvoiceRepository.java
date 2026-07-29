@@ -22,8 +22,22 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     @Query("select invoice from Invoice invoice join fetch invoice.user client left join fetch client.assignedEmployee where invoice.id = :id")
     Optional<Invoice> findByIdWithClient(Long id);
 
+    interface InvoiceStatusSummary {
+        Invoice.InvoiceStatus getStatus();
+        Long getCount();
+        java.math.BigDecimal getTotalAmount();
+    }
+
     List<Invoice> findByStatusAndDueDateBefore(Invoice.InvoiceStatus status, java.time.LocalDate date);
 
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("UPDATE Invoice i SET i.status = :targetStatus WHERE i.status = :sourceStatus AND i.dueDate < :date")
+    int bulkUpdateInvoiceStatus(
+            @org.springframework.data.repository.query.Param("sourceStatus") Invoice.InvoiceStatus sourceStatus,
+            @org.springframework.data.repository.query.Param("targetStatus") Invoice.InvoiceStatus targetStatus,
+            @org.springframework.data.repository.query.Param("date") java.time.LocalDate date
+    );
+
     @Query("SELECT i.status as status, COUNT(i.id) as count, SUM(i.amount) as totalAmount FROM Invoice i GROUP BY i.status")
-    List<java.util.Map<String, Object>> getFinanceSummaryByStatus();
+    List<InvoiceStatusSummary> getFinanceSummaryByStatus();
 }

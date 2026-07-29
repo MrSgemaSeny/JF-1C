@@ -54,7 +54,7 @@ public class InvoiceService {
 
     @Transactional(readOnly = true)
     public com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto getFinanceSummary() {
-        List<java.util.Map<String, Object>> summaryList = invoiceRepository.getFinanceSummaryByStatus();
+        List<InvoiceRepository.InvoiceStatusSummary> summaryList = invoiceRepository.getFinanceSummaryByStatus();
         java.util.Map<String, Long> countMap = new java.util.HashMap<>();
         java.util.Map<String, java.math.BigDecimal> amountMap = new java.util.HashMap<>();
 
@@ -63,11 +63,11 @@ public class InvoiceService {
         java.math.BigDecimal totalIssued = java.math.BigDecimal.ZERO;
         java.math.BigDecimal totalOverdue = java.math.BigDecimal.ZERO;
 
-        for (java.util.Map<String, Object> row : summaryList) {
-            Object statusObj = row.get("status");
-            String status = statusObj != null ? statusObj.toString() : "UNKNOWN";
-            Long count = row.get("count") != null ? ((Number) row.get("count")).longValue() : 0L;
-            java.math.BigDecimal amount = row.get("totalAmount") != null ? (java.math.BigDecimal) row.get("totalAmount") : java.math.BigDecimal.ZERO;
+        for (InvoiceRepository.InvoiceStatusSummary row : summaryList) {
+            Invoice.InvoiceStatus statusEnum = row.getStatus();
+            String status = statusEnum != null ? statusEnum.name() : "UNKNOWN";
+            Long count = row.getCount() != null ? row.getCount() : 0L;
+            java.math.BigDecimal amount = row.getTotalAmount() != null ? row.getTotalAmount() : java.math.BigDecimal.ZERO;
 
             countMap.put(status, count);
             amountMap.put(status, amount);

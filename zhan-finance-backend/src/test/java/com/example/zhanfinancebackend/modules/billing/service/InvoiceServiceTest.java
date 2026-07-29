@@ -81,15 +81,15 @@ class InvoiceServiceTest {
     @Test
     @DisplayName("Расчет финансовой сводки подсчитывает оплаченные и просроченные счета")
     void testGetFinanceSummary_CalculatesCorrectly() {
-        Map<String, Object> rowPaid = new HashMap<>();
-        rowPaid.put("status", "PAID");
-        rowPaid.put("count", 2L);
-        rowPaid.put("totalAmount", new BigDecimal("100000.00"));
+        InvoiceRepository.InvoiceStatusSummary rowPaid = mock(InvoiceRepository.InvoiceStatusSummary.class);
+        when(rowPaid.getStatus()).thenReturn(Invoice.InvoiceStatus.PAID);
+        when(rowPaid.getCount()).thenReturn(2L);
+        when(rowPaid.getTotalAmount()).thenReturn(new BigDecimal("100000.00"));
 
-        Map<String, Object> rowOverdue = new HashMap<>();
-        rowOverdue.put("status", "OVERDUE");
-        rowOverdue.put("count", 1L);
-        rowOverdue.put("totalAmount", new BigDecimal("30000.00"));
+        InvoiceRepository.InvoiceStatusSummary rowOverdue = mock(InvoiceRepository.InvoiceStatusSummary.class);
+        when(rowOverdue.getStatus()).thenReturn(Invoice.InvoiceStatus.OVERDUE);
+        when(rowOverdue.getCount()).thenReturn(1L);
+        when(rowOverdue.getTotalAmount()).thenReturn(new BigDecimal("30000.00"));
 
         when(invoiceRepository.getFinanceSummaryByStatus()).thenReturn(List.of(rowPaid, rowOverdue));
 
