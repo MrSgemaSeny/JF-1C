@@ -1,6 +1,6 @@
 import { apiRequest } from '@/shared/api/http';
 
-export type InvoiceStatus = 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+export type InvoiceStatus = 'PENDING' | 'ISSUED' | 'PAID' | 'OVERDUE' | 'CANCELLED';
 
 export interface InvoiceDto {
   id: number;
