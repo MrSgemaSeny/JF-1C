@@ -1,10 +1,10 @@
 package com.example.zhanfinancebackend.modules.documents.service;
 
+import com.example.zhanfinancebackend.common.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.file.Path;
 
@@ -20,24 +20,24 @@ class LocalStoragePathTraversalTest {
     }
 
     @Test
-    @DisplayName("Попытка загрузки файла с выходом из rootLocation выбрасывает 400 Bad Request")
+    @DisplayName("Попытка загрузки файла с выходом из rootLocation выбрасывает BadRequestException")
     void testPathTraversal_LoadAsResource_ThrowsException() {
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
                 () -> localStorageService.loadAsResource("../../../etc/passwd")
         );
 
-        assertTrue(exception.getMessage().contains("Invalid file path"));
+        assertTrue(exception.getMessage().contains("Cannot access file outside current directory"));
     }
 
     @Test
-    @DisplayName("Попытка удаления файла вне rootLocation выбрасывает 400 Bad Request")
+    @DisplayName("Попытка удаления файла вне rootLocation выбрасывает BadRequestException")
     void testPathTraversal_Delete_ThrowsException() {
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
                 () -> localStorageService.delete("../../../config/secret.txt")
         );
 
-        assertTrue(exception.getMessage().contains("Invalid file path"));
+        assertTrue(exception.getMessage().contains("Cannot access file outside current directory"));
     }
 }

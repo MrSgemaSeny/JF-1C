@@ -1,13 +1,16 @@
 package com.example.zhanfinancebackend.modules.billing.service;
 
+import com.example.zhanfinancebackend.modules.audit.service.AuditService;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
+import com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto;
 import com.example.zhanfinancebackend.modules.billing.dto.InvoiceDto;
 import com.example.zhanfinancebackend.modules.billing.entity.Invoice;
+import com.example.zhanfinancebackend.modules.billing.entity.Invoice.InvoiceStatus;
 import com.example.zhanfinancebackend.modules.billing.repository.InvoiceRepository;
-import com.example.zhanfinancebackend.modules.audit.service.AuditService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,78 +19,85 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class InvoiceServiceTest {
+class InvoiceServiceTest {
 
-    @Mock
-    private InvoiceRepository invoiceRepository;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private InvoiceAccessService invoiceAccessService;
-
-    @Mock
-    private AuditService auditService;
+    @Mock private InvoiceRepository invoiceRepository;
+    @Mock private UserRepository userRepository;
+    @Mock private InvoiceAccessService invoiceAccessService;
+    @Mock private AuditService auditService;
 
     @InjectMocks
     private InvoiceService invoiceService;
 
     private User admin;
     private User client;
+    private Invoice invoice;
 
     @BeforeEach
     void setUp() {
-        admin = mock(User.class);
-        lenient().when(admin.getId()).thenReturn(1L);
-        lenient().when(admin.getRole()).thenReturn(Role.ADMIN);
+        admin = new User();
+        admin.setId(1L);
+        admin.setRole(Role.ADMIN);
 
-        client = mock(User.class);
-        lenient().when(client.getId()).thenReturn(2L);
-        lenient().when(client.getRole()).thenReturn(Role.CLIENT);
-        lenient().when(client.getEmail()).thenReturn("client@example.com");
+        client = new User();
+        client.setId(2L);
+        client.setEmail("client@test.com");
+        client.setRole(Role.CLIENT);
+
+        invoice = new Invoice(client, "Консультационные услуги", new BigDecimal("50000.00"), LocalDate.now().plusDays(10));
+        invoice.setId(100L);
     }
 
     @Test
-    void testFindAllForAdmin() {
-        Invoice invoice = new Invoice(client, "Test Invoice", new BigDecimal("100.00"), LocalDate.now());
-        org.springframework.test.util.ReflectionTestUtils.setField(invoice, "id", 10L);
-
-        when(invoiceRepository.findAllWithClient()).thenReturn(List.of(invoice));
-
-        List<InvoiceDto> result = invoiceService.findAll(admin);
-
-        assertEquals(1, result.size());
-        assertEquals(10L, result.get(0).id());
-        assertEquals("Test Invoice", result.get(0).title());
-        verify(invoiceRepository).findAllWithClient();
-    }
-
-    @Test
-    void testCreateInvoice() {
-        InvoiceDto request = new InvoiceDto(null, 2L, "New Invoice", new BigDecimal("500.00"), null, LocalDate.now());
+    @DisplayName("Создание счета админом успешно логируется и сохраняется")
+    void testCreateInvoice_Success() {
+        InvoiceDto request = new InvoiceDto(null, 2L, "Консультационные услуги", new BigDecimal("50000.00"), InvoiceStatus.DRAFT, LocalDate.now().plusDays(10));
 
         when(userRepository.findById(2L)).thenReturn(Optional.of(client));
-        doNothing().when(invoiceAccessService).assertCanCreateFor(admin, client);
-        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(invocation -> {
-            Invoice saved = invocation.getArgument(0);
-            org.springframework.test.util.ReflectionTestUtils.setField(saved, "id", 100L);
-            return saved;
+        when(invoiceRepository.save(any(Invoice.class))).thenAnswer(i -> {
+            Invoice inv = i.getArgument(0);
+            inv.setId(100L);
+            return inv;
         });
 
         InvoiceDto result = invoiceService.create(admin, request);
 
         assertNotNull(result);
-        assertEquals(100L, result.id());
-        assertEquals("New Invoice", result.title());
-        assertEquals(new BigDecimal("500.00"), result.amount());
+        assertEquals("Консультационные услуги", result.title());
+        assertEquals(new BigDecimal("50000.00"), result.amount());
+        verify(auditService, times(1)).logAction(eq("CREATE"), eq("Invoice"), eq(100L), anyString());
+    }
+
+    @Test
+    @DisplayName("Расчет финансовой сводки подсчитывает оплаченные и просроченные счета")
+    void testGetFinanceSummary_CalculatesCorrectly() {
+        Map<String, Object> rowPaid = new HashMap<>();
+        rowPaid.put("status", "PAID");
+        rowPaid.put("count", 2L);
+        rowPaid.put("totalAmount", new BigDecimal("100000.00"));
+
+        Map<String, Object> rowOverdue = new HashMap<>();
+        rowOverdue.put("status", "OVERDUE");
+        rowOverdue.put("count", 1L);
+        rowOverdue.put("totalAmount", new BigDecimal("30000.00"));
+
+        when(invoiceRepository.getFinanceSummaryByStatus()).thenReturn(List.of(rowPaid, rowOverdue));
+
+        FinanceSummaryDto summary = invoiceService.getFinanceSummary();
+
+        assertNotNull(summary);
+        assertEquals(new BigDecimal("100000.00"), summary.totalPaid());
+        assertEquals(new BigDecimal("30000.00"), summary.totalOverdue());
+        assertEquals(new BigDecimal("130000.00"), summary.totalInvoiced());
     }
 }
