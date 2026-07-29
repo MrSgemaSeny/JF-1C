@@ -58,9 +58,19 @@ public class LearnerCourseController {
         return ApiResponse.success(null);
     }
 
+    @GetMapping("/{courseId}/certificate")
+    public ApiResponse<com.example.zhanfinancebackend.modules.courses.dto.CertificateDto> getCertificate(@PathVariable Long courseId, @AuthenticationPrincipal UserPrincipal principal) {
+        return ApiResponse.success(lessonProgressService.getCertificate(courseId, principal.getId()));
+    }
+
+    @GetMapping("/certificates/verify/{code}")
+    @PreAuthorize("permitAll()")
+    public ApiResponse<com.example.zhanfinancebackend.modules.courses.dto.CertificateDto> verifyCertificate(@PathVariable String code) {
+        return ApiResponse.success(lessonProgressService.verifyCertificate(code));
+    }
+
     @GetMapping("/lessons/{id}/file")
     public ResponseEntity<org.springframework.core.io.support.ResourceRegion> streamLessonFile(@PathVariable Long id, @RequestHeader HttpHeaders headers) throws IOException {
-        // TODO: Phase 2 - Implement file streaming from LessonBlock
         return ResponseEntity.notFound().build();
     }
 }

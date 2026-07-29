@@ -80,6 +80,7 @@ public class SecurityConfig {
                                 "/api/contact-requests/*/files",
                                 "/api/services",
                                 "/api/services/highlighted",
+                                "/api/courses/certificates/verify/**",
                                 "/uploads/avatars/**"
                         ).permitAll()
                         .requestMatchers(

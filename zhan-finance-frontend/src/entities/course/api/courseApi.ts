@@ -38,6 +38,19 @@ export interface CourseProgressDto {
   completionPercentage: number;
   isCompleted: boolean;
   completedLessonIds: number[];
+  unlockedLessonIds?: number[];
+  canCompleteToday?: boolean;
+  certificateCode?: string;
+}
+
+export interface CertificateDto {
+  id: number;
+  certificateCode: string;
+  userId: number;
+  userName: string;
+  courseId: number;
+  courseTitle: string;
+  issuedAt: string;
 }
 
 // Learner API
@@ -57,6 +70,14 @@ export async function completeLesson(courseId: number, lessonId: number): Promis
   await apiRequest(`/api/courses/${courseId}/lessons/${lessonId}/complete`, {
     method: 'POST'
   });
+}
+
+export async function getCertificate(courseId: number): Promise<CertificateDto> {
+  return await apiRequest<CertificateDto>(`/api/courses/${courseId}/certificate`);
+}
+
+export async function verifyCertificate(code: string): Promise<CertificateDto> {
+  return await apiRequest<CertificateDto>(`/api/courses/certificates/verify/${code}`);
 }
 
 // Admin API

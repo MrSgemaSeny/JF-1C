@@ -14,4 +14,14 @@ public class CourseProgressDto {
     private int completionPercentage;
     private boolean isCompleted;
     private List<Long> completedLessonIds;
+    private List<Long> unlockedLessonIds;
+    private boolean canCompleteToday;
+    private String certificateCode;
+
+    public CourseProgressDto(Long courseId, int completionPercentage, boolean isCompleted, List<Long> completedLessonIds) {
+        this.courseId = courseId;
+        this.completionPercentage = completionPercentage;
+        this.isCompleted = isCompleted;
+        this.completedLessonIds = completedLessonIds;
+    }
 }
