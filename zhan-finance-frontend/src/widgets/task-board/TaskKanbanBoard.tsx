@@ -5,6 +5,7 @@ import {
   closestCorners,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragStartEvent,
@@ -192,6 +193,12 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
         distance: 5,
       },
     }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -291,15 +298,8 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
 
     // Handle reordering within the same column
     if (activeContainer === overContainer) {
-      const activeIndex = columns[activeContainer].findIndex(t => t.id === active.id);
-      const overIndex = columns[overContainer].findIndex(t => t.id === over.id);
-
-      if (activeIndex !== overIndex) {
-        setColumns(prev => ({
-          ...prev,
-          [activeContainer]: arrayMove(prev[activeContainer], activeIndex, overIndex)
-        }));
-      }
+      // DnD reordering within the same column is disabled because the backend doesn't save stage_position.
+      return;
     }
 
     // Check if stage actually changed from its initial state
@@ -336,6 +336,25 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       }
       return next;
     });
+  };
+
+  const handleMoveRight = async (task: TaskDto) => {
+    const currentStageId = task.stageId || task.stage?.id;
+    const currentIndex = stages.findIndex(s => s.id === currentStageId);
+    if (currentIndex >= 0 && currentIndex < stages.length - 1) {
+      const nextStage = stages[currentIndex + 1];
+      
+      if (userRole === 'EMPLOYEE' && (nextStage.type === 'WON' || nextStage.type === 'LOST')) {
+        return;
+      }
+
+      try {
+        await updateTaskStage({ id: task.id, stageId: nextStage.id });
+        handleUpdateTask({ ...task, stageId: nextStage.id, stage: nextStage });
+      } catch (e) {
+        console.error("Failed to move right", e);
+      }
+    }
   };
 
   if (isLoadingPipelines) {
@@ -424,6 +443,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
                 onTaskClick={(id) => ref && 'current' in ref && ref.current?.openTaskModal(id)}
                 userRole={userRole}
                 onOpenChat={handleOpenChat}
+                onMoveRight={handleMoveRight}
               />
             ))}
             <DragOverlay>

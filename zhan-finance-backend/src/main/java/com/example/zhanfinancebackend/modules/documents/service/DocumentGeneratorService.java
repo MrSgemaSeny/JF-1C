@@ -110,6 +110,8 @@ public class DocumentGeneratorService {
 
         } catch (IOException e) {
             throw new ApiException(ErrorCode.INTERNAL_ERROR, "Ошибка при генерации документа: " + e.getMessage());
+        } catch (Exception e) {
+            throw new ApiException(ErrorCode.INTERNAL_ERROR, "Критическая ошибка генерации: " + e.getClass().getSimpleName() + " - " + e.getMessage());
         }
     }
 

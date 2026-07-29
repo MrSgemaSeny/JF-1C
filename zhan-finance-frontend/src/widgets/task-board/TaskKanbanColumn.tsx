@@ -16,9 +16,10 @@ interface TaskKanbanColumnProps {
   onTaskClick: (taskId: number) => void;
   userRole: string;
   onOpenChat?: (clientId: number, clientName: string) => void;
+  onMoveRight?: (task: TaskDto) => void;
 }
 
-export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenChat }: TaskKanbanColumnProps) {
+export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenChat, onMoveRight }: TaskKanbanColumnProps) {
   const { t, i18n } = useTranslation('crm');
   const { setNodeRef } = useDroppable({
     id: `stage-${stage.id}`,
@@ -94,6 +95,8 @@ export function TaskKanbanColumn({ stage, tasks, onTaskClick, userRole, onOpenCh
               onClick={() => onTaskClick(task.id)} 
               userRole={userRole}
               onOpenChat={onOpenChat}
+              onMoveRight={onMoveRight}
+              disableMoveRight={stage.isPreFinal || stage.type === 'WON' || stage.type === 'LOST'}
             />
           ))}
         </SortableContext>

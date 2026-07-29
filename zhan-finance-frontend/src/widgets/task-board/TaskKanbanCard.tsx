@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Phone, Mail, MessageCircle } from 'lucide-react';
+import { Phone, Mail, MessageCircle, ArrowRight } from 'lucide-react';
 import type { TaskDto } from '@/entities/task/model/types';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { getSecureImageUrl } from '@/shared/api/http';
@@ -13,9 +13,11 @@ interface TaskKanbanCardProps {
   onClick: () => void;
   userRole: string;
   onOpenChat?: (clientId: number, clientName: string) => void;
+  onMoveRight?: (task: TaskDto) => void;
+  disableMoveRight?: boolean;
 }
 
-export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanbanCardProps) {
+export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRight, disableMoveRight }: TaskKanbanCardProps) {
   const { t } = useTranslation('crm');
   const { user } = useAuth();
   const isMyTask = task.assignedTo?.id === user?.userId;
@@ -198,6 +200,25 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat }: TaskKanb
                 </div>
               )}
             </div>
+          )}
+          {onMoveRight && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!disableMoveRight) {
+                  onMoveRight(task);
+                }
+              }}
+              disabled={disableMoveRight}
+              className={`p-1 rounded-full border transition-colors ${
+                disableMoveRight 
+                  ? 'text-gray-300 border-gray-200 bg-gray-50 cursor-not-allowed' 
+                  : 'text-blue-500 border-blue-200 bg-blue-50 hover:bg-blue-100 hover:text-blue-600'
+              }`}
+              title={disableMoveRight ? "Перемещение заблокировано" : "Переместить на следующий этап"}
+            >
+              <ArrowRight size={14} />
+            </button>
           )}
         </div>
       </div>

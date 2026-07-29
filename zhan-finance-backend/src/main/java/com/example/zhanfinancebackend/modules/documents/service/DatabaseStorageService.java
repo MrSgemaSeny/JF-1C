@@ -19,7 +19,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import com.example.zhanfinancebackend.common.exception.BadRequestException;
 import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 @ConditionalOnProperty(name = "app.storage.type", havingValue = "db", matchIfMissing = true)
 public class DatabaseStorageService implements StorageService {
 
