@@ -412,8 +412,21 @@ public class TaskService {
                         "/admin/tasks"
                 );
                 
-                if (newStage.getType() == StageType.LOST && employee != null) {
-                     emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), lostReason);
+                if (newStage.getType() == StageType.WON) {
+                    java.util.List<Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
+                    emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                    if (employee != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), null);
+                    }
+                } else if (newStage.getType() == StageType.LOST) {
+                    if (employee != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), lostReason);
+                    }
+                } else if ("Доработка".equalsIgnoreCase(newStage.getName()) || "Rework".equalsIgnoreCase(newStage.getName())) {
+                    if (employee != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), null);
+                    }
+                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), null);
                 }
             } else {
                 notificationService.createNotification(
@@ -446,6 +459,8 @@ public class TaskService {
                     emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
                 } else if (newStage.getType() == StageType.LOST) {
                     emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), lostReason);
+                } else if ("Доработка".equalsIgnoreCase(newStage.getName()) || "Rework".equalsIgnoreCase(newStage.getName())) {
+                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), null);
                 }
             }
         }
