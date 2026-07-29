@@ -23,4 +23,16 @@ public class AsyncConfig {
         exec.initialize();
         return exec;
     }
+
+    @Bean(name = "pdfTaskExecutor")
+    public Executor pdfTaskExecutor() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(4);
+        exec.setMaxPoolSize(16);
+        exec.setQueueCapacity(500);
+        exec.setThreadNamePrefix("pdf-worker-");
+        exec.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        exec.initialize();
+        return exec;
+    }
 }
