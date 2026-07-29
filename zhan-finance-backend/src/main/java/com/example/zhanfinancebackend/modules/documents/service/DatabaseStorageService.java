@@ -91,10 +91,21 @@ public class DatabaseStorageService implements StorageService {
                             : "avatars/" + storageKey;
                     return localStorageService.loadAsBytes(altKey);
                 } catch (Exception ex) {
-                    throw new ResourceNotFoundException("Could not read file: " + storageKey);
+                    // Fallthrough to direct disk check
                 }
             }
         }
+
+        // Direct disk fallback for local development when storage type is db
+        try {
+            Path root = Paths.get("./uploads").toAbsolutePath().normalize();
+            String cleanKey = storageKey.startsWith("avatars/") ? storageKey.substring("avatars/".length()) : storageKey;
+            Path p1 = root.resolve(cleanKey).normalize();
+            if (Files.exists(p1)) return Files.readAllBytes(p1);
+            Path p2 = root.resolve("avatars").resolve(cleanKey).normalize();
+            if (Files.exists(p2)) return Files.readAllBytes(p2);
+        } catch (Exception ignored) {}
+
         throw new ResourceNotFoundException("Could not read file: " + storageKey);
     }
 
@@ -121,10 +132,21 @@ public class DatabaseStorageService implements StorageService {
                             : "avatars/" + storageKey;
                     return localStorageService.loadAsResource(altKey);
                 } catch (Exception ex) {
-                    throw new ResourceNotFoundException("Could not read file: " + storageKey);
+                    // Fallthrough to direct disk check
                 }
             }
         }
+
+        // Direct disk fallback for local development when storage type is db
+        try {
+            Path root = Paths.get("./uploads").toAbsolutePath().normalize();
+            String cleanKey = storageKey.startsWith("avatars/") ? storageKey.substring("avatars/".length()) : storageKey;
+            Path p1 = root.resolve(cleanKey).normalize();
+            if (Files.exists(p1)) return new UrlResource(p1.toUri());
+            Path p2 = root.resolve("avatars").resolve(cleanKey).normalize();
+            if (Files.exists(p2)) return new UrlResource(p2.toUri());
+        } catch (Exception ignored) {}
+
         throw new ResourceNotFoundException("Could not read file: " + storageKey);
     }
 
