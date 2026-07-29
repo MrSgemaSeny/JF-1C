@@ -303,14 +303,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     }
 
     // Check if stage actually changed from its initial state
-    const task = columns[overContainer].find(t => t.id === active.id);
-    if (task && task.stageId) {
-      if (task.stageId !== activeTaskInitialStageId) {
-        try {
-          await updateTaskStage({ id: task.id, stageId: task.stageId });
-        } catch (e) {
-          console.error("Failed to update task stage", e);
-        }
+    const targetStageId = parseInt(overContainer.replace('stage-', ''), 10);
+    const taskIdNum = typeof active.id === 'number' ? active.id : parseInt(String(active.id), 10);
+
+    if (activeTaskInitialStageId !== null && !isNaN(targetStageId) && targetStageId !== activeTaskInitialStageId && !isNaN(taskIdNum)) {
+      try {
+        await updateTaskStage({ id: taskIdNum, stageId: targetStageId });
+      } catch (e) {
+        console.error("Failed to update task stage", e);
       }
     }
     setActiveTaskInitialStageId(null);

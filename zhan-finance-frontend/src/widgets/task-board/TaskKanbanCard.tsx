@@ -45,7 +45,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRigh
   const currencyStr = task.currency || t('kanban.currency', { defaultValue: 'тенге' });
   
   const dateStr = task.createdAt 
-    ? new Date(task.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+    ? new Date(task.createdAt).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'short' })
     : '';
 
   return (
