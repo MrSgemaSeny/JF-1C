@@ -15,7 +15,7 @@ import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { ApiError } from '@/shared/api/http';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 export function HomeServices() {
   const { t } = useTranslation('common');
@@ -95,10 +95,9 @@ export function HomeServices() {
       <Container>
         <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
           <div className="max-w-2xl">
-            <h2 
-              className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6"
-              dangerouslySetInnerHTML={{ __html: t('homeServices.title') }}
-            />
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6">
+              <Trans i18nKey="homeServices.title" ns="common" />
+            </h2>
             <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
               {t('homeServices.subtitle')}
             </p>

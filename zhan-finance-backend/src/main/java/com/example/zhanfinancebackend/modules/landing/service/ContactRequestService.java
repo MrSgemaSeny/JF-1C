@@ -126,16 +126,38 @@ public class ContactRequestService {
         contactRequestRepository.delete(contactRequest);
     }
 
+    private static final List<String> ALLOWED_EXTENSIONS = List.of("pdf", "doc", "docx", "png", "jpg", "jpeg", "txt", "zip", "xlsx", "xls");
+
     @Transactional
     public List<ContactRequestFileDto> uploadFiles(Long id, MultipartFile[] files) {
         ContactRequest contactRequest = get(id);
+
+        if (files == null || files.length == 0) {
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("No files provided");
+        }
+
+        long existingCount = fileRepository.countByContactRequestId(id);
+        if (existingCount + files.length > 5) {
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Maximum 5 files allowed per contact request");
+        }
+
         List<ContactRequestFile> savedFiles = new ArrayList<>();
         
         for (MultipartFile file : files) {
+            String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown";
+            String ext = "";
+            int dotIdx = originalFilename.lastIndexOf('.');
+            if (dotIdx > 0 && dotIdx < originalFilename.length() - 1) {
+                ext = originalFilename.substring(dotIdx + 1).toLowerCase();
+            }
+            if (!ALLOWED_EXTENSIONS.contains(ext)) {
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("File type not allowed: " + ext);
+            }
+
             String storageKey = storageService.store(file);
             ContactRequestFile requestFile = new ContactRequestFile(
                     contactRequest,
-                    file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown",
+                    originalFilename,
                     storageKey,
                     file.getContentType() != null ? file.getContentType() : "application/octet-stream",
                     file.getSize()

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ContactRequestFileRepository extends JpaRepository<ContactRequestFile, Long> {
     List<ContactRequestFile> findByContactRequestId(Long contactRequestId);
+    long countByContactRequestId(Long contactRequestId);
 }

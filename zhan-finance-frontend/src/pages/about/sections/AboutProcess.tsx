@@ -1,7 +1,7 @@
 import { Briefcase } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
 import { workProcess } from '@/shared/config/content/work-process';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 export function AboutProcess() {
   const { t } = useTranslation('landing');
@@ -17,7 +17,7 @@ export function AboutProcess() {
           {workProcess.map((step) => (
             <div key={step.n}>
               <h3 className="text-2xl font-black uppercase text-brand-green mb-1">{step.n}. {t(step.titleKey)}</h3>
-              <p dangerouslySetInnerHTML={{ __html: t(step.textKey) }} />
+              <p><Trans i18nKey={step.textKey} ns="landing" /></p>
             </div>
           ))}
         </div>

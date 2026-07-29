@@ -2,7 +2,7 @@ import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 interface AdvantageCard {
   title: string;
@@ -37,8 +37,9 @@ export function HomeAdvantages() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
               className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green"
-              dangerouslySetInnerHTML={{ __html: t('homeAdvantages.title') }}
-            />
+            >
+              <Trans i18nKey="homeAdvantages.title" ns="common" />
+            </motion.h2>
             <motion.p 
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}

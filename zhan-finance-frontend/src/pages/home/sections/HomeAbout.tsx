@@ -2,7 +2,7 @@ import { Section } from '@/shared/ui/Section';
 import { motion } from 'framer-motion';
 import { ROUTES } from '@/shared/config/routes';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 const polaroids = [
   {
@@ -58,10 +58,9 @@ export function HomeAbout() {
               {t('homeAbout.badge')}
             </div>
 
-            <h2 
-              className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green"
-              dangerouslySetInnerHTML={{ __html: t('homeAbout.title') }}
-            />
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">
+              <Trans i18nKey="homeAbout.title" ns="common" />
+            </h2>
           </motion.div>
 
           <motion.div
