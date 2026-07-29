@@ -123,6 +123,7 @@ public class InvoiceService {
             details.append("Due date changed from ").append(invoice.getDueDate()).append(" to ").append(request.dueDate()).append("; ");
         }
         if (request.status() != null && invoice.getStatus() != request.status()) {
+            validateStatusTransition(invoice.getStatus(), request.status());
             details.append("Status changed from ").append(invoice.getStatus()).append(" to ").append(request.status()).append("; ");
         }
         
@@ -138,6 +139,15 @@ public class InvoiceService {
         }
         
         return toDto(invoice);
+    }
+
+    private void validateStatusTransition(Invoice.InvoiceStatus current, Invoice.InvoiceStatus target) {
+        if (current == Invoice.InvoiceStatus.PAID && target != Invoice.InvoiceStatus.PAID) {
+            throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot change status of a PAID invoice");
+        }
+        if (current == Invoice.InvoiceStatus.CANCELED && target != Invoice.InvoiceStatus.CANCELED) {
+            throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot change status of a CANCELED invoice");
+        }
     }
 
     @Transactional

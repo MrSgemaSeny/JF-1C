@@ -87,4 +87,20 @@ class CrmAccessServiceTest {
         assertDoesNotThrow(() -> accessService.assertCanUpdateTaskStage(admin, task1, wonStage));
         assertDoesNotThrow(() -> accessService.assertCanAssignClient(admin));
     }
+
+    @Test
+    @DisplayName("Никакой не-админ не может вытащить задачу из финального статуса WON или LOST")
+    void testNonAdmin_CannotMoveTaskOutOfWonOrLost() {
+        Stage wonStage = new Stage();
+        wonStage.setType(StageType.WON);
+
+        Stage openStage = new Stage();
+        openStage.setType(StageType.OPEN);
+
+        task1.setStage(wonStage);
+
+        assertFalse(accessService.canUpdateTaskStage(employee1, task1, openStage));
+        assertFalse(accessService.canUpdateTaskStage(client1, task1, openStage));
+        assertTrue(accessService.canUpdateTaskStage(admin, task1, openStage));
+    }
 }

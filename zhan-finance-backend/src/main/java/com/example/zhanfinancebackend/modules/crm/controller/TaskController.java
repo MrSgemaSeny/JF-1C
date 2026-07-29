@@ -30,8 +30,12 @@ import com.example.zhanfinancebackend.modules.crm.mapper.TaskMapper;
 import com.example.zhanfinancebackend.modules.documents.dto.DocumentDto;
 import com.example.zhanfinancebackend.modules.documents.service.DocumentGeneratorService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/crm/tasks")
+@Tag(name = "CRM Tasks", description = "Управление задачами воронки CRM")
 public class TaskController {
 
     private final TaskService taskService;
@@ -47,6 +51,7 @@ public class TaskController {
     }
 
     @GetMapping
+    @Operation(summary = "Получить список задач с фильтрацией и пагинацией")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
     public ApiResponse<?> getTasks(
             @AuthenticationPrincipal UserPrincipal principal,
