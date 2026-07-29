@@ -71,6 +71,10 @@ public class CrmAccessService {
         if (actor.getRole() == Role.ADMIN) {
             return true;
         }
+        // Non-admins cannot move tasks out of final stages (WON or LOST)
+        if (task.getStage() != null && (task.getStage().getType() == StageType.WON || task.getStage().getType() == StageType.LOST)) {
+            return false;
+        }
         if (actor.getRole() == Role.EMPLOYEE) {
             if (newStage != null && (newStage.getType() == StageType.WON || newStage.getType() == StageType.LOST)) {
                 return false;

@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect, useCallback } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, useCallback, useMemo } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -127,7 +127,8 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   const { mutateAsync: updateTaskStage } = useUpdateTaskStage();
 
   const pipeline = pipelines?.[0]; // Default to first pipeline for now
-  const stages = pipeline?.stages || [];
+  const stages = useMemo(() => pipeline?.stages || [], [pipeline?.stages]);
+  const stagesKey = useMemo(() => stages.map(s => s.id).join(','), [stages]);
 
   // Sync state with initialTasks when NOT dragging
   const isDragging = activeTask !== null;
@@ -151,7 +152,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       });
     }
     setColumns(nextCols);
-  }, [stages, initialTasks, isDragging]);
+  }, [stagesKey, initialTasks, isDragging]);
 
   useImperativeHandle(ref, () => ({
     createNewTask: (task: TaskDto) => {
@@ -290,6 +291,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     const overStageIdStr = overContainer.replace('stage-', '');
     const targetStageId = parseInt(overStageIdStr, 10);
     const overStage = stages.find(s => s.id === targetStageId);
+
+    const initialStage = stages.find(s => s.id === activeTaskInitialStageId);
+
+    // Block non-admins from moving tasks out of final stages (WON / LOST)
+    if (userRole !== 'ADMIN' && initialStage && (initialStage.type === 'WON' || initialStage.type === 'LOST')) {
+      setActiveTaskInitialStageId(null);
+      return;
+    }
 
     // Block employee from moving to WON or LOST
     if (userRole === 'EMPLOYEE' && overStage && (overStage.type === 'WON' || overStage.type === 'LOST')) {
