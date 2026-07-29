@@ -27,6 +27,6 @@ public class Chapter extends BaseEntity {
     private int orderIndex = 0;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("orderIndex ASC")
+    @OrderBy("orderIndex ASC, id ASC")
     private List<Lesson> lessons = new ArrayList<>();
 }

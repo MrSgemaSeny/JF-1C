@@ -22,14 +22,14 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
-        List<Course> courses = courseRepository.findAll();
+        List<Course> courses = courseRepository.findAllByOrderByIdDesc();
         courses.forEach(this::initializeCourse);
         return courses;
     }
 
     @Transactional(readOnly = true)
     public List<Course> getPublishedCourses() {
-        List<Course> courses = courseRepository.findAllByStatus(CourseStatus.PUBLISHED);
+        List<Course> courses = courseRepository.findAllByStatusOrderByIdDesc(CourseStatus.PUBLISHED);
         courses.forEach(this::initializeCourse);
         return courses;
     }

@@ -40,6 +40,6 @@ public class Course extends BaseEntity {
     private List<CourseCurator> curators = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("orderIndex ASC")
+    @OrderBy("orderIndex ASC, id ASC")
     private List<Chapter> chapters = new ArrayList<>();
 }
