@@ -84,7 +84,7 @@ public class EmailNotificationService {
             buttonHtml = String.format(
                 "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 32px; margin-bottom: 8px;\">" +
                 "  <tr><td align=\"center\">" +
-                "    <a href=\"%s\" style=\"display: inline-block; padding: 14px 32px; background-color: #047857; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px -1px rgba(4, 120, 87, 0.2);\">%s</a>" +
+                "    <a href=\"%s\" style=\"display: inline-block; padding: 15px 36px; background: linear-gradient(135deg, #047857 0%%, #059669 100%%); color: #ffffff; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 15px; box-shadow: 0 10px 15px -3px rgba(4, 120, 87, 0.3);\">%s &rarr;</a>" +
                 "  </td></tr>" +
                 "</table>",
                 buttonUrl, buttonText
@@ -93,24 +93,31 @@ public class EmailNotificationService {
 
         String template = 
             "<!DOCTYPE html>" +
-            "<html><head><meta charset=\"UTF-8\"></head>" +
+            "<html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head>" +
             "<body style=\"margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\">" +
-            "  <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f3f4f6; padding: 40px 20px;\">" +
+            "  <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f3f4f6; padding: 32px 16px;\">" +
             "    <tr><td align=\"center\">" +
-            "      <table width=\"100%\" max-width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\">" +
-            "        <tr><td style=\"background-color: #047857; padding: 32px 40px; text-align: center;\">" +
-            "          <h1 style=\"color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;\">Zhan Finance</h1>" +
+            "      <table width=\"100%\" max-width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01);\">" +
+            "        <tr><td style=\"background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%); padding: 36px 40px; text-align: center;\">" +
+            "          <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+            "            <tr><td align=\"center\">" +
+            "              <div style=\"display: inline-block; background: rgba(255, 255, 255, 0.15); padding: 6px 18px; border-radius: 9999px; margin-bottom: 8px;\">" +
+            "                <span style=\"color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;\">ZHAN FINANCE</span>" +
+            "              </div>" +
+            "              <h1 style=\"color: #ffffff; margin: 4px 0 0 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;\">Финансовый Сервис & 1С</h1>" +
+            "            </td></tr>" +
+            "          </table>" +
             "        </td></tr>" +
-            "        <tr><td style=\"padding: 40px;\">" +
-            "          <h2 style=\"color: #111827; font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 24px;\">{HEADER_TITLE}</h2>" +
+            "        <tr><td style=\"padding: 36px 40px;\">" +
+            "          <h2 style=\"color: #111827; font-size: 20px; font-weight: 700; margin-top: 0; margin-bottom: 20px; letter-spacing: -0.3px;\">{HEADER_TITLE}</h2>" +
             "          <p style=\"color: #374151; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Здравствуйте, <b style=\"color: #111827;\">{RECIPIENT_NAME}</b>!</p>" +
             "          {CONTENT_HTML}" +
             "          {BUTTON_HTML}" +
-            "          <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 32px; border-top: 1px solid #e5e7eb;\">" +
+            "          <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 36px; border-top: 1px solid #f3f4f6;\">" +
             "            <tr><td style=\"padding-top: 24px; text-align: center;\">" +
-            "              <p style=\"font-size: 14px; color: #6b7280; line-height: 20px; margin: 0 0 8px 0;\">С уважением,<br/><b style=\"color: #374151;\">Команда Zhan Finance</b></p>" +
-            "              <p style=\"font-size: 12px; color: #9ca3af; line-height: 18px; margin: 0;\">ТОО \"Zhan Finance\" &bull; Служба поддержки: <a href=\"mailto:support@zhanfinance.kz\" style=\"color: #047857; text-decoration: none;\">support@zhanfinance.kz</a></p>" +
-            "              <p style=\"font-size: 11px; color: #9ca3af; line-height: 16px; margin-top: 6px; margin-bottom: 0;\">Это автоматическое транзакционное сообщение. Вы получили его, так как совершили действие на платформе Zhan Finance.</p>" +
+            "              <p style=\"font-size: 14px; color: #6b7280; line-height: 20px; margin: 0 0 8px 0;\">С уважением,<br/><b style=\"color: #111827;\">Команда Zhan Finance</b></p>" +
+            "              <p style=\"font-size: 12px; color: #9ca3af; line-height: 18px; margin: 0;\">ТОО \"Zhan Finance\" &bull; Поддержка: <a href=\"mailto:support@zhanfinance.kz\" style=\"color: #047857; text-decoration: none; font-weight: 600;\">support@zhanfinance.kz</a></p>" +
+            "              <p style=\"font-size: 11px; color: #9ca3af; line-height: 16px; margin-top: 8px; margin-bottom: 0;\">Это автоматическое транзакционное сообщение сервиса Zhan Finance.</p>" +
             "            </td></tr>" +
             "          </table>" +
             "        </td></tr>" +
