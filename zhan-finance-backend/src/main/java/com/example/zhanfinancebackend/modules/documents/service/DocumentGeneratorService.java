@@ -70,8 +70,11 @@ public class DocumentGeneratorService {
         DocumentTemplate template = templateRepository.findById(templateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Template not found"));
 
-        User client = task.getClient();
-        documentAccessService.assertCanCreateFor(actor, client != null ? client : actor);
+        User rawClient = task.getClient();
+        User client = rawClient != null ? (User) org.hibernate.Hibernate.unproxy(rawClient) : null;
+        User realActor = actor != null ? (User) org.hibernate.Hibernate.unproxy(actor) : null;
+
+        documentAccessService.assertCanCreateFor(realActor, client != null ? client : realActor);
 
         Map<String, Object> context = buildContext(task, client);
         byte[] templateBytes = storageService.loadAsBytes(template.getFilePath());
@@ -118,10 +121,11 @@ public class DocumentGeneratorService {
         
         doc = documentRepository.save(doc);
 
+        User owner = (User) org.hibernate.Hibernate.unproxy(doc.getUser());
         return new DocumentDto(
                 doc.getId(),
-                doc.getUser().getId(),
-                doc.getUser().getFullName(),
+                owner.getId(),
+                owner.getFullName(),
                 doc.getTask() != null ? doc.getTask().getId() : null,
                 doc.getFileName(),
                 doc.getContentType(),
