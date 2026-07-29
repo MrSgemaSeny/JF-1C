@@ -21,6 +21,17 @@ public class CourseMediaController {
         this.storageService = storageService;
     }
 
+    /**
+     * ARCHITECTURE DECISION (Capability URL):
+     * Current implementation uses unguessable UUID storageKeys (122-bit entropy) as capability URLs.
+     * This protects against IDOR/bruteforce enumeration without requiring complex database migrations
+     * or streaming media files through memory-intensive backend endpoints.
+     * 
+     * FUTURE ROADMAP (Cloudflare R2 / AWS S3 Presigned URLs):
+     * Upon migrating to object storage (app.storage.type=s3/r2), replace direct file streaming with
+     * temporary presigned URLs (TTL = 1 hour) generated via S3Presigner after verifying course access
+     * via CourseAccessService.
+     */
     @GetMapping("/{storageKey:.+}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LEARNER')")
     public ResponseEntity<Resource> downloadMedia(@PathVariable String storageKey) {
