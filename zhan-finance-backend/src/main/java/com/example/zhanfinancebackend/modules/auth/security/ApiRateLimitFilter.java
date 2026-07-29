@@ -54,14 +54,13 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
         }
 
         Bucket bucket = buckets.get(ip, k -> createBucket());
-        if (bucket != null && bucket.tryConsume(1)) {
+        if (bucket.tryConsume(1)) {
             chain.doFilter(request, response);
         } else {
             response.setStatus(429);
             response.setHeader("Retry-After", "60");
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("{\"error\":\"Too many requests\"}");
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\":\"Too many requests\",\"retryAfter\":60}");
         }
     }
 }

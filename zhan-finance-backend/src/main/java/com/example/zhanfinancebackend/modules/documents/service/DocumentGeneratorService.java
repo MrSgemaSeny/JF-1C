@@ -37,24 +37,27 @@ public class DocumentGeneratorService {
     private final StorageService storageService;
     private final DocumentAccessService documentAccessService;
     private final ClientProfileRepository clientProfileRepository;
+    private final DocumentDataLoader documentDataLoader;
 
     public DocumentGeneratorService(DocumentTemplateRepository templateRepository,
                                     TaskRepository taskRepository,
                                     DocumentRepository documentRepository,
                                     StorageService storageService,
                                     DocumentAccessService documentAccessService,
-                                    ClientProfileRepository clientProfileRepository) {
+                                    ClientProfileRepository clientProfileRepository,
+                                    DocumentDataLoader documentDataLoader) {
         this.templateRepository = templateRepository;
         this.taskRepository = taskRepository;
         this.documentRepository = documentRepository;
         this.storageService = storageService;
         this.documentAccessService = documentAccessService;
         this.clientProfileRepository = clientProfileRepository;
+        this.documentDataLoader = documentDataLoader;
     }
 
     public DocumentDto generateFromTemplate(Long taskId, UUID templateId, User actor) {
-        // 1. Чтение данных из БД (внутри readOnly транзакции)
-        GenerationData data = fetchGenerationData(taskId, templateId, actor);
+        // 1. Чтение данных из БД (через DocumentDataLoader proxy — открывается readOnly транзакция)
+        GenerationData data = documentDataLoader.load(taskId, templateId, actor);
 
         // 2. Рендеринг шаблона (БЕЗ ТРАНЗАКЦИИ — не держит соединение Hikari)
         byte[] renderedDocx = renderDocx(data.templateBytes, data.context);

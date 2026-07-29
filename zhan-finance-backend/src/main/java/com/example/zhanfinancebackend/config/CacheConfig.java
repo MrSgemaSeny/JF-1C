@@ -13,10 +13,19 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(60, TimeUnit.SECONDS)
-                .maximumSize(500));
-        return cacheManager;
+        CaffeineCacheManager manager = new CaffeineCacheManager();
+        manager.registerCustomCache("dashboard",
+                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).maximumSize(100).build());
+        manager.registerCustomCache("tasks",
+                Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).maximumSize(500).build());
+        manager.registerCustomCache("users",
+                Caffeine.newBuilder().expireAfterWrite(300, TimeUnit.SECONDS).maximumSize(200).build());
+        manager.registerCustomCache("courses",
+                Caffeine.newBuilder().expireAfterWrite(120, TimeUnit.SECONDS).maximumSize(100).build());
+        manager.registerCustomCache("pipelines",
+                Caffeine.newBuilder().expireAfterWrite(600, TimeUnit.SECONDS).maximumSize(50).build());
+        manager.setCaffeine(
+                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).maximumSize(300));
+        return manager;
     }
 }
