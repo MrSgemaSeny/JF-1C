@@ -19,6 +19,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
+        cache-dependency-path: zhan-finance-backend/build.gradle
         
     - name: Grant execute permission for gradlew
       run: chmod +x ./zhan-finance-backend/gradlew
