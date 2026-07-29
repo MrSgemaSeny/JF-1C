@@ -5,7 +5,7 @@ import { CourseDto, LessonDto, getCourseById, getCourseProgress, completeLesson,
 import { ROUTES } from '@/shared/config/routes';
 import { Spinner } from '@/shared/ui/Spinner';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-hot-toast';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -90,11 +90,6 @@ export function LearnerLessonPage() {
       </div>
     );
   }
-
-  const allLessons = course.chapters.reduce((acc, chapter) => [...acc, ...chapter.lessons], [] as LessonDto[]);
-  const currentIndex = allLessons.findIndex((l) => l.id === lesson.id);
-  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
-  const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
 
   const goToLesson = (id: number) =>
     navigate(
