@@ -98,14 +98,15 @@ public class EmailNotificationService {
             "  <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f3f4f6; padding: 32px 16px;\">" +
             "    <tr><td align=\"center\">" +
             "      <table width=\"100%\" max-width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01);\">" +
-            "        <tr><td style=\"background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%); padding: 36px 40px; text-align: center;\">" +
+            "        <tr><td style=\"padding: 28px 40px; border-bottom: 1px solid #f3f4f6;\">" +
             "          <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
-            "            <tr><td align=\"center\">" +
-            "              <div style=\"display: inline-block; background: rgba(255, 255, 255, 0.15); padding: 6px 18px; border-radius: 9999px; margin-bottom: 8px;\">" +
-            "                <span style=\"color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;\">ZHAN FINANCE</span>" +
-            "              </div>" +
-            "              <h1 style=\"color: #ffffff; margin: 4px 0 0 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;\">Финансовый Сервис & 1С</h1>" +
-            "            </td></tr>" +
+            "            <tr>" +
+            "              <td align=\"left\" style=\"vertical-align: middle;\">" +
+            "                <img src=\"https://mrsgemaseny.github.io/JF-1C/logo.png\" width=\"40\" height=\"40\" alt=\"Zhan Finance Logo\" style=\"display: inline-block; vertical-align: middle; border-radius: 10px; margin-right: 12px;\" />" +
+            "                <span style=\"font-size: 22px; font-weight: 800; color: #047857; letter-spacing: 0.5px; vertical-align: middle;\">Zhan</span>" +
+            "                <span style=\"font-size: 22px; font-weight: 700; color: #111827; letter-spacing: 0.5px; vertical-align: middle;\"> Finance</span>" +
+            "              </td>" +
+            "            </tr>" +
             "          </table>" +
             "        </td></tr>" +
             "        <tr><td style=\"padding: 36px 40px;\">" +
