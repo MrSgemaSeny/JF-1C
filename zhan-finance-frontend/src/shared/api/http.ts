@@ -94,6 +94,10 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
 
     if (response.status === 403) {
       toast.error("You don't have access to this resource", { duration: 5000 });
+    } else if (response.status === 422) {
+      toast.warning(errorMessage, { duration: 5000 });
+    } else if (response.status === 429) {
+      toast.error("Превышен лимит запросов. Пожалуйста, подождите минуту.", { duration: 5000 });
     }
 
     throw new ApiError(errorMessage, response.status, code, details, requestId);
