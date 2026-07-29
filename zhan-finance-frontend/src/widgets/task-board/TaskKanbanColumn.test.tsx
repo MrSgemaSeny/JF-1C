@@ -5,6 +5,12 @@ import { TaskKanbanColumn } from './TaskKanbanColumn';
 import type { StageDto, TaskDto } from '@/entities/task/model/types';
 import { DndContext } from '@dnd-kit/core';
 
+vi.mock('@/features/auth/AuthContext', () => ({
+  useAuth: () => ({
+    user: { userId: 1, email: 'admin@test.com', role: 'ADMIN' },
+  }),
+}));
+
 describe('TaskKanbanColumn', () => {
   it('renders stage name and task count correctly', () => {
     const mockStage: StageDto = {
