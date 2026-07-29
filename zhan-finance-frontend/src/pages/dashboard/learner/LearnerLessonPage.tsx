@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, FileText, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, FileText, Download, ChevronLeft, ChevronRight, Award } from 'lucide-react';
 import { CourseDto, LessonDto, getCourseById, getCourseProgress, completeLesson, CourseProgressDto } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
 import { Spinner } from '@/shared/ui/Spinner';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -39,6 +40,15 @@ export function LearnerLessonPage() {
       .finally(() => setIsLoading(false));
   }, [courseId, lessonId]);
 
+  const allLessons = course ? course.chapters.reduce((acc, chapter) => [...acc, ...chapter.lessons], [] as LessonDto[]) : [];
+  const currentIndex = lesson ? allLessons.findIndex((l) => l.id === lesson.id) : -1;
+  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex >= 0 && currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+
+  const currentChapter = course && lesson ? course.chapters.find((c) => c.lessons.some((l) => l.id === lesson.id)) : null;
+  const isLastLessonInChapter = currentChapter && lesson ? currentChapter.lessons[currentChapter.lessons.length - 1].id === lesson.id : false;
+  const isLastLessonInCourse = lesson ? nextLesson === null : false;
+
   const handleComplete = async () => {
     if (!courseId || !lessonId || !progress) return;
     try {
@@ -46,12 +56,19 @@ export function LearnerLessonPage() {
       await completeLesson(Number(courseId), Number(lessonId));
       const updatedProgress = await getCourseProgress(Number(courseId));
       setProgress(updatedProgress);
-      // Automatically go to next lesson if available
+
       if (nextLesson) {
+        if (isLastLessonInChapter) {
+          toast.success(t('learnerLesson.moduleCompleted', { defaultValue: 'Модуль завершён! Переходим к следующему модулю.' }));
+        }
         goToLesson(nextLesson.id);
+      } else {
+        toast.success(t('learnerLesson.courseCompleted', { defaultValue: 'Поздравляем! Вы успешно завершили курс и получили сертификат!' }));
+        navigate(ROUTES.LEARNER_COURSE_DETAILS.replace(':id', courseId));
       }
     } catch (err) {
       console.error(err);
+      toast.error(t('learnerLesson.completeError', { defaultValue: 'Ошибка при сохранении прогресса урока' }));
     } finally {
       setIsCompleting(false);
     }
@@ -178,6 +195,13 @@ export function LearnerLessonPage() {
             <Spinner size="sm" className="text-current" />
           ) : progress?.completedLessonIds.includes(lesson.id) ? (
             t('learnerLesson.passed', { defaultValue: 'Пройдено ✅' })
+          ) : isLastLessonInCourse ? (
+            <span className="flex items-center gap-2">
+              <Award className="w-5 h-5 text-yellow-300" />
+              {t('learnerLesson.finishCourse', { defaultValue: 'Завершить курс и получить сертификат' })}
+            </span>
+          ) : isLastLessonInChapter ? (
+            t('learnerLesson.completeModule', { defaultValue: 'Завершить модуль и перейти к следующему' })
           ) : (
             t('learnerLesson.completeAndNext', { defaultValue: 'Завершить урок и перейти к следующему' })
           )}
