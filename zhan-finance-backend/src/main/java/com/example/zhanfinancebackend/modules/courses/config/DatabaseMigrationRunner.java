@@ -40,13 +40,12 @@ public class DatabaseMigrationRunner {
             """);
 
             jdbcTemplate.execute("""
-                INSERT INTO courses (title, description, thumbnail, status, is_published, created_by, created_at, updated_at)
+                INSERT INTO courses (title, description, thumbnail, status, created_by, created_at, updated_at)
                 SELECT
                     '1С:Бухгалтерия 8.3 — Полный практический курс',
                     'Практический обучающий курс по ведению комплексного учёта в 1С:Бухгалтерия 8.3.',
                     'https://images.unsplash.com/photo-1554200876-56c2f25224fa?q=80&w=800&auto=format&fit=crop',
                     'PUBLISHED',
-                    true,
                     (SELECT id FROM app_users WHERE role = 'ADMIN' ORDER BY id ASC LIMIT 1),
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP

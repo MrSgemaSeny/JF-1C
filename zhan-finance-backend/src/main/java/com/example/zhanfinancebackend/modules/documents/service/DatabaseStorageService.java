@@ -86,7 +86,10 @@ public class DatabaseStorageService implements StorageService {
                 return localStorageService.loadAsBytes(storageKey);
             } catch (Exception e) {
                 try {
-                    return localStorageService.loadAsBytes("avatars/" + storageKey);
+                    String altKey = storageKey.startsWith("avatars/") 
+                            ? storageKey.substring("avatars/".length()) 
+                            : "avatars/" + storageKey;
+                    return localStorageService.loadAsBytes(altKey);
                 } catch (Exception ex) {
                     throw new ResourceNotFoundException("Could not read file: " + storageKey);
                 }
@@ -113,7 +116,10 @@ public class DatabaseStorageService implements StorageService {
                 return localStorageService.loadAsResource(storageKey);
             } catch (Exception e) {
                 try {
-                    return localStorageService.loadAsResource("avatars/" + storageKey);
+                    String altKey = storageKey.startsWith("avatars/") 
+                            ? storageKey.substring("avatars/".length()) 
+                            : "avatars/" + storageKey;
+                    return localStorageService.loadAsResource(altKey);
                 } catch (Exception ex) {
                     throw new ResourceNotFoundException("Could not read file: " + storageKey);
                 }
