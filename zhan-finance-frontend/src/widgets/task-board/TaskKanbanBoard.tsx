@@ -209,7 +209,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
       return id;
     }
     for (const [key, tasks] of Object.entries(columns)) {
-      if (tasks.find(t => t.id === id)) {
+      if (tasks.find(t => String(t.id) === String(id))) {
         return key;
       }
     }
@@ -222,7 +222,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     const { active } = event;
     const container = findContainer(active.id);
     if (container) {
-      const task = columns[container].find(t => t.id === active.id);
+      const task = columns[container].find(t => String(t.id) === String(active.id));
       if (task) {
         setActiveTask(task);
         setActiveTaskInitialStageId(task.stageId || task.stage?.id || null);
@@ -250,19 +250,21 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     }
 
     setColumns((prev) => {
-      const activeItems = prev[activeContainer];
-      const overItems = prev[overContainer];
+      const activeItems = prev[activeContainer] || [];
+      const overItems = prev[overContainer] || [];
 
-      const activeIndex = activeItems.findIndex(t => t.id === active.id);
+      const activeIndex = activeItems.findIndex(t => String(t.id) === String(active.id));
       const overIndex = over.id.toString().startsWith('stage-')
         ? overItems.length
-        : overItems.findIndex(t => t.id === over.id);
+        : overItems.findIndex(t => String(t.id) === String(over.id));
+
+      if (activeIndex === -1) return prev;
 
       const newActive = [...activeItems];
       const newOver = [...overItems];
       const [item] = newActive.splice(activeIndex, 1);
       
-      // Optimitically update stageId so it renders correctly
+      // Optimistically update stageId so it renders correctly
       const stageIdStr = overContainer.replace('stage-', '');
       item.stageId = parseInt(stageIdStr, 10);
       
@@ -278,34 +280,26 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
 
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    const currentActiveTask = activeTask;
     setActiveTask(null);
     
     if (!over) return;
 
-    const activeContainer = findContainer(active.id);
     const overContainer = findContainer(over.id);
+    if (!overContainer) return;
 
-    if (!activeContainer || !overContainer) return;
+    const overStageIdStr = overContainer.replace('stage-', '');
+    const targetStageId = parseInt(overStageIdStr, 10);
+    const overStage = stages.find(s => s.id === targetStageId);
 
     // Block employee from moving to WON or LOST
-    const overStageIdStr = overContainer.replace('stage-', '');
-    const overStageId = parseInt(overStageIdStr, 10);
-    const overStage = stages.find(s => s.id === overStageId);
     if (userRole === 'EMPLOYEE' && overStage && (overStage.type === 'WON' || overStage.type === 'LOST')) {
+      setActiveTaskInitialStageId(null);
       return;
     }
 
-    // Handle reordering within the same column
-    if (activeContainer === overContainer) {
-      // DnD reordering within the same column is disabled because the backend doesn't save stage_position.
-      return;
-    }
-
-    // Check if stage actually changed from its initial state
-    const targetStageId = parseInt(overContainer.replace('stage-', ''), 10);
     const taskIdNum = typeof active.id === 'number' ? active.id : parseInt(String(active.id), 10);
 
+    // Save stage change if the target stage differs from initial stage before dragging
     if (activeTaskInitialStageId !== null && !isNaN(targetStageId) && targetStageId !== activeTaskInitialStageId && !isNaN(taskIdNum)) {
       try {
         await updateTaskStage({ id: taskIdNum, stageId: targetStageId });
