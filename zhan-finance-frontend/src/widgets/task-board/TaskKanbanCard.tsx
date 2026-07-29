@@ -18,7 +18,7 @@ interface TaskKanbanCardProps {
 }
 
 export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRight, disableMoveRight }: TaskKanbanCardProps) {
-  const { t } = useTranslation('crm');
+  const { t, i18n } = useTranslation('crm');
   const { user } = useAuth();
   const isMyTask = task.assignedTo?.id === user?.userId;
   const {
