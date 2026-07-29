@@ -44,7 +44,7 @@ public class DocumentDataLoader {
         this.clientProfileRepository = clientProfileRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public DocumentGeneratorService.GenerationData load(Long taskId, UUID templateId, User actor) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
@@ -56,6 +56,10 @@ public class DocumentDataLoader {
         User realActor = actor != null ? (User) org.hibernate.Hibernate.unproxy(actor) : null;
 
         documentAccessService.assertCanCreateFor(realActor, client != null ? client : realActor);
+
+        if (task.getServices() != null) {
+            org.hibernate.Hibernate.initialize(task.getServices());
+        }
 
         Map<String, Object> context = buildContext(task, client);
         byte[] templateBytes = storageService.loadAsBytes(template.getFilePath());
@@ -88,7 +92,15 @@ public class DocumentDataLoader {
         ctx.put("TASK_AMOUNT", task.getAmount() != null ? task.getAmount().toString() : blank);
         ctx.put("TASK_DEADLINE", task.getDueDate() != null ? task.getDueDate().toString() : blank);
         ctx.put("TASK_DESCRIPTION", safe(task.getDescription(), blank));
-        ctx.put("TASK_SERVICE", (task.getServices() != null && !task.getServices().isEmpty()) ? task.getServices().get(0).getTitle() : blank);
+        String serviceTitle = blank;
+        if (task.getServices() != null && !task.getServices().isEmpty()) {
+            com.example.zhanfinancebackend.modules.services.entity.ServiceEntity s = 
+                    (com.example.zhanfinancebackend.modules.services.entity.ServiceEntity) org.hibernate.Hibernate.unproxy(task.getServices().get(0));
+            if (s != null && s.getTitle() != null && !s.getTitle().isBlank()) {
+                serviceTitle = s.getTitle();
+            }
+        }
+        ctx.put("TASK_SERVICE", serviceTitle);
 
         ctx.put("DATE_TODAY", LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy", new Locale("ru"))));
         ctx.put("DATE_TODAY_SHORT", LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
