@@ -15,7 +15,8 @@ public class CorsConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.cors.allowed-origins}") String allowedOrigins
+            @Value("${app.cors.allowed-origins:http://localhost:5173}") String allowedOrigins,
+            @Value("${app.cors.allowed-origin-patterns:https://*.github.io,http://localhost:*,http://127.0.0.1:*,https://zhanfinance.fly.dev}") String allowedOriginPatterns
     ) {
         CorsConfiguration configuration = new CorsConfiguration();
         
@@ -31,7 +32,7 @@ public class CorsConfig {
         }
 
         configuration.setAllowedOrigins(normalizedOrigins);
-        configuration.setAllowedOriginPatterns(List.of("https://*.github.io", "http://localhost:*", "http://127.0.0.1:*", "https://zhanfinance.fly.dev"));
+        configuration.setAllowedOriginPatterns(split(allowedOriginPatterns));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
