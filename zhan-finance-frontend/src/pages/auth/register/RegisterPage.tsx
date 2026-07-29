@@ -215,6 +215,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
                 {t('common.next', { defaultValue: 'Далее' })}
                 <ArrowRight className="w-4 h-4" />
               </button>
+              <p className="text-xs text-center text-gray-400 mt-1">Регистрация через логин / пароль</p>
             </form>
             
             <div className="mt-6">
@@ -226,13 +227,16 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
                   <span className="px-2 bg-white text-brand-green/50">{t('auth.login.or')}</span>
                 </div>
               </div>
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-2">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
                   onError={() => toast.error(t('auth.login.googleAuthError'))}
                   use_fedcm_for_prompt={false}
                   itp_support={true}
                 />
+                <p className="text-xs text-center text-brand-green/70">
+                  Регистрация через Google — будьте всегда в курсе происходящих событий
+                </p>
               </div>
             </div>
 
