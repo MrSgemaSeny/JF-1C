@@ -68,7 +68,6 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
         onConnect: () => {
-          console.log('Connected to WebSocket');
           // Subscribe to my own chat updates
           stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {

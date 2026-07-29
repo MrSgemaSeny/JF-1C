@@ -2,6 +2,8 @@ package com.example.zhanfinancebackend.modules.services.service;
 
 import com.example.zhanfinancebackend.modules.services.entity.ServiceEntity;
 import com.example.zhanfinancebackend.modules.services.repository.ServiceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,8 @@ import java.util.List;
 @Component
 public class ServiceDatabaseSeeder {
 
+    private static final Logger log = LoggerFactory.getLogger(ServiceDatabaseSeeder.class);
+
     private final ServiceRepository serviceRepository;
 
     public ServiceDatabaseSeeder(ServiceRepository serviceRepository) {
@@ -27,11 +31,11 @@ public class ServiceDatabaseSeeder {
     @Transactional
     public void seedDatabase() {
         if (serviceRepository.count() > 0) {
-            System.out.println("✓ Database already seeded. Skipping services seeding.");
+            log.info("Database already seeded. Skipping services seeding.");
             return;
         }
 
-        System.out.println("▶ Seeding services into database...");
+        log.info("Seeding services into database...");
 
         List<ServiceEntity> services = Arrays.asList(
                 createService("Бухгалтерское сопровождение", "Accounting Support", "Полный учёт операций, составление отчётности, контроль финансов.", "Full transaction accounting, reporting, and financial control.", "от 50 000 ₸", true, Arrays.asList("Полный учет операций", "Составление отчетности", "Контроль финансов")),
@@ -43,7 +47,7 @@ public class ServiceDatabaseSeeder {
         );
 
         serviceRepository.saveAll(services);
-        System.out.println("✓ Successfully seeded " + services.size() + " services.");
+        log.info("Successfully seeded {} services.", services.size());
     }
 
     private ServiceEntity createService(String title, String titleEn, String description, String descriptionEn, String price, boolean isHighlighted, List<String> features) {
