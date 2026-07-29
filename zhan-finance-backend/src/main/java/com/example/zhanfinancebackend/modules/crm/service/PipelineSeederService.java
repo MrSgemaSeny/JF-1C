@@ -63,36 +63,16 @@ public class PipelineSeederService {
                     }
                 });
             } else {
-                // Check if "На проверке" exists, if not, create it
-                boolean hasReviewStage = stageRepository.findAll().stream()
-                        .anyMatch(s -> "На проверке".equals(s.getName()));
+                boolean hasReviewStage = stageRepository.findAll().stream().anyMatch(s -> "На проверке".equals(s.getName()));
                 if (!hasReviewStage) {
                     Stage reviewStage = createStage(defaultPipeline, "На проверке", "Review", 5, StageType.OPEN, false, "var(--color-stage-review)");
                     stageRepository.save(reviewStage);
-                    
-                    // Shift indices of later stages
-                    stageRepository.findAll().forEach(s -> {
-                        if (s.getOrderIndex() >= 5 && !"На проверке".equals(s.getName())) {
-                            s.setOrderIndex(s.getOrderIndex() + 1);
-                            stageRepository.save(s);
-                        }
-                    });
                 }
 
-                // Check if "Доработка" exists, if not, create it at index 5 and push others
-                boolean hasReworkStage = stageRepository.findAll().stream()
-                        .anyMatch(s -> "Доработка".equals(s.getName()));
+                boolean hasReworkStage = stageRepository.findAll().stream().anyMatch(s -> "Доработка".equals(s.getName()));
                 if (!hasReworkStage) {
                     Stage reworkStage = createStage(defaultPipeline, "Доработка", "Rework", 5, StageType.OPEN, false, "var(--color-stage-rework)");
                     stageRepository.save(reworkStage);
-                    
-                    // Shift indices of later stages (which includes 'На проверке' now)
-                    stageRepository.findAll().forEach(s -> {
-                        if (s.getOrderIndex() >= 5 && !"Доработка".equals(s.getName())) {
-                            s.setOrderIndex(s.getOrderIndex() + 1);
-                            stageRepository.save(s);
-                        }
-                    });
                 }
             }
         }
