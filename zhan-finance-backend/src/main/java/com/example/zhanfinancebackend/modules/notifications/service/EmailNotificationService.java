@@ -107,8 +107,10 @@ public class EmailNotificationService {
             "          {CONTENT_HTML}" +
             "          {BUTTON_HTML}" +
             "          <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-top: 32px; border-top: 1px solid #e5e7eb;\">" +
-            "            <tr><td style=\"padding-top: 24px;\">" +
-            "              <p style=\"font-size: 14px; color: #6b7280; line-height: 20px; margin: 0;\">С уважением,<br/><b style=\"color: #374151;\">Команда Zhan Finance</b></p>" +
+            "            <tr><td style=\"padding-top: 24px; text-align: center;\">" +
+            "              <p style=\"font-size: 14px; color: #6b7280; line-height: 20px; margin: 0 0 8px 0;\">С уважением,<br/><b style=\"color: #374151;\">Команда Zhan Finance</b></p>" +
+            "              <p style=\"font-size: 12px; color: #9ca3af; line-height: 18px; margin: 0;\">ТОО \"Zhan Finance\" &bull; Служба поддержки: <a href=\"mailto:support@zhanfinance.kz\" style=\"color: #047857; text-decoration: none;\">support@zhanfinance.kz</a></p>" +
+            "              <p style=\"font-size: 11px; color: #9ca3af; line-height: 16px; margin-top: 6px; margin-bottom: 0;\">Это автоматическое транзакционное сообщение. Вы получили его, так как совершили действие на платформе Zhan Finance.</p>" +
             "            </td></tr>" +
             "          </table>" +
             "        </td></tr>" +
@@ -122,6 +124,10 @@ public class EmailNotificationService {
             .replace("{RECIPIENT_NAME}", recipientName != null ? recipientName : "")
             .replace("{CONTENT_HTML}", contentHtml != null ? contentHtml : "")
             .replace("{BUTTON_HTML}", buttonHtml != null ? buttonHtml : "");
+    }
+
+    public String getFrontendUrl() {
+        return frontendUrl;
     }
 
     @Async

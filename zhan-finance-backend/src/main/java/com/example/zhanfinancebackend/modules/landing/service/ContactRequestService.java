@@ -63,32 +63,40 @@ public class ContactRequestService {
         // Email самому лиду
         if (request.email() != null && !request.email().isBlank()) {
             try {
-                String subject = "Ваша заявка принята | Zhan Finance";
-                String htmlBody = String.format(
-                    "<div style=\"font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; padding: 20px;\">" +
-                    "<h2 style=\"color: #047857; margin-top: 0;\">Zhan Finance</h2>" +
-                    "<h3>Здравствуйте, %s!</h3>" +
-                    "<p>Мы успешно получили вашу заявку на нашем сайте.</p>" +
-                    "<div style=\"background-color: #f9fafb; padding: 15px; border-radius: 6px; margin: 20px 0;\">" +
-                    "<p style=\"margin-top: 0;\"><b>Детали вашей заявки:</b></p>" +
-                    "<ul style=\"margin-bottom: 0;\">" +
-                    "<li><b>Имя:</b> %s</li>" +
-                    "<li><b>Телефон:</b> %s</li>" +
-                    "<li><b>Источник:</b> %s</li>" +
-                    "</ul>" +
-                    "</div>" +
-                    "<p>Наш менеджер свяжется с вами в ближайшее рабочее время для уточнения деталей.</p>" +
-                    "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\" />" +
-                    "<p style=\"font-size: 14px; color: #666; margin-bottom: 0;\">С уважением,<br/><b>Команда Zhan Finance</b></p>" +
-                    "</div>",
-                    request.name(),
+                String ticketNum = "ZF-" + (1000 + saved.getId());
+                String subject = "Заявка #" + ticketNum + ": Подтверждение получения — Zhan Finance";
+                
+                String contentHtml = String.format(
+                    "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">" +
+                    "Мы успешно получили вашу заявку. Наш специалист свяжется с вами в течение <b>2 рабочих часов</b> (Пн-Пт с 9:00 до 18:00).</p>" +
+                    "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 24px;\">" +
+                    "  <tr><td style=\"padding: 24px;\">" +
+                    "    <p style=\"color: #047857; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; margin-bottom: 16px;\">Детали обращения</p>" +
+                    "    <table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+                    "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px; width: 35%%;\">Номер заявки:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 700;\">#%s</td></tr>" +
+                    "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px;\">Заявитель:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">%s</td></tr>" +
+                    "      <tr><td style=\"padding-bottom: 12px; color: #6b7280; font-size: 14px;\">Телефон:</td><td style=\"padding-bottom: 12px; color: #111827; font-size: 15px; font-weight: 500;\">%s</td></tr>" +
+                    "      <tr><td style=\"padding-bottom: 0; color: #6b7280; font-size: 14px;\">Источник:</td><td style=\"padding-bottom: 0; color: #111827; font-size: 15px;\">%s</td></tr>" +
+                    "    </table>" +
+                    "  </td></tr>" +
+                    "</table>",
+                    ticketNum,
                     request.name(),
                     request.phone(),
                     request.source() != null ? request.source() : "Сайт"
                 );
+
+                String htmlBody = emailNotificationService.buildFormalEmailHtml(
+                    "Ваша заявка принята",
+                    request.name(),
+                    contentHtml,
+                    "Перейти на сайт Zhan Finance",
+                    emailNotificationService.getFrontendUrl()
+                );
+
                 emailNotificationService.sendHtmlEmail(request.email(), subject, htmlBody);
             } catch (Exception e) {
-                // Игнорируем ошибку отправки письма
+                // Ignore email sending error
             }
         }
 
