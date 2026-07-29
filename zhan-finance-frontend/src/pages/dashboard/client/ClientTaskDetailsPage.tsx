@@ -73,8 +73,7 @@ export function ClientTaskDetailsPage() {
 
   const isPreFinalStage = task.stage?.isPreFinal || 
     task.stage?.name === 'На проверке' || 
-    task.stage?.name === 'Согласование' || 
-    task.stage?.type === 'PRE_FINAL';
+    task.stage?.name === 'Согласование';
 
   const handleRejectSubmit = async (reason: string) => {
     // Find a LOST stage
@@ -102,7 +101,7 @@ export function ClientTaskDetailsPage() {
   const handleRework = async () => {
     const reworkStage = stages.find((s: StageDto) => s.name === 'Доработка') ||
                         stages.find((s: StageDto) => s.name === 'В работе') ||
-                        stages.find((s: StageDto) => s.type === 'OPEN' && s.order > 0) ||
+                        stages.find((s: StageDto) => s.type === 'OPEN' && (s.orderIndex ?? 0) > 0) ||
                         stages.find((s: StageDto) => s.type === 'OPEN');
     if (!reworkStage) return;
     try {

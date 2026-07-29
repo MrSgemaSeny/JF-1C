@@ -55,8 +55,8 @@ export function ClientOverviewPage() {
   const [showForm, setShowForm] = useState(false);
 
 
-  // Filter state
-  const [activeTab, setActiveTab] = useState<'ACTIVE' | 'HISTORY'>('ACTIVE');
+  // Filter state: 'ALL' | 'ACTIVE' | 'ON_REVIEW' | 'COMPLETED'
+  const [filterType, setFilterType] = useState<'ALL' | 'ACTIVE' | 'ON_REVIEW' | 'COMPLETED'>('ALL');
 
   useEffect(() => {
     if (user?.userId) {
@@ -70,7 +70,6 @@ export function ClientOverviewPage() {
     try {
       if (user?.userId) {
         const data = await getTasks();
-        // Сортировка: новые сверху
         data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setTasks(data);
       }
@@ -82,24 +81,34 @@ export function ClientOverviewPage() {
     }
   };
 
-
-
+  // Helper to check if task needs client attention
+  const isTaskNeedsAttention = (t: TaskDto) => {
+    const name = t.stage?.name?.toLowerCase() || '';
+    return t.stage?.isPreFinal || name.includes('доработк') || name.includes('проверк') || name.includes('согласов');
+  };
 
   // Stats calculations
   const stats = {
-    active: tasks.filter((t) => t.stage?.type === 'OPEN').length,
-    onReview: tasks.filter((t) => {
-      const name = t.stage?.name?.toLowerCase() || '';
-      return name.includes('доработк') || name.includes('проверк');
-    }).length,
-    completed: tasks.filter((t) => t.stage?.type === 'WON').length,
+    active: tasks.filter((t) => t.stage?.type === 'OPEN' && !isTaskNeedsAttention(t)).length,
+    onReview: tasks.filter((t) => isTaskNeedsAttention(t)).length,
+    completed: tasks.filter((t) => t.stage?.type === 'WON' || t.stage?.type === 'LOST' || t.archived).length,
   };
 
   // Filter tasks
   const displayedTasks = tasks.filter(t => {
-    if (activeTab === 'ACTIVE') return t.stage?.type === 'OPEN';
-    return t.stage?.type === 'WON' || t.stage?.type === 'LOST';
+    if (filterType === 'ACTIVE') return t.stage?.type === 'OPEN' && !isTaskNeedsAttention(t);
+    if (filterType === 'ON_REVIEW') return isTaskNeedsAttention(t);
+    if (filterType === 'COMPLETED') return t.stage?.type === 'WON' || t.stage?.type === 'LOST' || t.archived;
+    return true;
   });
+
+  const handleCardClick = (targetFilter: 'ACTIVE' | 'ON_REVIEW' | 'COMPLETED') => {
+    if (filterType === targetFilter) {
+      setFilterType('ALL');
+    } else {
+      setFilterType(targetFilter);
+    }
+  };
 
   if (isLoading && tasks.length === 0) {
     return <div className="flex h-64 items-center justify-center"><Spinner /></div>;
@@ -119,37 +128,58 @@ export function ClientOverviewPage() {
 
       <WeeklySummaryWidget />
 
-      {/* Stats Cards */}
+      {/* Interactive Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => handleCardClick('ACTIVE')}
+          className={twMerge(
+            "bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between text-left transition-all cursor-pointer hover:shadow-md hover:border-blue-300",
+            filterType === 'ACTIVE' && "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/20"
+          )}
+        >
           <div>
-            <h3 className="text-gray-500 text-sm font-medium mb-1">{t('clientDashboard.inProgress')}</h3>
+            <h3 className="text-gray-500 text-sm font-medium mb-1">{t('clientDashboard.inProgress', { defaultValue: 'В работе' })}</h3>
             <p className="text-3xl font-bold text-gray-900">{stats.active}</p>
           </div>
           <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
             <Clock size={24} />
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => handleCardClick('ON_REVIEW')}
+          className={twMerge(
+            "bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between text-left transition-all cursor-pointer hover:shadow-md hover:border-orange-300",
+            filterType === 'ON_REVIEW' && "border-orange-500 ring-2 ring-orange-500/20 bg-orange-50/20"
+          )}
+        >
           <div>
-            <h3 className="text-gray-500 text-sm font-medium mb-1">{t('clientDashboard.needsAttention')}</h3>
+            <h3 className="text-gray-500 text-sm font-medium mb-1">{t('clientDashboard.needsAttention', { defaultValue: 'Требуют внимания' })}</h3>
             <p className="text-3xl font-bold text-gray-900">{stats.onReview}</p>
           </div>
           <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
             <AlertCircle size={24} />
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => handleCardClick('COMPLETED')}
+          className={twMerge(
+            "bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between text-left transition-all cursor-pointer hover:shadow-md hover:border-emerald-300",
+            filterType === 'COMPLETED' && "border-brand-green ring-2 ring-brand-green/20 bg-emerald-50/20"
+          )}
+        >
           <div>
-            <h3 className="text-gray-500 text-sm font-medium mb-1">{t('clientDashboard.completed')}</h3>
+            <h3 className="text-gray-500 text-sm font-medium mb-1">{t('clientDashboard.completed', { defaultValue: 'Завершенные' })}</h3>
             <p className="text-3xl font-bold text-gray-900">{stats.completed}</p>
           </div>
           <div className="w-12 h-12 rounded-full bg-brand-green/10 flex items-center justify-center text-brand-green">
             <CheckCircle2 size={24} />
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Main Content Layout */}
@@ -185,30 +215,42 @@ export function ClientOverviewPage() {
             </div>
           )}
 
-          {/* Requests List */}
+          {/* Requests List Tabs */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="flex border-b border-gray-100 px-6 pt-4">
+            <div className="flex border-b border-gray-100 px-6 pt-4 gap-2 overflow-x-auto">
               <button
-                className={twMerge("pb-4 px-4 text-sm font-medium border-b-2 transition-colors", activeTab === 'ACTIVE' ? 'border-brand-green text-brand-green' : 'border-transparent text-gray-500 hover:text-gray-700')}
-                onClick={() => setActiveTab('ACTIVE')}
+                className={twMerge("pb-4 px-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap", filterType === 'ALL' ? 'border-brand-green text-brand-green font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700')}
+                onClick={() => setFilterType('ALL')}
               >
-                {t('clientDashboard.activeRequests')}
+                {t('clientDashboard.allRequests', { defaultValue: 'Все заявки' })} ({tasks.length})
               </button>
               <button
-                className={twMerge("pb-4 px-4 text-sm font-medium border-b-2 transition-colors", activeTab === 'HISTORY' ? 'border-brand-green text-brand-green' : 'border-transparent text-gray-500 hover:text-gray-700')}
-                onClick={() => setActiveTab('HISTORY')}
+                className={twMerge("pb-4 px-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap", filterType === 'ACTIVE' ? 'border-brand-green text-brand-green font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700')}
+                onClick={() => setFilterType('ACTIVE')}
               >
-                {t('clientDashboard.history')}
+                {t('clientDashboard.inProgress', { defaultValue: 'В работе' })} ({stats.active})
+              </button>
+              <button
+                className={twMerge("pb-4 px-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap", filterType === 'ON_REVIEW' ? 'border-brand-green text-brand-green font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700')}
+                onClick={() => setFilterType('ON_REVIEW')}
+              >
+                {t('clientDashboard.needsAttention', { defaultValue: 'Требуют внимания' })} ({stats.onReview})
+              </button>
+              <button
+                className={twMerge("pb-4 px-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap", filterType === 'COMPLETED' ? 'border-brand-green text-brand-green font-semibold' : 'border-transparent text-gray-500 hover:text-gray-700')}
+                onClick={() => setFilterType('COMPLETED')}
+              >
+                {t('clientDashboard.completed', { defaultValue: 'Завершенные / Архив' })} ({stats.completed})
               </button>
             </div>
 
             <div className="p-6">
               {displayedTasks.length === 0 ? (
-                activeTab === 'ACTIVE' && tasks.length === 0 ? (
+                tasks.length === 0 ? (
                   <ClientWelcomeScreen onCreateRequest={() => setShowForm(true)} />
                 ) : (
                   <div className="text-center py-12 text-gray-400">
-                    {activeTab === 'ACTIVE' ? t('clientDashboard.noActiveRequests') : t('clientDashboard.noHistoryRequests')}
+                    {t('clientDashboard.noMatchingRequests', { defaultValue: 'Нет заявок в данной категории' })}
                   </div>
                 )
               ) : (
@@ -218,7 +260,7 @@ export function ClientOverviewPage() {
                     <div 
                       key={task.id}
                       onClick={() => navigate(ROUTES.CLIENT_TASK_DETAILS.replace(':id', task.id.toString()))}
-                      className="p-5 hover:bg-gray-50 transition-colors cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      className="p-5 hover:bg-gray-50 transition-colors cursor-pointer group flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-50 last:border-0"
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1.5">
