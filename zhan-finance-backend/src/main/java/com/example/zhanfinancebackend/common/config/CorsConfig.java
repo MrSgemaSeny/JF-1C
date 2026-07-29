@@ -18,7 +18,20 @@ public class CorsConfig {
             @Value("${app.cors.allowed-origins}") String allowedOrigins
     ) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(split(allowedOrigins));
+        
+        List<String> origins = split(allowedOrigins);
+        List<String> normalizedOrigins = new java.util.ArrayList<>();
+        for (String origin : origins) {
+            normalizedOrigins.add(origin);
+            if (origin.endsWith("/")) {
+                normalizedOrigins.add(origin.substring(0, origin.length() - 1));
+            } else {
+                normalizedOrigins.add(origin + "/");
+            }
+        }
+
+        configuration.setAllowedOrigins(normalizedOrigins);
+        configuration.setAllowedOriginPatterns(List.of("https://*.github.io", "http://localhost:*", "http://127.0.0.1:*", "https://zhanfinance.fly.dev"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
