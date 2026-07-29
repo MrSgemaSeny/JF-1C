@@ -61,4 +61,21 @@ class InvoiceStatusTransitionTest {
 
         assertThrows(UnprocessableEntityException.class, () -> invoiceService.update(admin, 42L, updateReq));
     }
+
+    @Test
+    @DisplayName("Попытка изменить статус отмененного счета (CANCELED -> ISSUED) вызывает UnprocessableEntityException")
+    void updateInvoice_CanceledToIssued_ThrowsUnprocessableEntity() {
+        Invoice canceledInvoice = new Invoice(admin, "Canceled Invoice", new BigDecimal("200.00"), LocalDate.now().plusDays(5));
+        canceledInvoice.setId(43L);
+        canceledInvoice.setStatus(Invoice.InvoiceStatus.CANCELED);
+
+        when(invoiceRepository.findByIdWithClient(43L)).thenReturn(Optional.of(canceledInvoice));
+
+        InvoiceDto updateReq = new InvoiceDto(
+                43L, admin.getId(), "Updated", new BigDecimal("200.00"),
+                Invoice.InvoiceStatus.ISSUED, LocalDate.now().plusDays(5)
+        );
+
+        assertThrows(UnprocessableEntityException.class, () -> invoiceService.update(admin, 43L, updateReq));
+    }
 }

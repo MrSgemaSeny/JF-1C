@@ -97,7 +97,11 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
     } else if (response.status === 422) {
       toast.warning(errorMessage, { duration: 5000 });
     } else if (response.status === 429) {
-      toast.error("Превышен лимит запросов. Пожалуйста, подождите минуту.", { duration: 5000 });
+      const retryAfter = response.headers.get('Retry-After');
+      const msg = retryAfter
+        ? `Превышен лимит запросов. Повторите попытку через ${retryAfter} сек.`
+        : 'Превышен лимит запросов. Пожалуйста, подождите.';
+      toast.error(msg, { duration: 5000 });
     }
 
     throw new ApiError(errorMessage, response.status, code, details, requestId);

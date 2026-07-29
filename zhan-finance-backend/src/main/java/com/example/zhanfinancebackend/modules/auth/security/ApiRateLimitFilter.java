@@ -58,6 +58,7 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         } else {
             response.setStatus(429);
+            response.setHeader("Retry-After", "60");
             response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"Too many requests\"}");
         }

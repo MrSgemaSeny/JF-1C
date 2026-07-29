@@ -1,8 +1,6 @@
-/**
- * @vitest-environment jsdom
- */
 import { describe, it, expect } from 'vitest';
 import type { StageDto } from '@/entities/task/model/types';
+import { canMoveTaskFromStage, canMoveTaskToStage } from '@/entities/task/lib/stageAccessUtils';
 
 describe('TaskKanbanBoard Stage Movement Restrictions', () => {
 
@@ -13,36 +11,22 @@ describe('TaskKanbanBoard Stage Movement Restrictions', () => {
     { id: 4, pipelineId: 1, name: 'Отменено (LOST)', orderIndex: 3, type: 'LOST', isDefault: false },
   ];
 
-  function canNonAdminMoveFromStage(userRole: string, initialStage: StageDto): boolean {
-    if (userRole !== 'ADMIN' && (initialStage.type === 'WON' || initialStage.type === 'LOST')) {
-      return false;
-    }
-    return true;
-  }
-
-  function canEmployeeMoveToStage(userRole: string, targetStage: StageDto): boolean {
-    if (userRole === 'EMPLOYEE' && (targetStage.type === 'WON' || targetStage.type === 'LOST')) {
-      return false;
-    }
-    return true;
-  }
-
   it('запрещает обычным пользователям (EMPLOYEE, CLIENT) перетаскивать задачи из WON/LOST стадий', () => {
     const wonStage = stages.find(s => s.type === 'WON')!;
     const lostStage = stages.find(s => s.type === 'LOST')!;
 
-    expect(canNonAdminMoveFromStage('EMPLOYEE', wonStage)).toBe(false);
-    expect(canNonAdminMoveFromStage('CLIENT', wonStage)).toBe(false);
-    expect(canNonAdminMoveFromStage('EMPLOYEE', lostStage)).toBe(false);
-    expect(canNonAdminMoveFromStage('ADMIN', wonStage)).toBe(true);
+    expect(canMoveTaskFromStage('EMPLOYEE', wonStage)).toBe(false);
+    expect(canMoveTaskFromStage('CLIENT', wonStage)).toBe(false);
+    expect(canMoveTaskFromStage('EMPLOYEE', lostStage)).toBe(false);
+    expect(canMoveTaskFromStage('ADMIN', wonStage)).toBe(true);
   });
 
   it('запрещает EMPLOYEE переводить задачи напрямую в финальные статусы WON/LOST без администратора', () => {
     const wonStage = stages.find(s => s.type === 'WON')!;
     const openStage = stages.find(s => s.type === 'OPEN')!;
 
-    expect(canEmployeeMoveToStage('EMPLOYEE', wonStage)).toBe(false);
-    expect(canEmployeeMoveToStage('EMPLOYEE', openStage)).toBe(true);
-    expect(canEmployeeMoveToStage('ADMIN', wonStage)).toBe(true);
+    expect(canMoveTaskToStage('EMPLOYEE', wonStage)).toBe(false);
+    expect(canMoveTaskToStage('EMPLOYEE', openStage)).toBe(true);
+    expect(canMoveTaskToStage('ADMIN', wonStage)).toBe(true);
   });
 });

@@ -16,6 +16,7 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { TaskKanbanColumn } from './TaskKanbanColumn';
 import { TaskKanbanCard } from './TaskKanbanCard';
 import type { TaskDto, StageDto } from '@/entities/task/model/types';
+import { canMoveTaskFromStage, canMoveTaskToStage } from '@/entities/task/lib/stageAccessUtils';
 import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
 import { useUpdateTaskStage } from '@/entities/task/api/taskQueries';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -246,7 +247,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     const overStageId = parseInt(overStageIdStr, 10);
     const overStage = stages.find(s => s.id === overStageId);
 
-    if (userRole === 'EMPLOYEE' && overStage && (overStage.type === 'WON' || overStage.type === 'LOST')) {
+    if (!canMoveTaskToStage(userRole, overStage)) {
       return; // Block employee from moving to WON or LOST
     }
 
@@ -295,13 +296,13 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     const initialStage = stages.find(s => s.id === activeTaskInitialStageId);
 
     // Block non-admins from moving tasks out of final stages (WON / LOST)
-    if (userRole !== 'ADMIN' && initialStage && (initialStage.type === 'WON' || initialStage.type === 'LOST')) {
+    if (!canMoveTaskFromStage(userRole, initialStage)) {
       setActiveTaskInitialStageId(null);
       return;
     }
 
     // Block employee from moving to WON or LOST
-    if (userRole === 'EMPLOYEE' && overStage && (overStage.type === 'WON' || overStage.type === 'LOST')) {
+    if (!canMoveTaskToStage(userRole, overStage)) {
       setActiveTaskInitialStageId(null);
       return;
     }
