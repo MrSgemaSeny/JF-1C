@@ -71,6 +71,11 @@ export function ClientTaskDetailsPage() {
   const isArchived = task.archived;
   const isFinished = isWon || isLost;
 
+  const isPreFinalStage = task.stage?.isPreFinal || 
+    task.stage?.name === 'На проверке' || 
+    task.stage?.name === 'Согласование' || 
+    task.stage?.type === 'PRE_FINAL';
+
   const handleRejectSubmit = async (reason: string) => {
     // Find a LOST stage
     const lostStage = stages.find((s: StageDto) => s.type === 'LOST');
@@ -95,7 +100,10 @@ export function ClientTaskDetailsPage() {
   };
 
   const handleRework = async () => {
-    const reworkStage = stages.find((s: StageDto) => s.name === 'Доработка');
+    const reworkStage = stages.find((s: StageDto) => s.name === 'Доработка') ||
+                        stages.find((s: StageDto) => s.name === 'В работе') ||
+                        stages.find((s: StageDto) => s.type === 'OPEN' && s.order > 0) ||
+                        stages.find((s: StageDto) => s.type === 'OPEN');
     if (!reworkStage) return;
     try {
       await updateStage({ id: task.id, stageId: reworkStage.id });
@@ -138,7 +146,7 @@ export function ClientTaskDetailsPage() {
             
             {!isArchived && (
               <div className="flex flex-wrap items-center gap-3">
-                {task.stage?.name === 'На проверке' && (
+                {isPreFinalStage && (
                   <>
                     <button
                       onClick={handleConfirm}
@@ -156,7 +164,7 @@ export function ClientTaskDetailsPage() {
                     </button>
                   </>
                 )}
-                {!isFinished && task.stage?.name !== 'На проверке' && (
+                {!isFinished && !isPreFinalStage && (
                   <div className="flex items-center gap-2">
                     <button
                       className="px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
