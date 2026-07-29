@@ -54,6 +54,10 @@ public class DatabaseMigrationRunner {
                 )
             """);
 
+            jdbcTemplate.execute("""
+                UPDATE stages SET is_pre_final = true WHERE name IN ('На проверке', 'Review', 'Согласование')
+            """);
+
             log.info("DatabaseMigrationRunner completed successfully.");
         } catch (Exception e) {
             log.error("DatabaseMigrationRunner error: {}", e.getMessage());

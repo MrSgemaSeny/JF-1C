@@ -88,7 +88,13 @@ public class CrmAccessService {
             if (newStage.getType() == StageType.LOST) {
                 return true;
             }
-            if (task.getStage() != null && task.getStage().isPreFinal()) {
+            boolean isPreFinal = task.getStage() != null && (
+                task.getStage().isPreFinal() ||
+                "На проверке".equalsIgnoreCase(task.getStage().getName()) ||
+                "Review".equalsIgnoreCase(task.getStage().getName()) ||
+                "Согласование".equalsIgnoreCase(task.getStage().getName())
+            );
+            if (isPreFinal) {
                 return newStage.getType() == StageType.WON ||
                        newStage.getType() == StageType.OPEN;
             }
