@@ -29,7 +29,7 @@ public class PipelineController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<List<PipelineDto>> getPipelines() {
         List<PipelineDto> pipelines = pipelineRepository.findAllWithStages().stream().map(p -> new PipelineDto(
                 p.getId(),

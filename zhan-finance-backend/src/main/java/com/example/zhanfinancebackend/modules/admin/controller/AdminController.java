@@ -21,7 +21,6 @@ import com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto;
 
 @RestController
 @RequestMapping("/v1/admin")
-@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final AdminService adminService;
@@ -35,11 +34,13 @@ public class AdminController {
     }
 
     @GetMapping("/finance/summary")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<FinanceSummaryDto> getFinanceSummary() {
         return ApiResponse.success(invoiceService.getFinanceSummary());
     }
 
     @GetMapping("/employees")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<List<EmployeeDto>> getAllEmployees(
             @AuthenticationPrincipal UserPrincipal principal
     ) {
@@ -47,71 +48,84 @@ public class AdminController {
     }
 
     @GetMapping("/employees/pending")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<List<EmployeeDto>> getPendingEmployees() {
         return ApiResponse.success(adminService.getPendingEmployees());
     }
 
     @GetMapping("/employees/workload")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<List<EmployeeWorkloadDto>> getEmployeeWorkload() {
         return ApiResponse.success(adminService.getEmployeeWorkloads());
     }
 
     @PostMapping("/employees/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> approveEmployee(@PathVariable Long id) {
         adminService.approveEmployee(id);
         return ApiResponse.success(null, "Сотрудник одобрен");
     }
 
     @PostMapping("/employees/{id}/promote-to-advisor")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> promoteToAdvisor(@PathVariable Long id) {
         adminService.promoteToAdvisor(id);
         return ApiResponse.success(null, "Сотрудник переведен в роль ADVISOR");
     }
 
     @PostMapping("/employees/{id}/demote-to-employee")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> demoteToEmployee(@PathVariable Long id) {
         adminService.demoteToEmployee(id);
         return ApiResponse.success(null, "Эдвайзер переведен в роль EMPLOYEE");
     }
 
     @PatchMapping("/users/{id}/toggle-status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> toggleUserStatus(@PathVariable Long id) {
         adminService.toggleUserStatus(id);
         return ApiResponse.success(null, "Статус пользователя успешно изменен");
     }
 
     @DeleteMapping("/employees/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> deleteEmployee(@PathVariable Long id) {
         userService.softDeleteUser(id);
         return ApiResponse.success(null, "Сотрудник деактивирован");
     }
 
     @GetMapping("/employees/assigned")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<List<EmployeeDto>> getAssignedEmployees() {
         return ApiResponse.success(adminService.getAssignedEmployees());
     }
 
     @GetMapping("/employees/unassigned")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<List<EmployeeDto>> getUnassignedEmployees() {
         return ApiResponse.success(adminService.getUnassignedEmployees());
     }
 
     @GetMapping("/dashboard")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<AdminDashboardDto> getAdminDashboard() {
         return ApiResponse.success(adminService.getAdminDashboard());
     }
 
     @GetMapping("/clients/stats")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<List<ClientStatsDto>> getClientStats() {
         return ApiResponse.success(adminService.getClientStats());
     }
 
     @GetMapping("/learners")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<EmployeeDto>> getAllLearners() {
         return ApiResponse.success(adminService.getAllLearners());
     }
 
     @PostMapping("/learners")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> createLearner(@jakarta.validation.Valid @RequestBody RegisterRequest request) {
         adminService.createLearner(request);
         return ApiResponse.success(null, "Обучающийся успешно создан");
