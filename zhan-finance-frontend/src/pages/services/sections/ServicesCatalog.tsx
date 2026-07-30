@@ -180,13 +180,18 @@ export function ServicesCatalog() {
 
               const data = await res.json();
               if (files && files.length > 0 && data.data?.id) {
-                const formData = new FormData();
-                files.forEach(file => formData.append('files', file));
-                await fetch(`/api/v1/contact-requests/${data.data.id}/files`, {
-                  method: 'POST',
-                  body: formData,
-                });
-                toast.success(t('services.catalog.successFiles', { defaultValue: 'Заявка отправлена! Ваши файлы прикреплены. Ожидайте звонка от нашего специалиста.' }));
+                try {
+                  const formData = new FormData();
+                  files.forEach(file => formData.append('files', file));
+                  await fetch(`/api/v1/contact-requests/${data.data.id}/files`, {
+                    method: 'POST',
+                    body: formData,
+                  });
+                  toast.success(t('services.catalog.successFiles', { defaultValue: 'Заявка отправлена! Ваши файлы прикреплены. Ожидайте звонка от нашего специалиста.' }));
+                } catch (fileErr) {
+                  console.error('Failed to upload guest request files:', fileErr);
+                  toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
+                }
               } else {
                 toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
               }

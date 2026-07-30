@@ -91,12 +91,16 @@ export function SolutionPicker() {
       });
 
       if (files.length > 0 && response.id) {
-        const formData = new FormData();
-        files.forEach(file => formData.append('files', file));
-        await fetch(`/api/v1/contact-requests/${response.id}/files`, {
-          method: 'POST',
-          body: formData,
-        });
+        try {
+          const formData = new FormData();
+          files.forEach(file => formData.append('files', file));
+          await fetch(`/api/v1/contact-requests/${response.id}/files`, {
+            method: 'POST',
+            body: formData,
+          });
+        } catch (fileErr) {
+          console.error('Failed to upload survey files:', fileErr);
+        }
       }
 
       setSubmitted(true);

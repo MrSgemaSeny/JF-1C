@@ -210,13 +210,18 @@ export function HomeServices() {
 
               const data = await res.json();
               if (files && files.length > 0 && data.data?.id) {
-                const formData = new FormData();
-                files.forEach(file => formData.append('files', file));
-                await fetch(`/api/v1/contact-requests/${data.data.id}/files`, {
-                  method: 'POST',
-                  body: formData,
-                });
-                setSuccessMessage(t('homeServices.successMessageFiles', { defaultValue: 'Ваша заявка отправлена!\n\nФайлы успешно прикреплены. Ожидайте звонка от нашего специалиста.' }));
+                try {
+                  const formData = new FormData();
+                  files.forEach(file => formData.append('files', file));
+                  await fetch(`/api/v1/contact-requests/${data.data.id}/files`, {
+                    method: 'POST',
+                    body: formData,
+                  });
+                  setSuccessMessage(t('homeServices.successMessageFiles', { defaultValue: 'Ваша заявка отправлена!\n\nФайлы успешно прикреплены. Ожидайте звонка от нашего специалиста.' }));
+                } catch (fileErr) {
+                  console.error('Failed to upload guest request files:', fileErr);
+                  setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
+                }
               } else {
                 setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
               }
