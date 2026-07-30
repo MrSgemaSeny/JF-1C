@@ -3,7 +3,7 @@ import {
   X, MessageSquare, Activity, Clock, Tag, User as UserIcon,
   Check, CheckSquare, Square, Loader2,
   Paperclip, FileText, Download, Archive, Trash2, Plus, Edit2,
-  Hash, PlayCircle, XCircle, Info,
+  Hash, PlayCircle, XCircle, Info, ShieldCheck,
 } from 'lucide-react';
 import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '../model/types';
 import { getTaskComments, addTaskComment, getTaskHistory, assignTask } from '../api/taskApi';
@@ -707,29 +707,45 @@ export function TaskDetailsModal({
             </div>
             {documents.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {documents.map(doc => (
-                  <div
-                    key={doc.id}
-                    className="group/doc flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-brand-green hover:shadow-md transition-all cursor-default"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-green-50 text-green-700 flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <FileText size={20} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-gray-800 truncate" title={doc.fileName}>{doc.fileName}</p>
-                      <p className="text-[11px] font-medium text-gray-500 mt-0.5">
-                        {(doc.fileSize / 1024).toFixed(1)} KB · {new Date(doc.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => downloadDocument(doc.id, doc.fileName)}
-                      className="opacity-0 group-hover/doc:opacity-100 p-2 text-gray-400 hover:text-brand-green rounded-lg hover:bg-brand-green/10 transition-all focus:opacity-100"
-                      title={t('taskModal.download', { defaultValue: 'Скачать' })}
+                {documents.map(doc => {
+                  const isConfirmed = doc.status === 'CONFIRMED';
+                  return (
+                    <div
+                      key={doc.id}
+                      className="group/doc flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-brand-green hover:shadow-md transition-all cursor-default"
                     >
-                      <Download size={18} />
-                    </button>
-                  </div>
-                ))}
+                      <div className="w-10 h-10 rounded-lg bg-green-50 text-green-700 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <FileText size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 truncate">
+                          <p className="text-sm font-bold text-gray-800 truncate" title={doc.fileName}>{doc.fileName}</p>
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <p className="text-[11px] font-medium text-gray-500">
+                            {(doc.fileSize / 1024).toFixed(1)} KB · {new Date(doc.createdAt).toLocaleDateString()}
+                          </p>
+                          {isConfirmed ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded border border-green-200">
+                              <ShieldCheck size={11} /> Подписано
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                              <Clock size={11} /> Ожидает подписи
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => downloadDocument(doc.id, doc.fileName)}
+                        className="opacity-0 group-hover/doc:opacity-100 p-2 text-gray-400 hover:text-brand-green rounded-lg hover:bg-brand-green/10 transition-all focus:opacity-100"
+                        title={t('taskModal.download', { defaultValue: 'Скачать' })}
+                      >
+                        <Download size={18} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="text-sm text-gray-400 italic text-center bg-gray-50 border border-dashed border-gray-200 rounded-xl p-6">

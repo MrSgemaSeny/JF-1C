@@ -82,7 +82,9 @@ public class DocumentService {
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "application/vnd.ms-excel",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "image/png", "image/jpeg"
+                "image/png", "image/jpeg", "image/webp", "image/gif",
+                "text/plain", "text/markdown", "text/x-markdown",
+                "application/zip", "application/x-zip-compressed"
         );
 
         if (!ALLOWED_CONTENT_TYPES.contains(contentType)) {

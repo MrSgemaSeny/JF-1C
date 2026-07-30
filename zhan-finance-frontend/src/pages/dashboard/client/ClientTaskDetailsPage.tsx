@@ -6,11 +6,11 @@ import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
 import type { StageDto } from '@/entities/task/model/types';
 import { TaskRejectModal } from '@/widgets/task-reject/TaskRejectModal';
 import { Spinner } from '@/shared/ui/Spinner';
-import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip, MoreVertical, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 import { translateTaskTitle, translateServiceName, translateStageName } from '@/shared/i18n/taskTranslator';
-import { downloadDocument, getTaskDocuments } from '@/entities/document/api/documentApi';
+import { downloadDocument, getTaskDocuments, confirmDocument } from '@/entities/document/api/documentApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 import { TaskEditModal } from '@/entities/task/ui/TaskEditModal';
 
@@ -42,11 +42,29 @@ export function ClientTaskDetailsPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  React.useEffect(() => {
+  const [confirmingDocId, setConfirmingDocId] = useState<number | null>(null);
+
+  const fetchTaskDocs = React.useCallback(() => {
     if (taskId) {
       getTaskDocuments(taskId).then(setDocuments).catch(console.error);
     }
   }, [taskId]);
+
+  React.useEffect(() => {
+    fetchTaskDocs();
+  }, [fetchTaskDocs]);
+
+  const handleConfirmDoc = async (docId: number) => {
+    setConfirmingDocId(docId);
+    try {
+      await confirmDocument(docId);
+      fetchTaskDocs();
+    } catch (err) {
+      console.error('Failed to confirm document', err);
+    } finally {
+      setConfirmingDocId(null);
+    }
+  };
 
   if (isTaskLoading || isPipelinesLoading) {
     return <div className="flex h-screen items-center justify-center"><Spinner /></div>;
@@ -308,24 +326,44 @@ export function ClientTaskDetailsPage() {
                   <Paperclip size={16} /> {t('tasks:details.documents', { defaultValue: 'Документы' })}
                 </h3>
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
-                  {documents.map(doc => (
-                    <div key={doc.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
-                      <div className="flex items-center gap-3 overflow-hidden">
-                        <FileText size={20} className="text-brand-green flex-shrink-0" />
-                        <div className="truncate">
-                          <p className="text-sm font-semibold text-gray-800 truncate" title={doc.fileName}>{doc.fileName}</p>
-                          <p className="text-xs text-gray-400">{(doc.fileSize / 1024).toFixed(1)} KB • {new Date(doc.createdAt).toLocaleDateString()}</p>
+                  {documents.map(doc => {
+                    const isConfirmed = doc.status === 'CONFIRMED';
+                    return (
+                      <div key={doc.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-brand-green/30 transition-all">
+                        <div className="flex items-center gap-3 overflow-hidden">
+                          <FileText size={20} className="text-brand-green flex-shrink-0" />
+                          <div className="truncate">
+                            <p className="text-sm font-semibold text-gray-800 truncate" title={doc.fileName}>{doc.fileName}</p>
+                            <p className="text-xs text-gray-400">{(doc.fileSize / 1024).toFixed(1)} KB • {new Date(doc.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                          {isConfirmed ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full font-semibold text-xs">
+                              <ShieldCheck size={13} />
+                              {t('documents.signed', { defaultValue: 'Подписано' })}
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => handleConfirmDoc(doc.id)}
+                              disabled={confirmingDocId === doc.id}
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-brand-green hover:bg-brand-green/90 text-white rounded-full font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                            >
+                              <CheckCircle2 size={13} />
+                              {confirmingDocId === doc.id ? t('documents.confirming', { defaultValue: '...' }) : t('documents.confirm', { defaultValue: 'Подтвердить' })}
+                            </button>
+                          )}
+                          <button
+                            onClick={() => downloadDocument(doc.id, doc.fileName)}
+                            className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors"
+                            title={t('tasks:details.download', { defaultValue: 'Скачать' })}
+                          >
+                            <Download size={16} />
+                          </button>
                         </div>
                       </div>
-                      <button
-                        onClick={() => downloadDocument(doc.id, doc.fileName)}
-                        className="p-2 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors ml-2"
-                        title={t('tasks:details.download', { defaultValue: 'Скачать' })}
-                      >
-                        <Download size={16} />
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

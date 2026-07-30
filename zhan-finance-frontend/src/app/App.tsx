@@ -121,6 +121,7 @@ export function App() {
             </Route>
 
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.LOGIN_EMPLOYEE} element={<RegisterPage isEmployeeRoute={true} />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
             <Route path={ROUTES.REGISTER_EMPLOYEE} element={<RegisterPage isEmployeeRoute={true} />} />
             <Route path={ROUTES.COMPLETE_PROFILE} element={<CompleteProfilePage />} />
@@ -218,6 +219,8 @@ export function App() {
                 
               </Route>
             </Route>
+            {/* Fallback Route */}
+            <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
           </Routes>
           </Suspense>
           </ErrorBoundary>
