@@ -76,7 +76,10 @@ export function EmployeeChatPage() {
       if (selectedContact?.id === userId) {
         setMessages(history);
         if (history.length > 0) {
-          lastMessageIdRef.current = Math.max(...history.map(m => m.id));
+          const validIds = history.map(m => m.id).filter((id): id is number => typeof id === 'number' && !isNaN(id));
+          if (validIds.length > 0) {
+            lastMessageIdRef.current = Math.max(...validIds);
+          }
         }
       }
     } catch (e) {

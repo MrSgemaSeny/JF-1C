@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect, useCallback, useMemo } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -23,6 +23,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { getTask } from '@/entities/task/api/taskApi';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import { ChatDrawer } from '@/widgets/chat/ChatDrawer';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { UserLabelManager } from '@/features/labels/ui/UserLabelManager';
 
@@ -219,9 +220,11 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   };
 
   const [activeTaskInitialStageId, setActiveTaskInitialStageId] = useState<number | null>(null);
+  const columnsSnapshotRef = useRef<Record<string, TaskDto[]>>({});
 
   const onDragStart = (event: DragStartEvent) => {
     const { active } = event;
+    columnsSnapshotRef.current = { ...columns };
     const container = findContainer(active.id);
     if (container) {
       const task = columns[container].find(t => String(t.id) === String(active.id));
@@ -315,6 +318,10 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
         await updateTaskStage({ id: taskIdNum, stageId: targetStageId });
       } catch (e) {
         console.error("Failed to update task stage", e);
+        if (columnsSnapshotRef.current && Object.keys(columnsSnapshotRef.current).length > 0) {
+          setColumns(columnsSnapshotRef.current);
+        }
+        toast.error(t('kanban.moveError', { defaultValue: 'Не удалось переместить задачу' }));
       }
     }
     setActiveTaskInitialStageId(null);

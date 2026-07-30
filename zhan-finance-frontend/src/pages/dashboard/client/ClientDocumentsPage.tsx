@@ -6,8 +6,15 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { Upload, Download, Trash2, FileText, FileSpreadsheet, File as FileIcon, FileImage, FileArchive, CheckCircle2, ShieldCheck, Folder, FileCheck, Clock, Layers } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
-const FOLDERS = ['Все', 'Акты ВР', 'Отчеты', 'Договоры', 'Разное'];
+const FOLDERS = [
+  { id: 'all', key: 'documents.folders.all', defaultLabel: 'Все' },
+  { id: 'acts', key: 'documents.folders.acts', defaultLabel: 'Акты ВР' },
+  { id: 'reports', key: 'documents.folders.reports', defaultLabel: 'Отчеты' },
+  { id: 'contracts', key: 'documents.folders.contracts', defaultLabel: 'Договоры' },
+  { id: 'other', key: 'documents.folders.other', defaultLabel: 'Разное' },
+];
 
 export function ClientDocumentsPage() {
   const { user } = useAuth();
@@ -18,7 +25,7 @@ export function ClientDocumentsPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const [selectedFolder, setSelectedFolder] = useState<string>('Все');
+  const [selectedFolder, setSelectedFolder] = useState<string>('all');
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [isConfirmingId, setIsConfirmingId] = useState<number | null>(null);
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
@@ -96,7 +103,7 @@ export function ClientDocumentsPage() {
       await downloadDocument(doc.id, doc.fileName);
     } catch (err) {
       console.error('Failed to download', err);
-      alert('Failed to download document');
+      toast.error(t('documents.downloadError', { defaultValue: 'Не удалось скачать документ' }));
     }
   };
 
@@ -107,7 +114,7 @@ export function ClientDocumentsPage() {
       await fetchDocuments();
     } catch (err) {
       console.error('Failed to confirm document', err);
-      alert(t('documents.confirmError', { defaultValue: 'Ошибка подписи документа' }));
+      toast.error(t('documents.confirmError', { defaultValue: 'Ошибка подписи документа' }));
     } finally {
       setIsConfirmingId(null);
     }
@@ -120,7 +127,7 @@ export function ClientDocumentsPage() {
       await downloadZipDocuments(Array.from(selectedIds));
     } catch (err) {
       console.error('Failed zip download', err);
-      alert(t('documents.zipError', { defaultValue: 'Ошибка скачивания ZIP архива' }));
+      toast.error(t('documents.zipError', { defaultValue: 'Ошибка скачивания ZIP архива' }));
     } finally {
       setIsDownloadingZip(false);
     }
@@ -133,7 +140,7 @@ export function ClientDocumentsPage() {
       await fetchDocuments();
     } catch (err) {
       console.error('Failed to delete', err);
-      alert('Failed to delete document');
+      toast.error(t('documents.deleteError', { defaultValue: 'Не удалось удалить документ' }));
     }
   };
 
@@ -173,12 +180,13 @@ export function ClientDocumentsPage() {
   };
 
   const filteredDocuments = documents.filter(doc => {
-    if (selectedFolder === 'Все') return true;
+    if (selectedFolder === 'all') return true;
     const docFolder = doc.folder || 'Разное';
-    if (selectedFolder === 'Акты ВР') return docFolder.includes('Акт') || doc.fileName.toLowerCase().includes('акт');
-    if (selectedFolder === 'Отчеты') return docFolder.includes('Отчет') || doc.fileName.toLowerCase().includes('отчет');
-    if (selectedFolder === 'Договоры') return docFolder.includes('Договор') || doc.fileName.toLowerCase().includes('договор');
-    return docFolder === 'Разное';
+    const fileName = doc.fileName.toLowerCase();
+    if (selectedFolder === 'acts') return docFolder.includes('Акт') || docFolder.toLowerCase().includes('act') || fileName.includes('акт') || fileName.includes('act');
+    if (selectedFolder === 'reports') return docFolder.includes('Отчет') || docFolder.toLowerCase().includes('report') || fileName.includes('отчет') || fileName.includes('report');
+    if (selectedFolder === 'contracts') return docFolder.includes('Договор') || docFolder.toLowerCase().includes('contract') || fileName.includes('договор') || fileName.includes('contract');
+    return docFolder === 'Разное' || docFolder.toLowerCase().includes('other');
   });
 
   const totalCount = documents.length;
@@ -280,11 +288,11 @@ export function ClientDocumentsPage() {
       {/* Navigation Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {FOLDERS.map(f => {
-          const isSelected = selectedFolder === f;
+          const isSelected = selectedFolder === f.id;
           return (
             <button
-              key={f}
-              onClick={() => setSelectedFolder(f)}
+              key={f.id}
+              onClick={() => setSelectedFolder(f.id)}
               className={clsx(
                 "px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap border shadow-2xs",
                 isSelected
@@ -293,7 +301,7 @@ export function ClientDocumentsPage() {
               )}
             >
               <Folder size={14} className={isSelected ? "text-white" : "text-gray-400"} />
-              <span>{f}</span>
+              <span>{t(f.key, { defaultValue: f.defaultLabel })}</span>
             </button>
           );
         })}

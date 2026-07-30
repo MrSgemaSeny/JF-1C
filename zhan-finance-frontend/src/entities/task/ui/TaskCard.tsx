@@ -8,6 +8,7 @@ import { uploadDocument } from '@/entities/document/api/documentApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { useTranslation } from 'react-i18next';
 import { DatePicker } from '@/shared/ui/DatePicker';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 interface TaskCardProps {
   task: TaskDto;
@@ -188,7 +189,7 @@ export function TaskCard({ task, onClick, className, onUpdateTask, onDeleteTask,
       await uploadDocument(file, task.client?.id, task.id);
     } catch (err) {
       console.error('Failed to upload inline', err);
-      alert('Failed to upload document');
+      toast.error(t('taskCard.uploadError', { defaultValue: 'Не удалось загрузить документ' }));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

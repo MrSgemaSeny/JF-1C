@@ -3,6 +3,7 @@ import { getEmployees, getPendingEmployees, approveEmployee, getEmployeeWorkload
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import { Check, Clock, UserCheck, Briefcase, ShieldAlert, ShieldCheck, UserX } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 export function AdminEmployeesPage() {
   const { t } = useTranslation(['common']);
@@ -38,23 +39,21 @@ export function AdminEmployeesPage() {
   }, []);
 
   async function handleApprove(id: number) {
-    if (!window.confirm(t('adminEmployees.approveConfirm'))) return;
+    if (!window.confirm(t('adminEmployees.approveConfirm', { defaultValue: 'Подтвердить регистрацию сотрудника?' }))) return;
     try {
       await approveEmployee(id);
       await loadData();
     } catch (e) {
       console.error(e);
-      alert(t('adminEmployees.approveError'));
+      toast.error(t('adminEmployees.approveError', { defaultValue: 'Ошибка при одобрении сотрудника' }));
     }
   }
 
   async function handlePromote(id: number) {
     const confirmed = window.confirm(
-      'ВНИМАНИЕ: Повышение сотрудника до роли ADVISOR!\n\n' +
-      '- Все закрепленные за ним клиенты будут откреплены.\n' +
-      '- Все активные задачи этого сотрудника будут переведены в открытый пул.\n' +
-      '- История чатов и сообщений сохранится без изменений.\n\n' +
-      'Вы уверены, что хотите перевести сотрудника в роль ADVISOR?'
+      t('adminEmployees.promoteConfirm', {
+        defaultValue: 'ВНИМАНИЕ: Повышение сотрудника до роли ADVISOR!\n\n- Все закрепленные за ним клиенты будут откреплены.\n- Все активные задачи этого сотрудника будут переведены в открытый пул.\n- История чатов и сообщений сохранится без изменений.\n\nВы уверены, что хотите перевести сотрудника в роль ADVISOR?'
+      })
     );
     if (!confirmed) return;
     try {
@@ -62,29 +61,29 @@ export function AdminEmployeesPage() {
       await loadData();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при изменении роли');
+      toast.error(t('adminEmployees.roleChangeError', { defaultValue: 'Ошибка при изменении роли' }));
     }
   }
 
   async function handleDemote(id: number) {
-    if (!window.confirm('Понизить ADVISOR до роли EMPLOYEE?')) return;
+    if (!window.confirm(t('adminEmployees.demoteConfirm', { defaultValue: 'Понизить ADVISOR до роли EMPLOYEE?' }))) return;
     try {
       await demoteToEmployee(id);
       await loadData();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при изменении роли');
+      toast.error(t('adminEmployees.roleChangeError', { defaultValue: 'Ошибка при изменении роли' }));
     }
   }
 
   async function handleToggleStatus(id: number) {
-    if (!window.confirm('Изменить статус активности аккаунта пользователя?')) return;
+    if (!window.confirm(t('adminEmployees.toggleStatusConfirm', { defaultValue: 'Изменить статус активности аккаунта пользователя?' }))) return;
     try {
       await toggleUserStatus(id);
       await loadData();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при изменении статуса');
+      toast.error(t('adminEmployees.statusChangeError', { defaultValue: 'Ошибка при изменении статуса' }));
     }
   }
 

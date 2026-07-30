@@ -3,6 +3,7 @@ import { apiRequest } from '@/shared/api/http';
 import { UserCheck, UserX, Plus, BookOpen, ShieldAlert, CheckCircle, MoreVertical } from 'lucide-react';
 import { Spinner } from '@/shared/ui/Spinner';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { useTranslation } from 'react-i18next';
 
 interface Curator {
   id: number;
@@ -18,6 +19,7 @@ interface CourseItem {
 }
 
 export function AdminCuratorsPage() {
+  const { t } = useTranslation(['common', 'tasks']);
   const [curators, setCurators] = useState<Curator[]>([]);
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ export function AdminCuratorsPage() {
       setCurators(curatorsRes || []);
       setCourses(coursesRes || []);
     } catch (err) {
-      toast.error('Failed to load curators or courses');
+      toast.error(t('adminCurators.loadError', { defaultValue: 'Не удалось загрузить данные кураторов' }));
     } finally {
       setLoading(false);
     }
@@ -64,14 +66,14 @@ export function AdminCuratorsPage() {
         method: 'POST',
         body: JSON.stringify({ fullName, email, password })
       });
-      toast.success('Curator created successfully');
+      toast.success(t('adminCurators.createdSuccess', { defaultValue: 'Куратор успешно создан' }));
       setIsModalOpen(false);
       setFullName('');
       setEmail('');
       setPassword('');
       fetchData();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to create curator');
+      toast.error(err?.message || t('adminCurators.createError', { defaultValue: 'Не удалось создать куратора' }));
     } finally {
       setSubmitting(false);
     }
@@ -80,10 +82,10 @@ export function AdminCuratorsPage() {
   const handleToggleStatus = async (id: number) => {
     try {
       await apiRequest(`/api/v1/admin/curators/${id}/toggle-status`, { method: 'POST' });
-      toast.success('Curator status updated');
+      toast.success(t('adminCurators.statusUpdated', { defaultValue: 'Статус куратора обновлен' }));
       fetchData();
     } catch (err) {
-      toast.error('Failed to update status');
+      toast.error(t('adminCurators.statusError', { defaultValue: 'Не удалось обновить статус' }));
     }
   };
 
@@ -94,10 +96,10 @@ export function AdminCuratorsPage() {
       } else {
         await apiRequest(`/api/v1/admin/curators/${curatorId}/courses/${courseId}`, { method: 'POST' });
       }
-      toast.success('Course assignment updated');
+      toast.success(t('adminCurators.assignUpdated', { defaultValue: 'Привязка курса обновлена' }));
       fetchData();
     } catch (err) {
-      toast.error('Failed to update assignment');
+      toast.error(t('adminCurators.assignError', { defaultValue: 'Не удалось обновить привязку курса' }));
     }
   };
 

@@ -20,6 +20,7 @@ import { translateTaskTitle, translateServiceName, translateStageName } from '@/
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 export interface TaskDetailsModalProps {
   task: TaskDto;
@@ -298,35 +299,42 @@ export function TaskDetailsModal({
     }
   };
 
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [isSubmittingReject, setIsSubmittingReject] = useState(false);
+
   const handleArchive = async () => {
     if (!window.confirm(t('taskModal.confirmArchive', { defaultValue: 'Архивировать задачу?' }))) return;
     try {
       const updated = await archiveTask(task.id);
       onUpdateTask(updated);
       onClose?.();
-    } catch { alert(t('taskModal.archiveError', { defaultValue: 'Ошибка архивирования' })); }
+    } catch { toast.error(t('taskModal.archiveError', { defaultValue: 'Ошибка архивирования' })); }
     finally { setShowMoreMenu(false); }
   };
 
-  const handleClientReject = async () => {
-    const reason = window.prompt(t('taskModal.rejectReasonPrompt', { defaultValue: 'Укажите причину отказа от задачи:' }));
-    if (reason === null) return;
-    
-    // Find the LOST stage
+  const handleOpenClientReject = () => {
+    setShowMoreMenu(false);
+    setShowRejectModal(true);
+  };
+
+  const handleConfirmClientReject = async () => {
     const pipeline = pipelines?.[0];
     const lostStage = pipeline?.stages.find(s => s.type === 'LOST');
     
     if (!lostStage) {
-      alert(t('taskModal.cancelStageError', { defaultValue: 'Ошибка: Стадия отмены не найдена в процессе' }));
+      toast.error(t('taskModal.cancelStageError', { defaultValue: 'Ошибка: Стадия отмены не найдена в процессе' }));
       return;
     }
 
     try {
-      const updated = await updateTaskStage(task.id, lostStage.id, reason || undefined);
+      setIsSubmittingReject(true);
+      const updated = await updateTaskStage(task.id, lostStage.id, rejectReason.trim() || undefined);
       onUpdateTask(updated);
+      setShowRejectModal(false);
       onClose?.();
-    } catch { alert(t('taskModal.cancelError', { defaultValue: 'Ошибка при отмене задачи' })); }
-    finally { setShowMoreMenu(false); }
+    } catch { toast.error(t('taskModal.cancelError', { defaultValue: 'Ошибка при отмене задачи' })); }
+    finally { setIsSubmittingReject(false); }
   };
 
   const handleDelete = async () => {
@@ -335,7 +343,7 @@ export function TaskDetailsModal({
       await deleteTask(task.id);
       onClose?.();
       window.location.reload();
-    } catch { alert(t('taskModal.deleteError', { defaultValue: 'Ошибка удаления' })); }
+    } catch { toast.error(t('taskModal.deleteError', { defaultValue: 'Ошибка удаления' })); }
     finally { setShowMoreMenu(false); }
   };
 
@@ -423,7 +431,7 @@ export function TaskDetailsModal({
                   )}
                   {userRole === 'CLIENT' && stage?.type !== 'WON' && stage?.type !== 'LOST' && (
                     <button
-                      onClick={handleClientReject}
+                      onClick={handleOpenClientReject}
                       className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
                     >
                       {t('taskModal.rejectTask', { defaultValue: 'Отказаться от задачи' })}
@@ -900,14 +908,48 @@ export function TaskDetailsModal({
     </div>
   );
 
-  if (!isModal) return content;
-
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-6"
-      onClick={onClose}
-    >
-      {content}
-    </div>
+    <>
+      {isModal ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-6"
+          onClick={onClose}
+        >
+          {content}
+        </div>
+      ) : content}
+
+      {showRejectModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShowRejectModal(false)}>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">{t('taskModal.rejectReasonTitle', { defaultValue: 'Отказ от задачи' })}</h3>
+            <p className="text-xs text-gray-500 mb-4">{t('taskModal.rejectReasonSubtitle', { defaultValue: 'Укажите причину отказа. Задача будет переведена в архив отменённых.' })}</p>
+            <textarea
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              placeholder={t('taskModal.rejectReasonPrompt', { defaultValue: 'Причина отказа...' })}
+              rows={3}
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm outline-none focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 mb-4"
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowRejectModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                {t('common.cancel', { defaultValue: 'Отмена' })}
+              </button>
+              <button
+                onClick={handleConfirmClientReject}
+                disabled={isSubmittingReject}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {isSubmittingReject && <Loader2 size={16} className="animate-spin" />}
+                {t('taskModal.rejectConfirm', { defaultValue: 'Подтвердить отказ' })}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
