@@ -56,4 +56,14 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   LEARNER: [
     { label: 'Courses', href: ROUTES.LEARNER_COURSES },
   ],
+  ADVISOR: [
+    { label: 'Overview', href: ROUTES.ADMIN },
+    { label: 'Chat', href: ROUTES.ADMIN_CHAT },
+    { label: 'Employees', href: ROUTES.ADMIN_EMPLOYEES },
+    { label: 'Clients', href: ROUTES.ADMIN_CLIENTS },
+    { label: 'Tasks', href: ROUTES.ADMIN_TASKS },
+    { label: 'Task Pool', href: ROUTES.ADMIN_TASK_POOL },
+    { label: 'Settings', href: ROUTES.SETTINGS },
+    { label: 'Notifications', href: ROUTES.NOTIFICATIONS },
+  ],
 };

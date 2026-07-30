@@ -62,6 +62,24 @@ public class AdminController {
         return ApiResponse.success(null, "Сотрудник одобрен");
     }
 
+    @PostMapping("/employees/{id}/promote-to-advisor")
+    public ApiResponse<Void> promoteToAdvisor(@PathVariable Long id) {
+        adminService.promoteToAdvisor(id);
+        return ApiResponse.success(null, "Сотрудник переведен в роль ADVISOR");
+    }
+
+    @PostMapping("/employees/{id}/demote-to-employee")
+    public ApiResponse<Void> demoteToEmployee(@PathVariable Long id) {
+        adminService.demoteToEmployee(id);
+        return ApiResponse.success(null, "Эдвайзер переведен в роль EMPLOYEE");
+    }
+
+    @PatchMapping("/users/{id}/toggle-status")
+    public ApiResponse<Void> toggleUserStatus(@PathVariable Long id) {
+        adminService.toggleUserStatus(id);
+        return ApiResponse.success(null, "Статус пользователя успешно изменен");
+    }
+
     @DeleteMapping("/employees/{id}")
     public ApiResponse<Void> deleteEmployee(@PathVariable Long id) {
         userService.softDeleteUser(id);

@@ -1,6 +1,7 @@
 package com.example.zhanfinancebackend;
 
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
+import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.courses.entity.Course;
 import com.example.zhanfinancebackend.modules.courses.entity.LessonType;
 import com.example.zhanfinancebackend.modules.courses.repository.CourseRepository;
@@ -40,28 +41,40 @@ class CourseIntegrationTests {
     @Autowired
     private LessonRepository lessonRepository;
 
+    @Autowired
+    private com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
+
+    @Autowired
+    private com.example.zhanfinancebackend.modules.auth.security.JwtService jwtService;
+
     @BeforeEach
     void setUp() {
         courseRepository.deleteAll();
         lessonRepository.deleteAll();
     }
 
-    private String registerAndGetToken(String email, Role role) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/register").contextPath("/api")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "fullName": "Test User",
-                                  "email": "%s",
-                                  "password": "password123",
-                                  "role": "%s"
-                                }
-                                """.formatted(email, role.name())))
-                .andExpect(status().isOk())
-                .andReturn();
+    @Autowired
+    private com.example.zhanfinancebackend.modules.auth.service.AuthService authService;
 
-        JsonNode auth = objectMapper.readTree(result.getResponse().getContentAsString()).get("data");
-        return auth.get("accessToken").asText();
+    private String registerAndGetToken(String email, Role role) throws Exception {
+        com.example.zhanfinancebackend.modules.auth.dto.AuthResponse response = authService.register(
+                new com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest(
+                        "Test User",
+                        email,
+                        "password123",
+                        role,
+                        null,
+                        null
+                )
+        );
+        if (response != null && response.accessToken() != null) {
+            return response.accessToken();
+        }
+        // If employee (disabled), approve and generate token via login
+        User user = userRepository.findByEmailIgnoreCase(email).orElseThrow();
+        user.setEnabled(true);
+        userRepository.save(user);
+        return jwtService.generateAccessToken(user);
     }
 
     @Test

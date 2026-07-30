@@ -10,6 +10,7 @@ import com.example.zhanfinancebackend.modules.auth.dto.CheckEmailRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse;
 import com.example.zhanfinancebackend.modules.auth.service.AuthService;
 import com.example.zhanfinancebackend.modules.auth.service.GoogleAuthService;
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +40,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        AuthResponse response = authService.register(request);
+        Role requestedRole = request.role();
+        if (requestedRole != Role.EMPLOYEE && requestedRole != Role.CLIENT) {
+            requestedRole = Role.CLIENT;
+        }
+        RegisterRequest sanitizedRequest = new RegisterRequest(
+                request.fullName(),
+                request.email(),
+                request.password(),
+                requestedRole,
+                request.phone(),
+                request.companyName()
+        );
+        AuthResponse response = authService.register(sanitizedRequest);
         if (response == null) {
             return ApiResponse.success(null, "Заявка на регистрацию отправлена. Ожидайте подтверждения администратора.");
         }

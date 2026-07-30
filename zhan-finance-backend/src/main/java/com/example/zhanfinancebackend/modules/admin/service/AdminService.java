@@ -22,6 +22,9 @@ import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
 import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
 
+import com.example.zhanfinancebackend.modules.auth.service.RefreshTokenService;
+import com.example.zhanfinancebackend.modules.audit.service.AuditService;
+
 @Service
 public class AdminService {
 
@@ -32,6 +35,8 @@ public class AdminService {
     private final UserMapper userMapper;
     private final EmailNotificationService emailNotificationService;
     private final NotificationService notificationService;
+    private final RefreshTokenService refreshTokenService;
+    private final AuditService auditService;
 
     public AdminService(
             UserRepository userRepository,
@@ -40,7 +45,9 @@ public class AdminService {
             org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
             UserMapper userMapper,
             EmailNotificationService emailNotificationService,
-            NotificationService notificationService
+            NotificationService notificationService,
+            RefreshTokenService refreshTokenService,
+            AuditService auditService
     ) {
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
@@ -49,12 +56,49 @@ public class AdminService {
         this.userMapper = userMapper;
         this.emailNotificationService = emailNotificationService;
         this.notificationService = notificationService;
+        this.refreshTokenService = refreshTokenService;
+        this.auditService = auditService;
     }
 
     public List<EmployeeDto> getAllEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADVISOR)).stream()
                 .map(userMapper::mapToEmployeeDto)
                 .toList();
+    }
+
+    public void promoteToAdvisor(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+        if (user.getRole() != Role.EMPLOYEE && user.getRole() != Role.ADVISOR) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Only employees can be promoted to ADVISOR");
+        }
+        user.setRole(Role.ADVISOR);
+        userRepository.save(user);
+        refreshTokenService.revokeAll(user);
+        auditService.logAction("PROMOTE_TO_ADVISOR", "User", user.getId(), "User " + user.getEmail() + " promoted to ADVISOR");
+    }
+
+    public void demoteToEmployee(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+        if (user.getRole() != Role.ADVISOR) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Only ADVISORs can be demoted to EMPLOYEE");
+        }
+        user.setRole(Role.EMPLOYEE);
+        userRepository.save(user);
+        refreshTokenService.revokeAll(user);
+        auditService.logAction("DEMOTE_TO_EMPLOYEE", "User", user.getId(), "User " + user.getEmail() + " demoted to EMPLOYEE");
+    }
+
+    public void toggleUserStatus(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
+        user.setEnabled(!user.isEnabled());
+        userRepository.save(user);
+        if (!user.isEnabled()) {
+            refreshTokenService.revokeAll(user);
+        }
+        auditService.logAction("TOGGLE_USER_STATUS", "User", user.getId(), "User " + user.getEmail() + " status toggled to " + user.isEnabled());
     }
 
     public List<EmployeeDto> getPendingEmployees() {

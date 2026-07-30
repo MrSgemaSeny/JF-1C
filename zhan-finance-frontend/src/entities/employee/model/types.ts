@@ -4,7 +4,7 @@ export interface EmployeeDto {
   id: number;
   fullName: string;
   email: string;
-  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER';
+  role: 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER' | 'CURATOR' | 'ADVISOR';
   enabled: boolean;
   createdAt: string;
 }

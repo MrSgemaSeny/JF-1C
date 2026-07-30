@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getEmployees, getPendingEmployees, approveEmployee, getEmployeeWorkload, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
+import { getEmployees, getPendingEmployees, approveEmployee, getEmployeeWorkload, promoteToAdvisor, demoteToEmployee, toggleUserStatus, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
-import { Check, Clock, UserCheck, Briefcase } from 'lucide-react';
+import { Check, Clock, UserCheck, Briefcase, ShieldAlert, ShieldCheck, UserX } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function AdminEmployeesPage() {
@@ -45,6 +45,39 @@ export function AdminEmployeesPage() {
     } catch (e) {
       console.error(e);
       alert(t('adminEmployees.approveError'));
+    }
+  }
+
+  async function handlePromote(id: number) {
+    if (!window.confirm('Назначить данного сотрудника в роль ADVISOR?')) return;
+    try {
+      await promoteToAdvisor(id);
+      await loadData();
+    } catch (e) {
+      console.error(e);
+      alert('Ошибка при изменении роли');
+    }
+  }
+
+  async function handleDemote(id: number) {
+    if (!window.confirm('Понизить ADVISOR до роли EMPLOYEE?')) return;
+    try {
+      await demoteToEmployee(id);
+      await loadData();
+    } catch (e) {
+      console.error(e);
+      alert('Ошибка при изменении роли');
+    }
+  }
+
+  async function handleToggleStatus(id: number) {
+    if (!window.confirm('Изменить статус активности аккаунта пользователя?')) return;
+    try {
+      await toggleUserStatus(id);
+      await loadData();
+    } catch (e) {
+      console.error(e);
+      alert('Ошибка при изменении статуса');
     }
   }
 
@@ -99,6 +132,9 @@ export function AdminEmployeesPage() {
                     {t('adminEmployees.employee')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Роль
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                     {t('adminEmployees.email')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -117,6 +153,15 @@ export function AdminEmployeesPage() {
                         <span className="sm:hidden text-xs font-bold text-gray-500 uppercase shrink-0">{t('adminEmployees.employee')}</span>
                         <div className="text-sm font-bold text-gray-900 truncate text-right sm:text-left">{emp.fullName}</div>
                       </div>
+                    </td>
+                    <td className="px-0 sm:px-6 py-2 sm:py-4 block sm:table-cell">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold ${
+                        emp.role === 'ADVISOR'
+                          ? 'bg-purple-100 text-purple-800 border border-purple-300'
+                          : 'bg-blue-50 text-blue-700 border border-blue-200'
+                      }`}>
+                        {emp.role}
+                      </span>
                     </td>
                     <td className="px-0 sm:px-6 py-2 sm:py-4 block sm:table-cell">
                       <div className="flex sm:block justify-between items-center sm:items-start gap-4">
@@ -146,7 +191,7 @@ export function AdminEmployeesPage() {
                           {t('adminEmployees.approve')}
                         </button>
                       ) : (
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-2 flex-wrap">
                           {(() => {
                             const count = workloads.get(emp.id) ?? 0;
                             const badgeColor =
@@ -162,9 +207,32 @@ export function AdminEmployeesPage() {
                               </span>
                             );
                           })()}
-                          <span className="w-full sm:w-auto inline-flex justify-center items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                            {t('adminEmployees.isActive')}
-                          </span>
+
+                          {emp.role === 'ADVISOR' ? (
+                            <button
+                              onClick={() => handleDemote(emp.id)}
+                              className="px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-md text-xs font-bold transition-colors"
+                              title="Понизить до роли EMPLOYEE"
+                            >
+                              В Employee
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handlePromote(emp.id)}
+                              className="px-2.5 py-1 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-md text-xs font-bold transition-colors"
+                              title="Повысить до роли ADVISOR"
+                            >
+                              В Advisor
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => handleToggleStatus(emp.id)}
+                            className="px-2.5 py-1 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md text-xs font-bold transition-colors"
+                            title="Изменить статус активности"
+                          >
+                            <UserX className="w-3 h-3" />
+                          </button>
                         </div>
                       )}
                     </td>
