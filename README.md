@@ -4,6 +4,13 @@ Zhan Finance (JF-1C) — специализированная высокопро
 
 Проект создан как полноценная, масштабируемая альтернатива универсальным коробочным порталам (Bitrix24, amoCRM). Платформа объединяет CRM, сквозной биллинг, генерацию документов, внутреннее обучение (LMS), безопасные WebSocket-чаты и публичную лидогенерацию.
 
+## Документация и База Знаний
+
+* **[ARCHITECTURE.md](file:///c:/Users/murat/IdeaProjects/JF-1C/docs/ARCHITECTURE.md)**: Полный обзор архитектуры, ролевая модель (5 ролей), концепция безопасности `CrmAccessService`, модули и стратегия БД.
+* **[ONBOARDING.md](file:///c:/Users/murat/IdeaProjects/JF-1C/docs/ONBOARDING.md)**: Быстрый старт для новых разработчиков (разворачивание окружения, сидинг, запуск тестов).
+* **[RUNBOOK.md](file:///c:/Users/murat/IdeaProjects/JF-1C/docs/RUNBOOK.md)**: Регламент эксплуатации, действия при авариях (Incident Response), резервное копирование и Health-проверки.
+* **[CONTRIBUTING.md](file:///c:/Users/murat/IdeaProjects/JF-1C/docs/CONTRIBUTING.md)**: Стандарты написания кода, правила Git Workflow, политика неизменяемости миграций и борьба с оверинжинирингом.
+
 ---
 
 ## Архитектура и Технологический Стек
