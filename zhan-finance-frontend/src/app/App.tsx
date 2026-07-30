@@ -121,7 +121,7 @@ export function App() {
             </Route>
 
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-            <Route path={ROUTES.LOGIN_EMPLOYEE} element={<RegisterPage isEmployeeRoute={true} />} />
+            <Route path={ROUTES.LOGIN_EMPLOYEE} element={<Navigate to={ROUTES.REGISTER_EMPLOYEE} replace />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
             <Route path={ROUTES.REGISTER_EMPLOYEE} element={<RegisterPage isEmployeeRoute={true} />} />
             <Route path={ROUTES.COMPLETE_PROFILE} element={<CompleteProfilePage />} />
