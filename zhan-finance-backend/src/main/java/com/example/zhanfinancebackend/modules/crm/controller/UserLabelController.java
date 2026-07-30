@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/crm/labels")
+@RequestMapping("/v1/crm/labels")
 @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
 public class UserLabelController {
 

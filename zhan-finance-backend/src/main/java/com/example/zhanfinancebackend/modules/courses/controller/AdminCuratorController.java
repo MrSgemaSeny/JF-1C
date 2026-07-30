@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/curators")
+@RequestMapping("/v1/admin/curators")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminCuratorController {
 

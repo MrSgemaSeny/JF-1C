@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/crm/employees")
+@RequestMapping("/v1/crm/employees")
 @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
 public class CrmEmployeeController {
 

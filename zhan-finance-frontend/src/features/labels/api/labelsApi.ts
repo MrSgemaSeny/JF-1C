@@ -3,11 +3,11 @@ import type { UserLabelDto } from '@/entities/task/model/types';
 
 export const labelsApi = {
   getMyLabels: async (): Promise<UserLabelDto[]> => {
-    return apiRequest<UserLabelDto[]>('/api/crm/labels');
+    return apiRequest<UserLabelDto[]>('/api/v1/crm/labels');
   },
 
   createLabel: async (data: { name: string; color: string }): Promise<UserLabelDto> => {
-    return apiRequest<UserLabelDto>('/api/crm/labels', {
+    return apiRequest<UserLabelDto>('/api/v1/crm/labels', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -15,15 +15,15 @@ export const labelsApi = {
   },
 
   deleteLabel: async (id: number): Promise<void> => {
-    await apiRequest(`/api/crm/labels/${id}`, { method: 'DELETE' });
+    await apiRequest(`/api/v1/crm/labels/${id}`, { method: 'DELETE' });
   },
 
   toggleTaskLabel: async (taskId: number, labelId: number): Promise<void> => {
-    await apiRequest(`/api/crm/tasks/${taskId}/labels/${labelId}`, { method: 'POST' });
+    await apiRequest(`/api/v1/crm/tasks/${taskId}/labels/${labelId}`, { method: 'POST' });
   },
 
   batchUpdateTasks: async (data: { taskIds: number[]; stageId?: number; assignedToId?: number; labelId?: number }): Promise<void> => {
-    await apiRequest('/api/crm/tasks/batch', {
+    await apiRequest('/api/v1/crm/tasks/batch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),

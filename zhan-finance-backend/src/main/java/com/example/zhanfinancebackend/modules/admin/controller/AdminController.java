@@ -20,7 +20,7 @@ import com.example.zhanfinancebackend.modules.billing.service.InvoiceService;
 import com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/v1/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 

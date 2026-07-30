@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.zhanfinancebackend.modules.courses.entity.Chapter;
 
 @RestController
-@RequestMapping("/api/curator")
+@RequestMapping("/v1/curator")
 @PreAuthorize("hasRole('CURATOR')")
 public class CuratorCourseController {
 

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/courses")
+@RequestMapping("/v1/courses")
 @PreAuthorize("hasAnyRole('ADMIN', 'LEARNER')")
 public class LearnerCourseController {
 

@@ -99,7 +99,7 @@ class TaskServiceIntegrationTests {
     void taskWorkflow_ClientToCompletion() throws Exception {
         // STEP 1: Client requests task
         MvcResult createResult = mockMvc.perform(
-                post("/api/crm/tasks/request")
+                post("/api/v1/crm/tasks/request").contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -118,7 +118,7 @@ class TaskServiceIntegrationTests {
 
         // STEP 2: Employee assigns to self
         mockMvc.perform(
-                patch("/api/crm/tasks/{id}/assign", taskId)
+                patch("/api/v1/crm/tasks/{id}/assign", taskId).contextPath("/api")
                         .param("assigneeId", String.valueOf(employee.getId()))
                         .header("Authorization", "Bearer " + employeeToken))
                 .andExpect(status().isOk())
@@ -131,7 +131,7 @@ class TaskServiceIntegrationTests {
             return stageRepository.save(s);
         });
         mockMvc.perform(
-                patch("/api/crm/tasks/{id}/stage", taskId)
+                patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
                         .header("Authorization", "Bearer " + employeeToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -144,7 +144,7 @@ class TaskServiceIntegrationTests {
         // STEP 4: Client completes the task (moves to WON)
         Stage doneStage = stageRepository.findAll().stream().filter(s -> s.getType() == StageType.WON).findFirst().orElseThrow();
         mockMvc.perform(
-                patch("/api/crm/tasks/{id}/stage", taskId)
+                patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -157,7 +157,7 @@ class TaskServiceIntegrationTests {
 
         // STEP 5: Verify client sees updated task
         mockMvc.perform(
-                get("/api/crm/tasks/{id}", taskId)
+                get("/api/v1/crm/tasks/{id}", taskId).contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.stage.type").value("WON"))
@@ -175,7 +175,7 @@ class TaskServiceIntegrationTests {
         task = taskRepository.save(task);
 
         mockMvc.perform(
-                get("/api/crm/tasks/{id}", task.getId())
+                get("/api/v1/crm/tasks/{id}", task.getId()).contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken))
                 .andExpect(status().isForbidden());
     }
@@ -183,7 +183,7 @@ class TaskServiceIntegrationTests {
     @Test
     void createTask_MissingTitle_Returns400() throws Exception {
         mockMvc.perform(
-                post("/api/crm/tasks/request")
+                post("/api/v1/crm/tasks/request").contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -201,7 +201,7 @@ class TaskServiceIntegrationTests {
         task.setStage(stageRepository.findAll().get(0));
         task = taskRepository.save(task);
 
-        mockMvc.perform(delete("/api/crm/tasks/{id}", task.getId())
+        mockMvc.perform(delete("/api/v1/crm/tasks/{id}", task.getId()).contextPath("/api")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
 
@@ -212,7 +212,7 @@ class TaskServiceIntegrationTests {
     void taskWorkflow_ClientRejectFlow() throws Exception {
         // STEP 1: Client requests task
         MvcResult createResult = mockMvc.perform(
-                post("/api/crm/tasks/request")
+                post("/api/v1/crm/tasks/request").contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -231,7 +231,7 @@ class TaskServiceIntegrationTests {
 
         // STEP 2: Employee assigns to self
         mockMvc.perform(
-                patch("/api/crm/tasks/{id}/assign", taskId)
+                patch("/api/v1/crm/tasks/{id}/assign", taskId).contextPath("/api")
                         .param("assigneeId", String.valueOf(employee.getId()))
                         .header("Authorization", "Bearer " + employeeToken))
                 .andExpect(status().isOk());
@@ -243,7 +243,7 @@ class TaskServiceIntegrationTests {
             return stageRepository.save(s);
         });
         mockMvc.perform(
-                patch("/api/crm/tasks/{id}/stage", taskId)
+                patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
                         .header("Authorization", "Bearer " + employeeToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -259,7 +259,7 @@ class TaskServiceIntegrationTests {
             return stageRepository.save(new Stage(p, "CANCELLED", 3, null, StageType.LOST));
         });
         mockMvc.perform(
-                patch("/api/crm/tasks/{id}/stage", taskId)
+                patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

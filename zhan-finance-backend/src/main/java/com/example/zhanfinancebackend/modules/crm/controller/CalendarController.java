@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/crm/calendar")
+@RequestMapping("/v1/crm/calendar")
 @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
 public class CalendarController {
 

@@ -17,12 +17,12 @@ export interface ServiceDto {
 
 // ========== API Calls ==========
 
-/** GET /api/services — все активные услуги (публичный) */
+/** GET /api/v1/services — все активные услуги (публичный) */
 export async function fetchServices(): Promise<ServiceDto[]> {
-  return apiRequest<ServiceDto[]>('/api/services');
+  return apiRequest<ServiceDto[]>('/api/v1/services');
 }
 
-/** GET /api/services/highlighted — услуги для главной страницы (публичный) */
+/** GET /api/v1/services/highlighted — услуги для главной страницы (публичный) */
 export async function fetchHighlightedServices(): Promise<ServiceDto[]> {
-  return apiRequest<ServiceDto[]>('/api/services/highlighted');
+  return apiRequest<ServiceDto[]>('/api/v1/services/highlighted');
 }

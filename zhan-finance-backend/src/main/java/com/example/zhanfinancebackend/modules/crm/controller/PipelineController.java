@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/crm/pipelines")
+@RequestMapping("/v1/crm/pipelines")
 public class PipelineController {
 
     private final PipelineRepository pipelineRepository;

@@ -30,7 +30,7 @@ interface AdminDashboardDto {
 }
 
 async function getAdminDashboard(): Promise<AdminDashboardDto> {
-  return apiRequest<AdminDashboardDto>('/api/crm/dashboard/admin');
+  return apiRequest<AdminDashboardDto>('/api/v1/crm/dashboard/admin');
 }
 
 // We don't need STATUS_CONFIG anymore since we will use dynamic names and colors

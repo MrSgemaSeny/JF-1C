@@ -75,12 +75,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",
-                                "/api/contact-requests",
-                                "/api/contact-requests/*/files",
-                                "/api/services",
-                                "/api/services/highlighted",
-                                "/api/courses/certificates/verify/**",
+                                "/v1/auth/**",
+                                "/v1/contact-requests",
+                                "/v1/contact-requests/*/files",
+                                "/v1/services",
+                                "/v1/services/highlighted",
+                                "/v1/courses/certificates/verify/**",
                                 "/uploads/avatars/**",
                                 "/actuator/health",
                                 "/actuator/info"
@@ -92,7 +92,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).hasRole("ADMIN")
-                        .requestMatchers("/api/internal/**").denyAll()
+                        .requestMatchers("/v1/internal/**").denyAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(apiRateLimitFilter, UsernamePasswordAuthenticationFilter.class)

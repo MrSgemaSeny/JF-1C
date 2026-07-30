@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/courses/media")
+@RequestMapping("/v1/courses/media")
 public class CourseMediaController {
 
     private final StorageService storageService;

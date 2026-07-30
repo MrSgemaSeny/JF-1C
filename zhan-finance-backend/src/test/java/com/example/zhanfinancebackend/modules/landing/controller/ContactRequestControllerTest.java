@@ -46,7 +46,7 @@ public class ContactRequestControllerTest {
 
         when(contactRequestService.create(any(ContactRequestCreateRequest.class))).thenReturn(mockResponse);
 
-        mockMvc.perform(post("/api/contact-requests")
+        mockMvc.perform(post("/api/v1/contact-requests").contextPath("/api")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .with(csrf()))
@@ -65,7 +65,7 @@ public class ContactRequestControllerTest {
         when(contactRequestService.uploadFiles(eq(1L), any(org.springframework.web.multipart.MultipartFile[].class)))
                 .thenReturn(java.util.List.of(new com.example.zhanfinancebackend.modules.landing.dto.ContactRequestFileDto(1L, "test.txt", "text/plain", 7L)));
 
-        mockMvc.perform(multipart("/api/contact-requests/1/files")
+        mockMvc.perform(multipart("/api/v1/contact-requests/1/files").contextPath("/api")
                 .file(file)
                 .with(csrf()))
                 .andExpect(status().isOk())

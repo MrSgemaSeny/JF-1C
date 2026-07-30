@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/media")
+@RequestMapping("/v1/admin/media")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminMediaController {
 

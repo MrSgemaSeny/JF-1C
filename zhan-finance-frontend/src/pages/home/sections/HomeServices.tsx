@@ -191,7 +191,7 @@ export function HomeServices() {
               if (message) fullMessage += `\nКомментарий: ${message}`;
               if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
               
-              const res = await fetch('/api/contact-requests', {
+              const res = await fetch('/api/v1/contact-requests', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
@@ -201,7 +201,7 @@ export function HomeServices() {
               if (files && files.length > 0 && data.data?.id) {
                 const formData = new FormData();
                 files.forEach(file => formData.append('files', file));
-                await fetch(`/api/contact-requests/${data.data.id}/files`, {
+                await fetch(`/api/v1/contact-requests/${data.data.id}/files`, {
                   method: 'POST',
                   body: formData,
                 });

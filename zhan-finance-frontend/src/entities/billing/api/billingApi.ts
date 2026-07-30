@@ -23,31 +23,31 @@ export interface SubscriptionDto {
 }
 
 export const billingApi = {
-  getInvoices: () => apiRequest<InvoiceDto[]>('/api/billing/invoices'),
-  getInvoice: (id: number) => apiRequest<InvoiceDto>(`/api/billing/invoices/${id}`),
-  createInvoice: (data: Omit<InvoiceDto, 'id'>) => apiRequest<InvoiceDto>('/api/billing/invoices', {
+  getInvoices: () => apiRequest<InvoiceDto[]>('/api/v1/billing/invoices'),
+  getInvoice: (id: number) => apiRequest<InvoiceDto>(`/api/v1/billing/invoices/${id}`),
+  createInvoice: (data: Omit<InvoiceDto, 'id'>) => apiRequest<InvoiceDto>('/api/v1/billing/invoices', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateInvoice: (id: number, data: Partial<InvoiceDto>) => apiRequest<InvoiceDto>(`/api/billing/invoices/${id}`, {
+  updateInvoice: (id: number, data: Partial<InvoiceDto>) => apiRequest<InvoiceDto>(`/api/v1/billing/invoices/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
-  deleteInvoice: (id: number) => apiRequest<void>(`/api/billing/invoices/${id}`, {
+  deleteInvoice: (id: number) => apiRequest<void>(`/api/v1/billing/invoices/${id}`, {
     method: 'DELETE',
   }),
 
-  getSubscriptions: () => apiRequest<SubscriptionDto[]>('/api/billing/subscriptions'),
-  getSubscription: (id: number) => apiRequest<SubscriptionDto>(`/api/billing/subscriptions/${id}`),
-  createSubscription: (data: Omit<SubscriptionDto, 'id'>) => apiRequest<SubscriptionDto>('/api/billing/subscriptions', {
+  getSubscriptions: () => apiRequest<SubscriptionDto[]>('/api/v1/billing/subscriptions'),
+  getSubscription: (id: number) => apiRequest<SubscriptionDto>(`/api/v1/billing/subscriptions/${id}`),
+  createSubscription: (data: Omit<SubscriptionDto, 'id'>) => apiRequest<SubscriptionDto>('/api/v1/billing/subscriptions', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateSubscription: (id: number, data: Partial<SubscriptionDto>) => apiRequest<SubscriptionDto>(`/api/billing/subscriptions/${id}`, {
+  updateSubscription: (id: number, data: Partial<SubscriptionDto>) => apiRequest<SubscriptionDto>(`/api/v1/billing/subscriptions/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
-  deleteSubscription: (id: number) => apiRequest<void>(`/api/billing/subscriptions/${id}`, {
+  deleteSubscription: (id: number) => apiRequest<void>(`/api/v1/billing/subscriptions/${id}`, {
     method: 'DELETE',
   }),
 };

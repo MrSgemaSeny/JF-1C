@@ -19,7 +19,7 @@ export function useLeads() {
   return useQuery<LeadDto[]>({
     queryKey: ['leads'],
     queryFn: async () => {
-      return await apiRequest<LeadDto[]>('/api/contact-requests');
+      return await apiRequest<LeadDto[]>('/api/v1/contact-requests');
     },
   });
 }
@@ -29,7 +29,7 @@ export function useUpdateLeadStatus() {
 
   return useMutation({
     mutationFn: async ({ id, status }: { id: number; status: LeadStatus }) => {
-      return await apiRequest<LeadDto>(`/api/contact-requests/${id}/status?status=${status}`, {
+      return await apiRequest<LeadDto>(`/api/v1/contact-requests/${id}/status?status=${status}`, {
         method: 'PATCH',
       });
     },

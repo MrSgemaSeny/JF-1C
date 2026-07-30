@@ -29,7 +29,7 @@ export function useContactForm() {
     setError(null);
 
     try {
-      await apiRequest('/api/contact-requests', {
+      await apiRequest('/api/v1/contact-requests', {
         method: 'POST',
         body: JSON.stringify({
           name,

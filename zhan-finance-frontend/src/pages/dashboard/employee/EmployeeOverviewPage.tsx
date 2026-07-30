@@ -22,7 +22,7 @@ interface EmployeeDashboardDto {
 }
 
 async function getEmployeeDashboard(): Promise<EmployeeDashboardDto> {
-  return apiRequest<EmployeeDashboardDto>('/api/crm/dashboard/employee');
+  return apiRequest<EmployeeDashboardDto>('/api/v1/crm/dashboard/employee');
 }
 
 export function EmployeeOverviewPage() {

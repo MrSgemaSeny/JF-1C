@@ -66,7 +66,7 @@ class PipelineIntegrationTests {
 
     @Test
     void getPipelines_ShouldReturnPipelinesWithStages() throws Exception {
-        mockMvc.perform(get("/api/crm/pipelines")
+        mockMvc.perform(get("/api/v1/crm/pipelines").contextPath("/api")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())

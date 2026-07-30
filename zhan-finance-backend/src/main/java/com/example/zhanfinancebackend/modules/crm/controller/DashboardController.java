@@ -16,7 +16,7 @@ import com.example.zhanfinancebackend.modules.crm.dto.WeeklySummaryDto;
 import com.example.zhanfinancebackend.modules.crm.service.DashboardSummaryService;
 
 @RestController
-@RequestMapping("/api/crm/dashboard")
+@RequestMapping("/v1/crm/dashboard")
 public class DashboardController {
 
     private final DashboardService dashboardService;

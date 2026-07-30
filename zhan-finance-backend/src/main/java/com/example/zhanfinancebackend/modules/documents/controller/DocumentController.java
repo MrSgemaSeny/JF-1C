@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping("/v1/documents")
 @Tag(name = "Documents", description = "Endpoints for document management")
 @SecurityRequirement(name = "bearerAuth")
 public class DocumentController {

@@ -40,7 +40,7 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         
-        if (request.getRequestURI().startsWith("/api/auth/")) {
+        if (request.getRequestURI().startsWith("/api/v1/auth/") || request.getRequestURI().startsWith("/api/auth/")) {
             String ip = request.getRemoteAddr();
             String cfIp = request.getHeader("CF-Connecting-IP");
             if (cfIp != null && !cfIp.trim().isEmpty()) {

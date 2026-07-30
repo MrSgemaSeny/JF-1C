@@ -55,38 +55,38 @@ export interface CertificateDto {
 
 // Learner API
 export async function getPublishedCourses(): Promise<CourseDto[]> {
-  return await apiRequest<CourseDto[]>('/api/courses');
+  return await apiRequest<CourseDto[]>('/api/v1/courses');
 }
 
 export async function getCourseById(id: number): Promise<CourseDto> {
-  return await apiRequest<CourseDto>(`/api/courses/${id}`);
+  return await apiRequest<CourseDto>(`/api/v1/courses/${id}`);
 }
 
 export async function getCourseProgress(courseId: number): Promise<CourseProgressDto> {
-  return await apiRequest<CourseProgressDto>(`/api/courses/${courseId}/progress`);
+  return await apiRequest<CourseProgressDto>(`/api/v1/courses/${courseId}/progress`);
 }
 
 export async function completeLesson(courseId: number, lessonId: number): Promise<void> {
-  await apiRequest(`/api/courses/${courseId}/lessons/${lessonId}/complete`, {
+  await apiRequest(`/api/v1/courses/${courseId}/lessons/${lessonId}/complete`, {
     method: 'POST'
   });
 }
 
 export async function getCertificate(courseId: number): Promise<CertificateDto> {
-  return await apiRequest<CertificateDto>(`/api/courses/${courseId}/certificate`);
+  return await apiRequest<CertificateDto>(`/api/v1/courses/${courseId}/certificate`);
 }
 
 export async function verifyCertificate(code: string): Promise<CertificateDto> {
-  return await apiRequest<CertificateDto>(`/api/courses/certificates/verify/${code}`);
+  return await apiRequest<CertificateDto>(`/api/v1/courses/certificates/verify/${code}`);
 }
 
 // Admin API
 export async function getAdminCourses(): Promise<CourseDto[]> {
-  return await apiRequest<CourseDto[]>('/api/admin/courses');
+  return await apiRequest<CourseDto[]>('/api/v1/admin/courses');
 }
 
 export async function getAdminCourseById(id: number): Promise<CourseDto> {
-  return await apiRequest<CourseDto>(`/api/admin/courses/${id}`);
+  return await apiRequest<CourseDto>(`/api/v1/admin/courses/${id}`);
 }
 
 export async function createCourse(title: string, description: string, isPublished: boolean): Promise<CourseDto> {
@@ -95,7 +95,7 @@ export async function createCourse(title: string, description: string, isPublish
   formData.append('description', description);
   formData.append('isPublished', String(isPublished));
 
-  return await apiRequest<CourseDto>('/api/admin/courses', {
+  return await apiRequest<CourseDto>('/api/v1/admin/courses', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
@@ -108,7 +108,7 @@ export async function updateCourse(id: number, title: string, description: strin
   formData.append('description', description);
   formData.append('isPublished', String(isPublished));
 
-  return await apiRequest<CourseDto>(`/api/admin/courses/${id}`, {
+  return await apiRequest<CourseDto>(`/api/v1/admin/courses/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
@@ -130,14 +130,14 @@ export async function createLesson(
     formData.append('file', file);
   }
 
-  return await apiRequest<LessonDto>(`/api/admin/courses/${courseId}/lessons`, {
+  return await apiRequest<LessonDto>(`/api/v1/admin/courses/${courseId}/lessons`, {
     method: 'POST',
     body: formData // Note: Content-Type is intentionally omitted for FormData
   });
 }
 
 export async function deleteLesson(lessonId: number): Promise<void> {
-  await apiRequest(`/api/admin/courses/lessons/${lessonId}`, {
+  await apiRequest(`/api/v1/admin/courses/lessons/${lessonId}`, {
     method: 'DELETE',
   });
 }
@@ -165,7 +165,7 @@ export async function updateLesson(
   if (videoFile) formData.append('videoFile', videoFile);
   if (documentFile) formData.append('documentFile', documentFile);
 
-  return await apiRequest<LessonDto>(`/api/admin/courses/lessons/${lessonId}`, {
+  return await apiRequest<LessonDto>(`/api/v1/admin/courses/lessons/${lessonId}`, {
     method: 'PUT',
     body: formData
   });
@@ -180,7 +180,7 @@ export async function createChapter(
   formData.append('title', title);
   formData.append('orderIndex', String(orderIndex));
 
-  return await apiRequest<ChapterDto>(`/api/admin/courses/${courseId}/chapters`, {
+  return await apiRequest<ChapterDto>(`/api/v1/admin/courses/${courseId}/chapters`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
@@ -200,7 +200,7 @@ export async function createLessonForChapter(
   formData.append('type', type);
   formData.append('orderIndex', String(orderIndex));
 
-  return await apiRequest<LessonDto>(`/api/admin/courses/chapters/${chapterId}/lessons`, {
+  return await apiRequest<LessonDto>(`/api/v1/admin/courses/chapters/${chapterId}/lessons`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
@@ -210,7 +210,7 @@ export async function createLessonForChapter(
 export async function uploadMedia(file: File): Promise<{ url: string }> {
   const formData = new FormData();
   formData.append('file', file);
-  return await apiRequest<{ url: string }>('/api/admin/media/upload', {
+  return await apiRequest<{ url: string }>('/api/v1/admin/media/upload', {
     method: 'POST',
     body: formData
   });

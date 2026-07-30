@@ -47,7 +47,7 @@ class CourseIntegrationTests {
     }
 
     private String registerAndGetToken(String email, Role role) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/auth/register")
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -70,7 +70,7 @@ class CourseIntegrationTests {
         String learnerToken = registerAndGetToken("learner@test.com", Role.LEARNER);
 
         // 1. Admin creates a course
-        MvcResult courseResult = mockMvc.perform(post("/api/admin/courses")
+        MvcResult courseResult = mockMvc.perform(post("/api/v1/admin/courses").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
                         .param("title", "Integration Test Course")
                         .param("description", "Desc")
@@ -89,7 +89,7 @@ class CourseIntegrationTests {
                 "dummy video content".getBytes()
         );
 
-        MvcResult lessonResult = mockMvc.perform(multipart("/api/admin/courses/" + courseId + "/lessons")
+        MvcResult lessonResult = mockMvc.perform(multipart("/api/v1/admin/courses/" + courseId + "/lessons").contextPath("/api")
                         .file(file)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
                         .param("title", "First Lesson")
@@ -102,13 +102,13 @@ class CourseIntegrationTests {
         Long lessonId = objectMapper.readTree(lessonResult.getResponse().getContentAsString()).get("data").get("id").asLong();
 
         // 3. Learner fetches published courses
-        mockMvc.perform(get("/api/courses")
+        mockMvc.perform(get("/api/v1/courses").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].id").value(courseId));
 
         // 4. Learner fetches specific course
-        mockMvc.perform(get("/api/courses/" + courseId)
+        mockMvc.perform(get("/api/v1/courses/" + courseId).contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.chapters[0].lessons[0].id").value(lessonId));
@@ -116,13 +116,13 @@ class CourseIntegrationTests {
         // 5. Learner downloads/streams the video (Full request)
         // TODO: Phase 2 - Re-enable file streaming tests
         /*
-        mockMvc.perform(get("/api/courses/lessons/" + lessonId + "/file")
+        mockMvc.perform(get("/api/v1/courses/lessons/" + lessonId + "/file").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
                 .andExpect(status().isOk())
                 .andExpect(content().string("dummy video content"));
 
         // 6. Learner streaming with Range Header (Partial content)
-        mockMvc.perform(get("/api/courses/lessons/" + lessonId + "/file")
+        mockMvc.perform(get("/api/v1/courses/lessons/" + lessonId + "/file").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken)
                         .header(HttpHeaders.RANGE, "bytes=0-4"))
                 .andExpect(status().isPartialContent())
@@ -136,7 +136,7 @@ class CourseIntegrationTests {
         String learnerToken = registerAndGetToken("learner2@test.com", Role.LEARNER);
 
         // 1. Admin creates UNPUBLISHED course
-        MvcResult courseResult = mockMvc.perform(post("/api/admin/courses")
+        MvcResult courseResult = mockMvc.perform(post("/api/v1/admin/courses").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
                         .param("title", "Secret Course")
                         .param("isPublished", "false"))
@@ -146,7 +146,7 @@ class CourseIntegrationTests {
         Long courseId = objectMapper.readTree(courseResult.getResponse().getContentAsString()).get("data").get("id").asLong();
 
         // 2. Admin adds a lesson
-        MvcResult lessonResult = mockMvc.perform(post("/api/admin/courses/" + courseId + "/lessons")
+        MvcResult lessonResult = mockMvc.perform(post("/api/v1/admin/courses/" + courseId + "/lessons").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
                         .param("title", "Secret Lesson")
                         .param("type", "DOCUMENT"))
@@ -155,20 +155,20 @@ class CourseIntegrationTests {
         Long lessonId = objectMapper.readTree(lessonResult.getResponse().getContentAsString()).get("data").get("id").asLong();
 
         // 3. Learner should NOT see it in the list
-        mockMvc.perform(get("/api/courses")
+        mockMvc.perform(get("/api/v1/courses").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isEmpty());
 
         // 4. Learner should get error when accessing directly
-        mockMvc.perform(get("/api/courses/" + courseId)
+        mockMvc.perform(get("/api/v1/courses/" + courseId).contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
                 .andExpect(status().isInternalServerError()); // Or 403/404 depending on error handling
 
         // 5. Learner should get 403 when trying to access the lesson's file (if it had one)
         // TODO: Phase 2 - Re-enable file streaming tests
         /*
-        mockMvc.perform(get("/api/courses/lessons/" + lessonId + "/file")
+        mockMvc.perform(get("/v1/courses/lessons/" + lessonId + "/file")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
                 .andExpect(status().isForbidden());
         */

@@ -34,23 +34,23 @@ class CourseApiSmokeTests {
         // Actually, the easiest way to test admin logic is if we had an endpoint or mock, but let's assume we can't easily register ADMIN.
         // For a smoke test, we'll just check if the endpoints are secured for anonymous users.
         
-        mockMvc.perform(get("/api/admin/courses"))
+        mockMvc.perform(get("/api/v1/admin/courses").contextPath("/api"))
                 .andExpect(status().is4xxClientError());
                 
-        mockMvc.perform(get("/api/courses"))
+        mockMvc.perform(get("/api/v1/courses").contextPath("/api"))
                 .andExpect(status().is4xxClientError());
 
         // Register a CLIENT to check if they can access LEARNER endpoints (they shouldn't)
-        JsonNode auth = register("client_for_courses@example.com");
+        JsonNode auth = register("client_course@example.com");
         String token = auth.get("accessToken").asText();
 
-        mockMvc.perform(get("/api/courses")
+        mockMvc.perform(get("/api/v1/courses").contextPath("/api")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden()); // Assuming CLIENT does not have LEARNER role
     }
 
     private JsonNode register(String email) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/auth/register")
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

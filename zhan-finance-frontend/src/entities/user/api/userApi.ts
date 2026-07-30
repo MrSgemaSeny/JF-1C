@@ -25,29 +25,29 @@ export interface UpdatePasswordRequest {
 }
 
 export async function getAllLearners(): Promise<UserProfileDto[]> {
-  return await apiRequest<UserProfileDto[]>('/api/admin/learners');
+  return await apiRequest<UserProfileDto[]>('/api/v1/admin/learners');
 }
 
 export async function createLearner(request: any): Promise<void> {
-  await apiRequest('/api/admin/learners', {
+  await apiRequest('/api/v1/admin/learners', {
     method: 'POST',
     body: JSON.stringify(request)
   });
 }
 
 export async function getMyProfile(): Promise<UserProfileDto> {
-  return apiRequest<UserProfileDto>('/api/users/me');
+  return apiRequest<UserProfileDto>('/api/v1/users/me');
 }
 
 export async function updateMyProfile(request: UpdateProfileRequest): Promise<UserProfileDto> {
-  return apiRequest<UserProfileDto>('/api/users/me', {
+  return apiRequest<UserProfileDto>('/api/v1/users/me', {
     method: 'PUT',
     body: JSON.stringify(request)
   });
 }
 
 export async function updateMyPassword(request: UpdatePasswordRequest): Promise<void> {
-  return apiRequest<void>('/api/users/me/password', {
+  return apiRequest<void>('/api/v1/users/me/password', {
     method: 'PUT',
     body: JSON.stringify(request)
   });
@@ -57,7 +57,7 @@ export async function uploadAvatar(file: File): Promise<UserProfileDto> {
   const formData = new FormData();
   formData.append('file', file);
 
-  return apiRequest<UserProfileDto>('/api/users/me/avatar', {
+  return apiRequest<UserProfileDto>('/api/v1/users/me/avatar', {
     method: 'POST',
     body: formData,
     // Do not set Content-Type header, the browser will automatically set it to multipart/form-data with boundary

@@ -24,7 +24,7 @@ export function CuratorStudentsPage() {
     const fetchStudents = async () => {
       try {
         setLoading(true);
-        const res = await apiRequest<StudentProgressDto[]>('/api/curator/students');
+        const res = await apiRequest<StudentProgressDto[]>('/api/v1/curator/students');
         setStudents(res || []);
       } catch (err) {
         console.error(err);

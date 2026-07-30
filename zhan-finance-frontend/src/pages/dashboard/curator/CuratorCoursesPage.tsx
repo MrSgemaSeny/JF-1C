@@ -19,7 +19,7 @@ export function CuratorCoursesPage() {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const res = await apiRequest<Course[]>('/api/curator/courses');
+        const res = await apiRequest<Course[]>('/api/v1/curator/courses');
         setCourses(res || []);
       } catch (err) {
         console.error(err);

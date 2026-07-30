@@ -39,8 +39,8 @@ export function AdminCuratorsPage() {
     try {
       setLoading(true);
       const [curatorsRes, coursesRes] = await Promise.all([
-        apiRequest<Curator[]>('/api/admin/curators'),
-        apiRequest<CourseItem[]>('/api/admin/courses')
+        apiRequest<Curator[]>('/api/v1/admin/curators'),
+        apiRequest<CourseItem[]>('/api/v1/admin/courses')
       ]);
       setCurators(curatorsRes || []);
       setCourses(coursesRes || []);
@@ -60,7 +60,7 @@ export function AdminCuratorsPage() {
     if (!fullName || !email || !password) return;
     try {
       setSubmitting(true);
-      await apiRequest('/api/admin/curators', {
+      await apiRequest('/api/v1/admin/curators', {
         method: 'POST',
         body: JSON.stringify({ fullName, email, password })
       });
@@ -79,7 +79,7 @@ export function AdminCuratorsPage() {
 
   const handleToggleStatus = async (id: number) => {
     try {
-      await apiRequest(`/api/admin/curators/${id}/toggle-status`, { method: 'POST' });
+      await apiRequest(`/api/v1/admin/curators/${id}/toggle-status`, { method: 'POST' });
       toast.success('Curator status updated');
       fetchData();
     } catch (err) {
@@ -90,9 +90,9 @@ export function AdminCuratorsPage() {
   const handleToggleCourseAssign = async (curatorId: number, courseId: number, isAssigned: boolean) => {
     try {
       if (isAssigned) {
-        await apiRequest(`/api/admin/curators/${curatorId}/courses/${courseId}`, { method: 'DELETE' });
+        await apiRequest(`/api/v1/admin/curators/${curatorId}/courses/${courseId}`, { method: 'DELETE' });
       } else {
-        await apiRequest(`/api/admin/curators/${curatorId}/courses/${courseId}`, { method: 'POST' });
+        await apiRequest(`/api/v1/admin/curators/${curatorId}/courses/${courseId}`, { method: 'POST' });
       }
       toast.success('Course assignment updated');
       fetchData();

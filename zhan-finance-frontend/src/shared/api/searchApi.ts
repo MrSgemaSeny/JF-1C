@@ -31,5 +31,5 @@ export interface GlobalSearchResponse {
 }
 
 export async function searchGlobal(query: string): Promise<GlobalSearchResponse> {
-  return apiRequest<GlobalSearchResponse>(`/api/search?q=${encodeURIComponent(query)}`);
+  return apiRequest<GlobalSearchResponse>(`/api/v1/search?q=${encodeURIComponent(query)}`);
 }

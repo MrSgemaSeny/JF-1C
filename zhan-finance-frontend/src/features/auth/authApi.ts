@@ -43,21 +43,21 @@ export interface CheckEmailResponse {
 }
 
 export function login(request: LoginRequest): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/api/auth/login', {
+  return apiRequest<AuthResponse>('/api/v1/auth/login', {
     method: 'POST',
     body: JSON.stringify(request)
   });
 }
 
 export function register(request: RegisterRequest): Promise<AuthResponse | null> {
-  return apiRequest<AuthResponse | null>('/api/auth/register', {
+  return apiRequest<AuthResponse | null>('/api/v1/auth/register', {
     method: 'POST',
     body: JSON.stringify(request)
   });
 }
 
 export async function refresh(request: RefreshRequest): Promise<AuthResponse> {
-  const url = `${API_BASE_URL}/api/auth/refresh`;
+  const url = `${API_BASE_URL}/api/v1/auth/refresh`;
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -77,14 +77,14 @@ export async function refresh(request: RefreshRequest): Promise<AuthResponse> {
 }
 
 export async function loginWithGoogle(credential: string, role?: 'CLIENT' | 'EMPLOYEE'): Promise<AuthResponse> {
-  return apiRequest<AuthResponse>('/api/auth/google', {
+  return apiRequest<AuthResponse>('/api/v1/auth/google', {
     method: 'POST',
     body: JSON.stringify({ credential, role })
   });
 }
 
 export function checkEmail(email: string): Promise<CheckEmailResponse> {
-  return apiRequest<CheckEmailResponse>('/api/auth/check-email', {
+  return apiRequest<CheckEmailResponse>('/api/v1/auth/check-email', {
     method: 'POST',
     body: JSON.stringify({ email })
   });

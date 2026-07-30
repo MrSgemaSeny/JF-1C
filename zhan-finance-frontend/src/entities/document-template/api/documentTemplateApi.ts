@@ -3,7 +3,7 @@ import { DocumentTemplate } from '../model/types';
 
 export const documentTemplateApi = {
   getAllTemplates: async (): Promise<DocumentTemplate[]> => {
-    return apiRequest<DocumentTemplate[]>('/api/document-templates');
+    return apiRequest<DocumentTemplate[]>('/api/v1/document-templates');
   },
 
   uploadTemplate: async (name: string, description: string, file: File): Promise<DocumentTemplate> => {
@@ -12,18 +12,18 @@ export const documentTemplateApi = {
     formData.append('description', description);
     formData.append('file', file);
 
-    return apiRequest<DocumentTemplate>('/api/document-templates', {
+    return apiRequest<DocumentTemplate>('/api/v1/document-templates', {
       method: 'POST',
       body: formData,
     });
   },
 
   deleteTemplate: async (id: string): Promise<void> => {
-    await apiRequest(`/api/document-templates/${id}`, { method: 'DELETE' });
+    await apiRequest(`/api/v1/document-templates/${id}`, { method: 'DELETE' });
   },
 
   downloadTemplate: async (id: string, fileName: string): Promise<void> => {
-    const blob = await apiDownload(`/api/document-templates/${id}/download`);
+    const blob = await apiDownload(`/api/v1/document-templates/${id}/download`);
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -34,7 +34,7 @@ export const documentTemplateApi = {
   },
 
   generateDocument: async (taskId: number, templateId: string): Promise<any> => {
-    return apiRequest(`/api/crm/tasks/${taskId}/documents/generate`, {
+    return apiRequest(`/api/v1/crm/tasks/${taskId}/documents/generate`, {
       method: 'POST',
       body: JSON.stringify({ templateId }),
     });

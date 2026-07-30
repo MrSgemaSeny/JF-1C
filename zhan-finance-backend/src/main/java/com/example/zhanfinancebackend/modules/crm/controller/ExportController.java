@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/crm/export")
+@RequestMapping("/v1/crm/export")
 public class ExportController {
 
     private static final char BOM = '\ufeff';

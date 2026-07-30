@@ -30,8 +30,8 @@ export function CuratorOverviewPage() {
       try {
         setLoading(true);
         const [coursesRes, studentsRes] = await Promise.all([
-          apiRequest<Course[]>('/api/curator/courses'),
-          apiRequest<StudentProgress[]>('/api/curator/students')
+          apiRequest<Course[]>('/api/v1/curator/courses'),
+          apiRequest<StudentProgress[]>('/api/v1/curator/students')
         ]);
         setCourses(coursesRes || []);
         setStudents(studentsRes || []);

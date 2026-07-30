@@ -23,10 +23,10 @@ class ApiRateLimitFilterTest {
     }
 
     @Test
-    @DisplayName("Запросы к /api/auth/** проминаются без учета глобального rate limit")
+    @DisplayName("Запросы к /api/v1/auth/** проминаются без учета глобального rate limit")
     void testAuthEndpoints_Bypassed() throws ServletException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI("/api/auth/login");
+        request.setRequestURI("/api/v1/auth/login");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain chain = mock(FilterChain.class);
@@ -38,10 +38,10 @@ class ApiRateLimitFilterTest {
     }
 
     @Test
-    @DisplayName("Первый нормальный запрос к /api/courses проходит успешно")
+    @DisplayName("Первый нормальный запрос к /api/v1/courses проходит успешно")
     void testNormalRequest_Allowed() throws ServletException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI("/api/courses");
+        request.setRequestURI("/api/v1/courses");
         request.setRemoteAddr("192.168.1.100");
 
         MockHttpServletResponse response = new MockHttpServletResponse();

@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/crm/tasks")
+@RequestMapping("/v1/crm/tasks")
 @Tag(name = "CRM Tasks", description = "Управление задачами воронки CRM")
 public class TaskController {
 

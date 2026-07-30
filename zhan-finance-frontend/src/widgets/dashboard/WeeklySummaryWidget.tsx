@@ -18,7 +18,7 @@ export function WeeklySummaryWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiRequest<WeeklySummaryDto>('/api/crm/dashboard/weekly-summary')
+    apiRequest<WeeklySummaryDto>('/api/v1/crm/dashboard/weekly-summary')
       .then(setData)
       .catch(console.error)
       .finally(() => setLoading(false));

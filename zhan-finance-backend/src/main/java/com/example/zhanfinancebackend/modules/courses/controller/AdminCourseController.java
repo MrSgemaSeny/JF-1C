@@ -19,7 +19,7 @@ import java.util.List;
 import com.example.zhanfinancebackend.modules.courses.entity.Chapter;
 
 @RestController
-@RequestMapping("/api/admin/courses")
+@RequestMapping("/v1/admin/courses")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminCourseController {
 

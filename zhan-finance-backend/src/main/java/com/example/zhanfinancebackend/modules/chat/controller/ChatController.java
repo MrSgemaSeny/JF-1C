@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/v1/chat")
 @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'LEARNER', 'CURATOR')")
 public class ChatController {
 

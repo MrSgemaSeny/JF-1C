@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/document-templates")
+@RequestMapping("/v1/document-templates")
 public class DocumentTemplateController {
 
     private final DocumentTemplateService templateService;

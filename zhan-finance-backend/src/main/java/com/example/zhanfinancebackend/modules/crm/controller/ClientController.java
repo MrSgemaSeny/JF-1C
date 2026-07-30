@@ -17,7 +17,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/crm/clients")
+@RequestMapping("/v1/crm/clients")
 public class ClientController {
 
     private final ClientService clientService;

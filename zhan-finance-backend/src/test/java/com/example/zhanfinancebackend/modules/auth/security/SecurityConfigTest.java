@@ -19,7 +19,7 @@ class SecurityConfigTest {
 
     @Test
     void testEmailEndpoint_shouldRequireAuth() throws Exception {
-        mockMvc.perform(post("/api/test-email"))
+        mockMvc.perform(post("/api/v1/test-email"))
                 .andExpect(status().isUnauthorized());
     }
 

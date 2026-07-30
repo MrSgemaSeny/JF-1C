@@ -63,7 +63,7 @@ class ApiSmokeTests {
         mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(post("/api/contact-requests")
+        mockMvc.perform(post("/api/v1/contact-requests").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -86,7 +86,7 @@ class ApiSmokeTests {
         assertThat(accessToken).isNotBlank();
         assertThat(refreshToken).isNotBlank();
 
-        MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
+        MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -104,7 +104,7 @@ class ApiSmokeTests {
                 .get("refreshToken")
                 .asText();
 
-        mockMvc.perform(post("/api/auth/refresh")
+        mockMvc.perform(post("/api/v1/auth/refresh").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -114,12 +114,12 @@ class ApiSmokeTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty());
 
-        mockMvc.perform(get("/api/users/me")
+        mockMvc.perform(get("/api/v1/users/me").contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.email").value("smoke@example.com"));
 
-        mockMvc.perform(put("/api/users/me")
+        mockMvc.perform(put("/api/v1/users/me").contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -133,12 +133,12 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.fullName").value("Smoke Updated"));
 
         long invoiceId = createInvoice(accessToken);
-        mockMvc.perform(get("/api/billing/invoices")
+        mockMvc.perform(get("/api/v1/billing/invoices").contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title").value("Smoke invoice"));
 
-        mockMvc.perform(put("/api/billing/invoices/{id}", invoiceId)
+        mockMvc.perform(put("/api/v1/billing/invoices/{id}", invoiceId).contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -152,17 +152,17 @@ class ApiSmokeTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("ISSUED"));
 
-        mockMvc.perform(delete("/api/billing/invoices/{id}", invoiceId)
+        mockMvc.perform(delete("/api/v1/billing/invoices/{id}", invoiceId).contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
 
         long subscriptionId = createSubscription(accessToken);
-        mockMvc.perform(get("/api/billing/subscriptions")
+        mockMvc.perform(get("/api/v1/billing/subscriptions").contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].planName").value("Business"));
 
-        mockMvc.perform(put("/api/billing/subscriptions/{id}", subscriptionId)
+        mockMvc.perform(put("/api/v1/billing/subscriptions/{id}", subscriptionId).contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -177,7 +177,7 @@ class ApiSmokeTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("PAUSED"));
 
-        mockMvc.perform(delete("/api/billing/subscriptions/{id}", subscriptionId)
+        mockMvc.perform(delete("/api/v1/billing/subscriptions/{id}", subscriptionId).contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
     }
@@ -188,7 +188,7 @@ class ApiSmokeTests {
         String clientToken = clientAuth.get("accessToken").asText();
         
         // Client requests a task
-        MvcResult requestResult = mockMvc.perform(post("/api/crm/tasks/request")
+        MvcResult requestResult = mockMvc.perform(post("/api/v1/crm/tasks/request").contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -206,7 +206,7 @@ class ApiSmokeTests {
                 .get("data").get("id").asLong();
                 
         // Client can fetch their own task
-        mockMvc.perform(get("/api/crm/tasks/" + taskId)
+        mockMvc.perform(get("/api/v1/crm/tasks/" + taskId).contextPath("/api")
                         .header("Authorization", "Bearer " + clientToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("Need help with integration"));
@@ -215,7 +215,7 @@ class ApiSmokeTests {
         JsonNode empAuth = register("employee_smoke@example.com");
         String empToken = empAuth.get("accessToken").asText();
 
-        mockMvc.perform(get("/api/crm/pipelines")
+        mockMvc.perform(get("/api/v1/crm/pipelines").contextPath("/api")
                         .header("Authorization", "Bearer " + empToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
@@ -226,15 +226,15 @@ class ApiSmokeTests {
 
     @Test
     void protectedEndpointsRequireJwt() throws Exception {
-        mockMvc.perform(get("/api/users/me"))
+        mockMvc.perform(get("/api/v1/users/me").contextPath("/api"))
                 .andExpect(status().is4xxClientError());
 
-        mockMvc.perform(get("/api/contact-requests"))
+        mockMvc.perform(get("/api/v1/contact-requests").contextPath("/api"))
                 .andExpect(status().is4xxClientError());
     }
 
     private JsonNode register(String email) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/auth/register")
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/register").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -251,7 +251,7 @@ class ApiSmokeTests {
     }
 
     private long createInvoice(String accessToken) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/billing/invoices")
+        MvcResult result = mockMvc.perform(post("/api/v1/billing/invoices").contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -268,7 +268,7 @@ class ApiSmokeTests {
     }
 
     private long createSubscription(String accessToken) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/billing/subscriptions")
+        MvcResult result = mockMvc.perform(post("/api/v1/billing/subscriptions").contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

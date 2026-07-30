@@ -2,15 +2,15 @@ import { apiRequest } from '@/shared/api/http';
 import type { ClientDto } from '../model/types';
 
 export async function getClients(): Promise<ClientDto[]> {
-  return apiRequest<ClientDto[]>('/api/crm/clients');
+  return apiRequest<ClientDto[]>('/api/v1/crm/clients');
 }
 
 export async function getClient(id: number): Promise<ClientDto> {
-  return apiRequest<ClientDto>(`/api/crm/clients/${id}`);
+  return apiRequest<ClientDto>(`/api/v1/crm/clients/${id}`);
 }
 
 export async function assignEmployee(id: number, employeeId: number): Promise<void> {
-  return apiRequest<void>(`/api/crm/clients/${id}/assign?employeeId=${employeeId}`, {
+  return apiRequest<void>(`/api/v1/crm/clients/${id}/assign?employeeId=${employeeId}`, {
     method: 'POST',
   });
 }
@@ -21,5 +21,5 @@ export interface ClientStatsDto {
 }
 
 export async function getClientStats(): Promise<ClientStatsDto[]> {
-  return apiRequest<ClientStatsDto[]>('/api/admin/clients/stats');
+  return apiRequest<ClientStatsDto[]>('/api/v1/admin/clients/stats');
 }

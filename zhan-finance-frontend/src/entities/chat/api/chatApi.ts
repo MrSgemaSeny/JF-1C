@@ -21,33 +21,33 @@ export interface ChatContactDto {
 }
 
 export async function getChatContacts(): Promise<ChatContactDto[]> {
-  return apiRequest<ChatContactDto[]>('/api/chat/contacts');
+  return apiRequest<ChatContactDto[]>('/api/v1/chat/contacts');
 }
 
 export async function getChatHistory(otherUserId: number, afterId?: number): Promise<ChatMessageDto[]> {
-  const url = afterId ? `/api/chat/${otherUserId}?afterId=${afterId}` : `/api/chat/${otherUserId}`;
+  const url = afterId ? `/api/v1/chat/${otherUserId}?afterId=${afterId}` : `/api/v1/chat/${otherUserId}`;
   return apiRequest<ChatMessageDto[]>(url);
 }
 
 export async function sendChatMessage(otherUserId: number, content: string): Promise<ChatMessageDto> {
-  return apiRequest<ChatMessageDto>(`/api/chat/${otherUserId}`, {
+  return apiRequest<ChatMessageDto>(`/api/v1/chat/${otherUserId}`, {
     method: 'POST',
     body: JSON.stringify({ content }),
   });
 }
 
 export async function markChatAsRead(otherUserId: number): Promise<void> {
-  return apiRequest<void>(`/api/chat/${otherUserId}/read`, {
+  return apiRequest<void>(`/api/v1/chat/${otherUserId}/read`, {
     method: 'PUT',
   });
 }
 
 export async function deleteChatMessage(messageId: number): Promise<void> {
-  return apiRequest<void>(`/api/chat/messages/${messageId}`, {
+  return apiRequest<void>(`/api/v1/chat/messages/${messageId}`, {
     method: 'DELETE',
   });
 }
 
 export async function getUnreadChatCount(): Promise<number> {
-  return apiRequest<number>('/api/chat/unread');
+  return apiRequest<number>('/api/v1/chat/unread');
 }

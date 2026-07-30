@@ -11,5 +11,5 @@ export interface AuditLogDto {
 }
 
 export const auditApi = {
-  getAuditLogs: () => apiRequest<AuditLogDto[]>('/api/admin/audit-logs'),
+  getAuditLogs: () => apiRequest<AuditLogDto[]>('/api/v1/admin/audit-logs'),
 };

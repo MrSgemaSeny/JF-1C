@@ -11,40 +11,40 @@ export async function uploadDocument(file: File, userId?: number, taskId?: numbe
     formData.append('taskId', taskId.toString());
   }
 
-  return apiRequest<DocumentDto>('/api/documents/upload', {
+  return apiRequest<DocumentDto>('/api/v1/documents/upload', {
     method: 'POST',
     body: formData,
   });
 }
 
 export async function getTaskDocuments(taskId: number): Promise<DocumentDto[]> {
-  return apiRequest<DocumentDto[]>(`/api/documents/task/${taskId}`);
+  return apiRequest<DocumentDto[]>(`/api/v1/documents/task/${taskId}`);
 }
 
 export async function updateDocumentStatus(id: number, status: string): Promise<DocumentDto> {
-  return apiRequest<DocumentDto>(`/api/documents/${id}/status?status=${status}`, {
+  return apiRequest<DocumentDto>(`/api/v1/documents/${id}/status?status=${status}`, {
     method: 'PATCH',
   });
 }
 
 export async function getDocuments(userId?: number): Promise<DocumentDto[]> {
   const query = userId ? `?userId=${userId}` : '';
-  return apiRequest<DocumentDto[]>(`/api/documents${query}`);
+  return apiRequest<DocumentDto[]>(`/api/v1/documents${query}`);
 }
 
 export async function getAllDocuments(): Promise<DocumentDto[]> {
-  return apiRequest<DocumentDto[]>('/api/documents/all');
+  return apiRequest<DocumentDto[]>('/api/v1/documents/all');
 }
 
 export async function deleteDocument(id: number): Promise<void> {
-  return apiRequest<void>(`/api/documents/${id}`, {
+  return apiRequest<void>(`/api/v1/documents/${id}`, {
     method: 'DELETE',
   });
 }
 
 export async function downloadDocument(id: number, fileName: string): Promise<void> {
   const token = getAccessToken();
-  const response = await fetch(`${API_BASE_URL}/api/documents/${id}/download`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/documents/${id}/download`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     }
@@ -66,7 +66,7 @@ export async function downloadDocument(id: number, fileName: string): Promise<vo
 }
 
 export async function confirmDocument(id: number): Promise<DocumentDto> {
-  return apiRequest<DocumentDto>(`/api/documents/${id}/confirm`, {
+  return apiRequest<DocumentDto>(`/api/v1/documents/${id}/confirm`, {
     method: 'POST',
   });
 }
@@ -74,7 +74,7 @@ export async function confirmDocument(id: number): Promise<DocumentDto> {
 export async function downloadZipDocuments(ids: number[], zipName = 'documents_archive.zip'): Promise<void> {
   const token = getAccessToken();
   const query = ids.join(',');
-  const response = await fetch(`${API_BASE_URL}/api/documents/download-zip?ids=${query}`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/documents/download-zip?ids=${query}`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     }

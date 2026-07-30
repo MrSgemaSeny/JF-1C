@@ -6,7 +6,8 @@ import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import com.example.zhanfinancebackend.modules.crm.repository.PipelineRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.StageRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
-import jakarta.annotation.PostConstruct;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class PipelineSeederService {
         this.taskRepository = taskRepository;
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void seedData() {
         Pipeline defaultPipeline;

@@ -2,7 +2,7 @@ import { apiRequest } from '@/shared/api/http';
 import type { PipelineDto, StageDto, StageType } from '@/entities/task/model/types';
 
 export const getPipelines = async (): Promise<PipelineDto[]> => {
-  return apiRequest<PipelineDto[]>('/api/crm/pipelines');
+  return apiRequest<PipelineDto[]>('/api/v1/crm/pipelines');
 };
 
 export interface CreateStageData {
@@ -24,21 +24,21 @@ export interface UpdateStageData {
 }
 
 export const createStage = async (pipelineId: number, data: CreateStageData): Promise<StageDto> => {
-  return apiRequest<StageDto>(`/api/crm/pipelines/${pipelineId}/stages`, {
+  return apiRequest<StageDto>(`/api/v1/crm/pipelines/${pipelineId}/stages`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
 };
 
 export const updateStage = async (pipelineId: number, stageId: number, data: UpdateStageData): Promise<StageDto> => {
-  return apiRequest<StageDto>(`/api/crm/pipelines/${pipelineId}/stages/${stageId}`, {
+  return apiRequest<StageDto>(`/api/v1/crm/pipelines/${pipelineId}/stages/${stageId}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
 };
 
 export const deleteStage = async (pipelineId: number, stageId: number): Promise<void> => {
-  return apiRequest<void>(`/api/crm/pipelines/${pipelineId}/stages/${stageId}`, {
+  return apiRequest<void>(`/api/v1/crm/pipelines/${pipelineId}/stages/${stageId}`, {
     method: 'DELETE',
   });
 };

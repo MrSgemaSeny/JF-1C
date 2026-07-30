@@ -79,7 +79,7 @@ export function SolutionPicker() {
         message += '\n\n' + t('quiz.filesAttachedAmount', { defaultValue: '*Прикреплено файлов: {{count}}*', count: files.length });
       }
       
-      const response = await apiRequest<{ id: number }>('/api/contact-requests', {
+      const response = await apiRequest<{ id: number }>('/api/v1/contact-requests', {
         method: 'POST',
         body: JSON.stringify({
           name: contact.name,
@@ -93,7 +93,7 @@ export function SolutionPicker() {
       if (files.length > 0 && response.id) {
         const formData = new FormData();
         files.forEach(file => formData.append('files', file));
-        await fetch(`/api/contact-requests/${response.id}/files`, {
+        await fetch(`/api/v1/contact-requests/${response.id}/files`, {
           method: 'POST',
           body: formData,
         });

@@ -54,7 +54,7 @@ describe('ContactForm Component', () => {
     fireEvent.click(submitButton);
     
     await waitFor(() => {
-      expect(apiRequestMock).toHaveBeenCalledWith('/api/contact-requests', {
+      expect(apiRequestMock).toHaveBeenCalledWith('/api/v1/contact-requests', {
         method: 'POST',
         body: expect.stringContaining('"name":"Ivan Ivanov"')
       });

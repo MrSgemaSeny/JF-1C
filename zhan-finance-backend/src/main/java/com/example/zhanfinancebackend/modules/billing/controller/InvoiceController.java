@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/billing/invoices")
+@RequestMapping("/v1/billing/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;

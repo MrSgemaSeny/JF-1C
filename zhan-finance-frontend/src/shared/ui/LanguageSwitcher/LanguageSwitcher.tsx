@@ -16,7 +16,7 @@ export const LanguageSwitcher = () => {
     
     if (user) {
       try {
-        await apiRequest('/api/users/me/locale', {
+        await apiRequest('/api/v1/users/me/locale', {
           method: 'PATCH',
           body: JSON.stringify({ locale: code })
         });
