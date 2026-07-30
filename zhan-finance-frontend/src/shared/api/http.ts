@@ -64,7 +64,7 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
       headers
     });
   } catch (err) {
-    toast.error('Connection failed. Check your internet connection.', { duration: 5000 });
+    toast.error(i18n.t('common.connectionFailed', { defaultValue: 'Ошибка соединения. Проверьте подключение к интернету.' }), { duration: 5000 });
     throw new ApiError('Connection failed', 0);
   }
 
@@ -93,7 +93,7 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
     }
 
     if (response.status === 403) {
-      toast.error("You don't have access to this resource", { duration: 5000 });
+      toast.error(i18n.t('common.accessDenied', { defaultValue: 'У вас нет доступа к этому ресурсу.' }), { duration: 5000 });
     } else if (response.status === 422) {
       toast.warning(errorMessage, { duration: 5000 });
     } else if (response.status === 429) {
@@ -141,7 +141,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
         return await rawRequest<T>(path, init, refreshedToken);
       } else {
         localStorage.removeItem('zhan_finance_auth');
-        toast.warning('Session expired, please login again', { duration: 5000 });
+        toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
         window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;
       }
@@ -163,7 +163,7 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
       headers
     });
   } catch (err) {
-    toast.error('Connection failed. Check your internet connection.', { duration: 5000 });
+    toast.error(i18n.t('common.connectionFailed', { defaultValue: 'Ошибка соединения. Проверьте подключение к интернету.' }), { duration: 5000 });
     throw new ApiError('Connection failed', 0);
   }
 
@@ -193,7 +193,7 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
     }
 
     if (response.status === 403) {
-      toast.error("You don't have access to this resource", { duration: 5000 });
+      toast.error(i18n.t('common.accessDenied', { defaultValue: 'У вас нет доступа к этому ресурсу.' }), { duration: 5000 });
     }
 
     throw new ApiError(errorMessage, response.status, code, details, requestId);
@@ -219,7 +219,7 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
         return await rawDownload(path, init, refreshedToken);
       } else {
         localStorage.removeItem('zhan_finance_auth');
-        toast.warning('Session expired, please login again', { duration: 5000 });
+        toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
         window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;
       }
