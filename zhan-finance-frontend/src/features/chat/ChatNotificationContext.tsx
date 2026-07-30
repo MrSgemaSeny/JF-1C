@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getUnreadChatCount } from '@/entities/chat/api/chatApi';
 import { Client } from '@stomp/stompjs';
-import { getWsEndpointUrl } from '@/shared/api/http';
+import { getWsEndpointUrl, getAccessToken } from '@/shared/api/http';
 import SockJS from 'sockjs-client';
 
 interface ChatNotificationContextType {
@@ -18,12 +18,12 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
   const [unreadChatCount, setUnreadChatCount] = useState(0);
 
   const fetchUnreadCount = async () => {
-    if (!user) return;
+    if (!user || !getAccessToken()) return;
     try {
       const count = await getUnreadChatCount();
       setUnreadChatCount(count);
-    } catch (err) {
-      console.error('Failed to fetch unread chat count', err);
+    } catch {
+      // Ignore 401 / background polling errors
     }
   };
 

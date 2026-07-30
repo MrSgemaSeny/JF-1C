@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getUserNotifications, markAsRead, markAllAsRead } from '@/entities/notification/api/notificationApi';
 import type { NotificationDto } from '@/entities/notification/model/types';
+import { getAccessToken } from '@/shared/api/http';
 
 interface NotificationContextType {
   notifications: NotificationDto[];
@@ -20,12 +21,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState(true);
 
   const fetchNotifications = async () => {
-    if (!user) return;
+    if (!user || !getAccessToken()) return;
     try {
       const data = await getUserNotifications();
       setNotifications(data);
-    } catch (err) {
-      console.error('Failed to fetch notifications', err);
+    } catch {
+      // Ignore 401 / background polling errors
     } finally {
       setLoading(false);
     }
