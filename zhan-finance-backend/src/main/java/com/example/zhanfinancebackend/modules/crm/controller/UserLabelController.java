@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/crm/labels")
-@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
 public class UserLabelController {
 
     private final UserLabelService labelService;

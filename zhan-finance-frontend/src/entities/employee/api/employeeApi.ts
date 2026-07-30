@@ -23,7 +23,7 @@ export interface EmployeeWorkloadDto {
 }
 
 export async function getEmployeeWorkload(): Promise<EmployeeWorkloadDto[]> {
-  return apiRequest<EmployeeWorkloadDto[]>('/api/v1/admin/employees/workload');
+  return apiRequest<EmployeeWorkloadDto[]>('/api/v1/crm/employees/workload');
 }
 
 export async function promoteToAdvisor(id: number): Promise<void> {

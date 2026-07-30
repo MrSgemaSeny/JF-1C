@@ -51,28 +51,28 @@ export function AdvisorOverviewPage() {
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white p-8 rounded-3xl shadow-xl border border-purple-800/30">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl p-8 rounded-3xl border border-gray-200/70 dark:border-purple-900/30 shadow-lg shadow-purple-900/5">
         <div>
-          <div className="flex items-center gap-2 text-purple-300 text-xs font-black uppercase tracking-wider mb-2">
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
+          <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 text-xs font-black uppercase tracking-wider mb-2">
+            <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             Портал Эдвайзера / Старшего наставника
           </div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight">Обзор портфеля и команды</h1>
-          <p className="text-purple-200 text-sm mt-1 max-w-xl">
+          <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">Обзор портфеля и команды</h1>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mt-1 max-w-xl">
             Мониторинг нагрузки сотрудников, глобальное управление клиентами и распределение задач из пула.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(ROUTES.ADVISOR_WORKLOAD)}
-            className="px-5 py-2.5 bg-purple-500 hover:bg-purple-600 text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-purple-500/20 flex items-center gap-2"
+            className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-purple-600/20 flex items-center gap-2"
           >
             <Users className="w-4 h-4" />
             Нагрузка команды
           </button>
           <button
             onClick={() => navigate(ROUTES.ADVISOR_TASK_POOL)}
-            className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-xl backdrop-blur-md transition-all flex items-center gap-2"
+            className="px-5 py-2.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50 text-sm font-bold rounded-xl transition-all flex items-center gap-2"
           >
             <Layers className="w-4 h-4" />
             Пул задач ({unassignedTasks.length})
