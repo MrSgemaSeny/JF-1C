@@ -40,14 +40,16 @@ public class UserService {
     private final StorageService storageService;
     private final UserMapper userMapper;
     private final TaskRepository taskRepository;
+    private final RefreshTokenService refreshTokenService;
 
-    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, StorageService storageService, UserMapper userMapper, TaskRepository taskRepository) {
+    public UserService(UserRepository userRepository, ClientProfileRepository clientProfileRepository, PasswordEncoder passwordEncoder, StorageService storageService, UserMapper userMapper, TaskRepository taskRepository, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.clientProfileRepository = clientProfileRepository;
         this.passwordEncoder = passwordEncoder;
         this.storageService = storageService;
         this.userMapper = userMapper;
         this.taskRepository = taskRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Transactional
@@ -56,6 +58,8 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setDeletedAt(java.time.Instant.now());
         userRepository.save(user);
+
+        refreshTokenService.revokeAll(user);
 
         // Unassign open tasks back to task pool
         var tasks = taskRepository.findAllByEmployeeWithDetails(user);
@@ -131,6 +135,7 @@ public class UserService {
 
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+        refreshTokenService.revokeAll(user);
     }
 
     @Transactional

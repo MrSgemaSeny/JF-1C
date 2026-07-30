@@ -27,6 +27,7 @@ public class HibernateAuditListener implements PostInsertEventListener, PostUpda
 
     private static final Logger log = LoggerFactory.getLogger(HibernateAuditListener.class);
     private static final Set<String> AUDITED_ENTITIES = Set.of("User", "Invoice", "Task", "Subscription");
+    private static final Set<String> SENSITIVE_FIELDS = Set.of("password", "passwordHash", "token", "refreshToken", "secret");
 
     private final AuditService auditService;
     private final ObjectMapper objectMapper;
@@ -103,8 +104,8 @@ public class HibernateAuditListener implements PostInsertEventListener, PostUpda
 
             if (!java.util.Objects.equals(oldVal, newVal)) {
                 Map<String, Object> changes = new HashMap<>();
-                changes.put("old", sanitize(oldVal));
-                changes.put("new", sanitize(newVal));
+                changes.put("old", sanitize(propertyNames[i], oldVal));
+                changes.put("new", sanitize(propertyNames[i], newVal));
                 diff.put(propertyNames[i], changes);
             }
         }
@@ -120,7 +121,7 @@ public class HibernateAuditListener implements PostInsertEventListener, PostUpda
         if (state == null || propertyNames == null) return "{}";
         Map<String, Object> map = new HashMap<>();
         for (int i = 0; i < propertyNames.length; i++) {
-            map.put(propertyNames[i], sanitize(state[i]));
+            map.put(propertyNames[i], sanitize(propertyNames[i], state[i]));
         }
         try {
             return objectMapper.writeValueAsString(map);
@@ -130,8 +131,11 @@ public class HibernateAuditListener implements PostInsertEventListener, PostUpda
         }
     }
 
-    private Object sanitize(Object value) {
+    private Object sanitize(String fieldName, Object value) {
         if (value == null) return null;
+        if (fieldName != null && SENSITIVE_FIELDS.contains(fieldName)) {
+            return "[PROTECTED]";
+        }
         if (value instanceof String || value instanceof Number || value instanceof Boolean || 
             value instanceof java.time.temporal.Temporal || value instanceof java.util.Date) {
             return value;
