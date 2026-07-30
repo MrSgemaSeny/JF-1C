@@ -239,7 +239,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/reassign/request")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<TaskDto> requestReassignment(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
@@ -248,7 +248,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/reassign/approve")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<TaskDto> approveReassignment(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
@@ -257,7 +257,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/reassign/reject")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<TaskDto> rejectReassignment(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
@@ -266,7 +266,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/labels/{labelId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<TaskDto> toggleUserLabel(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
