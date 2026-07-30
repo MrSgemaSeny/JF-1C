@@ -94,4 +94,7 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s " +
            "where t.archived = true and s.type = :stageType")
     List<Task> findArchivedByStageType(@Param("stageType") StageType stageType);
+
+    @Query("select t from Task t where t.client.id = :clientId and t.archived = false")
+    List<Task> findByClientIdAndArchivedFalse(@Param("clientId") Long clientId);
 }

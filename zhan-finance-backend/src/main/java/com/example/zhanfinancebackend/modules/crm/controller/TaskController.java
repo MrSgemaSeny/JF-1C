@@ -149,11 +149,21 @@ public class TaskController {
     public ApiResponse<TaskDto> assignTask(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
-            @RequestParam(required = false) Long assigneeId
+            @RequestParam Long assigneeId
     ) {
         Task task = taskService.getTaskEntity(id);
         accessService.assertCanAssignTask(principal.getUser(), task);
         return ApiResponse.success(taskService.assignTask(id, assigneeId, principal.getUser()));
+    }
+
+    @PatchMapping("/{id}/unassign")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<TaskDto> unassignTask(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        accessService.assertCanUnassignTask(principal.getUser());
+        return ApiResponse.success(taskService.unassignTask(id, principal.getUser()));
     }
 
     @PutMapping("/batch")

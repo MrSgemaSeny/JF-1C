@@ -17,15 +17,26 @@ import java.util.List;
 
 import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
 
+import com.example.zhanfinancebackend.modules.crm.entity.Task;
+import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
+
 @Service
 public class ClientService {
 
     private final ClientProfileRepository clientProfileRepository;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
+    private final NotificationService notificationService;
 
-    public ClientService(ClientProfileRepository clientProfileRepository, UserRepository userRepository) {
+    public ClientService(ClientProfileRepository clientProfileRepository, 
+                         UserRepository userRepository,
+                         TaskRepository taskRepository,
+                         NotificationService notificationService) {
         this.clientProfileRepository = clientProfileRepository;
         this.userRepository = userRepository;
+        this.taskRepository = taskRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -72,6 +83,26 @@ public class ClientService {
 
         client.setAssignedEmployee(employee);
         userRepository.save(client);
+
+        // Phase 2: Cascade ownership Client -> Active Tasks
+        List<Task> activeTasks = taskRepository.findByClientIdAndArchivedFalse(client.getId());
+        int cascadedCount = 0;
+        for (Task task : activeTasks) {
+            if (task.getAssignedTo() == null || !task.getAssignedTo().getId().equals(employee.getId())) {
+                task.setAssignedTo(employee);
+                taskRepository.save(task);
+                cascadedCount++;
+            }
+        }
+
+        if (cascadedCount > 0) {
+            notificationService.createNotification(
+                    employee,
+                    "Каскадное назначение задач",
+                    "За вами закреплён клиент " + client.getFullName() + ". Передано задач: " + cascadedCount,
+                    "/employee/tasks"
+            );
+        }
     }
 
     @Transactional

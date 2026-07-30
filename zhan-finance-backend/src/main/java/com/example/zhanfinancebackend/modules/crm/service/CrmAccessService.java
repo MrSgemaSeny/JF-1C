@@ -152,6 +152,16 @@ public class CrmAccessService {
         }
     }
 
+    public boolean canUnassignTask(User actor) {
+        return actor.getRole() == Role.ADMIN;
+    }
+
+    public void assertCanUnassignTask(User actor) {
+        if (!canUnassignTask(actor)) {
+            throw new org.springframework.security.access.AccessDeniedException("Unassigning task denied. Only ADMIN can clear task assignee.");
+        }
+    }
+
     private boolean sameUser(User left, User right) {
         if (left == null || right == null) return false;
         return left.getId() != null && left.getId().equals(right.getId());

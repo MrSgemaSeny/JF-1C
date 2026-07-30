@@ -505,58 +505,68 @@ public class TaskService {
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
     public TaskDto assignTask(Long taskId, Long assigneeId, User user) {
-        Task task = getTaskEntity(taskId);
-        User assignee = null;
-        if (assigneeId != null) {
-            assignee = userRepository.findById(assigneeId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
+        if (assigneeId == null) {
+            return unassignTask(taskId, user);
         }
-        if (assignee != null && assignee.getRole() != Role.EMPLOYEE) {
+        Task task = getTaskEntity(taskId);
+        User assignee = userRepository.findById(assigneeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
+
+        if (assignee.getRole() != Role.EMPLOYEE) {
             throw new ApiException(
                     ErrorCode.BAD_REQUEST, "Задачу можно назначить только на сотрудника."
             );
         }
         Long oldAssigneeId = task.getAssignedTo() != null ? task.getAssignedTo().getId() : null;
-        Long newAssigneeId = assignee != null ? assignee.getId() : null;
 
-        if (user.getRole() == Role.EMPLOYEE) {
-            if (assigneeId != null && !assigneeId.equals(user.getId())) {
-                throw new ApiException(
-                        ErrorCode.FORBIDDEN, "Сотрудники могут назначать задачи только на себя."
-                );
-            }
+        if (user.getRole() == Role.EMPLOYEE && !assigneeId.equals(user.getId())) {
+            throw new ApiException(
+                    ErrorCode.FORBIDDEN, "Сотрудники могут назначать задачи только на себя."
+            );
         }
 
-        if (!java.util.Objects.equals(oldAssigneeId, newAssigneeId)) {
+        if (!java.util.Objects.equals(oldAssigneeId, assignee.getId())) {
             String oldAssigneeName = task.getAssignedTo() != null ? task.getAssignedTo().getFullName() : "None";
-            String assigneeName = assignee != null ? assignee.getFullName() : "Не назначен";
-            logActivity(task, user, "Назначил исполнителя: " + assigneeName);
-            auditService.logAction("UPDATE_ASSIGNEE", "Task", task.getId(), "Assignee changed from " + oldAssigneeName + " to " + assigneeName);
+            logActivity(task, user, "Назначил исполнителя: " + assignee.getFullName());
+            auditService.logAction("UPDATE_ASSIGNEE", "Task", task.getId(), "Assignee changed from " + oldAssigneeName + " to " + assignee.getFullName());
         }
         task.setAssignedTo(assignee);
 
-        if (assignee != null && task.getClient() != null) {
-            clientService.assignEmployeeToClient(task.getClient().getId(), assignee.getId());
-        }
-
         Task savedTask = taskRepository.save(task);
 
-        if (assignee != null) {
-            notificationService.createNotification(
-                    assignee,
-                    "Новая задача",
-                    "Вам назначена задача: " + savedTask.getTitle(),
-                    "/employee/tasks"
-            );
-            emailNotificationService.sendTaskAssignedEmail(assignee, savedTask);
-        }
+        notificationService.createNotification(
+                assignee,
+                "Новая задача",
+                "Вам назначена задача: " + savedTask.getTitle(),
+                "/employee/tasks"
+        );
+        emailNotificationService.sendTaskAssignedEmail(assignee, savedTask);
 
         notificationService.notifyAdmins(
                 "Смена исполнителя",
-                "Исполнитель задачи '" + task.getTitle() + "' изменен на: " + (assignee != null ? assignee.getFullName() : "Не назначен"),
+                "Исполнитель задачи '" + task.getTitle() + "' изменен на: " + assignee.getFullName(),
                 "/admin/tasks"
         );
 
+        return taskMapper.mapToDto(savedTask);
+    }
+
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
+    public TaskDto unassignTask(Long taskId, User user) {
+        Task task = getTaskEntity(taskId);
+        if (task.getAssignedTo() != null) {
+            String oldAssigneeName = task.getAssignedTo().getFullName();
+            logActivity(task, user, "Снял исполнителя: " + oldAssigneeName);
+            auditService.logAction("UNASSIGN_TASK", "Task", task.getId(), "Assignee cleared from " + oldAssigneeName);
+            task.setAssignedTo(null);
+        }
+        Task savedTask = taskRepository.save(task);
+        notificationService.notifyAdmins(
+                "Снятие исполнителя",
+                "С задачи '" + task.getTitle() + "' снят исполнитель",
+                "/admin/tasks"
+        );
         return taskMapper.mapToDto(savedTask);
     }
 
