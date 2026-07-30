@@ -107,7 +107,7 @@ public class TaskController {
     }
 
     @PostMapping("/request")
-    @PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<TaskDto> requestTask(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody TaskRequestCreateRequest request

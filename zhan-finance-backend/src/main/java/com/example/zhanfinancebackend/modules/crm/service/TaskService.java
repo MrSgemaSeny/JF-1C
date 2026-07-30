@@ -230,11 +230,15 @@ public class TaskService {
 
     @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     @Transactional
-    public TaskDto requestTask(TaskRequestCreateRequest request, User client) {
-        User managedClient = userRepository.findById(client.getId())
+    public TaskDto requestTask(TaskRequestCreateRequest request, User actor) {
+        Long targetClientId = (request.clientId() != null && (actor.getRole() == Role.ADMIN || actor.getRole() == Role.EMPLOYEE || actor.getRole() == Role.ADVISOR))
+                ? request.clientId()
+                : actor.getId();
+
+        User managedClient = userRepository.findById(targetClientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
 
-        Task task = new Task(request.title(), managedClient, managedClient);
+        Task task = new Task(request.title(), managedClient, actor);
         task.setDescription(request.description());
         task.setDueDate(request.dueDate());
 
@@ -397,7 +401,7 @@ public class TaskService {
             auditService.logAction("UPDATE_STAGE", "Task", task.getId(), "Stage changed from " + oldStage + " to " + newStage.getName());
 
             if (user.getRole() == Role.CLIENT) {
-                User employee = task.getAssignedTo() != null ? task.getAssignedTo() : task.getClient().getAssignedEmployee();
+                User employee = task.getAssignedTo() != null ? task.getAssignedTo() : (task.getClient() != null ? task.getClient().getAssignedEmployee() : null);
                 if (employee != null) {
                     notificationService.createNotification(
                             employee,
@@ -414,7 +418,9 @@ public class TaskService {
                 
                 if (newStage.getType() == StageType.WON) {
                     java.util.List<Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
-                    emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                    }
                     if (employee != null) {
                         emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), null);
                     }

@@ -124,6 +124,7 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
  * (обычно: разлогинить и отправить на /login).
  */
 let refreshPromise: Promise<string | null> | null = null;
+let isRedirectingToLogin = false;
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getAccessToken();
@@ -142,8 +143,11 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
         return await rawRequest<T>(path, init, refreshedToken);
       } else {
         localStorage.removeItem(AUTH_STORAGE_KEY);
-        toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
-        window.location.href = import.meta.env.BASE_URL + 'login';
+        if (!isRedirectingToLogin) {
+          isRedirectingToLogin = true;
+          toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
+          window.location.href = import.meta.env.BASE_URL + 'login';
+        }
         throw error;
       }
     }
