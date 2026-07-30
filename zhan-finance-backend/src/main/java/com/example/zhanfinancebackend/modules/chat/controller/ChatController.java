@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/chat")
-@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'LEARNER', 'CURATOR')")
+@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'LEARNER', 'CURATOR', 'ADVISOR')")
 public class ChatController {
 
     private final ChatService chatService;

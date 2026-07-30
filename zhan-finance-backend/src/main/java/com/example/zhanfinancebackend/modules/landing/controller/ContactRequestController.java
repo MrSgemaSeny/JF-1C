@@ -36,19 +36,19 @@ public class ContactRequestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<List<ContactRequestDto>> findAll() {
         return ApiResponse.success(contactRequestService.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<ContactRequestDto> findById(@PathVariable Long id) {
         return ApiResponse.success(contactRequestService.findById(id));
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<ContactRequestDto> updateStatus(
             @PathVariable Long id,
             @RequestParam ContactRequestStatus status
@@ -71,7 +71,7 @@ public class ContactRequestController {
     }
 
     @GetMapping("/{id}/files/{fileId}/download")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> downloadFile(
             @PathVariable Long id,
             @PathVariable Long fileId) {

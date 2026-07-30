@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/crm/employees")
-@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
 public class CrmEmployeeController {
 
     private final UserRepository userRepository;
@@ -24,7 +24,7 @@ public class CrmEmployeeController {
 
     @GetMapping
     public ApiResponse<List<EmployeeDto>> getEmployees() {
-        List<EmployeeDto> employees = userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
+        List<EmployeeDto> employees = userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADVISOR)).stream()
                 .map(u -> new EmployeeDto(
                         u.getId(),
                         u.getFullName(),

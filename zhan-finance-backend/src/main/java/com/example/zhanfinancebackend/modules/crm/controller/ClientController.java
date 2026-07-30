@@ -31,18 +31,18 @@ public class ClientController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<List<ClientDto>> getClients(@AuthenticationPrincipal UserPrincipal principal) {
 
         User user = principal.getUser();
-        if (user.getRole() == Role.ADMIN) {
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.ADVISOR) {
             return ApiResponse.success(clientService.getAllClients());
         }
         return ApiResponse.success(clientService.getClientsForEmployee(user));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<ClientDto> getClient(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
@@ -55,7 +55,7 @@ public class ClientController {
     }
     
     @PostMapping("/{id}/assign")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<Void> assignEmployee(
             @PathVariable Long id,
             @RequestParam Long employeeId

@@ -52,7 +52,7 @@ public class TaskController {
 
     @GetMapping
     @Operation(summary = "Получить список задач с фильтрацией и пагинацией")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<?> getTasks(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(required = false) Long clientId,
@@ -64,7 +64,7 @@ public class TaskController {
     ) {
         User user = principal.getUser();
 
-        if (user.getRole() == Role.ADMIN || user.getRole() == Role.EMPLOYEE) {
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.EMPLOYEE || user.getRole() == Role.ADVISOR) {
             if (page != null && size != null) {
                 return ApiResponse.success(taskService.getAllTasksPaged(clientId, assignedToId, stageId, unassigned, page, size));
             }
@@ -76,7 +76,7 @@ public class TaskController {
     }
 
     @GetMapping("/archived")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<List<TaskDto>> getArchivedTasks(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam StageType stageType
@@ -85,7 +85,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ApiResponse<TaskDto> getTask(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -97,7 +97,7 @@ public class TaskController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<TaskDto> createTask(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody TaskCreateRequest request
@@ -116,7 +116,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/stage")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<TaskDto> updateStage(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
@@ -126,7 +126,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<TaskDto> updateTaskDetails(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
@@ -145,7 +145,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/assign")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<TaskDto> assignTask(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
@@ -167,7 +167,7 @@ public class TaskController {
     }
 
     @PutMapping("/batch")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<List<TaskDto>> batchUpdateTasks(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody TaskBatchUpdateRequest request
@@ -176,7 +176,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}/comments")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<List<TaskCommentDto>> getTaskComments(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
@@ -185,7 +185,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/comments")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<TaskCommentDto> addComment(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
@@ -212,7 +212,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}/history")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
     public ApiResponse<List<TaskActivityDto>> getTaskHistory(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
@@ -221,7 +221,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/documents/generate")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
     public ApiResponse<DocumentDto> generateDocument(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,

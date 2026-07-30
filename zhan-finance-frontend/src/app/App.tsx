@@ -131,13 +131,13 @@ export function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
               
-                {/* Shared Admin & Employee Routes */}
-              <Route element={<RoleProtectedRoute allow={['ADMIN', 'EMPLOYEE']} />}>
+                {/* Shared Admin, Employee & Advisor Routes */}
+              <Route element={<RoleProtectedRoute allow={['ADMIN', 'EMPLOYEE', 'ADVISOR']} />}>
                 <Route path={ROUTES.ADMIN_LEADS} element={<AdminLeadsPage />} />
               </Route>
 
-                {/* Admin Routes */}
-              <Route element={<RoleProtectedRoute allow={['ADMIN']} />}>
+                {/* Shared Admin & Advisor CRM Routes */}
+              <Route element={<RoleProtectedRoute allow={['ADMIN', 'ADVISOR']} />}>
                 <Route path={ROUTES.ADMIN} element={<AdminOverviewPage />} />
                 <Route path={ROUTES.ADMIN_CHAT} element={<EmployeeChatPage />} />
                 <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
@@ -147,6 +147,10 @@ export function App() {
                 <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />
                 <Route path={ROUTES.ADMIN_TASK_DETAILS} element={<TaskDetailsPage />} />
+              </Route>
+
+                {/* Admin Only Routes */}
+              <Route element={<RoleProtectedRoute allow={['ADMIN']} />}>
                 <Route path={ROUTES.ADMIN_COURSES} element={<AdminCoursesPage />} />
                 <Route path={ROUTES.ADMIN_COURSES_NEW} element={<AdminCourseEditPage />} />
                 <Route path={ROUTES.ADMIN_COURSES_EDIT} element={<AdminCourseEditPage />} />

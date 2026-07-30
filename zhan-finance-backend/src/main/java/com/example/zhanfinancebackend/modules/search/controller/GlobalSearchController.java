@@ -22,7 +22,7 @@ public class GlobalSearchController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'LEARNER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'LEARNER', 'ADVISOR')")
     public ApiResponse<GlobalSearchResponse> search(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam("q") String query

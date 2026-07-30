@@ -6,6 +6,7 @@ import type { UserRole } from './authApi';
 export function roleHome(role: UserRole): string {
   switch (role) {
     case 'ADMIN':
+    case 'ADVISOR':
       return ROUTES.ADMIN;
     case 'EMPLOYEE':
       return ROUTES.EMPLOYEE;
