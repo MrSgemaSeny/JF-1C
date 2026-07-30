@@ -14,7 +14,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 public class CrmAccessService {
 
     public boolean canReadClient(User actor, User client) {
-        if (actor.getRole() == Role.ADMIN) {
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
@@ -33,7 +33,7 @@ public class CrmAccessService {
     }
 
     public boolean canReadTask(User actor, Task task) {
-        if (actor.getRole() == Role.ADMIN) {
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
@@ -52,7 +52,7 @@ public class CrmAccessService {
     }
 
     public boolean canCreateTaskFor(User actor, User client) {
-        if (actor.getRole() == Role.ADMIN) {
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
@@ -68,10 +68,10 @@ public class CrmAccessService {
     }
 
     public boolean canUpdateTaskStage(User actor, Task task, Stage newStage) {
-        if (actor.getRole() == Role.ADMIN) {
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
             return true;
         }
-        // Non-admins cannot move tasks out of final stages (WON or LOST)
+        // Non-admins and non-advisors cannot move tasks out of final stages (WON or LOST)
         if (task.getStage() != null && (task.getStage().getType() == StageType.WON || task.getStage().getType() == StageType.LOST)) {
             return false;
         }
@@ -110,7 +110,7 @@ public class CrmAccessService {
     }
 
     public boolean canUpdateTaskDetails(User actor, Task task) {
-        if (actor.getRole() == Role.ADMIN) {
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {
@@ -139,7 +139,7 @@ public class CrmAccessService {
     }
 
     public boolean canAssignTask(User actor, Task task) {
-        if (actor.getRole() == Role.ADMIN) return true;
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) return true;
         if (actor.getRole() != Role.EMPLOYEE) return false;
         return task.getAssignedTo() == null
                 || assignedToEmployee(actor, task.getClient())

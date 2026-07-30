@@ -79,16 +79,16 @@ public class ChatService {
 
         List<User> usersToInclude = new ArrayList<>();
 
-        if (currentUser.getRole() == Role.ADMIN) {
-            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.EMPLOYEE, Role.CLIENT)));
+        if (currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.ADVISOR) {
+            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR, Role.EMPLOYEE, Role.CLIENT)));
         } else if (currentUser.getRole() == Role.EMPLOYEE) {
-            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.EMPLOYEE)));
+            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR, Role.EMPLOYEE)));
             usersToInclude.addAll(userRepository.findAllByAssignedEmployee(currentUser));
         } else if (currentUser.getRole() == Role.CLIENT || currentUser.getRole() == Role.LEARNER) {
             if (currentUser.getAssignedEmployee() != null) {
                 usersToInclude.add(currentUser.getAssignedEmployee());
             }
-            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN)));
+            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR)));
         }
 
         return usersToInclude.stream()
@@ -120,23 +120,23 @@ public class ChatService {
         User otherUser = userRepository.findById(otherUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Other user not found"));
 
-        if (currentUser.getRole() == Role.ADMIN) {
-            return; // Admin can chat with anyone
+        if (currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.ADVISOR) {
+            return; // Admin and Advisor can chat with anyone
         }
 
         if (currentUser.getRole() == Role.CLIENT || currentUser.getRole() == Role.LEARNER) {
-            if (otherUser.getRole() == Role.ADMIN) {
-                return; // Clients/Learners can chat with admins
+            if (otherUser.getRole() == Role.ADMIN || otherUser.getRole() == Role.ADVISOR) {
+                return; // Clients/Learners can chat with admins and advisors
             }
             if (currentUser.getAssignedEmployee() != null && currentUser.getAssignedEmployee().getId().equals(otherUserId)) {
                 return;
             }
-            throw new org.springframework.security.access.AccessDeniedException("Client can only chat with their assigned employee or admins");
+            throw new org.springframework.security.access.AccessDeniedException("Client can only chat with their assigned employee, admins, or advisors");
         } 
         
         if (currentUser.getRole() == Role.EMPLOYEE) {
-            if (otherUser.getRole() == Role.ADMIN || otherUser.getRole() == Role.EMPLOYEE) {
-                return; // Employees can chat with admins and other employees
+            if (otherUser.getRole() == Role.ADMIN || otherUser.getRole() == Role.ADVISOR || otherUser.getRole() == Role.EMPLOYEE) {
+                return; // Employees can chat with admins, advisors, and other employees
             }
             if (otherUser.getRole() == Role.CLIENT || otherUser.getRole() == Role.LEARNER) {
                 if (otherUser.getAssignedEmployee() != null && otherUser.getAssignedEmployee().getId().equals(currentUserId)) {
