@@ -119,7 +119,7 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getPendingEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE)).stream()
+        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADVISOR)).stream()
                 .filter(u -> !u.isEnabled())
                 .map(userMapper::mapToEmployeeDto)
                 .toList();

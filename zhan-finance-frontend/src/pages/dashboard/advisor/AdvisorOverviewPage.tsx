@@ -16,23 +16,26 @@ export function AdvisorOverviewPage() {
   const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [unassignedTasks, setUnassignedTasks] = useState<TaskDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadAdvisorData() {
       setIsLoading(true);
+      setError(null);
       try {
         const [empList, clientList, allTasks, unassigned] = await Promise.all([
-          getEmployees().catch(() => []),
-          getClients().catch(() => []),
-          getTasks({}).catch(() => []),
-          getTasks({ unassigned: true }).catch(() => [])
+          getEmployees(),
+          getClients(),
+          getTasks({}),
+          getTasks({ unassigned: true })
         ]);
         setEmployees(empList);
         setClients(clientList);
         setTasks(allTasks as TaskDto[]);
         setUnassignedTasks(unassigned as TaskDto[]);
-      } catch (e) {
+      } catch (e: any) {
         console.error('Failed to load Advisor Overview:', e);
+        setError(e?.message || 'Не удалось загрузить данные панели Эдвайзера');
       } finally {
         setIsLoading(false);
       }
@@ -50,6 +53,11 @@ export function AdvisorOverviewPage() {
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 space-y-8">
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm font-medium">
+          {error}
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl p-8 rounded-3xl border border-gray-200/70 dark:border-purple-900/30 shadow-lg shadow-purple-900/5">
         <div>

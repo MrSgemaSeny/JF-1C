@@ -17,6 +17,8 @@ export function AdvisorWorkloadPage() {
   const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
   const [assigningToEmployeeId, setAssigningToEmployeeId] = useState<number | null>(null);
 
+  const [pendingAssignment, setPendingAssignment] = useState<{ taskId: number; employeeId: number } | null>(null);
+
   async function loadWorkloadData() {
     setIsLoading(true);
     try {
@@ -46,7 +48,7 @@ export function AdvisorWorkloadPage() {
   async function handleAssignTask(taskId: number, employeeId: number) {
     try {
       await assignTask(taskId, employeeId);
-      setSelectedTask(null);
+      setPendingAssignment(null);
       await loadWorkloadData();
     } catch (e) {
       console.error(e);
@@ -142,23 +144,40 @@ export function AdvisorWorkloadPage() {
 
               {/* Delegate Task Button */}
               {unassignedTasks.length > 0 && (
-                <div className="pt-2 border-t border-gray-100">
+                <div className="pt-2 border-t border-gray-100 space-y-2">
                   <select
                     onChange={(e) => {
                       if (e.target.value) {
-                        handleAssignTask(Number(e.target.value), emp.id);
+                        setPendingAssignment({ taskId: Number(e.target.value), employeeId: emp.id });
                       }
                     }}
-                    defaultValue=""
+                    value={pendingAssignment?.employeeId === emp.id ? pendingAssignment.taskId : ''}
                     className="w-full text-xs font-bold p-2.5 rounded-xl border border-purple-200 bg-purple-50/40 text-purple-800 hover:bg-purple-50 transition-colors cursor-pointer"
                   >
-                    <option value="" disabled>+ Назначить задачу из пула</option>
+                    <option value="" disabled>+ Выбрать задачу из пула</option>
                     {unassignedTasks.map((ut) => (
                       <option key={ut.id} value={ut.id}>
                         {ut.title} ({ut.client?.companyName || ut.client?.fullName || 'Без клиента'})
                       </option>
                     ))}
                   </select>
+
+                  {pendingAssignment?.employeeId === emp.id && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleAssignTask(pendingAssignment.taskId, pendingAssignment.employeeId)}
+                        className="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+                      >
+                        Подтвердить
+                      </button>
+                      <button
+                        onClick={() => setPendingAssignment(null)}
+                        className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold rounded-xl transition-all"
+                      >
+                        Отмена
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
