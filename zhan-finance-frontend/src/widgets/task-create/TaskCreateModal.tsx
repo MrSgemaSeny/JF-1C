@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { translateServiceName } from '@/shared/i18n/taskTranslator';
 import { DatePicker } from '@/shared/ui/DatePicker';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 interface TaskCreateModalProps {
   onClose: () => void;
   onCreated: () => void;
@@ -96,10 +97,21 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
         });
       }
 
-      // Upload files
+      // Upload files without blocking modal completion
       if (files.length > 0 && createdTask.id) {
+        const failedFiles: string[] = [];
         for (const file of files) {
-          await uploadDocument(file, undefined, createdTask.id);
+          try {
+            await uploadDocument(file, undefined, createdTask.id);
+          } catch (fileErr) {
+            console.error('Failed to upload file attachment:', file.name, fileErr);
+            failedFiles.push(file.name);
+          }
+        }
+        if (failedFiles.length > 0) {
+          toast.warning(t('taskCreate.partialUploadError', {
+            defaultValue: `Задача создана, но не удалось прикрепить файлы: ${failedFiles.join(', ')}`
+          }));
         }
       }
 

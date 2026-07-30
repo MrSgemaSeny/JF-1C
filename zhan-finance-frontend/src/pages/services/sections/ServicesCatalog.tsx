@@ -83,7 +83,18 @@ export function ServicesCatalog() {
 
       // Upload attached files to the created task
       if (files && files.length > 0 && createdTask?.id) {
-        await Promise.all(files.map(file => uploadDocument(file, undefined, createdTask.id)));
+        const failedFiles: string[] = [];
+        for (const file of files) {
+          try {
+            await uploadDocument(file, undefined, createdTask.id);
+          } catch (fileErr) {
+            console.error('Failed to upload file attachment:', file.name, fileErr);
+            failedFiles.push(file.name);
+          }
+        }
+        if (failedFiles.length > 0) {
+          toast.warning(`Заявка создана, но не удалось загрузить файлы: ${failedFiles.join(', ')}`);
+        }
       }
 
       toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
