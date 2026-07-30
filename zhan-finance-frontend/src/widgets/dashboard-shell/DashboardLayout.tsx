@@ -8,6 +8,7 @@ import { NotificationBell } from './NotificationBell';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { getSecureImageUrl } from '@/shared/api/http';
 
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -65,7 +66,7 @@ function HeaderProfile() {
         </div>
         {user?.avatarUrl ? (
           <img 
-            src={user.avatarUrl} 
+            src={getSecureImageUrl(user.avatarUrl)} 
             alt={user?.fullName || ''} 
             className="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm"
           />
@@ -80,7 +81,7 @@ function HeaderProfile() {
         <div className="absolute right-0 top-full mt-2 w-[300px] sm:w-[340px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
           <div className="p-4 border-b border-gray-100 flex items-center gap-3 bg-gray-50/50">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
+              <img src={getSecureImageUrl(user.avatarUrl)} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
             ) : (
               <div className="w-10 h-10 rounded-full bg-brand-green flex items-center justify-center border-2 border-white shadow-sm text-white font-bold text-lg">
                 {user?.fullName?.charAt(0) || 'U'}

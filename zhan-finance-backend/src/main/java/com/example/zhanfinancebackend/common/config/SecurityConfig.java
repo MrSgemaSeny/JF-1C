@@ -82,6 +82,9 @@ public class SecurityConfig {
                                 "/v1/services/highlighted",
                                 "/v1/courses/certificates/verify/**",
                                 "/uploads/avatars/**",
+                                "/api/uploads/avatars/**",
+                                "/ws/**",
+                                "/api/ws/**",
                                 "/actuator/health",
                                 "/actuator/info"
                         ).permitAll()

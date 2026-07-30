@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getUnreadChatCount } from '@/entities/chat/api/chatApi';
 import { Client } from '@stomp/stompjs';
+import { getWsEndpointUrl } from '@/shared/api/http';
 import SockJS from 'sockjs-client';
 
 interface ChatNotificationContextType {
@@ -34,7 +35,7 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
       // Setup Stomp client
       const token = user.accessToken;
       const stompClient = new Client({
-        webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws?token=${token}`),
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(token)),
         connectHeaders: { Authorization: `Bearer ${token}` },
         reconnectDelay: 5000,
         onConnect: () => {

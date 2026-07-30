@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { getChatContacts, getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, ChatContactDto, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { useAuth } from '@/features/auth/AuthContext';
-import { getSecureImageUrl } from '@/shared/api/http';
+import { getSecureImageUrl, getWsEndpointUrl } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -91,7 +91,7 @@ export function ClientChatPage() {
     if (user) {
       const token = user.accessToken;
       stompClient = new Client({
-        webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws?token=${token}`),
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(token)),
         connectHeaders: { Authorization: `Bearer ${token}` },
         reconnectDelay: 5000,
         onConnect: () => {

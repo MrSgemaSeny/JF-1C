@@ -245,7 +245,17 @@ export function extractValidationErrors(error: unknown): Record<string, string> 
 export function getSecureImageUrl(url: string | undefined): string | undefined {
   if (!url) return undefined;
   if (url.startsWith('http')) return url;
-  return `${API_BASE_URL}${url}`;
+  const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+  if (cleanUrl.startsWith('/uploads/') && !cleanUrl.startsWith('/api/')) {
+    return `${API_BASE_URL}/api${cleanUrl}`;
+  }
+  return `${API_BASE_URL}${cleanUrl}`;
+}
+
+export function getWsEndpointUrl(token: string): string {
+  const baseUrl = API_BASE_URL.replace(/\/+$/, '');
+  const wsPath = baseUrl.endsWith('/api') ? '/ws' : '/api/ws';
+  return `${baseUrl}${wsPath}?token=${token}`;
 }
 
 export { API_BASE_URL, getAccessToken };

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { X, Send, User } from 'lucide-react';
 import { getChatHistory, sendChatMessage, markChatAsRead, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useAuth } from '@/features/auth/AuthContext';
+import { getWsEndpointUrl } from '@/shared/api/http';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
@@ -60,7 +61,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
       // 1. Setup Stomp client
       const token = user.accessToken;
       stompClient = new Client({
-        webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_URL}/ws?token=${token}`),
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(token)),
         connectHeaders: {
           Authorization: `Bearer ${token}`
         },
