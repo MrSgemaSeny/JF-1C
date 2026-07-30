@@ -49,7 +49,14 @@ export function AdminEmployeesPage() {
   }
 
   async function handlePromote(id: number) {
-    if (!window.confirm('Назначить данного сотрудника в роль ADVISOR?')) return;
+    const confirmed = window.confirm(
+      '⚠️ ВНИМАНИЕ: Повышение сотрудника до роли ADVISOR!\n\n' +
+      '• Все закрепленные за ним клиенты будут откреплены.\n' +
+      '• Все активные задачи этого сотрудника будут переведены в открытый пул (снят исполнитель).\n' +
+      '• История чатов и сообщений сохранится без изменений.\n\n' +
+      'Вы уверены, что хотите перевести сотрудника в роль ADVISOR?'
+    );
+    if (!confirmed) return;
     try {
       await promoteToAdvisor(id);
       await loadData();

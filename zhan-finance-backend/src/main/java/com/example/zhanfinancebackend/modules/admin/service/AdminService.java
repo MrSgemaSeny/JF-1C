@@ -66,6 +66,7 @@ public class AdminService {
                 .toList();
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void promoteToAdvisor(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -74,8 +75,24 @@ public class AdminService {
         }
         user.setRole(Role.ADVISOR);
         userRepository.save(user);
+
+        // Detach all assigned clients
+        List<User> assignedClients = userRepository.findAllByAssignedEmployee(user);
+        for (User client : assignedClients) {
+            client.setAssignedEmployee(null);
+            userRepository.save(client);
+        }
+
+        // Detach all assigned active tasks
+        List<Task> assignedTasks = taskRepository.findAllByEmployeeWithDetails(user);
+        for (Task task : assignedTasks) {
+            task.setAssignedTo(null);
+            taskRepository.save(task);
+        }
+
         refreshTokenService.revokeAll(user);
-        auditService.logAction("PROMOTE_TO_ADVISOR", "User", user.getId(), "User " + user.getEmail() + " promoted to ADVISOR");
+        auditService.logAction("PROMOTE_TO_ADVISOR", "User", user.getId(), 
+            "User " + user.getEmail() + " promoted to ADVISOR. Unassigned " + assignedClients.size() + " clients and " + assignedTasks.size() + " tasks.");
     }
 
     public void demoteToEmployee(Long userId) {
