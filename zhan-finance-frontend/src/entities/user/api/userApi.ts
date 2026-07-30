@@ -24,11 +24,18 @@ export interface UpdatePasswordRequest {
   newPassword?: string;
 }
 
+export interface CreateLearnerRequest {
+  fullName: string;
+  email: string;
+  password?: string;
+  phone?: string;
+}
+
 export async function getAllLearners(): Promise<UserProfileDto[]> {
   return await apiRequest<UserProfileDto[]>('/api/v1/admin/learners');
 }
 
-export async function createLearner(request: any): Promise<void> {
+export async function createLearner(request: CreateLearnerRequest): Promise<void> {
   await apiRequest('/api/v1/admin/learners', {
     method: 'POST',
     body: JSON.stringify(request)

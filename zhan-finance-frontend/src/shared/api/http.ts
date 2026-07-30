@@ -1,4 +1,5 @@
 import i18n from '@/shared/i18n/i18n';
+import { AUTH_STORAGE_KEY } from '@/shared/constants/storageKeys';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
@@ -140,7 +141,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
       if (refreshedToken) {
         return await rawRequest<T>(path, init, refreshedToken);
       } else {
-        localStorage.removeItem('zhan_finance_auth');
+        localStorage.removeItem(AUTH_STORAGE_KEY);
         toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
         window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;
@@ -218,7 +219,7 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
       if (refreshedToken) {
         return await rawDownload(path, init, refreshedToken);
       } else {
-        localStorage.removeItem('zhan_finance_auth');
+        localStorage.removeItem(AUTH_STORAGE_KEY);
         toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
         window.location.href = import.meta.env.BASE_URL + 'login';
         throw error;

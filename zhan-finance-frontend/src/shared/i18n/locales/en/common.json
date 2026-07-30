@@ -21,6 +21,9 @@
   "loading": "Loading...",
   "success": "Success",
   "error": "Error",
+  "connectionFailed": "Failed to connect to server. Please check your connection.",
+  "sessionExpired": "Session expired, please log in again.",
+  "accessDenied": "You do not have permission to perform this action.",
   "publicNav": {
     "home": "Home",
     "services": "Services",

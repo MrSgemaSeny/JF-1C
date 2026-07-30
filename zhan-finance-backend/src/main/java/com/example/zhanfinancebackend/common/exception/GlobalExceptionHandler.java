@@ -170,7 +170,7 @@ public class GlobalExceptionHandler {
             else if (exception instanceof UnauthorizedException || exception instanceof org.springframework.security.core.AuthenticationException) messageKey = "error.unauthorized";
             else if (exception instanceof AccessDeniedException) messageKey = "error.access.denied";
             else if (exception instanceof ConflictException) messageKey = "error.conflict";
-            else if (exception instanceof BadRequestException) messageKey = "error.bad.request";
+            else if (exception instanceof BadRequestException || exception instanceof InvalidStateException || exception instanceof UnprocessableEntityException) messageKey = "error.bad.request";
             else if (exception instanceof ApiException apiEx) {
                 messageKey = "error." + apiEx.getErrorCode().name().toLowerCase();
             }

@@ -3,7 +3,9 @@ import { configureAuth } from '@/shared/api/http';
 import * as authApi from './authApi';
 import type { AuthResponse, UserRole } from './authApi';
 
-const STORAGE_KEY = 'zhan_finance_auth';
+import { AUTH_STORAGE_KEY } from '@/shared/constants/storageKeys';
+
+const STORAGE_KEY = AUTH_STORAGE_KEY;
 
 interface StoredAuth {
   accessToken: string;

@@ -38,7 +38,8 @@ public class SecurityConfig {
             AuthRateLimitFilter authRateLimitFilter,
             ApiRateLimitFilter apiRateLimitFilter,
             AuthenticationProvider authenticationProvider,
-            CorsConfigurationSource corsConfigurationSource
+            CorsConfigurationSource corsConfigurationSource,
+            ObjectMapper objectMapper
     ) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -68,9 +69,7 @@ public class SecurityConfig {
                                     request.getRequestURI(),
                                     UUID.randomUUID().toString()
                             );
-                            ObjectMapper mapper = new ObjectMapper();
-                            mapper.findAndRegisterModules(); // Support LocalDateTime
-                            response.getWriter().write(mapper.writeValueAsString(errorResponse));
+                            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
                         })
                 )
                 .authorizeHttpRequests(auth -> auth

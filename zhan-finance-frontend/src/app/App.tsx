@@ -148,7 +148,7 @@ export function App() {
                 <Route path={ROUTES.ADMIN_EMPLOYEES} element={<AdminEmployeesPage />} />
                 <Route path={ROUTES.ADMIN_CLIENTS} element={<AdminClientsPage />} />
                 <Route path={ROUTES.ADMIN_TASKS} element={<AdminTasksPage />} />
-                <Route path="/admin/tasks/pool" element={<TaskPoolPage />} />
+                <Route path={ROUTES.ADMIN_TASK_POOL} element={<TaskPoolPage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_DONE} element={<AdminArchiveDonePage />} />
                 <Route path={ROUTES.ADMIN_ARCHIVE_CANCELLED} element={<AdminArchiveCancelledPage />} />
                 <Route path={ROUTES.ADMIN_TASK_DETAILS} element={<TaskDetailsPage />} />

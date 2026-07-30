@@ -168,11 +168,14 @@ public class AdminService {
         // This will be replaced in DashboardService, but since it's duplicated in AdminService...
         // Wait, AdminService also has getAdminDashboard which fetches ALL tasks. I should defer this or redirect to DashboardService.
         // I will change it to return empty or just use DashboardService here later.
-        java.util.List<Task> allTasks = taskRepository.findAll();
-        long tasksCount = allTasks.size();
+        long tasksCount = taskRepository.count();
         
-        java.util.Map<String, Long> tasksByStatus = allTasks.stream()
-                .collect(java.util.stream.Collectors.groupingBy(t -> t.getStage() != null ? t.getStage().getName() : "Unknown", java.util.stream.Collectors.counting()));
+        java.util.Map<String, Long> tasksByStatus = new java.util.HashMap<>();
+        for (java.util.Map<String, Object> map : taskRepository.countTasksByStatus()) {
+            String statusName = map.get("statusName") != null ? map.get("statusName").toString() : "Unknown";
+            Long count = ((Number) map.get("count")).longValue();
+            tasksByStatus.put(statusName, count);
+        }
                 
         return new AdminDashboardDto(clientsCount, employeesCount, tasksCount, 0L, 0L, 0.0, tasksByStatus, java.util.Collections.emptyMap(), userRepository.count(), 0L, java.math.BigDecimal.ZERO, java.math.BigDecimal.ZERO, java.util.Collections.emptyList());
     }
