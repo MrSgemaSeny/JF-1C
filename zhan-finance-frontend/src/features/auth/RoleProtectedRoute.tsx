@@ -7,8 +7,9 @@ export function roleHome(role: UserRole): string {
   switch (role) {
     case 'ADMIN':
       return ROUTES.ADMIN;
-    case 'EMPLOYEE':
     case 'ADVISOR':
+      return ROUTES.ADVISOR;
+    case 'EMPLOYEE':
       return ROUTES.EMPLOYEE;
     case 'CLIENT':
       return ROUTES.CLIENT;

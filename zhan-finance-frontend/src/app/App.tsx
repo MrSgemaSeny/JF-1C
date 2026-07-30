@@ -44,6 +44,10 @@ const CuratorOverviewPage = lazy(() => import('@/pages/dashboard/curator/Curator
 const CuratorCoursesPage = lazy(() => import('@/pages/dashboard/curator/CuratorCoursesPage').then(m => ({ default: m.CuratorCoursesPage })));
 const CuratorStudentsPage = lazy(() => import('@/pages/dashboard/curator/CuratorStudentsPage').then(m => ({ default: m.CuratorStudentsPage })));
 
+// Advisor
+const AdvisorOverviewPage = lazy(() => import('@/pages/dashboard/advisor/AdvisorOverviewPage').then(m => ({ default: m.AdvisorOverviewPage })));
+const AdvisorWorkloadPage = lazy(() => import('@/pages/dashboard/advisor/AdvisorWorkloadPage').then(m => ({ default: m.AdvisorWorkloadPage })));
+
 // Learner
 const LearnerCoursesPage = lazy(() => import('@/pages/dashboard/learner/LearnerCoursesPage').then(m => ({ default: m.LearnerCoursesPage })));
 const LearnerCourseDetailPage = lazy(() => import('@/pages/dashboard/learner/LearnerCourseDetailPage').then(m => ({ default: m.LearnerCourseDetailPage })));
@@ -166,8 +170,19 @@ export function App() {
                 <Route path={ROUTES.CURATOR_STUDENTS} element={<CuratorStudentsPage />} />
               </Route>
 
-              {/* Employee & Advisor Routes */}
-              <Route element={<RoleProtectedRoute allow={['EMPLOYEE', 'ADVISOR']} />}>
+              {/* Advisor Portal Routes */}
+              <Route element={<RoleProtectedRoute allow={['ADVISOR']} />}>
+                <Route path={ROUTES.ADVISOR} element={<AdvisorOverviewPage />} />
+                <Route path={ROUTES.ADVISOR_WORKLOAD} element={<AdvisorWorkloadPage />} />
+                <Route path={ROUTES.ADVISOR_CLIENTS} element={<EmployeeClientsPage />} />
+                <Route path={ROUTES.ADVISOR_TASKS} element={<EmployeeTasksPage />} />
+                <Route path={ROUTES.ADVISOR_TASK_POOL} element={<TaskPoolPage />} />
+                <Route path={ROUTES.ADVISOR_TASK_DETAILS} element={<TaskDetailsPage />} />
+                <Route path={ROUTES.ADVISOR_CHAT} element={<EmployeeChatPage />} />
+              </Route>
+
+              {/* Employee Routes */}
+              <Route element={<RoleProtectedRoute allow={['EMPLOYEE']} />}>
                 <Route path={ROUTES.EMPLOYEE} element={<EmployeeOverviewPage />} />
                 <Route path={ROUTES.EMPLOYEE_CHAT} element={<EmployeeChatPage />} />
                 <Route path={ROUTES.EMPLOYEE_CLIENTS} element={<EmployeeClientsPage />} />

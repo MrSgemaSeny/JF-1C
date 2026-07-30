@@ -33,6 +33,15 @@ export const ROUTES = {
   CURATOR_COURSES: '/curator/courses',
   CURATOR_STUDENTS: '/curator/students',
 
+  // Advisor Routes
+  ADVISOR: '/advisor',
+  ADVISOR_CLIENTS: '/advisor/clients',
+  ADVISOR_CHAT: '/advisor/chat',
+  ADVISOR_TASKS: '/advisor/tasks',
+  ADVISOR_TASK_POOL: '/advisor/tasks/pool',
+  ADVISOR_TASK_DETAILS: '/advisor/tasks/:id',
+  ADVISOR_WORKLOAD: '/advisor/workload',
+
   // Shared Dashboard Routes
   SETTINGS: '/settings',
   NOTIFICATIONS: '/notifications',
