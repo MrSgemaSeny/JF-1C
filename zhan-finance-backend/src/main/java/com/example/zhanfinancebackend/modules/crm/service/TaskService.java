@@ -834,12 +834,15 @@ public class TaskService {
         UserLabel label = request.labelId() != null ? userLabelRepository.findById(request.labelId()).orElse(null) : null;
 
         for (Task task : tasks) {
+            accessService.assertCanUpdateTaskDetails(user, task);
             if (newStage != null) {
+                accessService.assertCanUpdateTaskStage(user, task, newStage);
                 Stage oldStage = task.getStage();
                 task.setStage(newStage);
                 logStageActivity(task, user, "Пакетное изменение стадии на " + newStage.getName(), oldStage, newStage);
             }
             if (assignee != null) {
+                accessService.assertCanAssignTask(user, task);
                 task.setAssignedTo(assignee);
                 logActivity(task, user, "Пакетное переназначение на " + assignee.getFullName());
             }
