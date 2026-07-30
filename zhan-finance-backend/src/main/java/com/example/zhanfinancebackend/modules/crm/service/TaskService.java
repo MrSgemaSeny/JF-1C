@@ -397,7 +397,7 @@ public class TaskService {
             auditService.logAction("UPDATE_STAGE", "Task", task.getId(), "Stage changed from " + oldStage + " to " + newStage.getName());
 
             if (user.getRole() == Role.CLIENT) {
-                User employee = task.getClient().getAssignedEmployee();
+                User employee = task.getAssignedTo() != null ? task.getAssignedTo() : task.getClient().getAssignedEmployee();
                 if (employee != null) {
                     notificationService.createNotification(
                             employee,
