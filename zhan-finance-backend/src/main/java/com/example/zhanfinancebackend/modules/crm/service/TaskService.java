@@ -512,9 +512,9 @@ public class TaskService {
         User assignee = userRepository.findById(assigneeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
 
-        if (assignee.getRole() != Role.EMPLOYEE) {
+        if (assignee.getRole() != Role.EMPLOYEE && assignee.getRole() != Role.ADVISOR) {
             throw new ApiException(
-                    ErrorCode.BAD_REQUEST, "Задачу можно назначить только на сотрудника."
+                    ErrorCode.BAD_REQUEST, "Задачу можно назначить только на сотрудника или эдвайзера."
             );
         }
         Long oldAssigneeId = task.getAssignedTo() != null ? task.getAssignedTo().getId() : null;

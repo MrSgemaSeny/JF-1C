@@ -41,6 +41,7 @@ public class CrmEmployeeController {
     }
 
     @GetMapping("/workload")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADVISOR')")
     public ApiResponse<List<EmployeeWorkloadDto>> getEmployeeWorkload() {
         return ApiResponse.success(adminService.getEmployeeWorkloads());
     }

@@ -126,10 +126,10 @@ public class AdvisorSecurityIntegrationTest {
     // --- EMPLOYEE FORBIDDEN ENDPOINTS (403 Forbidden) ---
 
     @Test
-    public void employee_AllowedOnCrmWorkload() throws Exception {
+    public void employee_ForbiddenFromEmployeesWorkload() throws Exception {
         mockMvc.perform(get("/api/v1/crm/employees/workload").contextPath("/api")
                 .with(user(employeePrincipal)))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
     }
 
     @Test
