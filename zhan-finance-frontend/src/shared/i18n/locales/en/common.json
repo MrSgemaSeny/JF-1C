@@ -1360,7 +1360,65 @@
   "adminTemplates.noTemplatesDesc": "Upload your first .docx template so employees can quickly generate documents.",
   "sidebar.roles.ADMIN": "Admin",
   "sidebar.roles.EMPLOYEE": "Employee",
-  "documents.fileType": "Type",
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Centralized management of your documents, acts, and contracts",
+    "searchPlaceholder": "Search by file name...",
+    "viewMode": {
+      "table": "Table",
+      "grid": "Grid"
+    },
+    "metrics": {
+      "total": "Total documents",
+      "pending": "Awaiting signature",
+      "confirmed": "Signed"
+    },
+    "folders": {
+      "all": "All documents",
+      "acts": "Acts of Work",
+      "reports": "Reports",
+      "contracts": "Contracts",
+      "other": "Other"
+    },
+    "upload": {
+      "dragOrClick": "Drag and drop file or click to upload",
+      "uploading": "Uploading document...",
+      "formats": "PDF, DOCX, XLSX, PNG, JPG, ZIP up to 20 MB",
+      "selectFile": "Upload file"
+    },
+    "table": {
+      "file": "File name",
+      "type": "Type",
+      "signature": "Signature status",
+      "size": "Size",
+      "actions": "Actions"
+    },
+    "status": {
+      "signed": "Signed",
+      "confirm": "Confirm",
+      "confirming": "Confirming..."
+    },
+    "actions": {
+      "download": "Download",
+      "delete": "Delete",
+      "downloadZip": "Download selected ({{count}}) as ZIP",
+      "formingZip": "Forming ZIP...",
+      "deselect": "Deselect"
+    },
+    "empty": {
+      "title": "No documents found",
+      "description": "Upload your first file or change your search query"
+    },
+    "notifications": {
+      "confirmDelete": "Are you sure you want to delete this document?",
+      "deleteSuccess": "Document deleted successfully",
+      "deleteError": "Failed to delete document",
+      "downloadError": "Failed to download document",
+      "confirmSuccess": "Document confirmed and signed successfully",
+      "confirmError": "Failed to confirm document",
+      "zipError": "Failed to generate ZIP archive"
+    }
+  },
   "details.taskNotFound": "Task not found",
   "details.goBack": "Go back",
   "more": "More",

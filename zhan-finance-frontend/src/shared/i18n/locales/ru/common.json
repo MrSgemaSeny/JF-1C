@@ -1361,7 +1361,65 @@
   "adminTemplates.noTemplatesDesc": "Загрузите первый .docx шаблон, чтобы сотрудники могли быстро генерировать документы.",
   "sidebar.roles.ADMIN": "Admin",
   "sidebar.roles.EMPLOYEE": "Employee",
-  "documents.fileType": "Тип",
+  "documents": {
+    "title": "Документы",
+    "subtitle": "Централизованное управление вашими документами, актами и договорами",
+    "searchPlaceholder": "Поиск по названию файла...",
+    "viewMode": {
+      "table": "Таблица",
+      "grid": "Сетка"
+    },
+    "metrics": {
+      "total": "Всего документов",
+      "pending": "Ожидают подписи",
+      "confirmed": "Подписано"
+    },
+    "folders": {
+      "all": "Все документы",
+      "acts": "Акты ВР",
+      "reports": "Отчеты",
+      "contracts": "Договоры",
+      "other": "Разное"
+    },
+    "upload": {
+      "dragOrClick": "Перетащите файл или нажмите для загрузки",
+      "uploading": "Загрузка документа...",
+      "formats": "PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ",
+      "selectFile": "Загрузить файл"
+    },
+    "table": {
+      "file": "Название файла",
+      "type": "Тип",
+      "signature": "Статус подписи",
+      "size": "Размер",
+      "actions": "Действия"
+    },
+    "status": {
+      "signed": "Подписано",
+      "confirm": "Подтвердить",
+      "confirming": "Подтверждаем..."
+    },
+    "actions": {
+      "download": "Скачать",
+      "delete": "Удалить",
+      "downloadZip": "Скачать выбранные ({{count}}) в ZIP",
+      "formingZip": "Формируем ZIP...",
+      "deselect": "Снять выделение"
+    },
+    "empty": {
+      "title": "Документы не найдены",
+      "description": "Загрузите первый файл или измените параметры поиска"
+    },
+    "notifications": {
+      "confirmDelete": "Вы уверены, что хотите удалить этот документ?",
+      "deleteSuccess": "Документ успешно удален",
+      "deleteError": "Не удалось удалить документ",
+      "downloadError": "Ошибка при скачивании документа",
+      "confirmSuccess": "Документ успешно подтвержден и подписан",
+      "confirmError": "Ошибка при подтверждении документа",
+      "zipError": "Ошибка при формировании ZIP-архива"
+    }
+  },
   "details.taskNotFound": "Задача не найдена",
   "details.goBack": "Вернуться назад",
   "more": "Ещё",
