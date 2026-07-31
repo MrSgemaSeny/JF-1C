@@ -67,7 +67,16 @@ public class DashboardSummaryService {
         }
 
         int pendingDocs = (int) documentRepository.findAll().stream()
-                .filter(d -> "AWAITING_SIGNATURE".equalsIgnoreCase(d.getStatus()) || "UPLOADED".equalsIgnoreCase(d.getStatus()))
+                .filter(d -> {
+                    boolean isValidStatus = "AWAITING_SIGNATURE".equalsIgnoreCase(d.getStatus()) || "UPLOADED".equalsIgnoreCase(d.getStatus());
+                    if (!isValidStatus) {
+                        return false;
+                    }
+                    if (user.getRole() == Role.CLIENT || user.getRole() == Role.EMPLOYEE) {
+                        return d.getUser() != null && d.getUser().getId().equals(user.getId());
+                    }
+                    return true;
+                })
                 .count();
 
         highlights.add("Завершено задач на этой неделе: " + completedThisWeek);
