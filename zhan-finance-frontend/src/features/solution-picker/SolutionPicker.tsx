@@ -7,6 +7,13 @@ import { apiRequest } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
 import { ROUTES } from '@/shared/config/routes';
 
+function formatFileSize(bytes: number): string {
+  if (!bytes || bytes === 0) return '0 B';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function SolutionPicker() {
   const { t } = useTranslation('common');
   const [step, setStep] = useState(0);
@@ -223,7 +230,7 @@ export function SolutionPicker() {
                       <div key={i} className="flex items-center gap-3 rounded-lg border border-brand-green/10 bg-brand-green/5 p-3 text-sm">
                         <FileText size={16} className="text-brand-green" />
                         <span className="flex-1 truncate text-brand-green/80 font-medium">{file.name}</span>
-                        <span className="text-xs text-brand-green/50">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                        <span className="text-xs text-brand-green/50">{formatFileSize(file.size)}</span>
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); removeFile(i); }}

@@ -14,6 +14,13 @@ const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 10;
 const ALLOWED_EXTENSIONS = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.csv'];
 
+function formatFileSize(bytes: number): string {
+  if (!bytes || bytes === 0) return '0 B';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 interface ServiceModalProps {
   item: ServiceDto;
   onClose: () => void;
@@ -25,8 +32,16 @@ interface ServiceModalProps {
   initialPreferredDate?: string;
 }
 
-export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmitting = false, isLoggedIn = false, initialMessage = '', initialPreferredDate = '' }: ServiceModalProps) {
-
+export function ServiceModal({
+  item,
+  onClose,
+  onRequest,
+  onGuestRequest,
+  isSubmitting = false,
+  isLoggedIn = false,
+  initialMessage = '',
+  initialPreferredDate = '',
+}: ServiceModalProps) {
   const { t } = useTranslation(['modals', 'landing', 'common']);
   const [message, setMessage] = useState(initialMessage);
   const [preferredDate, setPreferredDate] = useState(initialPreferredDate);
@@ -35,18 +50,18 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEscapeKey(() => onClose(), true);
-  
+  useEscapeKey(onClose);
+
   useEffect(() => {
-    setMessage(initialMessage);
-    setPreferredDate(initialPreferredDate);
+    if (initialMessage) setMessage(initialMessage);
+    if (initialPreferredDate) setPreferredDate(initialPreferredDate);
   }, [initialMessage, initialPreferredDate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = Array.from(e.target.files || []);
+    const selectedFiles = Array.from(e.target.files || []);
     const validFiles: File[] = [];
 
-    for (const file of selected) {
+    for (const file of selectedFiles) {
       if (files.length + validFiles.length >= MAX_FILES) break;
       
       const ext = '.' + file.name.split('.').pop()?.toLowerCase();
@@ -79,7 +94,6 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
       }
     }
   };
-
 
   return (
     <AnimatePresence>
@@ -176,7 +190,6 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
                       />
                     </div>
 
-                    {/* File Attachment Section - AVAILABLE TO ALL */}
                     <div className="space-y-3">
                       <label className="block text-sm font-medium text-gray-700">
                         {t('serviceModal.files.label', { defaultValue: 'Прикрепить файлы' })}
@@ -210,7 +223,7 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
                             <div key={`${file.name}-${i}`} className="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 text-sm">
                               <FileText size={14} className="text-brand-green shrink-0" />
                               <span className="flex-1 truncate text-gray-700 font-medium">{file.name}</span>
-                              <span className="text-gray-400 text-xs shrink-0">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                              <span className="text-gray-400 text-xs shrink-0">{formatFileSize(file.size)}</span>
                               <button
                                 type="button"
                                 onClick={() => removeFile(i)}
