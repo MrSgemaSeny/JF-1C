@@ -67,7 +67,6 @@ export function ClientDocumentsPage() {
   const isUploadedByClient = (doc: DocumentDto) => {
     if (doc.uploadedByRole === 'CLIENT') return true;
     if (doc.uploadedById && user?.userId && doc.uploadedById === user.userId) return true;
-    if (doc.fileName.endsWith('.md')) return true;
     return false;
   };
 
