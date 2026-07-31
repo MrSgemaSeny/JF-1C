@@ -15,6 +15,7 @@ export interface AuthResponse {
   authProvider?: 'LOCAL' | 'GOOGLE';
   requires2FA?: boolean;
   preAuthToken?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export interface LoginRequest {

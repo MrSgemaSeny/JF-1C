@@ -7,7 +7,7 @@ import { ShieldCheck, ShieldAlert, QrCode, Lock, KeyRound, Loader2, Copy, CheckC
 
 export function AdminSecurityPage() {
   const { t } = useTranslation(['common']);
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
 
   const [phase, setPhase] = useState<'idle' | 'setup' | 'disable'>('idle');
   const [setupData, setSetupData] = useState<TwoFactorSetupResponse | null>(null);
@@ -16,7 +16,7 @@ export function AdminSecurityPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState(false);
 
-  const is2FAEnabled = user?.role === 'ADMIN'; // Checked via user settings / auth profile
+  const is2FAEnabled = Boolean(user?.twoFactorEnabled);
 
   const handleStartSetup = async () => {
     setIsLoading(true);
@@ -40,6 +40,7 @@ export function AdminSecurityPage() {
     try {
       await confirm2FASetup(setupData.secret, confirmCode);
       toast.success(t('adminSecurity.enabledSuccess', { defaultValue: 'Двухфакторная аутентификация успешно включена!' }));
+      updateUser({ twoFactorEnabled: true });
       setPhase('idle');
       setSetupData(null);
       setConfirmCode('');
@@ -58,6 +59,7 @@ export function AdminSecurityPage() {
     try {
       await disable2FA(disableCode);
       toast.success(t('adminSecurity.disabledSuccess', { defaultValue: '2FA успешно отключена' }));
+      updateUser({ twoFactorEnabled: false });
       setPhase('idle');
       setDisableCode('');
     } catch (err: any) {
@@ -91,38 +93,63 @@ export function AdminSecurityPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-gray-50/80 border border-gray-100">
           <div className="flex items-start gap-4">
-            <div className={`p-3 rounded-xl ${phase === 'setup' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-              <ShieldCheck size={24} />
+            <div className={`p-3 rounded-xl ${is2FAEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+              {is2FAEnabled ? <ShieldCheck size={24} /> : <ShieldAlert size={24} />}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">
-                {t('adminSecurity.totpTitle', { defaultValue: 'Google Authenticator / TOTP 2FA' })}
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold text-gray-900">
+                  {t('adminSecurity.totpTitle', { defaultValue: 'Google Authenticator / TOTP 2FA' })}
+                </h2>
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${is2FAEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                  {is2FAEnabled ? 'Включена' : 'Не подключена'}
+                </span>
+              </div>
               <p className="text-sm text-gray-500 mt-0.5">
-                {t('adminSecurity.totpDesc', { defaultValue: 'Защита входа с помощью 6-значных временных кодов.' })}
+                {is2FAEnabled
+                  ? t('adminSecurity.enabledDesc', { defaultValue: 'Ваш аккаунт защищен 6-значными одноразовыми кодами при входе.' })
+                  : t('adminSecurity.totpDesc', { defaultValue: 'Защита входа с помощью 6-значных временных кодов.' })}
               </p>
             </div>
           </div>
 
           {phase === 'idle' && (
-            <button
-              onClick={handleStartSetup}
-              disabled={isLoading}
-              className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex items-center gap-2 shrink-0 disabled:opacity-50"
-            >
-              {isLoading ? <Loader2 size={16} className="animate-spin" /> : <QrCode size={16} />}
-              {t('adminSecurity.enableBtn', { defaultValue: 'Настроить 2FA' })}
-            </button>
+            is2FAEnabled ? (
+              <button
+                onClick={() => setPhase('disable')}
+                className="px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-sm font-bold rounded-xl transition-all flex items-center gap-2 shrink-0"
+              >
+                <ShieldAlert size={16} />
+                {t('adminSecurity.disableBtn', { defaultValue: 'Отключить 2FA' })}
+              </button>
+            ) : (
+              <button
+                onClick={handleStartSetup}
+                disabled={isLoading}
+                className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex items-center gap-2 shrink-0 disabled:opacity-50"
+              >
+                {isLoading ? <Loader2 size={16} className="animate-spin" /> : <QrCode size={16} />}
+                {t('adminSecurity.enableBtn', { defaultValue: 'Настроить 2FA' })}
+              </button>
+            )
           )}
         </div>
 
         {/* Setup Flow */}
         {phase === 'setup' && setupData && (
           <div className="p-6 border border-emerald-100 bg-emerald-50/30 rounded-2xl space-y-6 animate-fadeIn">
-            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-brand-green" />
-              {t('adminSecurity.stepTitle', { defaultValue: 'Инструкция по подключению 2FA' })}
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-brand-green" />
+                {t('adminSecurity.stepTitle', { defaultValue: 'Инструкция по подключению 2FA' })}
+              </h3>
+              <button
+                onClick={() => { setPhase('idle'); setSetupData(null); }}
+                className="text-xs font-semibold text-gray-500 hover:text-gray-800"
+              >
+                Отмена
+              </button>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
               <div className="flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 shadow-inner">
@@ -178,10 +205,19 @@ export function AdminSecurityPage() {
         {/* Disable Modal / Inline */}
         {phase === 'disable' && (
           <form onSubmit={handleDisable2FA} className="p-6 border border-red-100 bg-red-50/30 rounded-2xl space-y-4">
-            <h3 className="text-lg font-bold text-red-900 flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-red-600" />
-              Отключение двухфакторной аутентификации
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-red-900 flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-red-600" />
+                Отключение двухфакторной аутентификации
+              </h3>
+              <button
+                type="button"
+                onClick={() => { setPhase('idle'); setDisableCode(''); }}
+                className="text-xs font-semibold text-gray-500 hover:text-gray-800"
+              >
+                Отмена
+              </button>
+            </div>
             <p className="text-sm text-gray-600">
               Для подтверждения отключения 2FA введите текущий 6-значный код из вашего приложения Authenticator:
             </p>

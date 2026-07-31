@@ -16,7 +16,8 @@ public record AuthResponse(
         AuthProvider authProvider,
         String locale,
         Boolean requires2FA,
-        String preAuthToken
+        String preAuthToken,
+        Boolean twoFactorEnabled
 ) {
     public AuthResponse(
             String accessToken,
@@ -31,10 +32,10 @@ public record AuthResponse(
             AuthProvider authProvider,
             String locale
     ) {
-        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null);
+        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null, false);
     }
 
     public static AuthResponse requires2FA(String preAuthToken) {
-        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken);
+        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, true);
     }
 }

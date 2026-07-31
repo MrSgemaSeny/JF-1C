@@ -159,7 +159,10 @@ public class AuthService {
                 false,
                 user.getAvatarUrl(),
                 user.getAuthProvider(),
-                user.getLocale()
+                user.getLocale(),
+                false,
+                null,
+                user.isTwoFactorEnabled()
         );
     }
 
