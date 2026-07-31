@@ -906,6 +906,7 @@
     "errorBoundary": {
       "title": "Something went wrong",
       "unknown": "Unknown error",
+      "chunkError": "The application has been updated. Please reload the page to continue.",
       "reload": "Reload page"
     },
     "successModal": {

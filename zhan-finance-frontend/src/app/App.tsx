@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense, useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
+import { lazyWithRetry as lazy } from '@/shared/lib/react/lazyWithRetry';
 import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 import { Spinner } from '@/shared/ui/Spinner';
 import { ROUTES } from '@/shared/config/routes';
