@@ -102,27 +102,26 @@ export const LeadsPage = () => {
   const sortedLeads = leads ? [...leads].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) : [];
 
   return (
-    <div className="flex flex-col h-full bg-gray-50/50 w-full">
-      <header className="px-4 md:px-8 py-4 md:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0 border-b border-gray-200 bg-white">
+    <div className="space-y-6 max-w-[1600px] mx-auto pb-16">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-6 rounded-2xl border border-gray-200/80 shadow-2xs">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2 md:gap-3">
+          <h1 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2 md:gap-3">
             <div className="p-1.5 md:p-2 bg-brand-green/10 text-brand-green rounded-lg md:rounded-xl">
               <LayoutList size={20} className="md:w-6 md:h-6" />
             </div>
             {t('admin.leads.title', { defaultValue: 'Входящие заявки' })}
-            <span className="rounded-full px-2 py-0.5 text-[10px] md:text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">
+            <span className="rounded-full px-2.5 py-0.5 text-[10px] md:text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
               {leads?.length || 0}
             </span>
           </h1>
-          <p className="text-xs md:text-sm text-gray-500 mt-1">
+          <p className="text-xs md:text-sm text-gray-500 font-medium mt-1">
             {t('admin.leads.subtitle', { defaultValue: 'Обработка новых заявок с сайта и квизов' })}
           </p>
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto p-0 md:p-8">
-        <div className="bg-white md:rounded-xl shadow-sm border-y md:border-x border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto custom-scrollbar">
+      <main className="bg-white rounded-2xl border border-gray-200/80 shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="bg-gray-50/80 border-b border-gray-200 text-gray-500 text-[10px] md:text-xs uppercase tracking-wider font-semibold">
@@ -192,8 +191,7 @@ export const LeadsPage = () => {
               </tbody>
             </table>
           </div>
-        </div>
-      </main>
-    </div>
-  );
-};
+        </main>
+      </div>
+    );
+  };
