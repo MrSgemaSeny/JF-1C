@@ -35,6 +35,11 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String uri = request.getRequestURI();
         // Применяем лимит ко всем /api/v1/, КРОМЕ /api/v1/auth/ и /api/auth/ (они защищаются AuthRateLimitFilter)
         if (!uri.startsWith("/api/v1/") || uri.startsWith("/api/v1/auth/") || uri.startsWith("/api/auth/")) {
