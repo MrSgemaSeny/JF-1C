@@ -14,6 +14,9 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByUserIdOrTaskClientId(@org.springframework.data.repository.query.Param("userId") Long userId);
     
     List<Document> findByUser_AssignedEmployee_IdOrderByCreatedAtDesc(Long employeeId);
+    
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT d FROM Document d LEFT JOIN d.user u LEFT JOIN d.task t WHERE u.assignedEmployee.id = :employeeId OR d.uploadedBy.id = :employeeId OR t.assignedTo.id = :employeeId ORDER BY d.createdAt DESC")
+    List<Document> findForEmployee(@org.springframework.data.repository.query.Param("employeeId") Long employeeId);
     List<Document> findAllByOrderByCreatedAtDesc();
     List<Document> findByTaskIdOrderByCreatedAtDesc(Long taskId);
     java.util.Optional<Document> findByStorageKey(String storageKey);

@@ -537,6 +537,13 @@ public class TaskService {
             auditService.logAction("UPDATE_ASSIGNEE", "Task", task.getId(), "Assignee changed from " + oldAssigneeName + " to " + assignee.getFullName());
         }
         task.setAssignedTo(assignee);
+        if (task.getStage() != null && task.getStage().getType() == com.example.zhanfinancebackend.modules.crm.entity.StageType.LOST) {
+            Long pipelineId = task.getStage().getPipeline() != null ? task.getStage().getPipeline().getId() : 1L;
+            com.example.zhanfinancebackend.modules.crm.entity.Stage firstStage = stageRepository.findByPipelineIdOrderByOrderIndexAsc(pipelineId)
+                    .stream().findFirst().orElse(task.getStage());
+            task.setStage(firstStage);
+            logActivity(task, user, "Возобновил отмененную задачу из пула: стадия " + firstStage.getName());
+        }
 
         Task savedTask = taskRepository.save(task);
 

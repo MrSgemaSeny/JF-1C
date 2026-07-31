@@ -1,12 +1,27 @@
-import { useEffect, useState, useRef } from 'react';
-import { getAllDocuments, uploadDocument, downloadDocument, deleteDocument } from '@/entities/document/api/documentApi';
+import { useEffect, useState, useRef, useMemo } from 'react';
+import { getAllDocuments, uploadDocument, downloadDocument, deleteDocument, downloadZipArchive } from '@/entities/document/api/documentApi';
 import { getClients } from '@/entities/client/api/clientApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 import type { ClientDto } from '@/entities/client/model/types';
 import { Spinner } from '@/shared/ui/Spinner';
-import { Upload, Download, Trash2, FileText, FileSpreadsheet, File as FileIcon } from 'lucide-react';
+import { 
+  Upload, Download, Trash2, FileText, FileSpreadsheet, File as FileIcon, 
+  Search, Folder, Archive, ShieldCheck, CheckCircle2, List, LayoutGrid, 
+  ArrowUpDown, X, FileArchive, Users
+} from 'lucide-react';
 import { clsx } from 'clsx';
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
+
+const FOLDERS = [
+  { id: 'all', key: 'documents.folders.all', defaultLabel: 'Все документы' },
+  { id: 'acts', key: 'documents.folders.acts', defaultLabel: 'Акты ВР' },
+  { id: 'reports', key: 'documents.folders.reports', defaultLabel: 'Отчеты' },
+  { id: 'contracts', key: 'documents.folders.contracts', defaultLabel: 'Договоры' },
+  { id: 'other', key: 'documents.folders.other', defaultLabel: 'Разное' },
+];
+
+const ACCEPT_ATTRIBUTE = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.zip,.rar,.7z';
 
 export function EmployeeDocumentsPage() {
   const { t } = useTranslation(['common']);
@@ -17,6 +32,15 @@ export function EmployeeDocumentsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [selectedFolder, setSelectedFolder] = useState<string>('all');
+  const [uploaderFilter, setUploaderFilter] = useState<'all' | 'staff' | 'client'>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+  const [sortBy, setSortBy] = useState<'date-desc' | 'date-asc' | 'name' | 'size'>('date-desc');
+
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -34,7 +58,7 @@ export function EmployeeDocumentsPage() {
       setDocuments(docsData);
       setClients(clientsData);
     } catch (err) {
-      setError(t('employeeDocuments.loadError'));
+      setError(t('employeeDocuments.loadError', { defaultValue: 'Не удалось загрузить документы' }));
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -43,7 +67,7 @@ export function EmployeeDocumentsPage() {
 
   const processFileUpload = async (file: File) => {
     if (!selectedClientId) {
-      setError(t('employeeDocuments.selectClientError'));
+      toast.error(t('employeeDocuments.selectClientError', { defaultValue: 'Выберите клиента перед загрузкой файла' }));
       return;
     }
     
@@ -51,15 +75,18 @@ export function EmployeeDocumentsPage() {
     setError(null);
     try {
       await uploadDocument(file, Number(selectedClientId));
+      toast.success(t('employeeDocuments.uploadSuccess', { defaultValue: 'Файл успешно загружен' }));
       
       const docsData = await getAllDocuments();
       setDocuments(docsData);
+      setSelectedFolder('all');
+      setSearchQuery('');
       
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    } catch (err) {
-      setError(t('employeeDocuments.uploadError'));
+    } catch (err: any) {
+      toast.error(err?.message || t('employeeDocuments.uploadError', { defaultValue: 'Ошибка при загрузке документа' }));
       console.error(err);
     } finally {
       setIsUploading(false);
@@ -99,20 +126,120 @@ export function EmployeeDocumentsPage() {
       await downloadDocument(doc.id, doc.fileName);
     } catch (err) {
       console.error('Failed to download', err);
-      alert(t('employeeDocuments.downloadError'));
+      toast.error(t('employeeDocuments.downloadError', { defaultValue: 'Ошибка скачивания' }));
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm(t('employeeDocuments.deleteConfirm'))) return;
+    if (!window.confirm(t('employeeDocuments.deleteConfirm', { defaultValue: 'Удалить этот документ?' }))) return;
     try {
       await deleteDocument(id);
-      const docsData = await getAllDocuments();
-      setDocuments(docsData);
+      toast.success(t('employeeDocuments.deleteSuccess', { defaultValue: 'Документ удален' }));
+      setDocuments(prev => prev.filter(d => d.id !== id));
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     } catch (err) {
       console.error('Failed to delete', err);
-      alert(t('employeeDocuments.deleteError'));
+      toast.error(t('employeeDocuments.deleteError', { defaultValue: 'Не удалось удалить документ' }));
     }
+  };
+
+  const handleDownloadZip = async () => {
+    if (selectedIds.size === 0) return;
+    setIsDownloadingZip(true);
+    try {
+      await downloadZipArchive(Array.from(selectedIds));
+      toast.success(t('documents.zipSuccess', { defaultValue: 'Архив успешно скачан' }));
+    } catch (err) {
+      console.error('Failed zip download', err);
+      toast.error(t('documents.zipError', { defaultValue: 'Ошибка при создании архива' }));
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  };
+
+  const isUploadedByClient = (doc: DocumentDto) => {
+    return doc.uploadedByRole === 'CLIENT' || doc.uploadedByRole === 'LEARNER';
+  };
+
+  const getDocCategory = (doc: DocumentDto): 'acts' | 'reports' | 'contracts' | 'other' => {
+    const docFolder = (doc.folder || '').toLowerCase();
+    const fileName = doc.fileName.toLowerCase();
+    if (docFolder.includes('акт') || docFolder.includes('act') || fileName.includes('акт') || fileName.includes('act')) return 'acts';
+    if (docFolder.includes('отчет') || docFolder.includes('report') || fileName.includes('отчет') || fileName.includes('report')) return 'reports';
+    if (docFolder.includes('договор') || docFolder.includes('contract') || fileName.includes('договор') || fileName.includes('contract')) return 'contracts';
+    return 'other';
+  };
+
+  // Filter and Sort documents
+  const filteredDocuments = useMemo(() => {
+    return documents
+      .filter((doc) => {
+        // Client filter dropdown
+        if (selectedClientId && doc.userId !== Number(selectedClientId)) return false;
+
+        // Source uploader filter
+        const clientUpload = isUploadedByClient(doc);
+        if (uploaderFilter === 'staff' && clientUpload) return false;
+        if (uploaderFilter === 'client' && !clientUpload) return false;
+
+        // Folder filter
+        if (selectedFolder !== 'all') {
+          if (getDocCategory(doc) !== selectedFolder) return false;
+        }
+
+        // Search query filter
+        const matchesSearch = !searchQuery || doc.fileName.toLowerCase().includes(searchQuery.toLowerCase()) || (doc.clientName && doc.clientName.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        return matchesSearch;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'date-desc') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        if (sortBy === 'date-asc') return new Date(a.createdAt).getTime() - new Date(a.createdAt).getTime();
+        if (sortBy === 'name') return a.fileName.localeCompare(b.fileName);
+        if (sortBy === 'size') return b.fileSize - a.fileSize;
+        return 0;
+      });
+  }, [documents, selectedClientId, uploaderFilter, selectedFolder, searchQuery, sortBy]);
+
+  // Counts per folder
+  const folderCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: documents.length, acts: 0, reports: 0, contracts: 0, other: 0 };
+    documents.forEach(doc => {
+      if (selectedClientId && doc.userId !== Number(selectedClientId)) return;
+      const cat = getDocCategory(doc);
+      counts[cat]++;
+    });
+    return counts;
+  }, [documents, selectedClientId]);
+
+  // Metrics summary
+  const metrics = useMemo(() => {
+    const relevantDocs = selectedClientId ? documents.filter(d => d.userId === Number(selectedClientId)) : documents;
+    const total = relevantDocs.length;
+    const awaiting = relevantDocs.filter(d => d.status !== 'CONFIRMED' && !isUploadedByClient(d)).length;
+    const signed = relevantDocs.filter(d => d.status === 'CONFIRMED').length;
+    return { total, awaiting, signed };
+  }, [documents, selectedClientId]);
+
+  const toggleSelectAll = (filteredList: DocumentDto[]) => {
+    if (selectedIds.size === filteredList.length && filteredList.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredList.map(d => d.id)));
+    }
+  };
+
+  const toggleSelectOne = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   const formatFileSize = (bytes: number) => {
@@ -120,35 +247,44 @@ export function EmployeeDocumentsPage() {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   };
 
   const getDocTypeInfo = (type: string) => {
-    if (type.includes('pdf')) return { label: 'PDF', color: 'bg-red-100 text-red-700', icon: FileText };
-    if (type.includes('spreadsheet') || type.includes('excel')) return { label: 'EXCEL', color: 'bg-emerald-100 text-emerald-700', icon: FileSpreadsheet };
-    if (type.includes('wordprocessing') || type.includes('word')) return { label: 'WORD', color: 'bg-blue-100 text-blue-700', icon: FileText };
-    if (type.includes('csv')) return { label: 'CSV', color: 'bg-emerald-100 text-emerald-700', icon: FileSpreadsheet };
-    if (type.includes('xml')) return { label: 'XML', color: 'bg-orange-100 text-orange-700', icon: FileIcon };
-    return { label: type.split('/').pop()?.toUpperCase() || 'FILE', color: 'bg-gray-100 text-gray-700', icon: FileIcon };
+    const tLower = (type || '').toLowerCase();
+    if (tLower.includes('pdf'))
+      return { label: 'PDF', icon: FileText, bg: 'bg-red-50 text-red-700 border-red-200' };
+    if (tLower.includes('spreadsheet') || tLower.includes('excel') || tLower.includes('xls') || tLower.includes('csv'))
+      return { label: 'EXCEL', icon: FileSpreadsheet, bg: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
+    if (tLower.includes('word') || tLower.includes('docx') || tLower.includes('doc'))
+      return { label: 'WORD', icon: FileText, bg: 'bg-blue-50 text-blue-700 border-blue-200' };
+    if (tLower.includes('zip') || tLower.includes('compressed') || tLower.includes('rar') || tLower.includes('7z'))
+      return { label: 'ZIP', icon: FileArchive, bg: 'bg-amber-50 text-amber-700 border-amber-200' };
+    return { label: type.split('/').pop()?.toUpperCase() || 'FILE', icon: FileIcon, bg: 'bg-gray-50 text-gray-700 border-gray-200' };
   };
 
   return (
-    <div className="space-y-6 w-full max-w-full overflow-hidden flex flex-col">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('employeeDocuments.title')}</h1>
-        <p className="text-gray-500 text-sm mt-1">{t('employeeDocuments.subtitle')}</p>
-      </div>
+    <div className="space-y-6 max-w-[1600px] mx-auto pb-16">
+      {/* Header & Metrics */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+            {t('employeeDocuments.title', { defaultValue: 'Документы клиентов' })}
+          </h1>
+          <p className="text-gray-500 text-sm font-medium mt-1">
+            {t('employeeDocuments.subtitle', { defaultValue: 'Управление документами подопечных клиентов компании' })}
+          </p>
+        </div>
 
-      {/* Upload Zone */}
-      <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
-        <div className="max-w-md w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('employeeDocuments.uploadLabel')}</label>
+        {/* Client Filter Selector */}
+        <div className="flex items-center gap-2 bg-white p-2 rounded-2xl border border-gray-200/80 shadow-2xs">
+          <Users size={16} className="text-gray-400 ml-2" />
           <select
             value={selectedClientId}
             onChange={(e) => setSelectedClientId(e.target.value === '' ? '' : Number(e.target.value))}
-            className="w-full rounded-xl border-gray-300 shadow-sm focus:border-brand-green focus:ring-brand-green sm:text-sm py-2.5 px-3 border truncate"
+            className="bg-transparent text-xs font-bold text-gray-800 border-none focus:ring-0 py-1 pr-8 cursor-pointer"
           >
-            <option value="">{t('employeeDocuments.selectClientOption')}</option>
+            <option value="">Все подопечные клиенты</option>
             {clients.map(client => (
               <option key={client.id} value={client.user.id}>
                 {client.user.fullName} ({client.user.email})
@@ -156,13 +292,49 @@ export function EmployeeDocumentsPage() {
             ))}
           </select>
         </div>
+      </div>
 
+      {/* Metrics Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-2xs flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center font-bold">
+            <FileText size={22} />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Всего документов</p>
+            <p className="text-2xl font-black text-gray-900 mt-0.5">{metrics.total}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-2xs flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <Archive size={22} />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Ожидают подписи</p>
+            <p className="text-2xl font-black text-amber-600 mt-0.5">{metrics.awaiting}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-2xs flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <ShieldCheck size={22} />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Подписано</p>
+            <p className="text-2xl font-black text-blue-600 mt-0.5">{metrics.signed}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Upload Zone */}
+      <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-2xs space-y-4">
         <div 
           className={clsx(
-            "relative border-2 border-dashed rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center transition-all group w-full overflow-hidden",
-            !selectedClientId ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200" : "cursor-pointer",
-            isDragging && selectedClientId ? "border-brand-green bg-green-50/50" : "",
-            selectedClientId && !isDragging ? "border-gray-200 bg-white hover:border-brand-green/50 hover:bg-gray-50" : ""
+            'border-2 border-dashed rounded-2xl p-6 md:p-8 text-center transition-all flex flex-col items-center justify-center gap-3 relative overflow-hidden group',
+            !selectedClientId ? 'opacity-60 cursor-not-allowed bg-gray-50 border-gray-200' : 'cursor-pointer',
+            isDragging && selectedClientId ? 'border-brand-green bg-emerald-50/60 shadow-md scale-[1.003]' : '',
+            selectedClientId && !isDragging ? 'border-gray-200/80 bg-white hover:border-brand-green/50 hover:bg-gray-50/60 hover:shadow-2xs' : ''
           )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -171,123 +343,304 @@ export function EmployeeDocumentsPage() {
             if (selectedClientId) fileInputRef.current?.click();
           }}
         >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileSelect}
-            className="hidden"
-            accept=".pdf,.xlsx,.xml,.csv,.docx"
-            disabled={!selectedClientId || isUploading}
+          <input 
+            ref={fileInputRef} 
+            type="file" 
+            accept={ACCEPT_ATTRIBUTE} 
+            className="hidden" 
+            onChange={handleFileSelect} 
+            disabled={!selectedClientId || isUploading} 
           />
-          
-          {isUploading ? (
-            <div className="flex flex-col items-center">
-              <Spinner size="lg" />
-              <p className="mt-4 text-sm font-medium text-gray-900">{t('employeeDocuments.uploading')}</p>
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xs">
+            {isUploading ? <Spinner className="w-6 h-6 text-brand-green" /> : <Upload size={22} />}
+          </div>
+          <div>
+            <p className="text-sm font-bold text-gray-900">
+              {!selectedClientId 
+                ? 'Выберите клиента выше для загрузки документа' 
+                : isUploading 
+                ? 'Загрузка документа...' 
+                : 'Перетащите файл или нажмите для загрузки'}
+            </p>
+            <p className="text-xs font-medium text-gray-400 mt-1">PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ</p>
+          </div>
+        </div>
+
+        {error && (
+          <div className="p-4 bg-red-50 text-red-700 border border-red-200 rounded-xl text-sm font-medium">
+            {error}
+          </div>
+        )}
+      </div>
+
+      {/* Navigation Controls: Folders + Source Filters + Search + Sort + View */}
+      <div className="flex flex-col gap-3 bg-white border border-gray-200/80 p-3.5 rounded-2xl shadow-2xs">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pb-3 border-b border-gray-100">
+          {/* Folder Tabs (hide empty ones except 'all') */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+            {FOLDERS.map((f) => {
+              const isSelected = selectedFolder === f.id;
+              const count = folderCounts[f.id] || 0;
+              if (f.id !== 'all' && count === 0 && !isSelected) return null;
+
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setSelectedFolder(f.id)}
+                  className={clsx(
+                    'px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap border',
+                    isSelected
+                      ? 'bg-brand-green text-white border-brand-green shadow-xs'
+                      : 'bg-gray-50 text-gray-600 border-gray-200/60 hover:bg-gray-100 hover:text-gray-900'
+                  )}
+                >
+                  <Folder size={14} className={isSelected ? 'text-white' : 'text-gray-400'} />
+                  <span>{t(f.key, { defaultValue: f.defaultLabel })}</span>
+                  <span
+                    className={clsx(
+                      'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold',
+                      isSelected ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-600'
+                    )}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Source Uploader Filter */}
+          <div className="flex items-center bg-gray-100/90 p-1 rounded-xl border border-gray-200/60 shrink-0">
+            <button
+              type="button"
+              onClick={() => setUploaderFilter('all')}
+              className={clsx(
+                'px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                uploaderFilter === 'all' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+              )}
+            >
+              Все источники
+            </button>
+            <button
+              type="button"
+              onClick={() => setUploaderFilter('staff')}
+              className={clsx(
+                'px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
+                uploaderFilter === 'staff' ? 'bg-white text-brand-green shadow-xs' : 'text-gray-500 hover:text-gray-900'
+              )}
+            >
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+              От компании
+            </button>
+            <button
+              type="button"
+              onClick={() => setUploaderFilter('client')}
+              className={clsx(
+                'px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
+                uploaderFilter === 'client' ? 'bg-white text-blue-700 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+              )}
+            >
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              От клиентов
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom bar: Search + Sort + Actions */}
+        <div className="flex items-center gap-2.5 flex-wrap justify-between pt-1">
+          <div className="relative flex-1 min-w-[200px] max-w-md">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Поиск по файлам или клиенту..."
+              className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:bg-white transition-all"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {selectedIds.size > 0 && (
+              <button
+                type="button"
+                onClick={handleDownloadZip}
+                disabled={isDownloadingZip}
+                className="px-3.5 py-2 bg-brand-green hover:bg-brand-green/90 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-2xs cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {isDownloadingZip ? <Spinner className="w-3.5 h-3.5 text-white" /> : <Archive size={14} />}
+                <span>Скачать ZIP ({selectedIds.size})</span>
+              </button>
+            )}
+
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e: any) => setSortBy(e.target.value)}
+                className="appearance-none pl-3 pr-8 py-2 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-green/20 cursor-pointer"
+              >
+                <option value="date-desc">Сначала новые</option>
+                <option value="date-asc">Сначала старые</option>
+                <option value="name">По названию (А-Я)</option>
+                <option value="size">По размеру</option>
+              </select>
+              <ArrowUpDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
-          ) : (
-            <>
-              <div className={clsx(
-                "w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-colors",
-                isDragging ? "bg-brand-green text-white" : "bg-gray-100 text-gray-500",
-                selectedClientId && "group-hover:bg-brand-green/10 group-hover:text-brand-green"
-              )}>
-                <Upload className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-semibold text-gray-900 mb-1">
-                {!selectedClientId ? t('employeeDocuments.selectClientFirst') : isDragging ? t('employeeDocuments.dropHere') : t('employeeDocuments.clickOrDrag')}
-              </h3>
-              <p className="text-gray-500 text-xs max-w-sm">
-                {t('employeeDocuments.supports')}
-              </p>
-            </>
-          )}
+
+            <div className="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200/60">
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                className={clsx(
+                  'p-1.5 rounded-lg transition-all cursor-pointer',
+                  viewMode === 'table' ? 'bg-white text-brand-green shadow-xs' : 'text-gray-400 hover:text-gray-700'
+                )}
+                title="Таблица"
+              >
+                <List size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={clsx(
+                  'p-1.5 rounded-lg transition-all cursor-pointer',
+                  viewMode === 'grid' ? 'bg-white text-brand-green shadow-xs' : 'text-gray-400 hover:text-gray-700'
+                )}
+                title="Сетка"
+              >
+                <LayoutGrid size={16} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {error && (
-        <div className="p-4 bg-red-50/80 border border-red-100 rounded-xl flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-red-500"></div>
-          <p className="text-red-800 text-sm font-medium">{error}</p>
+      {/* Main Content Area */}
+      {isLoading ? (
+        <div className="py-20 flex justify-center bg-white border border-gray-200/80 rounded-2xl shadow-2xs">
+          <Spinner />
         </div>
-      )}
-
-      {/* Documents Table */}
-      <div className="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden w-full flex-1">
-        {isLoading ? (
-          <div className="py-12 flex justify-center">
-            <Spinner />
+      ) : filteredDocuments.length === 0 ? (
+        <div className="bg-white border border-gray-200/80 rounded-2xl p-12 text-center shadow-2xs">
+          <div className="w-16 h-16 bg-emerald-50 text-brand-green rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FileIcon size={28} />
           </div>
-        ) : documents.length === 0 ? (
-          <div className="text-center py-16 px-4">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileIcon className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-gray-900 font-medium mb-1">{t('employeeDocuments.noDocs')}</h3>
-            <p className="text-gray-500 text-sm">{t('employeeDocuments.noDocsSubtext')}</p>
-          </div>
-        ) : (
+          <h3 className="text-gray-900 font-bold text-base mb-1">Документы не найдены</h3>
+          <p className="text-gray-500 text-xs max-w-sm mx-auto">
+            Попробуйте изменить выбранного клиента, категорию или поисковый запрос.
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
           <div className="overflow-x-auto w-full">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docName')}</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docClient')}</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docType')}</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docSize')}</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs">{t('employeeDocuments.docDate')}</th>
-                  <th className="px-6 py-4 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">{t('employeeDocuments.docActions')}</th>
+                <tr className="bg-gray-50/80 border-b border-gray-200/80 text-xs font-bold text-gray-500">
+                  <th className="px-4 py-4 w-10 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.size === filteredDocuments.length && filteredDocuments.length > 0}
+                      onChange={() => toggleSelectAll(filteredDocuments)}
+                      className="rounded border-gray-300 text-brand-green focus:ring-brand-green cursor-pointer"
+                    />
+                  </th>
+                  <th className="px-6 py-4">Название файла</th>
+                  <th className="px-6 py-4">Клиент</th>
+                  <th className="px-6 py-4">Тип</th>
+                  <th className="px-6 py-4">Статус подписи</th>
+                  <th className="px-6 py-4">Размер</th>
+                  <th className="px-6 py-4 text-right">Действия</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
-                {documents.map((doc) => {
-                  const typeInfo = getDocTypeInfo(doc.contentType);
-                  const Icon = typeInfo.icon;
+              <tbody className="divide-y divide-gray-100 font-medium">
+                {filteredDocuments.map((doc) => {
+                  const info = getDocTypeInfo(doc.contentType);
+                  const Icon = info.icon;
+                  const isSelected = selectedIds.has(doc.id);
+                  const isConfirmed = doc.status === 'CONFIRMED';
+                  const clientUploaded = isUploadedByClient(doc);
+
                   return (
-                    <tr key={doc.id} className="hover:bg-gray-50/50 transition-colors group">
+                    <tr key={doc.id} className={clsx('hover:bg-gray-50/70 transition-colors', isSelected && 'bg-emerald-50/30')}>
+                      <td className="px-4 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelectOne(doc.id)}
+                          className="rounded border-gray-300 text-brand-green focus:ring-brand-green cursor-pointer"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={clsx("p-2 rounded-lg", typeInfo.color.replace('text-', 'bg-opacity-20 text-').split(' ')[0])}>
-                             <Icon className={clsx("w-4 h-4", typeInfo.color.split(' ')[1])} />
+                          <div className={clsx('w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 border', info.bg)}>
+                            <Icon size={18} />
                           </div>
-                          <span className="font-medium text-gray-900 truncate max-w-[200px] sm:max-w-[250px]">
-                            {doc.fileName}
-                          </span>
+                          <div>
+                            <span className="font-bold text-gray-900 truncate max-w-md block" title={doc.fileName}>
+                              {doc.fileName}
+                            </span>
+                            <span className="text-[11px] text-gray-400 font-normal">
+                              {new Date(doc.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          <span className="text-gray-900 font-medium">{doc.clientName || t('employeeDocuments.unknownClient')}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={clsx("px-2.5 py-1 rounded-md text-xs font-semibold", typeInfo.color)}>
-                          {typeInfo.label}
+                        <span className="text-xs font-bold text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/60">
+                          {doc.clientName || 'Клиент системный'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-600 font-medium">
+                      <td className="px-6 py-4">
+                        <span className={clsx('text-xs font-bold px-2.5 py-1 rounded-lg border', info.bg)}>
+                          {info.label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {clientUploaded ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200/80 rounded-full font-bold text-xs shadow-2xs">
+                            <Upload size={13} />
+                            От клиента
+                          </span>
+                        ) : isConfirmed ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full font-bold text-xs shadow-2xs">
+                            <ShieldCheck size={14} />
+                            Подписано {doc.confirmedAt ? new Date(doc.confirmedAt).toLocaleDateString() : ''}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200/80 rounded-full font-bold text-xs shadow-2xs">
+                            <CheckCircle2 size={13} />
+                            Ожидает подписи
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-gray-500 text-xs font-semibold">
                         {formatFileSize(doc.fileSize)}
                       </td>
-                      <td className="px-6 py-4 text-gray-500">
-                        {new Date(doc.createdAt).toLocaleDateString(undefined, {
-                          year: 'numeric', month: 'short', day: 'numeric'
-                        })}
-                      </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
+                        <div className="flex items-center justify-end gap-1">
                           <button
+                            type="button"
                             onClick={() => handleDownload(doc)}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors tooltip"
-                            title="Download"
+                            className="p-2 text-gray-400 hover:text-brand-green hover:bg-emerald-50 rounded-xl transition-all cursor-pointer"
+                            title="Скачать"
                           >
-                            <Download className="w-4 h-4" />
+                            <Download size={18} />
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleDelete(doc.id)}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors tooltip"
-                            title="Delete"
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                            title="Удалить"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </td>
@@ -297,8 +650,8 @@ export function EmployeeDocumentsPage() {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

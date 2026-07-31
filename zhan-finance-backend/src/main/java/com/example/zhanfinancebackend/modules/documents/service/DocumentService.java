@@ -180,12 +180,12 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public List<DocumentDto> getAllVisibleDocuments(User actor) {
-        if (actor.getRole() == Role.ADMIN) {
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
             return documentRepository.findAllByOrderByCreatedAtDesc().stream()
                     .map(this::mapToDto)
                     .collect(Collectors.toList());
         } else if (actor.getRole() == Role.EMPLOYEE) {
-            return documentRepository.findByUser_AssignedEmployee_IdOrderByCreatedAtDesc(actor.getId()).stream()
+            return documentRepository.findForEmployee(actor.getId()).stream()
                     .map(this::mapToDto)
                     .collect(Collectors.toList());
         } else {
