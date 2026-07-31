@@ -39,6 +39,7 @@ public class GoogleAuthService {
     private final ClientService clientService;
     private final NotificationService notificationService;
     private final EmailNotificationService emailNotificationService;
+    private final TwoFactorService twoFactorService;
 
     public GoogleAuthService(
 
@@ -47,7 +48,8 @@ public class GoogleAuthService {
             RefreshTokenService refreshTokenService,
             ClientService clientService,
             NotificationService notificationService,
-            EmailNotificationService emailNotificationService
+            EmailNotificationService emailNotificationService,
+            TwoFactorService twoFactorService
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
@@ -55,6 +57,7 @@ public class GoogleAuthService {
         this.clientService = clientService;
         this.notificationService = notificationService;
         this.emailNotificationService = emailNotificationService;
+        this.twoFactorService = twoFactorService;
     }
 
     @Transactional
@@ -142,6 +145,11 @@ public class GoogleAuthService {
         emailNotificationService.sendWelcomeEmail(user);
         
         isNewUser = true;
+        }
+
+        if (user.isTwoFactorEnabled()) {
+            String preAuthToken = twoFactorService.createPreAuthToken(user);
+            return AuthResponse.requires2FA(preAuthToken);
         }
 
         RefreshToken refreshToken = refreshTokenService.create(user);

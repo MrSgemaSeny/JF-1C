@@ -27,7 +27,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ requires2FA?: boolean; preAuthToken?: string } | void>;
   completeAuth: (response: authApi.AuthResponse) => void;
-  loginWithGoogle: (credential: string, role?: 'CLIENT' | 'EMPLOYEE') => Promise<{ isPendingApproval: boolean; isNewUser: boolean }>;
+  loginWithGoogle: (credential: string, role?: 'CLIENT' | 'EMPLOYEE') => Promise<{ requires2FA?: boolean; preAuthToken?: string; isPendingApproval?: boolean; isNewUser?: boolean }>;
   register: (req: authApi.RegisterRequest) => Promise<{ isPendingApproval: boolean }>;
   logout: () => void;
 }
@@ -140,6 +140,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const response = await authApi.loginWithGoogle(credential, role);
         if (response) {
+          if (response.requires2FA && response.preAuthToken) {
+            return { requires2FA: true, preAuthToken: response.preAuthToken };
+          }
           setUser(toStoredAuth(response));
           return { isPendingApproval: false, isNewUser: !!response.isNewUser };
         } else {

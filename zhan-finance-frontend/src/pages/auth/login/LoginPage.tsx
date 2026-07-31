@@ -35,6 +35,11 @@ export function LoginPage() {
     setIsSubmitting(true);
     try {
       const result = await loginWithGoogle(credentialResponse.credential);
+      if (result?.requires2FA && result.preAuthToken) {
+        setPreAuthToken(result.preAuthToken);
+        setStep('TOTP');
+        return;
+      }
       if (result.isPendingApproval) {
         toast.warning(t('auth.login.pendingApproval'));
       } else if (result.isNewUser) {
