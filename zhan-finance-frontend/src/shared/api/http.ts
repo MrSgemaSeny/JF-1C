@@ -103,6 +103,8 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
         ? `Превышен лимит запросов. Повторите попытку через ${retryAfter} сек.`
         : 'Превышен лимит запросов. Пожалуйста, подождите.';
       toast.error(msg, { duration: 5000 });
+    } else if (response.status !== 401) {
+      toast.error(errorMessage, { duration: 6000 });
     }
 
     throw new ApiError(errorMessage, response.status, code, details, requestId);
@@ -199,6 +201,8 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
 
     if (response.status === 403) {
       toast.error(i18n.t('common.accessDenied', { defaultValue: 'У вас нет доступа к этому ресурсу.' }), { duration: 5000 });
+    } else if (response.status !== 401) {
+      toast.error(errorMessage, { duration: 6000 });
     }
 
     throw new ApiError(errorMessage, response.status, code, details, requestId);
