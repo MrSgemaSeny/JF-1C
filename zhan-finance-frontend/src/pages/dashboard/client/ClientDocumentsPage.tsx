@@ -481,22 +481,6 @@ export function ClientDocumentsPage() {
               </button>
             )}
           </div>
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('documents.searchPlaceholder', { defaultValue: 'Поиск по названию файла...' })}
-              className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:bg-white transition-all"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
 
           {/* Sort Dropdown */}
           <div className="relative">

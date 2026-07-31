@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { getAllDocuments, uploadDocument, downloadDocument, deleteDocument, downloadZipArchive } from '@/entities/document/api/documentApi';
+import { getAllDocuments, uploadDocument, downloadDocument, deleteDocument, downloadZipDocuments } from '@/entities/document/api/documentApi';
 import { getClients } from '@/entities/client/api/clientApi';
 import type { DocumentDto } from '@/entities/document/model/types';
 import type { ClientDto } from '@/entities/client/model/types';
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useTranslation } from 'react-i18next';
-import toast from 'react-hot-toast';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 const FOLDERS = [
   { id: 'all', key: 'documents.folders.all', defaultLabel: 'Все документы' },
@@ -151,7 +151,7 @@ export function EmployeeDocumentsPage() {
     if (selectedIds.size === 0) return;
     setIsDownloadingZip(true);
     try {
-      await downloadZipArchive(Array.from(selectedIds));
+      await downloadZipDocuments(Array.from(selectedIds));
       toast.success(t('documents.zipSuccess', { defaultValue: 'Архив успешно скачан' }));
     } catch (err) {
       console.error('Failed zip download', err);

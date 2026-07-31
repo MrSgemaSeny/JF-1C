@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { DatePicker } from '@/shared/ui/DatePicker';
 import { ROUTES } from '@/shared/config/routes';
-import toast from 'react-hot-toast';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 10;
@@ -24,7 +24,7 @@ function formatFileSize(bytes: number): string {
 
 interface ServiceModalProps {
   item: ServiceDto;
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
   onRequest?: (service: ServiceDto, message?: string, preferredDate?: string, files?: File[]) => Promise<void>;
   onGuestRequest?: (service: ServiceDto, name: string, phone: string, message?: string, preferredDate?: string, files?: File[]) => Promise<void>;
