@@ -82,7 +82,7 @@ export function ClientDocumentsPage() {
     setError(null);
     try {
       if (user?.userId) {
-        const data = await getDocuments();
+        const data = await getDocuments(user.userId);
         setDocuments(data);
       }
     } catch (err) {
