@@ -75,6 +75,7 @@ class TwoFactorServiceTest {
         preAuth.setExpiresAt(LocalDateTime.now().plusMinutes(5));
 
         when(preAuthRepository.findByToken("valid-token")).thenReturn(Optional.of(preAuth));
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
 
         User result = twoFactorService.validatePreAuthToken("valid-token");
 
