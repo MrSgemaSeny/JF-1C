@@ -36,6 +36,6 @@ public record AuthResponse(
     }
 
     public static AuthResponse requires2FA(String preAuthToken) {
-        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, true);
+        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false);
     }
 }
