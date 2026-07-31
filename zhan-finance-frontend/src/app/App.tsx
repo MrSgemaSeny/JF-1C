@@ -39,6 +39,7 @@ const AdminSubscriptionsPage = lazy(() => import('@/pages/dashboard/admin/billin
 const AdminAuditLogPage = lazy(() => import('@/pages/dashboard/admin/AdminAuditLogPage').then(m => ({ default: m.AdminAuditLogPage })));
 const AdminTemplatesPage = lazy(() => import('@/pages/dashboard/admin/AdminTemplatesPage').then(m => ({ default: m.AdminTemplatesPage })));
 const AdminCuratorsPage = lazy(() => import('@/pages/dashboard/admin/AdminCuratorsPage').then(m => ({ default: m.AdminCuratorsPage })));
+const AdminSecurityPage = lazy(() => import('@/pages/admin-security/ui/AdminSecurityPage').then(m => ({ default: m.AdminSecurityPage })));
 
 // Curator
 const CuratorOverviewPage = lazy(() => import('@/pages/dashboard/curator/CuratorOverviewPage').then(m => ({ default: m.CuratorOverviewPage })));
@@ -163,6 +164,7 @@ export function App() {
                 <Route path={ROUTES.ADMIN_AUDIT_LOGS} element={<AdminAuditLogPage />} />
                 <Route path={ROUTES.ADMIN_TEMPLATES} element={<AdminTemplatesPage />} />
                 <Route path={ROUTES.ADMIN_CURATORS} element={<AdminCuratorsPage />} />
+                <Route path={ROUTES.ADMIN_SECURITY} element={<AdminSecurityPage />} />
               </Route>
 
               {/* Curator Routes */}

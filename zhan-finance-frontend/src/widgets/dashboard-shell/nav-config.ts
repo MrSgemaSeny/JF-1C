@@ -22,6 +22,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
     { label: 'Subscriptions', href: ROUTES.ADMIN_SUBSCRIPTIONS },
     { label: 'Audit Logs', href: ROUTES.ADMIN_AUDIT_LOGS },
     { label: 'Templates', href: ROUTES.ADMIN_TEMPLATES },
+    { label: '2FA Security', href: ROUTES.ADMIN_SECURITY },
     { label: 'Settings', href: ROUTES.SETTINGS },
     { label: 'Notifications', href: ROUTES.NOTIFICATIONS },
   ],

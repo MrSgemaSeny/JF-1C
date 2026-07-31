@@ -23,7 +23,8 @@ interface AuthContextValue {
   user: StoredAuth | null;
   setUser: (user: StoredAuth | null) => void;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ requires2FA?: boolean; preAuthToken?: string } | void>;
+  completeAuth: (response: authApi.AuthResponse) => void;
   loginWithGoogle: (credential: string, role?: 'CLIENT' | 'EMPLOYEE') => Promise<{ isPendingApproval: boolean; isNewUser: boolean }>;
   register: (req: authApi.RegisterRequest) => Promise<{ isPendingApproval: boolean }>;
   logout: () => void;
@@ -47,13 +48,13 @@ function readStoredAuth(): StoredAuth | null {
 
 function toStoredAuth(response: AuthResponse): StoredAuth {
   return {
-    accessToken: response.accessToken,
-    refreshToken: response.refreshToken,
-    userId: response.id,
-    email: response.email,
-    fullName: response.fullName,
-    role: response.role,
-    isNewUser: response.isNewUser,
+    accessToken: response.accessToken || '',
+    refreshToken: response.refreshToken || '',
+    userId: response.id || 0,
+    email: response.email || '',
+    fullName: response.fullName || '',
+    role: response.role || 'CLIENT',
+    isNewUser: response.isNewUser || false,
     avatarUrl: response.avatarUrl,
     authProvider: response.authProvider,
   };
@@ -103,10 +104,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       try {
         const response = await authApi.login({ email, password });
+        if (response.requires2FA && response.preAuthToken) {
+          return { requires2FA: true, preAuthToken: response.preAuthToken };
+        }
         setUser(toStoredAuth(response));
       } finally {
         setIsLoading(false);
       }
+    },
+    completeAuth(response) {
+      setUser(toStoredAuth(response));
     },
     async register(req) {
       setIsLoading(true);
@@ -128,7 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await authApi.loginWithGoogle(credential, role);
         if (response) {
           setUser(toStoredAuth(response));
-          return { isPendingApproval: false, isNewUser: response.isNewUser };
+          return { isPendingApproval: false, isNewUser: !!response.isNewUser };
         } else {
           return { isPendingApproval: true, isNewUser: false };
         }

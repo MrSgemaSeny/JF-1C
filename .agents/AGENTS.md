@@ -43,7 +43,7 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 7. **Docker**: Do not suggest or configure Docker unless explicitly requested.
 8. **Communication**: NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
 9. **Tests before pushing**: Never push to branches if there are errors or failing tests.
-10. **Git Workflow**: Do not automatically commit and push small changes (minimum 40+ lines modified or explicit request).
+10. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
 
 ## Current Status
 - Flyway migration chain V1->V108 verified on clean DB [DONE]

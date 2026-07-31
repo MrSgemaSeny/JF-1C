@@ -28,6 +28,7 @@ export const ROUTES = {
   ADMIN_AUDIT_LOGS: '/admin/audit-logs',
   ADMIN_TEMPLATES: '/admin/templates',
   ADMIN_CURATORS: '/admin/curators',
+  ADMIN_SECURITY: '/admin/security',
 
   // Curator Routes
   CURATOR: '/curator',

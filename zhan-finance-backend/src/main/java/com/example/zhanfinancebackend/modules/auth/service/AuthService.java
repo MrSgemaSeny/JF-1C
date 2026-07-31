@@ -36,6 +36,7 @@ public class AuthService {
     private final ClientService clientService;
     private final NotificationService notificationService;
     private final EmailNotificationService emailNotificationService;
+    private final TwoFactorService twoFactorService;
 
     public AuthService(
             UserRepository userRepository,
@@ -45,7 +46,8 @@ public class AuthService {
             RefreshTokenService refreshTokenService,
             ClientService clientService,
             NotificationService notificationService,
-            EmailNotificationService emailNotificationService
+            EmailNotificationService emailNotificationService,
+            TwoFactorService twoFactorService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -55,6 +57,7 @@ public class AuthService {
         this.clientService = clientService;
         this.notificationService = notificationService;
         this.emailNotificationService = emailNotificationService;
+        this.twoFactorService = twoFactorService;
     }
 
     @Transactional
@@ -118,10 +121,18 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
-        // Правильно: берём User из UserPrincipal
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         User user = principal.getUser();
 
+        if (user.isTwoFactorEnabled()) {
+            String preAuthToken = twoFactorService.createPreAuthToken(user);
+            return AuthResponse.requires2FA(preAuthToken);
+        }
+
+        return buildFullAuthResponse(user);
+    }
+
+    public AuthResponse buildFullAuthResponse(User user) {
         RefreshToken refreshToken = refreshTokenService.create(user);
         return response(user, refreshToken.getToken());
     }

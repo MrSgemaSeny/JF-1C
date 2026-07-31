@@ -3,16 +3,18 @@ import { apiRequest, API_BASE_URL } from '@/shared/api/http';
 export type UserRole = 'ADMIN' | 'EMPLOYEE' | 'CLIENT' | 'LEARNER' | 'CURATOR' | 'ADVISOR';
 
 export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  tokenType: string;
-  id: number;
-  email: string;
-  fullName: string;
-  role: UserRole;
-  isNewUser: boolean;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenType?: string;
+  id?: number;
+  email?: string;
+  fullName?: string;
+  role?: UserRole;
+  isNewUser?: boolean;
   avatarUrl?: string;
-  authProvider: 'LOCAL' | 'GOOGLE';
+  authProvider?: 'LOCAL' | 'GOOGLE';
+  requires2FA?: boolean;
+  preAuthToken?: string;
 }
 
 export interface LoginRequest {
@@ -89,3 +91,41 @@ export function checkEmail(email: string): Promise<CheckEmailResponse> {
     body: JSON.stringify({ email })
   });
 }
+
+export interface TwoFactorVerifyRequest {
+  preAuthToken: string;
+  code: string;
+}
+
+export interface TwoFactorSetupResponse {
+  secret: string;
+  qrCodeImage: string;
+  uri: string;
+}
+
+export function verify2FA(request: TwoFactorVerifyRequest): Promise<AuthResponse> {
+  return apiRequest<AuthResponse>('/api/v1/auth/2fa/verify', {
+    method: 'POST',
+    body: JSON.stringify(request)
+  });
+}
+
+export function get2FASetup(): Promise<TwoFactorSetupResponse> {
+  return apiRequest<TwoFactorSetupResponse>('/api/v1/auth/2fa/setup', {
+    method: 'GET'
+  });
+}
+
+export function confirm2FASetup(secret: string, code: string): Promise<void> {
+  return apiRequest<void>('/api/v1/auth/2fa/setup/confirm', {
+    method: 'POST',
+    body: JSON.stringify({ secret, code })
+  });
+}
+
+export function disable2FA(code: string): Promise<void> {
+  return apiRequest<void>('/api/v1/auth/2fa/disable', {
+    method: 'POST',
+    body: JSON.stringify({ code })
+  });
+}
