@@ -1,7 +1,7 @@
 import i18n from '@/shared/i18n/i18n';
 import { AUTH_STORAGE_KEY } from '@/shared/constants/storageKeys';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://zhanfinance.fly.dev' : '');
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
 interface ApiEnvelope<T> {
   success: boolean;
