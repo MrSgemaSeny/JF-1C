@@ -11,24 +11,21 @@ import org.springframework.stereotype.Service;
 public class DocumentAccessService {
 
     public boolean canRead(User actor, Document document) {
-        if (actor.getRole() == Role.ADMIN) {
+        if (actor == null || document == null) return false;
+        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR || actor.getRole() == Role.EMPLOYEE) {
             return true;
         }
         if (actor.getRole() == Role.CLIENT) {
             return sameUser(actor, document.getUser());
         }
-        if (actor.getRole() == Role.EMPLOYEE) {
-            if (assignedToEmployee(actor, document.getUser())) return true;
-            if (document.getTask() != null) {
-                return sameUser(actor, document.getTask().getAssignedTo()) || assignedToEmployee(actor, document.getTask().getClient());
-            }
-        }
         return false;
     }
 
     public boolean canWrite(User actor, Document document) {
+        if (actor == null || document == null) return false;
         return actor.getRole() == Role.ADMIN
-                || (actor.getRole() == Role.EMPLOYEE && assignedToEmployee(actor, document.getUser()))
+                || actor.getRole() == Role.ADVISOR
+                || actor.getRole() == Role.EMPLOYEE
                 || (actor.getRole() == Role.CLIENT && sameUser(actor, document.getUser()));
     }
 
@@ -45,9 +42,11 @@ public class DocumentAccessService {
     }
 
     public boolean canCreateFor(User actor, User targetUser) {
+        if (actor == null) return false;
         return actor.getRole() == Role.ADMIN
-                || (actor.getRole() == Role.CLIENT && sameUser(actor, targetUser))
-                || (actor.getRole() == Role.EMPLOYEE && assignedToEmployee(actor, targetUser));
+                || actor.getRole() == Role.ADVISOR
+                || actor.getRole() == Role.EMPLOYEE
+                || (actor.getRole() == Role.CLIENT && sameUser(actor, targetUser));
     }
 
     public void assertCanCreateFor(User actor, User targetUser) {
