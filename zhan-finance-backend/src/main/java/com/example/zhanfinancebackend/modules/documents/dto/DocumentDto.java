@@ -15,7 +15,12 @@ public class DocumentDto {
     private LocalDateTime confirmedAt;
     private String confirmedIp;
     private String folder;
-    
+    private Long uploadedById;
+    private String uploadedByName;
+    private String uploadedByRole;
+
+    public DocumentDto() {}
+
     public DocumentDto(Long id, Long userId, String clientName, Long taskId, String fileName, String contentType, Long fileSize, String status, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
@@ -43,6 +48,24 @@ public class DocumentDto {
         this.folder = folder;
     }
 
+    public DocumentDto(Long id, Long userId, String clientName, Long taskId, String fileName, String contentType, Long fileSize, String status, LocalDateTime createdAt, LocalDateTime confirmedAt, String confirmedIp, String folder, Long uploadedById, String uploadedByName, String uploadedByRole) {
+        this.id = id;
+        this.userId = userId;
+        this.clientName = clientName;
+        this.taskId = taskId;
+        this.fileName = fileName;
+        this.contentType = contentType;
+        this.fileSize = fileSize;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.confirmedAt = confirmedAt;
+        this.confirmedIp = confirmedIp;
+        this.folder = folder;
+        this.uploadedById = uploadedById;
+        this.uploadedByName = uploadedByName;
+        this.uploadedByRole = uploadedByRole;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getUserId() { return userId; }
@@ -66,4 +89,11 @@ public class DocumentDto {
     public void setConfirmedIp(String confirmedIp) { this.confirmedIp = confirmedIp; }
     public String getFolder() { return folder; }
     public void setFolder(String folder) { this.folder = folder; }
+
+    public Long getUploadedById() { return uploadedById; }
+    public void setUploadedById(Long uploadedById) { this.uploadedById = uploadedById; }
+    public String getUploadedByName() { return uploadedByName; }
+    public void setUploadedByName(String uploadedByName) { this.uploadedByName = uploadedByName; }
+    public String getUploadedByRole() { return uploadedByRole; }
+    public void setUploadedByRole(String uploadedByRole) { this.uploadedByRole = uploadedByRole; }
 }

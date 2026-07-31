@@ -125,6 +125,7 @@ public class DocumentGeneratorService {
         doc = documentRepository.save(doc);
 
         User owner = (User) org.hibernate.Hibernate.unproxy(doc.getUser());
+        User uploader = doc.getUploadedBy() != null ? (User) org.hibernate.Hibernate.unproxy(doc.getUploadedBy()) : actor;
         return new DocumentDto(
                 doc.getId(),
                 owner.getId(),
@@ -134,7 +135,13 @@ public class DocumentGeneratorService {
                 doc.getContentType(),
                 doc.getFileSize(),
                 doc.getStatus(),
-                doc.getCreatedAt()
+                doc.getCreatedAt(),
+                doc.getConfirmedAt(),
+                doc.getConfirmedIp(),
+                doc.getFolder(),
+                uploader != null ? uploader.getId() : null,
+                uploader != null ? uploader.getFullName() : null,
+                uploader != null && uploader.getRole() != null ? uploader.getRole().name() : null
         );
     }
 

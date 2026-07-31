@@ -1394,10 +1394,16 @@
       "size": "Размер",
       "actions": "Действия"
     },
+    "uploaderFilter": {
+      "all": "Все источники",
+      "company": "От компании (на подпись)",
+      "client": "Загружено вами"
+    },
     "status": {
       "signed": "Подписано",
       "confirm": "Подтвердить",
-      "confirming": "Подтверждаем..."
+      "confirming": "Подтверждаем...",
+      "clientUploaded": "Загружено вами"
     },
     "actions": {
       "download": "Скачать",

@@ -53,6 +53,7 @@ export function ClientDocumentsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [selectedFolder, setSelectedFolder] = useState<string>('all');
+  const [uploaderFilter, setUploaderFilter] = useState<'all' | 'company' | 'client'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [sortBy, setSortBy] = useState<'date-desc' | 'date-asc' | 'name' | 'size'>('date-desc');
@@ -62,6 +63,13 @@ export function ClientDocumentsPage() {
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isUploadedByClient = (doc: DocumentDto) => {
+    if (doc.uploadedByRole === 'CLIENT') return true;
+    if (doc.uploadedById && user?.userId && doc.uploadedById === user.userId) return true;
+    if (doc.fileName.endsWith('.md')) return true;
+    return false;
+  };
 
   useEffect(() => {
     if (user?.userId) {
@@ -217,6 +225,11 @@ export function ClientDocumentsPage() {
   const filteredDocuments = useMemo(() => {
     return documents
       .filter((doc) => {
+        // Source uploader filter
+        const clientUpload = isUploadedByClient(doc);
+        if (uploaderFilter === 'company' && clientUpload) return false;
+        if (uploaderFilter === 'client' && !clientUpload) return false;
+
         // Folder filter
         const docFolder = doc.folder || 'Разное';
         const fileName = doc.fileName.toLowerCase();
@@ -244,7 +257,7 @@ export function ClientDocumentsPage() {
         if (sortBy === 'size') return b.fileSize - a.fileSize;
         return 0;
       });
-  }, [documents, selectedFolder, searchQuery, sortBy]);
+  }, [documents, uploaderFilter, selectedFolder, searchQuery, sortBy, user?.userId]);
 
   // Counts per folder
   const folderCounts = useMemo(() => {
@@ -261,7 +274,8 @@ export function ClientDocumentsPage() {
   }, [documents]);
 
   const totalCount = documents.length;
-  const pendingCount = documents.filter(d => d.status !== 'CONFIRMED').length;
+  // Pending signature applies ONLY to documents uploaded by company staff (not by client)
+  const pendingCount = documents.filter(d => !isUploadedByClient(d) && d.status !== 'CONFIRMED').length;
   const confirmedCount = documents.filter(d => d.status === 'CONFIRMED').length;
 
   return (
@@ -382,10 +396,44 @@ export function ClientDocumentsPage() {
           })}
         </div>
 
-        {/* Right side controls: Search + Sort + View Mode */}
-        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+        {/* Right side controls: Search + Source Filter + Sort + View Mode */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Uploader Source Filter */}
+          <div className="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200/60">
+            <button
+              type="button"
+              onClick={() => setUploaderFilter('all')}
+              className={clsx(
+                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                uploaderFilter === 'all' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+              )}
+            >
+              {t('documents.uploaderFilter.all', { defaultValue: 'Все источники' })}
+            </button>
+            <button
+              type="button"
+              onClick={() => setUploaderFilter('company')}
+              className={clsx(
+                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                uploaderFilter === 'company' ? 'bg-white text-brand-green shadow-xs' : 'text-gray-500 hover:text-gray-900'
+              )}
+            >
+              {t('documents.uploaderFilter.company', { defaultValue: 'От компании (на подпись)' })}
+            </button>
+            <button
+              type="button"
+              onClick={() => setUploaderFilter('client')}
+              className={clsx(
+                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                uploaderFilter === 'client' ? 'bg-white text-blue-700 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+              )}
+            >
+              {t('documents.uploaderFilter.client', { defaultValue: 'Загружено вами' })}
+            </button>
+          </div>
+
           {/* Search Input */}
-          <div className="relative flex-1 sm:w-64">
+          <div className="relative flex-1 sm:w-56">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -482,6 +530,7 @@ export function ClientDocumentsPage() {
                       const Icon = info.icon;
                       const isSelected = selectedIds.has(doc.id);
                       const isConfirmed = doc.status === 'CONFIRMED';
+                      const clientUploaded = isUploadedByClient(doc);
 
                       return (
                         <tr key={doc.id} className={clsx('hover:bg-gray-50/70 transition-colors', isSelected && 'bg-emerald-50/30')}>
@@ -514,7 +563,12 @@ export function ClientDocumentsPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            {isConfirmed ? (
+                            {clientUploaded ? (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200/80 rounded-full font-bold text-xs shadow-2xs">
+                                <Upload size={13} />
+                                {t('documents.status.clientUploaded', { defaultValue: 'Загружено вами' })}
+                              </span>
+                            ) : isConfirmed ? (
                               <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full font-bold text-xs shadow-2xs">
                                 <ShieldCheck size={14} />
                                 {t('documents.status.signed', { defaultValue: 'Подписано' })} {doc.confirmedAt ? new Date(doc.confirmedAt).toLocaleDateString() : ''}
@@ -580,6 +634,7 @@ export function ClientDocumentsPage() {
                 const Icon = info.icon;
                 const isSelected = selectedIds.has(doc.id);
                 const isConfirmed = doc.status === 'CONFIRMED';
+                const clientUploaded = isUploadedByClient(doc);
 
                 return (
                   <div
@@ -615,7 +670,12 @@ export function ClientDocumentsPage() {
                     {/* Card Footer: Status & Actions */}
                     <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
                       <div>
-                        {isConfirmed ? (
+                        {clientUploaded ? (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60">
+                            <Upload size={11} />
+                            {t('documents.status.clientUploaded', { defaultValue: 'Загружено вами' })}
+                          </span>
+                        ) : isConfirmed ? (
                           <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
                             <ShieldCheck size={12} />
                             {t('documents.status.signed', { defaultValue: 'Подписано' })}

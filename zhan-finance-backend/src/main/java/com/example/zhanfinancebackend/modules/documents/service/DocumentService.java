@@ -296,6 +296,7 @@ public class DocumentService {
     }
 
     private DocumentDto mapToDto(Document document) {
+        User uploader = document.getUploadedBy();
         return new DocumentDto(
                 document.getId(),
                 document.getUser().getId(),
@@ -308,7 +309,10 @@ public class DocumentService {
                 document.getCreatedAt(),
                 document.getConfirmedAt(),
                 document.getConfirmedIp(),
-                document.getFolder()
+                document.getFolder(),
+                uploader != null ? uploader.getId() : null,
+                uploader != null ? uploader.getFullName() : null,
+                uploader != null && uploader.getRole() != null ? uploader.getRole().name() : null
         );
     }
 }

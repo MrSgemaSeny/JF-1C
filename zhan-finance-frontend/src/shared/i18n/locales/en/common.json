@@ -1393,10 +1393,16 @@
       "size": "Size",
       "actions": "Actions"
     },
+    "uploaderFilter": {
+      "all": "All sources",
+      "company": "From company (needs signature)",
+      "client": "Uploaded by you"
+    },
     "status": {
       "signed": "Signed",
       "confirm": "Confirm",
-      "confirming": "Confirming..."
+      "confirming": "Confirming...",
+      "clientUploaded": "Uploaded by you"
     },
     "actions": {
       "download": "Download",

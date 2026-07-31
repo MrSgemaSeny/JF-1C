@@ -11,6 +11,9 @@ export interface DocumentDto {
   confirmedAt?: string;
   confirmedIp?: string;
   folder?: string;
+  uploadedById?: number;
+  uploadedByName?: string;
+  uploadedByRole?: string;
 }
 
 export interface DocumentUploadResponse {
