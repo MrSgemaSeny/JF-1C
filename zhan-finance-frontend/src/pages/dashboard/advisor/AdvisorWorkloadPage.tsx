@@ -69,8 +69,8 @@ export function AdvisorWorkloadPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-purple-600 text-xs font-black uppercase tracking-wider mb-1">
-            <ShieldCheck className="w-4 h-4 text-purple-600" />
+          <div className="flex items-center gap-2 text-brand-green text-xs font-black uppercase tracking-wider mb-1">
+            <ShieldCheck className="w-4 h-4 text-brand-green" />
             Балансировка нагрузки команды
           </div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Мониторинг специалистов</h1>
@@ -79,8 +79,9 @@ export function AdvisorWorkloadPage() {
           </p>
         </div>
         <button
+          type="button"
           onClick={() => navigate(ROUTES.ADVISOR_TASK_POOL)}
-          className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl transition-all shadow-sm flex items-center gap-2"
+          className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex items-center gap-2 cursor-pointer"
         >
           <Layers className="w-4 h-4" />
           Пул нераспределенных задач ({unassignedTasks.length})
@@ -95,11 +96,11 @@ export function AdvisorWorkloadPage() {
           const isOverloaded = activeTasksCount > 7;
 
           return (
-            <div key={emp.id} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div key={emp.id} className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-2xs space-y-5 flex flex-col justify-between hover:shadow-sm transition-shadow">
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-lg">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-100/70 text-brand-green flex items-center justify-center font-black text-lg">
                       {emp.fullName.charAt(0)}
                     </div>
                     <div>
@@ -108,7 +109,7 @@ export function AdvisorWorkloadPage() {
                     </div>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    emp.role === 'ADVISOR' ? 'bg-purple-100 text-purple-800' : 'bg-blue-50 text-blue-700'
+                    emp.role === 'ADVISOR' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-50 text-blue-700'
                   }`}>
                     {emp.role}
                   </span>
@@ -132,7 +133,7 @@ export function AdvisorWorkloadPage() {
                     empTasks.slice(0, 3).map((t) => (
                       <div key={t.id} className="text-xs p-2.5 bg-gray-50/80 rounded-xl font-medium text-gray-700 truncate flex justify-between items-center">
                         <span className="truncate">{t.title}</span>
-                        <span className="text-[10px] text-purple-600 font-bold ml-2 shrink-0">{t.stage?.name}</span>
+                        <span className="text-[10px] text-brand-green font-bold ml-2 shrink-0">{t.stage?.name}</span>
                       </div>
                     ))
                   )}
@@ -152,7 +153,7 @@ export function AdvisorWorkloadPage() {
                       }
                     }}
                     value={pendingAssignment?.employeeId === emp.id ? pendingAssignment.taskId : ''}
-                    className="w-full text-xs font-bold p-2.5 rounded-xl border border-purple-200 bg-purple-50/40 text-purple-800 hover:bg-purple-50 transition-colors cursor-pointer"
+                    className="w-full text-xs font-bold p-2.5 rounded-xl border border-brand-green/20 bg-brand-beige/30 text-brand-green hover:bg-brand-beige/60 transition-colors cursor-pointer"
                   >
                     <option value="" disabled>+ Выбрать задачу из пула</option>
                     {unassignedTasks.map((ut) => (
@@ -165,14 +166,16 @@ export function AdvisorWorkloadPage() {
                   {pendingAssignment?.employeeId === emp.id && (
                     <div className="flex items-center gap-2">
                       <button
+                        type="button"
                         onClick={() => handleAssignTask(pendingAssignment.taskId, pendingAssignment.employeeId)}
-                        className="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+                        className="flex-1 py-2 bg-brand-green hover:bg-brand-green/90 text-white text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer"
                       >
                         Подтвердить
                       </button>
                       <button
+                        type="button"
                         onClick={() => setPendingAssignment(null)}
-                        className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold rounded-xl transition-all"
+                        className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold rounded-xl transition-all cursor-pointer"
                       >
                         Отмена
                       </button>
