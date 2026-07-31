@@ -180,6 +180,7 @@ export function App() {
                 <Route path={ROUTES.ADVISOR_TASKS} element={<EmployeeTasksPage />} />
                 <Route path={ROUTES.ADVISOR_TASK_POOL} element={<TaskPoolPage />} />
                 <Route path={ROUTES.ADVISOR_TASK_DETAILS} element={<TaskDetailsPage />} />
+                <Route path={ROUTES.ADVISOR_DOCUMENTS} element={<EmployeeDocumentsPage />} />
                 <Route path={ROUTES.ADVISOR_CHAT} element={<EmployeeChatPage />} />
               </Route>
 

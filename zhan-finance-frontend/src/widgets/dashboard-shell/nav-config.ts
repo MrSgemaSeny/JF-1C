@@ -62,6 +62,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
     { label: 'Clients', href: ROUTES.ADVISOR_CLIENTS },
     { label: 'Tasks', href: ROUTES.ADVISOR_TASKS },
     { label: 'Task Pool', href: ROUTES.ADVISOR_TASK_POOL },
+    { label: 'Documents', href: ROUTES.ADVISOR_DOCUMENTS },
     { label: 'Chat', href: ROUTES.ADVISOR_CHAT },
     { label: 'Calendar', href: ROUTES.EMPLOYEE_CALENDAR },
     { label: 'Settings', href: ROUTES.SETTINGS },

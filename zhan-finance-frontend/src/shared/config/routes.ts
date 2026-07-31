@@ -42,6 +42,7 @@ export const ROUTES = {
   ADVISOR_TASK_POOL: '/advisor/tasks/pool',
   ADVISOR_TASK_DETAILS: '/advisor/tasks/:id',
   ADVISOR_WORKLOAD: '/advisor/workload',
+  ADVISOR_DOCUMENTS: '/advisor/documents',
 
   // Shared Dashboard Routes
   SETTINGS: '/settings',
