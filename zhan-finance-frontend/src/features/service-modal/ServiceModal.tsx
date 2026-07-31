@@ -133,8 +133,8 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
               </div>
             </div>
 
-            <div className="w-full lg:w-[380px] shrink-0">
-              <div className="sticky top-6 space-y-5 rounded-3xl bg-gray-50 border border-gray-200/60 p-6 sm:p-8 shadow-sm">
+            <div className="w-full lg:w-[420px] shrink-0">
+              <div className="space-y-4 rounded-3xl bg-gray-50 border border-gray-200/60 p-6 sm:p-8 shadow-sm">
                 <h5 className="text-xl font-black text-gray-900">{t('serviceModal.orderForm.title', { defaultValue: 'Оставить заявку' })}</h5>
                 <p className="text-gray-500 text-sm font-medium leading-relaxed mb-4">
                   {isLoggedIn
