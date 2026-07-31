@@ -280,14 +280,37 @@ public class DocumentService {
     public byte[] generateZipArchive(List<Long> documentIds, User actor) {
         List<Document> documents = documentRepository.findAllById(documentIds);
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+        java.util.Set<String> usedNames = new java.util.HashSet<>();
+
         try (java.util.zip.ZipOutputStream zos = new java.util.zip.ZipOutputStream(baos)) {
             for (Document doc : documents) {
-                documentAccessService.assertCanRead(actor, doc);
-                byte[] fileBytes = storageService.loadAsBytes(doc.getStorageKey());
-                java.util.zip.ZipEntry entry = new java.util.zip.ZipEntry(doc.getFileName());
-                zos.putNextEntry(entry);
-                zos.write(fileBytes);
-                zos.closeEntry();
+                try {
+                    documentAccessService.assertCanRead(actor, doc);
+                    byte[] fileBytes = storageService.loadAsBytes(doc.getStorageKey());
+
+                    String baseName = doc.getFileName();
+                    String entryName = baseName;
+                    int counter = 1;
+
+                    while (usedNames.contains(entryName)) {
+                        int dotIdx = baseName.lastIndexOf('.');
+                        if (dotIdx > 0) {
+                            entryName = baseName.substring(0, dotIdx) + "_" + counter + baseName.substring(dotIdx);
+                        } else {
+                            entryName = baseName + "_" + counter;
+                        }
+                        counter++;
+                    }
+                    usedNames.add(entryName);
+
+                    java.util.zip.ZipEntry entry = new java.util.zip.ZipEntry(entryName);
+                    zos.putNextEntry(entry);
+                    zos.write(fileBytes);
+                    zos.closeEntry();
+                } catch (Exception e) {
+                    // Skip files that fail read/storage checks to avoid failing whole zip
+                    continue;
+                }
             }
             zos.finish();
         } catch (java.io.IOException e) {

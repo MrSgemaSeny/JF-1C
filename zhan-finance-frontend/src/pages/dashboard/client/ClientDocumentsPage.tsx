@@ -242,6 +242,21 @@ export function ClientDocumentsPage() {
     return { label: type.split('/').pop()?.toUpperCase() || 'FILE', icon: FileIcon, bg: 'bg-gray-50 text-gray-700 border-gray-200' };
   };
 
+  const getDocCategory = (doc: DocumentDto): 'acts' | 'reports' | 'contracts' | 'other' => {
+    const docFolder = (doc.folder || '').toLowerCase();
+    const fileName = doc.fileName.toLowerCase();
+    if (docFolder.includes('акт') || docFolder.includes('act') || fileName.includes('акт') || fileName.includes('act')) {
+      return 'acts';
+    }
+    if (docFolder.includes('отчет') || docFolder.includes('report') || fileName.includes('отчет') || fileName.includes('report')) {
+      return 'reports';
+    }
+    if (docFolder.includes('договор') || docFolder.includes('contract') || fileName.includes('договор') || fileName.includes('contract')) {
+      return 'contracts';
+    }
+    return 'other';
+  };
+
   // Filter and Sort documents
   const filteredDocuments = useMemo(() => {
     return documents
@@ -252,24 +267,14 @@ export function ClientDocumentsPage() {
         if (uploaderFilter === 'client' && !clientUpload) return false;
 
         // Folder filter
-        const docFolder = doc.folder || 'Разное';
-        const fileName = doc.fileName.toLowerCase();
-        let matchesFolder = true;
-
-        if (selectedFolder === 'acts') {
-          matchesFolder = docFolder.includes('Акт') || docFolder.toLowerCase().includes('act') || fileName.includes('акт') || fileName.includes('act');
-        } else if (selectedFolder === 'reports') {
-          matchesFolder = docFolder.includes('Отчет') || docFolder.toLowerCase().includes('report') || fileName.includes('отчет') || fileName.includes('report');
-        } else if (selectedFolder === 'contracts') {
-          matchesFolder = docFolder.includes('Договор') || docFolder.toLowerCase().includes('contract') || fileName.includes('договор') || fileName.includes('contract');
-        } else if (selectedFolder === 'other') {
-          matchesFolder = docFolder === 'Разное' || docFolder.toLowerCase().includes('other');
+        if (selectedFolder !== 'all') {
+          if (getDocCategory(doc) !== selectedFolder) return false;
         }
 
         // Search query filter
         const matchesSearch = !searchQuery || doc.fileName.toLowerCase().includes(searchQuery.toLowerCase());
 
-        return matchesFolder && matchesSearch;
+        return matchesSearch;
       })
       .sort((a, b) => {
         if (sortBy === 'date-desc') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -284,12 +289,8 @@ export function ClientDocumentsPage() {
   const folderCounts = useMemo(() => {
     const counts: Record<string, number> = { all: documents.length, acts: 0, reports: 0, contracts: 0, other: 0 };
     documents.forEach(doc => {
-      const docFolder = doc.folder || 'Разное';
-      const fileName = doc.fileName.toLowerCase();
-      if (docFolder.includes('Акт') || docFolder.toLowerCase().includes('act') || fileName.includes('акт') || fileName.includes('act')) counts.acts++;
-      else if (docFolder.includes('Отчет') || docFolder.toLowerCase().includes('report') || fileName.includes('отчет') || fileName.includes('report')) counts.reports++;
-      else if (docFolder.includes('Договор') || docFolder.toLowerCase().includes('contract') || fileName.includes('договор') || fileName.includes('contract')) counts.contracts++;
-      else counts.other++;
+      const cat = getDocCategory(doc);
+      counts[cat]++;
     });
     return counts;
   }, [documents]);
