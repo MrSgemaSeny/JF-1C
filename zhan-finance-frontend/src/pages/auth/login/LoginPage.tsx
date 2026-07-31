@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Mail, Lock } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
@@ -21,32 +21,41 @@ export function LoginPage() {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
+    if (!credentialResponse.credential || isSubmitting || submittingRef.current) return;
+    
+    submittingRef.current = true;
+    setIsSubmitting(true);
     try {
-      if (credentialResponse.credential) {
-        const result = await loginWithGoogle(credentialResponse.credential);
-        if (result.isPendingApproval) {
-          toast.warning(t('auth.login.pendingApproval'));
-        } else if (result.isNewUser) {
-          toast.success(t('auth.login.registerSuccess'));
-          navigate(ROUTES.COMPLETE_PROFILE);
-        } else {
-          toast.success(t('auth.login.loginSuccess'));
-          const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
-          navigate(returnUrl, { replace: true });
-        }
+      const result = await loginWithGoogle(credentialResponse.credential);
+      if (result.isPendingApproval) {
+        toast.warning(t('auth.login.pendingApproval'));
+      } else if (result.isNewUser) {
+        toast.success(t('auth.login.registerSuccess'));
+        navigate(ROUTES.COMPLETE_PROFILE);
+      } else {
+        toast.success(t('auth.login.loginSuccess'));
+        const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
+        navigate(returnUrl, { replace: true });
       }
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
       toast.error(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.googleError') : msg }));
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (isSubmitting || submittingRef.current) return;
     setGlobalError(null);
     setValidationErrors({});
+
+    submittingRef.current = true;
     setIsSubmitting(true);
     try {
       await login(email, password);
@@ -62,6 +71,7 @@ export function LoginPage() {
         setGlobalError(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.loginError') : msg }));
       }
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   }

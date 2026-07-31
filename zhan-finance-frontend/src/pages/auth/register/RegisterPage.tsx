@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, User, Mail, Lock, Phone, Building2 } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
@@ -37,11 +37,16 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [googlePromptShownFor, setGooglePromptShownFor] = useState<string | null>(null);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
+    if (!credentialResponse.credential || isSubmitting || submittingRef.current) return;
+    
+    submittingRef.current = true;
+    setIsSubmitting(true);
     try {
       if (credentialResponse.credential) {
         const result = await loginWithGoogle(credentialResponse.credential, role);
@@ -59,11 +64,15 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
       toast.error(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.register.googleError') : msg }));
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
 
   const handleCredentialsSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (isSubmitting || submittingRef.current) return;
     setGlobalError(null);
     setValidationErrors({});
 
@@ -98,6 +107,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
 
   const handleDetailsSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (isSubmitting || submittingRef.current) return;
     setGlobalError(null);
     setValidationErrors({});
 
@@ -106,6 +116,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
       return;
     }
 
+    submittingRef.current = true;
     setIsSubmitting(true);
     try {
       const result = await register({
@@ -133,6 +144,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
         setGlobalError(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.register.registerError') : msg }));
       }
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };
