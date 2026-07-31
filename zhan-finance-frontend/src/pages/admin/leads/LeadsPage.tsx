@@ -70,9 +70,9 @@ const formatMessage = (message: string, t: any) => {
   }
   
   return (
-    <div className="flex items-start gap-3 text-sm text-gray-700 mt-1 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
+    <div className="flex items-start gap-3 text-sm text-gray-700 mt-1 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm overflow-hidden max-w-2xl">
       <MessageSquare className="w-4 h-4 text-brand-green/60 shrink-0 mt-0.5" />
-      <span className="leading-relaxed whitespace-pre-wrap">{message}</span>
+      <span className="leading-relaxed whitespace-pre-wrap break-words break-all min-w-0 flex-1">{message}</span>
     </div>
   );
 };
@@ -163,7 +163,7 @@ export const LeadsPage = () => {
                           <a href={`tel:${lead.phone}`} className="hover:text-brand-green transition-colors">{lead.phone}</a>
                         </div>
                       </td>
-                      <td className="px-4 md:px-6 py-4 md:py-5 align-top">
+                      <td className="px-4 md:px-6 py-4 md:py-5 align-top max-w-xl break-words">
                         {formatMessage(lead.message || '', t)}
                       </td>
                       <td className="px-4 md:px-6 py-4 md:py-5 align-top text-right">
