@@ -55,9 +55,23 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+    if (!e.target.files) return;
+    const selected = Array.from(e.target.files);
+    const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.txt', '.md', '.zip', '.rar', '.7z', '.csv'];
+    
+    const valid: File[] = [];
+    for (const file of selected) {
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        toast.error(t('taskCreate.invalidFileType', {
+          defaultValue: `Файл ${file.name} заблокирован: загрузка исполняемых файлов (.exe, .sh, .js) запрещена из соображений безопасности.`
+        }), { duration: 6000 });
+        continue;
+      }
+      valid.push(file);
     }
+    setFiles(prev => [...prev, ...valid]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const toggleService = (id: number) => {

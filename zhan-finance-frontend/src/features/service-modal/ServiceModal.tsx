@@ -9,10 +9,11 @@ import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { DatePicker } from '@/shared/ui/DatePicker';
 import { ROUTES } from '@/shared/config/routes';
+import toast from 'react-hot-toast';
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 10;
-const ALLOWED_EXTENSIONS = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.csv'];
+const ALLOWED_EXTENSIONS = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.csv', '.txt', '.md', '.zip', '.rar', '.7z'];
 
 function formatFileSize(bytes: number): string {
   if (!bytes || bytes === 0) return '0 B';
@@ -23,6 +24,7 @@ function formatFileSize(bytes: number): string {
 
 interface ServiceModalProps {
   item: ServiceDto;
+  isOpen: boolean;
   onClose: () => void;
   onRequest?: (service: ServiceDto, message?: string, preferredDate?: string, files?: File[]) => Promise<void>;
   onGuestRequest?: (service: ServiceDto, name: string, phone: string, message?: string, preferredDate?: string, files?: File[]) => Promise<void>;
@@ -34,6 +36,7 @@ interface ServiceModalProps {
 
 export function ServiceModal({
   item,
+  isOpen,
   onClose,
   onRequest,
   onGuestRequest,
@@ -65,8 +68,18 @@ export function ServiceModal({
       if (files.length + validFiles.length >= MAX_FILES) break;
       
       const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!ALLOWED_EXTENSIONS.includes(ext)) continue;
-      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) continue;
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        toast.error(t('serviceModal.files.forbiddenExt', { 
+          defaultValue: `Файл ${file.name} заблокирован: загрузка исполняемых файлов (.exe, .sh, .js) запрещена из соображений безопасности.`
+        }), { duration: 6000 });
+        continue;
+      }
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        toast.error(t('serviceModal.files.fileTooLarge', { 
+          defaultValue: `Размер файла ${file.name} превышает лимит ${MAX_FILE_SIZE_MB} МБ.`
+        }), { duration: 5000 });
+        continue;
+      }
       
       validFiles.push(file);
     }

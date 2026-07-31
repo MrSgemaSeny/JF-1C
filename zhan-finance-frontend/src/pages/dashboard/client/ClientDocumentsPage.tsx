@@ -386,47 +386,50 @@ export function ClientDocumentsPage() {
       )}
 
       {/* Navigation Controls: Folders + Search + View Switcher */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-white border border-gray-200/80 p-3 rounded-2xl shadow-2xs">
-        {/* Folder Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-          {FOLDERS.map((f) => {
-            const isSelected = selectedFolder === f.id;
-            const count = folderCounts[f.id] || 0;
-            return (
-              <button
-                key={f.id}
-                onClick={() => setSelectedFolder(f.id)}
-                className={clsx(
-                  'px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap border',
-                  isSelected
-                    ? 'bg-brand-green text-white border-brand-green shadow-xs'
-                    : 'bg-gray-50 text-gray-600 border-gray-200/60 hover:bg-gray-100 hover:text-gray-900'
-                )}
-              >
-                <Folder size={14} className={isSelected ? 'text-white' : 'text-gray-400'} />
-                <span>{t(f.key, { defaultValue: f.defaultLabel })}</span>
-                <span
+      <div className="flex flex-col gap-3 bg-white border border-gray-200/80 p-3.5 rounded-2xl shadow-2xs">
+        {/* Top bar: Folder Tabs & Source Filters */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pb-3 border-b border-gray-100">
+          {/* Folder Tabs (hide empty ones except 'all') */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+            {FOLDERS.map((f) => {
+              const isSelected = selectedFolder === f.id;
+              const count = folderCounts[f.id] || 0;
+              // Hide empty folders to avoid visual noise, unless selected or 'all'
+              if (f.id !== 'all' && count === 0 && !isSelected) return null;
+
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setSelectedFolder(f.id)}
                   className={clsx(
-                    'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold',
-                    isSelected ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-600'
+                    'px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap border',
+                    isSelected
+                      ? 'bg-brand-green text-white border-brand-green shadow-xs'
+                      : 'bg-gray-50 text-gray-600 border-gray-200/60 hover:bg-gray-100 hover:text-gray-900'
                   )}
                 >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                  <Folder size={14} className={isSelected ? 'text-white' : 'text-gray-400'} />
+                  <span>{t(f.key, { defaultValue: f.defaultLabel })}</span>
+                  <span
+                    className={clsx(
+                      'px-1.5 py-0.5 rounded-full text-[10px] font-extrabold',
+                      isSelected ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-600'
+                    )}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Right side controls: Search + Source Filter + Sort + View Mode */}
-        <div className="flex items-center gap-2.5 flex-wrap">
           {/* Uploader Source Filter */}
-          <div className="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200/60">
+          <div className="flex items-center bg-gray-100/90 p-1 rounded-xl border border-gray-200/60 shrink-0">
             <button
               type="button"
               onClick={() => setUploaderFilter('all')}
               className={clsx(
-                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                'px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
                 uploaderFilter === 'all' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
               )}
             >
@@ -436,28 +439,49 @@ export function ClientDocumentsPage() {
               type="button"
               onClick={() => setUploaderFilter('company')}
               className={clsx(
-                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                'px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
                 uploaderFilter === 'company' ? 'bg-white text-brand-green shadow-xs' : 'text-gray-500 hover:text-gray-900'
               )}
             >
-              {t('documents.uploaderFilter.company', { defaultValue: 'От компании (на подпись)' })}
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+              {t('documents.uploaderFilter.company', { defaultValue: 'От компании' })}
             </button>
             <button
               type="button"
               onClick={() => setUploaderFilter('client')}
               className={clsx(
-                'px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer',
+                'px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
                 uploaderFilter === 'client' ? 'bg-white text-blue-700 shadow-xs' : 'text-gray-500 hover:text-gray-900'
               )}
             >
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
               {t('documents.uploaderFilter.client', { defaultValue: 'Загружено вами' })}
             </button>
           </div>
+        </div>
 
+        {/* Bottom bar: Search + Sort + View Mode */}
+        <div className="flex items-center gap-2.5 flex-wrap justify-between pt-1">
           {/* Search Input */}
-          <div className="relative flex-1 sm:w-56">
+          <div className="relative flex-1 min-w-[200px] max-w-md">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('documents.searchPlaceholder', { defaultValue: 'Поиск по названию файла...' })}
+              className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:bg-white transition-all"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
