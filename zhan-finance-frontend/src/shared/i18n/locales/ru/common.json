@@ -18,6 +18,10 @@
     "noResults": "Ничего не найдено",
     "lessonType": "Тип:"
   },
+  "datePicker": {
+    "selectDate": "Выберите дату",
+    "clear": "Очистить"
+  },
   "loading": "Загрузка...",
   "success": "Успешно",
   "error": "Ошибка",

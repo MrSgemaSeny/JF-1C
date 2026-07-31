@@ -180,7 +180,7 @@ export function DatePicker({ value, onChange, min, placeholder, className }: Dat
         <div className="flex items-center gap-2 min-w-0">
           <CalendarIcon size={18} className="text-brand-green shrink-0" />
           <span className={twMerge("truncate", !formattedDisplay ? "text-gray-400 font-normal" : "text-gray-800 font-semibold")}>
-            {formattedDisplay || placeholder || (lang === 'en' ? 'Select date' : 'Выберите дату')}
+            {formattedDisplay || placeholder || t('datePicker.selectDate', { defaultValue: 'Выберите дату' })}
           </span>
         </div>
 
@@ -192,7 +192,7 @@ export function DatePicker({ value, onChange, min, placeholder, className }: Dat
               handleClear();
             }}
             className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-200/60 rounded-full transition-colors shrink-0"
-            title={lang === 'en' ? 'Clear' : 'Очистить'}
+            title={t('datePicker.clear', { defaultValue: 'Очистить' })}
           >
             <X size={14} />
           </button>

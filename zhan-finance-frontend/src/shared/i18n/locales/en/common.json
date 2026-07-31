@@ -18,6 +18,10 @@
     "noResults": "No results found",
     "lessonType": "Type:"
   },
+  "datePicker": {
+    "selectDate": "Select date",
+    "clear": "Clear"
+  },
   "loading": "Loading...",
   "success": "Success",
   "error": "Error",
