@@ -14,7 +14,7 @@ import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { SuccessModal } from '@/shared/ui/SuccessModal';
 import { useAuth } from '@/features/auth/AuthContext';
 import { toast } from '@/shared/ui/Toast/ToastContext';
-import { ApiError } from '@/shared/api/http';
+import { ApiError, apiRequest } from '@/shared/api/http';
 import { useTranslation, Trans } from 'react-i18next';
 
 export function HomeServices() {
@@ -202,18 +202,16 @@ export function HomeServices() {
               if (message) fullMessage += `\nКомментарий: ${message}`;
               if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
               
-              const res = await fetch('/api/v1/contact-requests', {
+              const res = await apiRequest<{ id: number }>('/api/v1/contact-requests', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
               });
 
-              const data = await res.json();
-              if (files && files.length > 0 && data.data?.id) {
+              if (files && files.length > 0 && res.id) {
                 try {
                   const formData = new FormData();
                   files.forEach(file => formData.append('files', file));
-                  await fetch(`/api/v1/contact-requests/${data.data.id}/files`, {
+                  await apiRequest(`/api/v1/contact-requests/${res.id}/files`, {
                     method: 'POST',
                     body: formData,
                   });
