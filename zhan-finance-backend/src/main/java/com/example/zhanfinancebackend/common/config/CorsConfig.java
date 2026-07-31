@@ -15,24 +15,16 @@ public class CorsConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.cors.allowed-origins:http://localhost:5173}") String allowedOrigins,
+            @Value("${app.cors.allowed-origins:https://mrsgemaseny.github.io,https://zhanfinance.fly.dev,http://localhost:5173}") String allowedOrigins,
             @Value("${app.cors.allowed-origin-patterns:https://*.github.io,http://localhost:*,http://127.0.0.1:*,https://zhanfinance.fly.dev}") String allowedOriginPatterns
     ) {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        List<String> origins = split(allowedOrigins);
-        List<String> normalizedOrigins = new java.util.ArrayList<>();
-        for (String origin : origins) {
-            normalizedOrigins.add(origin);
-            if (origin.endsWith("/")) {
-                normalizedOrigins.add(origin.substring(0, origin.length() - 1));
-            } else {
-                normalizedOrigins.add(origin + "/");
-            }
-        }
 
-        configuration.setAllowedOrigins(normalizedOrigins);
-        configuration.setAllowedOriginPatterns(split(allowedOriginPatterns));
+        List<String> allPatterns = new java.util.ArrayList<>();
+        allPatterns.addAll(cleanOrigins(allowedOrigins));
+        allPatterns.addAll(cleanOrigins(allowedOriginPatterns));
+
+        configuration.setAllowedOriginPatterns(allPatterns);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
@@ -43,10 +35,23 @@ public class CorsConfig {
         return source;
     }
 
-    private List<String> split(String value) {
+    private List<String> cleanOrigins(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of();
+        }
         return Arrays.stream(value.split(","))
                 .map(String::trim)
                 .filter(origin -> !origin.isBlank())
+                .map(origin -> {
+                    if (origin.startsWith("http://") || origin.startsWith("https://")) {
+                        int slashIdx = origin.indexOf('/', origin.indexOf("//") + 2);
+                        if (slashIdx != -1) {
+                            return origin.substring(0, slashIdx);
+                        }
+                    }
+                    return origin;
+                })
+                .distinct()
                 .toList();
     }
 }
