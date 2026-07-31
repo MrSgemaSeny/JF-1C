@@ -1277,6 +1277,26 @@
     "Работа с актами, накладными, счетами и внутренней бухгалтерией.": "Work with acts, invoices, bills, and internal accounting.",
     "Юридическая проверка надежности партнеров и клиентов до сделки.": "Legal verification of the reliability of partners and clients before the deal."
   },
+  "serviceFeatures": {
+    "Полный учет операций": "Full transaction accounting",
+    "Составление отчетности": "Financial and tax reporting",
+    "Контроль финансов": "Financial control and monitoring",
+    "Подготовка и сдача отчетности": "Preparation and submission of tax reports",
+    "Консультации по налогам": "Tax consultations and advice",
+    "Работа с налоговыми органами": "Representation with tax authorities",
+    "Расчет заработной платы": "Payroll calculation",
+    "Кадровое делопроизводство": "HR administration and records",
+    "Отчетность по сотрудникам": "Employee tax and pension reporting",
+    "Аудит текущей базы": "Audit of current database and 1C",
+    "Восстановление документов": "Restoration of missing documents",
+    "Пересдача отчетности": "Resubmission of tax declarations",
+    "Ввод актов и накладных": "Data entry of acts and waybills",
+    "Сверка с контрагентами": "Reconciliation statements with counterparties",
+    "Контроль задолженности": "Accounts receivable & payable tracking",
+    "Анализ налоговых рисков": "Analysis of tax and legal risks",
+    "Проверка по реестрам": "Verification via state registries",
+    "Выдача заключения": "Issuance of official risk assessment report"
+  },
   "taskPrefixes": {
     "Запрос на услугу": "Service Request",
     "Заказ услуги": "Service Order"

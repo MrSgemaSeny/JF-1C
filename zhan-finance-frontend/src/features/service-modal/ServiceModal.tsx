@@ -112,7 +112,9 @@ export function ServiceModal({
           <div className="flex items-center justify-between gap-4 border-b border-gray-100 bg-white/80 backdrop-blur px-8 py-5 sticky top-0 z-10">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-brand-green/60 mb-1">{t('serviceModal.service', { defaultValue: 'Услуга' })}</p>
-              <h3 className="text-2xl sm:text-3xl font-black text-brand-green tracking-tight leading-none">{item.title}</h3>
+              <h3 className="text-2xl sm:text-3xl font-black text-brand-green tracking-tight leading-none">
+                {t(`serviceNames.${item.title}`, { defaultValue: item.title })}
+              </h3>
             </div>
             <button
               type="button"
@@ -132,14 +134,18 @@ export function ServiceModal({
               )}
               <div className="space-y-4">
                 <h4 className="text-xl font-black text-gray-900">{t('serviceModal.about', { defaultValue: 'О сервисе' })}</h4>
-                <p className="text-gray-600 leading-relaxed text-lg">{item.description}</p>
+                <p className="text-gray-600 leading-relaxed text-lg">
+                  {t(`serviceDescriptions.${item.description}`, { defaultValue: item.description })}
+                </p>
                 <div className="rounded-2xl border border-brand-green/10 bg-brand-green/[0.03] p-6 mt-6">
                   <h5 className="font-bold text-brand-green mb-4 flex items-center gap-2">{t('serviceModal.includes', { defaultValue: 'Что входит в стоимость:' })}</h5>
                   <ul className="space-y-3 text-brand-green/80 font-medium">
                     {item.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-brand-green shrink-0" />
-                        <span className="leading-snug">{feature}</span>
+                        <span className="leading-snug">
+                          {t(`serviceFeatures.${feature}`, { defaultValue: feature })}
+                        </span>
                       </li>
                     ))}
                   </ul>
