@@ -26,12 +26,18 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
+import { BrowserRouter } from 'react-router-dom';
+
 describe('SolutionPicker Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  const renderComponent = () => render(<SolutionPicker />);
+  const renderComponent = () => render(
+    <BrowserRouter>
+      <SolutionPicker />
+    </BrowserRouter>
+  );
 
   it('completes the survey and submits the contact request', async () => {
     const apiRequestMock = vi.mocked(http.apiRequest).mockResolvedValueOnce({});

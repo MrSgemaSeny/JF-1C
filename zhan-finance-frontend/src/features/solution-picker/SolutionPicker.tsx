@@ -1,9 +1,11 @@
 import { useState, useRef, DragEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UploadCloud, FileText, X } from 'lucide-react';
 import { questions } from './questions';
 import { apiRequest } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/shared/config/routes';
 
 export function SolutionPicker() {
   const { t } = useTranslation('common');
@@ -132,12 +134,12 @@ export function SolutionPicker() {
                   {t('quiz.promoText', { defaultValue: 'Зарегистрируйтесь на платформе, чтобы отслеживать статус заявок, обмениваться документами в безопасном чате и всегда быть на связи с личным бухгалтером.' })}
                 </p>
                 <div className="flex flex-wrap items-center gap-4">
-                  <a
-                    href="/login"
+                  <Link
+                    to={ROUTES.LOGIN}
                     className="px-6 py-3 bg-brand-green text-brand-beige rounded-lg font-bold hover:bg-brand-green/90 transition-colors"
                   >
                     {t('quiz.promoLogin', { defaultValue: 'Войти / Зарегистрироваться' })}
-                  </a>
+                  </Link>
                   <button
                     onClick={() => { setStep(0); setAnswers({}); setSubmitted(false); setContact({ name: '', phone: '', email: '' }); setFiles([]); }}
                     className="px-6 py-3 border border-brand-green/20 text-brand-green rounded-lg hover:bg-brand-green/5 transition-colors"

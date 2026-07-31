@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, CheckCircle2, Paperclip, X, FileText } from 'lucide-react';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
@@ -7,6 +8,7 @@ import { Textarea } from '@/shared/ui/Input/Textarea';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { DatePicker } from '@/shared/ui/DatePicker';
+import { ROUTES } from '@/shared/config/routes';
 
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 10;
@@ -245,12 +247,12 @@ export function ServiceModal({ item, onClose, onRequest, onGuestRequest, isSubmi
                 )}
 
                 {!onRequest && (
-                  <a
-                    href="/services"
+                  <Link
+                    to={ROUTES.SERVICES}
                     className="mt-6 flex w-full items-center justify-center rounded-xl bg-gray-900 px-5 py-4 text-base font-bold text-white transition-all hover:bg-gray-800 shadow-md"
                   >
                     {t('serviceModal.allServices', { defaultValue: 'Все услуги' })}
-                  </a>
+                  </Link>
                 )}
               </div>
             </div>
