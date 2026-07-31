@@ -127,7 +127,8 @@ public class TwoFactorService {
             throw new UnauthorizedException("Срок действия токена 2FA истек. Войдите заново.");
         }
 
-        return preAuth.getUser();
+        return userRepository.findById(preAuth.getUser().getId())
+                .orElseThrow(() -> new UnauthorizedException("Пользователь не найден"));
     }
 
     public boolean verifyCode(User user, String code) {
