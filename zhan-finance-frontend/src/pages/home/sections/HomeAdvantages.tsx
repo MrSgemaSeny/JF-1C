@@ -38,7 +38,7 @@ export function HomeAdvantages() {
               viewport={{ once: true }}
               className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green"
             >
-              <Trans i18nKey="homeAdvantages.title" ns="common" />
+              <Trans i18nKey="homeAdvantages.title" ns="common" components={{ br: <br />, 1: <span className="text-brand-green/40" /> }} />
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, x: -30 }}

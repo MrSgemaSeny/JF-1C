@@ -55,12 +55,12 @@
   },
   "homeAbout": {
     "badge": "About Us",
-    "title": "CHOOSE <span class=\"italic font-light\">PEACE OF MIND</span> — <br />AND FOCUS ON GROWING <br />YOUR BUSINESS",
+    "title": "CHOOSE <1>PEACE OF MIND</1> — <br/>AND FOCUS ON GROWING <br/>YOUR BUSINESS",
     "description": "We handle audits, test tax strategies, and think through every accounting detail — so you can just focus on scaling your company.",
     "link": "Learn more about us"
   },
   "homeServices": {
-    "title": "Solutions for <br /><span class=\"text-brand-green/40\">your business</span>",
+    "title": "Solutions for <br/><1>your business</1>",
     "subtitle": "From one-off consultations to full accounting and HR outsourcing. We will find the perfect format.",
     "allServices": "All Services",
     "orderPrefix": "Service request:",
@@ -70,7 +70,7 @@
     "modalTitle": "Request Accepted!"
   },
   "homeAdvantages": {
-    "title": "Why choose <br /><span class=\"text-brand-green/40\">Zhan Finance</span>",
+    "title": "Why choose <br/><1>Zhan Finance</1>",
     "subtitle": "We don't just submit reports. We build a transparent system that helps businesses grow safely.",
     "cards": [
       {

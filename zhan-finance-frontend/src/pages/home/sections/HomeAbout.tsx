@@ -59,7 +59,7 @@ export function HomeAbout() {
             </div>
 
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">
-              <Trans i18nKey="homeAbout.title" ns="common" />
+              <Trans i18nKey="homeAbout.title" ns="common" components={{ br: <br />, 1: <span className="italic font-light" /> }} />
             </h2>
           </motion.div>
 
