@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
+import { useAuth } from '@/features/auth/AuthContext';
 import { useTaskQuery, useUpdateTaskStage } from '@/entities/task/api/taskQueries';
 import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
 import type { StageDto } from '@/entities/task/model/types';
 import { TaskRejectModal } from '@/widgets/task-reject/TaskRejectModal';
 import { Spinner } from '@/shared/ui/Spinner';
-import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip, MoreVertical, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle2, XCircle, FileText, Download, Activity, Archive, X, Paperclip, MoreVertical, ShieldCheck, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 import { translateTaskTitle, translateServiceName, translateStageName } from '@/shared/i18n/taskTranslator';
@@ -16,6 +17,7 @@ import { TaskEditModal } from '@/entities/task/ui/TaskEditModal';
 
 // Reusing colors from Kanban config for the stepper
 export function ClientTaskDetailsPage() {
+  const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['tasks', 'crm']);
@@ -326,8 +328,11 @@ export function ClientTaskDetailsPage() {
                   <Paperclip size={16} /> {t('tasks:details.documents', { defaultValue: 'Документы' })}
                 </h3>
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
-                  {documents.map(doc => {
+                  {documents.map((doc) => {
                     const isConfirmed = doc.status === 'CONFIRMED';
+                    const clientUploaded = doc.uploadedByRole === 'CLIENT' || (doc.uploadedById && user?.userId && doc.uploadedById === user.userId) || doc.fileName.endsWith('.md');
+                    const canConfirmDoc = !isFinished && !isArchived && !clientUploaded;
+
                     return (
                       <div key={doc.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-brand-green/30 transition-all">
                         <div className="flex items-center gap-3 overflow-hidden">
@@ -338,13 +343,19 @@ export function ClientTaskDetailsPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                          {isConfirmed ? (
+                          {clientUploaded ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200/80 rounded-full font-semibold text-xs">
+                              <Upload size={13} />
+                              {t('documents.status.clientUploaded', { defaultValue: 'Загружено вами' })}
+                            </span>
+                          ) : isConfirmed ? (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full font-semibold text-xs">
                               <ShieldCheck size={13} />
                               {t('documents.signed', { defaultValue: 'Подписано' })}
                             </span>
-                          ) : (
+                          ) : canConfirmDoc ? (
                             <button
+                              type="button"
                               onClick={() => handleConfirmDoc(doc.id)}
                               disabled={confirmingDocId === doc.id}
                               className="inline-flex items-center gap-1 px-3 py-1 bg-brand-green hover:bg-brand-green/90 text-white rounded-full font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
@@ -352,10 +363,11 @@ export function ClientTaskDetailsPage() {
                               <CheckCircle2 size={13} />
                               {confirmingDocId === doc.id ? t('documents.confirming', { defaultValue: '...' }) : t('documents.confirm', { defaultValue: 'Подтвердить' })}
                             </button>
-                          )}
+                          ) : null}
                           <button
+                            type="button"
                             onClick={() => downloadDocument(doc.id, doc.fileName)}
-                            className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors cursor-pointer"
                             title={t('tasks:details.download', { defaultValue: 'Скачать' })}
                           >
                             <Download size={16} />
