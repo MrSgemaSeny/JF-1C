@@ -63,3 +63,8 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - **Anti-Looping**: Maximum 3 attempts per problem. If command fails, show exact error and explain WHY before fix.
 - **Risk Flags**: Mark risks with text tags: [CRITICAL], [WARNING], [INFO].
 - **Priorities on Conflict**: Security > Correctness > Performance > Code Cleanliness
+
+## Context Management
+- **CONTEXT.md**: ALWAYS read `.agents/CONTEXT.md` at the start of a session to understand the current state.
+- **Updating CONTEXT.md**: Whenever you complete a task, solve a major bug, or make an architectural decision, update `.agents/CONTEXT.md` to reflect the new state. 
+- **Context Size Limit**: Keep `.agents/CONTEXT.md` concise and under 200 lines. Prune old, resolved issues to make room for new ones.
