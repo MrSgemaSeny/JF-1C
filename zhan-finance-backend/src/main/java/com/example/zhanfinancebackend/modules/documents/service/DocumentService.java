@@ -88,14 +88,14 @@ public class DocumentService {
         );
 
         if (!ALLOWED_CONTENT_TYPES.contains(contentType)) {
-            throw new BadRequestException("Недопустимый тип файла: " + contentType);
+            throw new BadRequestException("Недопустимый формат файла. Загрузка исполняемых файлов (.exe) и скриптов запрещена из соображений безопасности. Разрешены: PDF, DOCX, XLSX, PNG, JPG, ZIP, MD.");
         }
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename != null) {
             String lowerCaseName = originalFilename.toLowerCase();
             if (lowerCaseName.endsWith(".html") || lowerCaseName.endsWith(".htm") || lowerCaseName.endsWith(".svg") || lowerCaseName.endsWith(".exe") || lowerCaseName.endsWith(".js") || lowerCaseName.endsWith(".sh")) {
-                throw new BadRequestException("Данный тип файла запрещен к загрузке.");
+                throw new BadRequestException("Загрузка исполняемых файлов (.exe, .sh, .js) запрещена из соображений безопасности.");
             }
         }
 

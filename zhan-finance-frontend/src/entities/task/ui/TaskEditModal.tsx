@@ -62,36 +62,40 @@ export function TaskEditModal({ task, isOpen, onClose, onSaved }: TaskEditModalP
 
   return (
     <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 flex flex-col max-h-[92vh]">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-brand-green/10 flex items-center justify-center text-brand-green">
-              <Edit3 size={18} />
+        <div className="flex items-center justify-between px-8 py-5 border-b border-gray-100 bg-gray-50/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-brand-green/10 flex items-center justify-center text-brand-green">
+              <Edit3 size={20} />
             </div>
-            <h3 className="font-bold text-lg text-gray-900">
-              {t('tasks:editModal.title', { defaultValue: 'Редактирование задачи' })}
-            </h3>
+            <div>
+              <h3 className="font-bold text-xl text-gray-900">
+                {t('tasks:editModal.title', { defaultValue: 'Редактирование задачи' })}
+              </h3>
+              <p className="text-xs text-gray-400 font-medium">#{task.id} • {task.title}</p>
+            </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-200/50 rounded-lg transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200/50 rounded-xl transition-colors cursor-pointer"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Modal Content / Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
+        <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto flex-1">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium">
+            <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-xs rounded-2xl font-medium leading-relaxed">
               {error}
             </div>
           )}
 
           {/* Title Field */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide">
               {t('tasks:editModal.taskTitle', { defaultValue: 'Название задачи' })} *
             </label>
             <input
@@ -99,14 +103,14 @@ export function TaskEditModal({ task, isOpen, onClose, onSaved }: TaskEditModalP
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder={t('tasks:editModal.taskTitlePlaceholder', { defaultValue: 'Введите название задачи' })}
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none"
               required
             />
           </div>
 
           {/* Description Field */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide">
               {t('tasks:editModal.description', { defaultValue: 'Описание задачи' })}
             </label>
             <textarea
@@ -114,13 +118,13 @@ export function TaskEditModal({ task, isOpen, onClose, onSaved }: TaskEditModalP
               onChange={e => setDescription(e.target.value)}
               rows={4}
               placeholder={t('tasks:editModal.descriptionPlaceholder', { defaultValue: 'Опишите детали задачи...' })}
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none resize-none"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none resize-none"
             />
           </div>
 
           {/* Deadline Field using custom DatePicker */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">
+          <div className="space-y-2 pb-24">
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide">
               {t('tasks:editModal.deadline', { defaultValue: 'Желаемый срок (Дедлайн)' })}
             </label>
             <DatePicker
@@ -131,18 +135,18 @@ export function TaskEditModal({ task, isOpen, onClose, onSaved }: TaskEditModalP
           </div>
 
           {/* Modal Footer */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-3 pt-5 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl text-sm font-semibold transition-colors"
+              className="px-5 py-2.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl text-sm font-bold transition-colors cursor-pointer"
             >
               {t('tasks:editModal.cancel', { defaultValue: 'Отмена' })}
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !title.trim()}
-              className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50 shadow-md shadow-brand-green/20"
+              className="px-6 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-2 disabled:opacity-50 shadow-md shadow-brand-green/20 cursor-pointer"
             >
               {isSubmitting ? (
                 <>

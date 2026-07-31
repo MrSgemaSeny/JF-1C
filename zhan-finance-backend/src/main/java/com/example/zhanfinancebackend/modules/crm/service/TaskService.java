@@ -297,7 +297,7 @@ public class TaskService {
     @Transactional
     public TaskDto updateTaskDetails(Long taskId, TaskUpdateRequest request, User user) {
         Task task = getTaskEntity(taskId);
-        accessService.assertCanUpdateTaskStage(user, task, task.getStage()); // Using this check for now to ensure they have write access
+        accessService.assertCanUpdateTaskDetails(user, task);
 
         boolean isEdited = false;
         if (request.title() != null && !request.title().trim().isEmpty()) {
