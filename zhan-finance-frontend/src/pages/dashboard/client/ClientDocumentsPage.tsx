@@ -93,17 +93,35 @@ export function ClientDocumentsPage() {
     }
   };
 
+  const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.txt', '.md', '.zip', '.rar', '.7z'];
+  const ACCEPT_ATTRIBUTE = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.zip,.rar,.7z';
+
   const processFileUpload = async (file: File) => {
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      const errMsg = t('documents.notifications.invalidFileType', {
+        defaultValue: 'Загрузка исполняемых файлов (.exe, .sh, .js) запрещена из соображений безопасности. Разрешены: PDF, DOCX, XLSX, PNG, JPG, ZIP, MD.'
+      });
+      setError(errMsg);
+      toast.error(errMsg);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
+
     setIsUploading(true);
     setError(null);
     try {
       await uploadDocument(file);
       await fetchDocuments();
+      toast.success(t('documents.notifications.uploadSuccess', { defaultValue: 'Файл успешно загружен' }));
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    } catch (err) {
-      setError(t('documents.notifications.uploadError', { defaultValue: 'Не удалось загрузить документ' }));
+    } catch (err: any) {
+      const apiMsg = err?.response?.data?.message || err?.message;
+      setError(apiMsg || t('documents.notifications.uploadError', { defaultValue: 'Не удалось загрузить документ' }));
       console.error(err);
     } finally {
       setIsUploading(false);
@@ -345,7 +363,7 @@ export function ClientDocumentsPage() {
             : 'border-gray-200/80 bg-white hover:border-brand-green/50 hover:bg-gray-50/60 hover:shadow-2xs'
         )}
       >
-        <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileSelect} disabled={isUploading} />
+        <input ref={fileInputRef} type="file" accept={ACCEPT_ATTRIBUTE} className="hidden" onChange={handleFileSelect} disabled={isUploading} />
         <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-brand-green flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xs">
           {isUploading ? <Spinner className="w-6 h-6 text-brand-green" /> : <Upload size={22} />}
         </div>
