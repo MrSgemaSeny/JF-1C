@@ -66,10 +66,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Сразу синхронно настраиваем http-клиент перед рендером детей
   useMemo(() => {
     configureAuth(
-      () => user?.accessToken ?? null,
+      () => user?.accessToken ?? readStoredAuth()?.accessToken ?? null,
       async () => {
         const current = readStoredAuth();
-        if (!current) {
+        if (!current || !current.refreshToken) {
           return null;
         }
         try {
