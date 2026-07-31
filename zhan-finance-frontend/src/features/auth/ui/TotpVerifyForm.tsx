@@ -142,6 +142,21 @@ export function TotpVerifyForm({ preAuthToken, onSuccess, onBack }: Props) {
           {t('auth.totp.backBtn', { defaultValue: 'Вернуться к вводу пароля' })}
         </button>
       </div>
+
+      <div className="pt-6 space-y-4">
+        <div className="p-4 bg-amber-50/80 border border-amber-200/50 rounded-xl">
+          <p className="text-xs text-amber-800 leading-relaxed text-center">
+            <strong>Внимание:</strong> Если вы попали на эту страницу случайно или подозреваете, что кто-то другой пытается войти в ваш аккаунт, немедленно свяжитесь с поддержкой и смените пароль.
+          </p>
+        </div>
+        
+        <p className="text-xs text-gray-400 text-center">
+          Продолжая, вы соглашаетесь с нашей{' '}
+          <a href="/privacy-policy" className="text-brand-green hover:underline font-medium">
+            Политикой конфиденциальности
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
