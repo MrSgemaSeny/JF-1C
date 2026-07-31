@@ -19,7 +19,7 @@ Explain WHY, not just WHAT (Senior Tech Lead mentoring approach: architect think
 
 ## Architecture
 - **API Routing**: context-path=/api, controllers on /v1/**, final routes: /api/v1/**
-- **Roles (5)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR
+- **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR
 - **FSD Layers**: shared -> entities -> features -> widgets -> pages
 - **State/Data Fetching**: React Query for all CRM data, structured keys: ['tasks', 'list', filter]
 - **Global Error Handling**: Global exception handler with requestId
