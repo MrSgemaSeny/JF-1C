@@ -83,8 +83,9 @@ public class DocumentService {
                 "application/vnd.ms-excel",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "image/png", "image/jpeg", "image/webp", "image/gif",
-                "text/plain", "text/markdown", "text/x-markdown",
-                "application/zip", "application/x-zip-compressed"
+                "text/plain", "text/csv", "text/markdown", "text/x-markdown",
+                "application/zip", "application/x-zip-compressed", "application/x-rar-compressed",
+                "application/octet-stream"
         );
 
         if (!ALLOWED_CONTENT_TYPES.contains(contentType)) {

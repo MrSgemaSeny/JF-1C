@@ -114,6 +114,9 @@ export function ClientDocumentsPage() {
     setError(null);
     try {
       await uploadDocument(file);
+      setUploaderFilter('all');
+      setSelectedFolder('all');
+      setSearchQuery('');
       await fetchDocuments();
       toast.success(t('documents.notifications.uploadSuccess', { defaultValue: 'Файл успешно загружен' }));
       if (fileInputRef.current) {
