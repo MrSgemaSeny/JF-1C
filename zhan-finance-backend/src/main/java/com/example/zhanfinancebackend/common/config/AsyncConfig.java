@@ -51,5 +51,17 @@ public class AsyncConfig implements AsyncConfigurer {
         exec.initialize();
         return exec;
     }
+
+    @Bean(name = "telegramExecutor")
+    public Executor telegramExecutor() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(2);
+        exec.setMaxPoolSize(5);
+        exec.setQueueCapacity(50);
+        exec.setThreadNamePrefix("TelegramNotify-");
+        exec.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        exec.initialize();
+        return exec;
+    }
 }
 

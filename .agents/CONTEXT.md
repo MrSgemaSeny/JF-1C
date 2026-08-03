@@ -36,3 +36,6 @@
 - Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 09-2fa, 10-monitoring, 18-landing, 19-advisor (9)
 - Partial: 06-notifications, 07-billing, 08-dashboard (3)
 - Planned: 11-domain-cdn, 12-payments, 13-1c-integration, 15-storage-r2, 16-lms-quizzes, 17-staging (6)
+
+## Technical Backlog
+- Check `sentry-spring-boot-starter-jakarta` version compatibility with Spring Boot 4.1.0 to restore backend Sentry error tracking (crashed on 8.51.0 due to `RestClientCustomizer`).

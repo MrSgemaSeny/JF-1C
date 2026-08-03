@@ -22,16 +22,19 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final EmailNotificationService emailNotificationService;
     private final UserRepository userRepository;
+    private final TelegramNotifierService telegramNotifierService;
 
     @org.springframework.beans.factory.annotation.Value("${app.frontend.url}")
     private String frontendUrl;
 
     public NotificationService(NotificationRepository notificationRepository, 
                                EmailNotificationService emailNotificationService,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               TelegramNotifierService telegramNotifierService) {
         this.notificationRepository = notificationRepository;
         this.emailNotificationService = emailNotificationService;
         this.userRepository = userRepository;
+        this.telegramNotifierService = telegramNotifierService;
     }
 
     @Transactional
@@ -52,6 +55,13 @@ public class NotificationService {
         for (User admin : admins) {
             createNotification(admin, title, message, relativeLink);
         }
+
+        // Also send to Telegram business channel for admins
+        String fullLink = null;
+        if (relativeLink != null) {
+            fullLink = frontendUrl + relativeLink;
+        }
+        telegramNotifierService.sendAdminNotificationAsync(title, message, fullLink);
     }
 
     @Transactional(readOnly = true)
@@ -90,4 +100,3 @@ public class NotificationService {
         );
     }
 }
-
