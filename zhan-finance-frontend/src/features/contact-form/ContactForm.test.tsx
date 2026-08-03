@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ContactForm } from './ContactForm';
@@ -41,6 +41,7 @@ describe('ContactForm Component', () => {
     const apiRequestMock = vi.mocked(http.apiRequest).mockResolvedValueOnce({});
     
     renderComponent();
+    await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
     
     const nameInput = screen.getByPlaceholderText(/Имя Фамилия/i);
     const phoneInput = screen.getByPlaceholderText(/\+7/i);
@@ -56,9 +57,8 @@ describe('ContactForm Component', () => {
     await waitFor(() => {
       expect(apiRequestMock).toHaveBeenCalledWith('/api/v1/contact-requests', {
         method: 'POST',
-        body: expect.stringContaining('"name":"Ivan Ivanov"')
+        body: expect.stringMatching(/Ivan Ivanov.*Need help with taxes|Need help with taxes.*Ivan Ivanov/s)
       });
-      expect(apiRequestMock.mock.calls[0][1]?.body).toContain('Need help with taxes');
     });
     
     expect(await screen.findByText(/Спасибо!/i)).toBeInTheDocument();

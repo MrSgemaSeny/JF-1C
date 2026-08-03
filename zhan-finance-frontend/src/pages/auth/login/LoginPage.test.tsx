@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { LoginPage } from './LoginPage';
@@ -46,8 +46,9 @@ describe('LoginPage Component', () => {
     );
   };
 
-  it('renders login form elements', () => {
+  it('renders login form elements', async () => {
     renderWithProviders(<LoginPage />);
+    await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/auth\.login\.passwordLabel/i)).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /auth\.login\.loginBtn/i })[0]).toBeInTheDocument();
@@ -55,6 +56,7 @@ describe('LoginPage Component', () => {
 
   it('shows validation errors when submitting empty form', async () => {
     renderWithProviders(<LoginPage />);
+    await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
     
     const submitButton = screen.getAllByRole('button', { name: /auth\.login\.loginBtn/i })[0];
     
