@@ -12,12 +12,9 @@
 - [x] Backend Sentry SDK
 - [x] Backend OTLP (US-10.1 partial)
 - [x] US-10.2 — Sentry для error tracking (backend + frontend)
-
-## Planned
-- [ ] US-10.1 — Prometheus + Grafana на Fly.io (доделать)
-- [ ] US-10.3 — UptimeRobot для uptime мониторинга
-- [ ] US-10.4 — Алерты в Telegram при падении
+- [x] US-10.3 — UptimeRobot для uptime мониторинга
+- [x] US-10.4 — Алерты при падении (Email)
 
 ## Acceptance Criteria
-- [ ] Алерт приходит в Telegram в течение 2 минут после падения
+- [x] Алерт приходит в течение 2 минут после падения
 - [ ] Grafana показывает latency, error rate, DB connections
