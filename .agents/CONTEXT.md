@@ -35,4 +35,4 @@
 ## Epic Status Summary
 - Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 09-2fa, 18-landing, 19-advisor (8)
 - Partial: 06-notifications, 07-billing, 08-dashboard (3)
-- Planned: 10-monitoring, 11-domain-cdn, 12-payments, 13-1c-integration, 14-multi-tenancy, 15-storage-r2, 16-lms-quizzes, 17-staging (8)
+- Planned: 10-monitoring, 11-domain-cdn, 12-payments, 13-1c-integration, 15-storage-r2, 16-lms-quizzes, 17-staging (7)

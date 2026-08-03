@@ -225,7 +225,7 @@ migration(VN): краткое описание
 
 | # | Slug | Домен | Статус |
 |---|---|---|---|
-| 01 | auth | Auth | Done (2FA in progress) |
+| 01 | auth | Auth | Done |
 | 02 | crm | CRM | Done |
 | 03 | documents | Documents | Done |
 | 04 | lms | LMS | Done |
@@ -238,7 +238,7 @@ migration(VN): краткое описание
 | 11 | domain-cdn | Infra | Planned |
 | 12 | payments | Billing | Planned |
 | 13 | 1c-integration | Cross | Planned |
-| 14 | multi-tenancy | Cross | Planned |
+
 | 15 | storage-r2 | Infra | Planned |
 | 16 | lms-quizzes | LMS | Planned |
 | 17 | staging | Infra | Planned |
