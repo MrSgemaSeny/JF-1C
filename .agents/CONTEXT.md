@@ -34,6 +34,6 @@
 - Epic-08: Dashboard analytics (charts, conversion funnel)
 
 ## Epic Status Summary
-- Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 09-2fa, 18-landing, 19-advisor (8)
-- Partial: 06-notifications, 07-billing, 08-dashboard, 10-monitoring (4)
+- Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 09-2fa, 10-monitoring, 18-landing, 19-advisor (9)
+- Partial: 06-notifications, 07-billing, 08-dashboard (3)
 - Planned: 11-domain-cdn, 12-payments, 13-1c-integration, 15-storage-r2, 16-lms-quizzes, 17-staging (6)
