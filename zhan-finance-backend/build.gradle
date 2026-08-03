@@ -28,7 +28,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.micrometer:micrometer-registry-otlp'
-    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:8.51.0'
+    implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
+    // TODO: Sentry 8.51.0 incompatible with Spring Boot 4.1.0 (NoClassDefFoundError: RestClientCustomizer)
+    // implementation 'io.sentry:sentry-spring-boot-starter-jakarta:8.51.0'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'com.google.api-client:google-api-client:2.2.0'
