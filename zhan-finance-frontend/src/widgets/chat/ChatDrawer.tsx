@@ -60,7 +60,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
     if (isOpen && otherUserId && user) {
       // 1. Setup Stomp client
       stompClient = new Client({
-        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true }),
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
         connectHeaders: {},
         debug: (str) => {
           // console.log('[STOMP]', str);

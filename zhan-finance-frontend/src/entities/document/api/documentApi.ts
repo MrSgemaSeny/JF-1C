@@ -1,4 +1,4 @@
-import { apiRequest, API_BASE_URL, getAccessToken } from '@/shared/api/http';
+import { apiRequest, API_BASE_URL } from '@/shared/api/http';
 import type { DocumentDto, DocumentUploadResponse } from '../model/types';
 
 export async function uploadDocument(file: File, userId?: number, taskId?: number): Promise<DocumentDto> {
@@ -43,11 +43,8 @@ export async function deleteDocument(id: number): Promise<void> {
 }
 
 export async function downloadDocument(id: number, fileName: string): Promise<void> {
-  const token = getAccessToken();
   const response = await fetch(`${API_BASE_URL}/api/v1/documents/${id}/download`, {
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    }
+    credentials: 'include'
   });
 
   if (!response.ok) {
@@ -72,12 +69,9 @@ export async function confirmDocument(id: number): Promise<DocumentDto> {
 }
 
 export async function downloadZipDocuments(ids: number[], zipName = 'documents_archive.zip'): Promise<void> {
-  const token = getAccessToken();
   const query = ids.join(',');
   const response = await fetch(`${API_BASE_URL}/api/v1/documents/download-zip?ids=${query}`, {
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    }
+    credentials: 'include'
   });
 
   if (!response.ok) {

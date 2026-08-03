@@ -34,7 +34,7 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
       
       // Setup Stomp client
       const client = new Client({
-        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true }),
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
         connectHeaders: {},
         debug: (str) => {
           // console.log('[STOMP NOTIF]', str);

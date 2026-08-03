@@ -122,7 +122,7 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined): Promi
  * исходную 401-ошибку дальше, вызывающий код решает, что делать
  * (обычно: разлогинить и отправить на /login).
  */
-let refreshPromise: Promise<string | null> | null = null;
+let refreshPromise: Promise<boolean> | null = null;
 let isRedirectingToLogin = false;
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {

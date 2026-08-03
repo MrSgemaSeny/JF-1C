@@ -93,7 +93,7 @@ export function ClientChatPage() {
     let stompClient: Client | null = null;
     if (user) {
       stompClient = new Client({
-        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true }),
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
         connectHeaders: {},
         debug: (str) => {
           // console.log('[STOMP]', str);

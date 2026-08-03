@@ -100,7 +100,7 @@ export function EmployeeChatPage() {
     
     if (user) {
       stompClient = new Client({
-        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true }),
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
         connectHeaders: {},
         debug: (str) => {
           // console.log('[STOMP]', str);
