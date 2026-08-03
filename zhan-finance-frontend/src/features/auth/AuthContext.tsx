@@ -8,8 +8,6 @@ import { AUTH_STORAGE_KEY } from '@/shared/constants/storageKeys';
 const STORAGE_KEY = AUTH_STORAGE_KEY;
 
 interface StoredAuth {
-  accessToken: string;
-  refreshToken: string;
   userId: number;
   email: string;
   fullName: string;
@@ -34,24 +32,8 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function readStoredAuth(): StoredAuth | null {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return null;
-  }
-  try {
-    return JSON.parse(raw) as StoredAuth;
-  } catch {
-    // Битый JSON в localStorage (ручное редактирование, старый несовместимый формат) -
-    // лучше тихо считать пользователя разлогиненным, чем уронить всё приложение.
-    return null;
-  }
-}
-
 function toStoredAuth(response: AuthResponse): StoredAuth {
   return {
-    accessToken: response.accessToken || '',
-    refreshToken: response.refreshToken || '',
     userId: response.id || 0,
     email: response.email || '',
     fullName: response.fullName || '',
@@ -64,40 +46,37 @@ function toStoredAuth(response: AuthResponse): StoredAuth {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<StoredAuth | null>(() => readStoredAuth());
-  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<StoredAuth | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Сразу синхронно настраиваем http-клиент перед рендером детей
   useMemo(() => {
-    configureAuth(
-      () => user?.accessToken ?? readStoredAuth()?.accessToken ?? null,
-      async () => {
-        const current = readStoredAuth();
-        if (!current || !current.refreshToken) {
-          return null;
-        }
-        try {
-          const response = await authApi.refresh({ refreshToken: current.refreshToken });
-          const next = toStoredAuth(response);
-          setUser(next);
-          return next.accessToken;
-        } catch {
-          setUser(null);
-          return null;
-        }
+    const refresh = async () => {
+      try {
+        const response = await authApi.refresh();
+        const next = toStoredAuth(response);
+        setUser(next);
+        return true;
+      } catch {
+        setUser(null);
+        return false;
       }
-    );
-  }, [user]);
+    };
+    configureAuth(refresh);
+  }, []);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [user]);
-
-
+    authApi.getMe()
+      .then(response => {
+        setUser(toStoredAuth(response));
+      })
+      .catch(() => {
+        setUser(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   const value = useMemo<AuthContextValue>(() => ({
     user,
@@ -152,10 +131,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     },
-    logout() {
-      setUser(null);
+    async logout() {
+      try {
+        await authApi.logoutUser();
+      } catch {
+        // ignore
+      } finally {
+        setUser(null);
+      }
     }
   }), [user, isLoading]);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Можно заменить на нормальный лоадер
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

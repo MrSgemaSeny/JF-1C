@@ -85,6 +85,7 @@ class CourseIntegrationTests {
         // 1. Admin creates a course
         MvcResult courseResult = mockMvc.perform(post("/api/v1/admin/courses").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .param("title", "Integration Test Course")
                         .param("description", "Desc")
                         .param("isPublished", "true"))
@@ -105,6 +106,7 @@ class CourseIntegrationTests {
         MvcResult lessonResult = mockMvc.perform(multipart("/api/v1/admin/courses/" + courseId + "/lessons").contextPath("/api")
                         .file(file)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .param("title", "First Lesson")
                         .param("type", "VIDEO")
                         .param("orderIndex", "0"))
@@ -151,6 +153,7 @@ class CourseIntegrationTests {
         // 1. Admin creates UNPUBLISHED course
         MvcResult courseResult = mockMvc.perform(post("/api/v1/admin/courses").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .param("title", "Secret Course")
                         .param("isPublished", "false"))
                 .andExpect(status().isOk())
@@ -161,6 +164,7 @@ class CourseIntegrationTests {
         // 2. Admin adds a lesson
         MvcResult lessonResult = mockMvc.perform(post("/api/v1/admin/courses/" + courseId + "/lessons").contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .param("title", "Secret Lesson")
                         .param("type", "DOCUMENT"))
                 .andExpect(status().isOk())

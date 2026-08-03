@@ -31,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class ApiSmokeTests {
 
+    record AuthResult(String accessToken, String refreshToken, JsonNode data) {}
+
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -79,9 +82,9 @@ class ApiSmokeTests {
 
     @Test
     void authJwtUserProfileAndBillingCrudWork() throws Exception {
-        JsonNode auth = register("smoke@example.com");
-        String accessToken = auth.get("accessToken").asText();
-        String refreshToken = auth.get("refreshToken").asText();
+        AuthResult auth = register("smoke@example.com");
+        String accessToken = auth.accessToken();
+        String refreshToken = auth.refreshToken();
 
         assertThat(accessToken).isNotBlank();
         assertThat(refreshToken).isNotBlank();
@@ -98,21 +101,13 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.tokenType").value("Bearer"))
                 .andReturn();
 
-        String currentRefreshToken = objectMapper
-                .readTree(loginResult.getResponse().getContentAsString())
-                .get("data")
-                .get("refreshToken")
-                .asText();
+        String currentRefreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
 
         mockMvc.perform(post("/api/v1/auth/refresh").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "refreshToken": "%s"
-                                }
-                                """.formatted(currentRefreshToken)))
+                        .cookie(new jakarta.servlet.http.Cookie("refreshToken", currentRefreshToken)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.accessToken").isNotEmpty());
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie().exists("accessToken"));
 
         mockMvc.perform(get("/api/v1/users/me").contextPath("/api")
                         .header("Authorization", "Bearer " + accessToken))
@@ -153,6 +148,7 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.status").value("ISSUED"));
 
         mockMvc.perform(delete("/api/v1/billing/invoices/{id}", invoiceId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
 
@@ -178,14 +174,15 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.status").value("PAUSED"));
 
         mockMvc.perform(delete("/api/v1/billing/subscriptions/{id}", subscriptionId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk());
     }
 
     @Test
     void crmTasksWork() throws Exception {
-        JsonNode clientAuth = register("client_smoke@example.com");
-        String clientToken = clientAuth.get("accessToken").asText();
+        AuthResult clientAuth = register("client_smoke@example.com");
+        String clientToken = clientAuth.accessToken();
         
         // Client requests a task
         MvcResult requestResult = mockMvc.perform(post("/api/v1/crm/tasks/request").contextPath("/api")
@@ -212,8 +209,8 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.title").value("Need help with integration"));
 
         // Employee can fetch pipelines
-        JsonNode empAuth = register("employee_smoke@example.com");
-        String empToken = empAuth.get("accessToken").asText();
+        AuthResult empAuth = register("employee_smoke@example.com");
+        String empToken = empAuth.accessToken();
 
         mockMvc.perform(get("/api/v1/crm/pipelines").contextPath("/api")
                         .header("Authorization", "Bearer " + empToken))
@@ -233,7 +230,7 @@ class ApiSmokeTests {
                 .andExpect(status().is4xxClientError());
     }
 
-    private JsonNode register(String email) throws Exception {
+    private AuthResult register(String email) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -247,7 +244,10 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.tokenType").value("Bearer"))
                 .andReturn();
 
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("data");
+        String accessToken = result.getResponse().getCookie("accessToken").getValue();
+        String refreshToken = result.getResponse().getCookie("refreshToken").getValue();
+        JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).get("data");
+        return new AuthResult(accessToken, refreshToken, data);
     }
 
     private long createInvoice(String accessToken) throws Exception {

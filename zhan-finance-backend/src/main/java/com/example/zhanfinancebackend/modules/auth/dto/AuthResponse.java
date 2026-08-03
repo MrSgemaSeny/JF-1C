@@ -2,10 +2,11 @@ package com.example.zhanfinancebackend.modules.auth.dto;
 
 import com.example.zhanfinancebackend.modules.auth.entity.AuthProvider;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public record AuthResponse(
-        String accessToken,
-        String refreshToken,
+        @JsonIgnore String accessToken,
+        @JsonIgnore String refreshToken,
         String tokenType,
         Long id,
         String email,

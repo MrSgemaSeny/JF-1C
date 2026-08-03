@@ -33,27 +33,23 @@ export class ApiError extends Error {
   }
 }
 
-type TokenGetter = () => string | null;
-type RefreshHandler = () => Promise<string | null>;
+type RefreshHandler = () => Promise<boolean>;
 
-let getAccessToken: TokenGetter = () => null;
-let onUnauthorized: RefreshHandler = async () => null;
+let onUnauthorized: RefreshHandler = async () => false;
 
 /**
- * Вызывается один раз из AuthProvider, чтобы http-клиент мог брать текущий
- * токен и пытаться обновить его на 401, не зная при этом ничего про
- * React-state или localStorage напрямую.
+ * Вызывается один раз из AuthProvider, чтобы http-клиент мог пытаться 
+ * обновить токен на 401, не зная при этом ничего про React-state.
  */
-export function configureAuth(tokenGetter: TokenGetter, refreshHandler: RefreshHandler) {
-  getAccessToken = tokenGetter;
+export function configureAuth(refreshHandler: RefreshHandler) {
   onUnauthorized = refreshHandler;
 }
 
-async function rawRequest<T>(path: string, init: RequestInit | undefined, accessToken: string | null): Promise<T> {
+async function rawRequest<T>(path: string, init: RequestInit | undefined): Promise<T> {
   const isFormData = init?.body instanceof FormData;
   const headers = {
+    'X-Requested-With': 'XMLHttpRequest',
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     'Accept-Language': i18n.language ?? 'ru',
     ...init?.headers
   };
@@ -62,7 +58,8 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined, access
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
-      headers
+      headers,
+      credentials: 'include'
     });
   } catch (err) {
     toast.error(i18n.t('common.connectionFailed', { defaultValue: 'Ошибка соединения. Проверьте подключение к интернету.' }), { duration: 5000 });
@@ -129,20 +126,19 @@ let refreshPromise: Promise<string | null> | null = null;
 let isRedirectingToLogin = false;
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = getAccessToken();
   try {
-    return await rawRequest<T>(path, init, token);
+    return await rawRequest<T>(path, init);
   } catch (error) {
-    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google');
+    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google') || path.includes('/auth/me');
     if (error instanceof ApiError && error.status === 401 && !isAuthRoute) {
       if (!refreshPromise) {
         refreshPromise = onUnauthorized().finally(() => {
           refreshPromise = null;
         });
       }
-      const refreshedToken = await refreshPromise;
-      if (refreshedToken) {
-        return await rawRequest<T>(path, init, refreshedToken);
+      const refreshResult = await refreshPromise;
+      if (refreshResult) {
+        return await rawRequest<T>(path, init);
       } else {
         localStorage.removeItem(AUTH_STORAGE_KEY);
         if (!isRedirectingToLogin) {
@@ -157,9 +153,9 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   }
 }
 
-async function rawDownload(path: string, init: RequestInit | undefined, accessToken: string | null): Promise<Blob> {
+async function rawDownload(path: string, init: RequestInit | undefined): Promise<Blob> {
   const headers = {
-    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    'X-Requested-With': 'XMLHttpRequest',
     ...init?.headers
   };
 
@@ -167,7 +163,8 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
-      headers
+      headers,
+      credentials: 'include'
     });
   } catch (err) {
     toast.error(i18n.t('common.connectionFailed', { defaultValue: 'Ошибка соединения. Проверьте подключение к интернету.' }), { duration: 5000 });
@@ -212,11 +209,10 @@ async function rawDownload(path: string, init: RequestInit | undefined, accessTo
 }
 
 export async function apiDownload(path: string, init?: RequestInit): Promise<Blob> {
-  const token = getAccessToken();
   try {
-    return await rawDownload(path, init, token);
+    return await rawDownload(path, init);
   } catch (error) {
-    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google');
+    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google') || path.includes('/auth/me');
     if (error instanceof ApiError && error.status === 401 && !isAuthRoute) {
       if (!refreshPromise) {
         refreshPromise = onUnauthorized().finally(() => {
@@ -225,7 +221,7 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
       }
       const refreshedToken = await refreshPromise;
       if (refreshedToken) {
-        return await rawDownload(path, init, refreshedToken);
+        return await rawDownload(path, init);
       } else {
         localStorage.removeItem(AUTH_STORAGE_KEY);
         toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
@@ -261,10 +257,10 @@ export function getSecureImageUrl(url: string | undefined): string | undefined {
   return `${API_BASE_URL}${cleanUrl}`;
 }
 
-export function getWsEndpointUrl(token: string): string {
+export function getWsEndpointUrl(): string {
   const baseUrl = API_BASE_URL.replace(/\/+$/, '');
   const wsPath = baseUrl.endsWith('/api') ? '/ws' : '/api/ws';
-  return `${baseUrl}${wsPath}?token=${token}`;
+  return `${baseUrl}${wsPath}`;
 }
 
-export { API_BASE_URL, getAccessToken };
+export { API_BASE_URL };

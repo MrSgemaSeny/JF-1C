@@ -21,6 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class CourseApiSmokeTests {
 
+    record AuthResult(String accessToken, String refreshToken, JsonNode data) {}
+
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -41,15 +44,15 @@ class CourseApiSmokeTests {
                 .andExpect(status().is4xxClientError());
 
         // Register a CLIENT to check if they can access LEARNER endpoints (they shouldn't)
-        JsonNode auth = register("client_course@example.com");
-        String token = auth.get("accessToken").asText();
+        AuthResult auth = register("client_course@example.com");
+        String token = auth.accessToken();
 
         mockMvc.perform(get("/api/v1/courses").contextPath("/api")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden()); // Assuming CLIENT does not have LEARNER role
     }
 
-    private JsonNode register(String email) throws Exception {
+    private AuthResult register(String email) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -62,6 +65,10 @@ class CourseApiSmokeTests {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        return objectMapper.readTree(result.getResponse().getContentAsString()).get("data");
+        String accessToken = result.getResponse().getCookie("accessToken") != null ? result.getResponse().getCookie("accessToken").getValue() : "";
+        String refreshToken = result.getResponse().getCookie("refreshToken") != null ? result.getResponse().getCookie("refreshToken").getValue() : "";
+        JsonNode data = objectMapper.readTree(result.getResponse().getContentAsString()).get("data");
+        
+        return new AuthResult(accessToken, refreshToken, data);
     }
 }

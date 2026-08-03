@@ -119,6 +119,7 @@ class TaskServiceIntegrationTests {
         // STEP 2: Employee assigns to self
         mockMvc.perform(
                 patch("/api/v1/crm/tasks/{id}/assign", taskId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .param("assigneeId", String.valueOf(employee.getId()))
                         .header("Authorization", "Bearer " + employeeToken))
                 .andExpect(status().isOk())
@@ -132,6 +133,7 @@ class TaskServiceIntegrationTests {
         });
         mockMvc.perform(
                 patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + employeeToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -145,6 +147,7 @@ class TaskServiceIntegrationTests {
         Stage doneStage = stageRepository.findAll().stream().filter(s -> s.getType() == StageType.WON).findFirst().orElseThrow();
         mockMvc.perform(
                 patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -184,6 +187,8 @@ class TaskServiceIntegrationTests {
     void createTask_MissingTitle_Returns400() throws Exception {
         mockMvc.perform(
                 post("/api/v1/crm/tasks/request").contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -202,6 +207,7 @@ class TaskServiceIntegrationTests {
         task = taskRepository.save(task);
 
         mockMvc.perform(delete("/api/v1/crm/tasks/{id}", task.getId()).contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
 
@@ -232,6 +238,7 @@ class TaskServiceIntegrationTests {
         // STEP 2: Employee assigns to self
         mockMvc.perform(
                 patch("/api/v1/crm/tasks/{id}/assign", taskId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .param("assigneeId", String.valueOf(employee.getId()))
                         .header("Authorization", "Bearer " + employeeToken))
                 .andExpect(status().isOk());
@@ -244,6 +251,7 @@ class TaskServiceIntegrationTests {
         });
         mockMvc.perform(
                 patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + employeeToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -260,6 +268,7 @@ class TaskServiceIntegrationTests {
         });
         mockMvc.perform(
                 patch("/api/v1/crm/tasks/{id}/stage", taskId).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
                         .header("Authorization", "Bearer " + clientToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

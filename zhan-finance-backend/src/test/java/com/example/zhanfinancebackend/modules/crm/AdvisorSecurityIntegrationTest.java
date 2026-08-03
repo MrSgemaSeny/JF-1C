@@ -68,6 +68,7 @@ public class AdvisorSecurityIntegrationTest {
     @Test
     public void advisor_CanAssignTask() throws Exception {
         mockMvc.perform(patch("/api/v1/crm/tasks/1/assign").contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .param("assigneeId", "2")
                 .with(user(advisorPrincipal))
                 .with(csrf()))
@@ -77,6 +78,7 @@ public class AdvisorSecurityIntegrationTest {
     @Test
     public void advisor_CanApproveReassignment() throws Exception {
         mockMvc.perform(post("/api/v1/crm/tasks/1/reassign/approve").contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .with(user(advisorPrincipal))
                 .with(csrf()))
                 .andExpect(status().is(org.hamcrest.Matchers.not(403)));
@@ -85,6 +87,7 @@ public class AdvisorSecurityIntegrationTest {
     @Test
     public void advisor_CanRejectReassignment() throws Exception {
         mockMvc.perform(post("/api/v1/crm/tasks/1/reassign/reject").contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .with(user(advisorPrincipal))
                 .with(csrf()))
                 .andExpect(status().is(org.hamcrest.Matchers.not(403)));
@@ -102,6 +105,7 @@ public class AdvisorSecurityIntegrationTest {
     @Test
     public void advisor_ForbiddenFromApproveEmployee() throws Exception {
         mockMvc.perform(post("/api/v1/admin/employees/1/approve").contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .with(user(advisorPrincipal))
                 .with(csrf()))
                 .andExpect(status().isForbidden());
@@ -110,6 +114,7 @@ public class AdvisorSecurityIntegrationTest {
     @Test
     public void advisor_ForbiddenFromPromoteToAdvisor() throws Exception {
         mockMvc.perform(post("/api/v1/admin/employees/1/promote-to-advisor").contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .with(user(advisorPrincipal))
                 .with(csrf()))
                 .andExpect(status().isForbidden());
@@ -118,6 +123,7 @@ public class AdvisorSecurityIntegrationTest {
     @Test
     public void advisor_ForbiddenFromDeleteEmployee() throws Exception {
         mockMvc.perform(delete("/api/v1/admin/employees/1").contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .with(user(advisorPrincipal))
                 .with(csrf()))
                 .andExpect(status().isForbidden());
@@ -135,6 +141,7 @@ public class AdvisorSecurityIntegrationTest {
     @Test
     public void employee_ForbiddenFromApproveReassignment() throws Exception {
         mockMvc.perform(post("/api/v1/crm/tasks/1/reassign/approve").contextPath("/api")
+                .header("X-Requested-With", "XMLHttpRequest")
                 .with(user(employeePrincipal))
                 .with(csrf()))
                 .andExpect(status().isForbidden());

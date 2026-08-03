@@ -53,22 +53,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (accessor != null) {
                     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                        String authHeader = accessor.getFirstNativeHeader("Authorization");
-                        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                            throw new IllegalArgumentException("Unauthorized: Missing or invalid Authorization header");
+                        java.security.Principal principal = accessor.getUser();
+                        if (principal == null) {
+                            throw new IllegalArgumentException("Unauthorized: WebSocket connection requires authentication via cookies");
                         }
-                        String token = authHeader.substring(7);
-                        String username = jwtService.extractUsernameIfValidAccessToken(token);
-                        if (username == null) {
-                            throw new IllegalArgumentException("Unauthorized: Invalid token");
-                        }
-                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                        if (!jwtService.isTokenValid(token, userDetails.getUsername())) {
-                            throw new IllegalArgumentException("Unauthorized: Invalid token");
-                        }
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        accessor.setUser(authentication);
+
                     } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) || StompCommand.SEND.equals(accessor.getCommand())) {
                         java.security.Principal principal = accessor.getUser();
                         if (principal == null) {

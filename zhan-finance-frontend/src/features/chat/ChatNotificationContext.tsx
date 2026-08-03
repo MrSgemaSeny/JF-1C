@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getUnreadChatCount } from '@/entities/chat/api/chatApi';
 import { Client } from '@stomp/stompjs';
-import { getWsEndpointUrl, getAccessToken } from '@/shared/api/http';
+import { getWsEndpointUrl } from '@/shared/api/http';
 import SockJS from 'sockjs-client';
 
 interface ChatNotificationContextType {
@@ -18,7 +18,7 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
   const [unreadChatCount, setUnreadChatCount] = useState(0);
 
   const fetchUnreadCount = async () => {
-    if (!user || !getAccessToken()) return;
+    if (!user) return;
     try {
       const count = await getUnreadChatCount();
       setUnreadChatCount(count);
@@ -33,28 +33,31 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
       const interval = setInterval(fetchUnreadCount, 30000);
       
       // Setup Stomp client
-      const token = user.accessToken;
-      const stompClient = new Client({
-        webSocketFactory: () => new SockJS(getWsEndpointUrl(token)),
-        connectHeaders: { Authorization: `Bearer ${token}` },
+      const client = new Client({
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true }),
+        connectHeaders: {},
+        debug: (str) => {
+          // console.log('[STOMP NOTIF]', str);
+        },
         reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
         onConnect: () => {
-          stompClient.subscribe(`/topic/chat/${user.userId}`, (message) => {
+          client.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {
-              const chatMessage = JSON.parse(message.body);
-              if (chatMessage.receiverId === user.userId && !chatMessage.isRead) {
-                fetchUnreadCount();
-              }
+               const chatMessage = JSON.parse(message.body);
+               if (chatMessage.receiverId === user.userId && !chatMessage.isRead) {
+                 fetchUnreadCount();
+               }
             }
           });
         },
       });
 
-      stompClient.activate();
+      client.activate();
 
       return () => {
         clearInterval(interval);
-        stompClient.deactivate();
+        client.deactivate();
       };
     } else {
       setUnreadChatCount(0);

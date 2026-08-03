@@ -147,10 +147,36 @@ public class AuthService {
         return response(user, newRefreshToken.getToken());
     }
 
+    @Transactional
+    public void logout(String refreshToken) {
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            refreshTokenService.revoke(refreshToken);
+        }
+    }
+
     private AuthResponse response(User user, String refreshToken) {
         return new AuthResponse(
                 jwtService.generateAccessToken(user),
                 refreshToken,
+                "Bearer",
+                user.getId(),
+                user.getEmail(),
+                user.getFullName(),
+                user.getRole(),
+                false,
+                user.getAvatarUrl(),
+                user.getAuthProvider(),
+                user.getLocale(),
+                false,
+                null,
+                user.isTwoFactorEnabled()
+        );
+    }
+
+    public AuthResponse me(User user) {
+        return new AuthResponse(
+                null,
+                null,
                 "Bearer",
                 user.getId(),
                 user.getEmail(),

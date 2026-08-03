@@ -99,11 +99,15 @@ export function EmployeeChatPage() {
     let stompClient: Client | null = null;
     
     if (user) {
-      const token = user.accessToken;
       stompClient = new Client({
-        webSocketFactory: () => new SockJS(getWsEndpointUrl(token)),
-        connectHeaders: { Authorization: `Bearer ${token}` },
+        webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true }),
+        connectHeaders: {},
+        debug: (str) => {
+          // console.log('[STOMP]', str);
+        },
         reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
         onConnect: () => {
           stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {

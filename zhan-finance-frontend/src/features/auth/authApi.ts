@@ -59,12 +59,13 @@ export function register(request: RegisterRequest): Promise<AuthResponse | null>
   });
 }
 
-export async function refresh(request: RefreshRequest): Promise<AuthResponse> {
+export async function refresh(request?: RefreshRequest): Promise<AuthResponse> {
   const url = `${API_BASE_URL}/api/v1/auth/refresh`;
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request)
+    body: request ? JSON.stringify(request) : undefined,
+    credentials: 'include'
   });
   
   if (!response.ok) {
@@ -77,6 +78,18 @@ export async function refresh(request: RefreshRequest): Promise<AuthResponse> {
   }
   
   return json.data as AuthResponse;
+}
+
+export function getMe(): Promise<AuthResponse> {
+  return apiRequest<AuthResponse>('/api/v1/auth/me', {
+    method: 'GET'
+  });
+}
+
+export function logoutUser(): Promise<void> {
+  return apiRequest<void>('/api/v1/auth/logout', {
+    method: 'POST'
+  });
 }
 
 export async function loginWithGoogle(credential: string, role?: 'CLIENT' | 'EMPLOYEE'): Promise<AuthResponse> {

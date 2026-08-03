@@ -58,6 +58,11 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
+    @Transactional
+    public void revoke(String token) {
+        refreshTokenRepository.findByToken(token).ifPresent(refreshTokenRepository::delete);
+    }
+
     /**
      * Принудительная инвалидация всех сессий пользователя.
      * Вызывается при смене пароля, подозрении на компрометацию, выходе со всех устройств.
