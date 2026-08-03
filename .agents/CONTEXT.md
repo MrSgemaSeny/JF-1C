@@ -18,6 +18,7 @@
 5. **Landing Pages (Epic-18)**: Public pages working -- Home, Services, About, Solution Picker, Contact, Leads.
 6. **LeadsPage UX**: Unified page scrolling (no inner overflow-auto).
 7. **API Versioning**: All paths migrated to /api/v1/** (Phase 4 complete).
+8. **GitHub Actions**: Configured DB backups (flyctl) and deploy notifications via Telegram.
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
