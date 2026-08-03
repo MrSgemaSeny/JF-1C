@@ -300,7 +300,12 @@ export function ClientTaskDetailsPage() {
             <div>
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">{t('tasks:details.description', { defaultValue: 'Описание' })}</h3>
               <div className="bg-gray-50 p-4 rounded-xl text-gray-700 text-sm whitespace-pre-wrap min-h-[100px] border border-gray-100">
-                {task.description || <span className="text-gray-400 italic">{t('tasks:details.noDescription', { defaultValue: 'Описание отсутствует...' })}</span>}
+                {task.description || (
+                  <div className="flex flex-col items-center justify-center py-6 text-gray-400 border border-dashed border-gray-200/50 dark:border-white/5 rounded-xl">
+                    <FileText className="w-8 h-8 mb-2 opacity-20" />
+                    <span className="text-sm italic">{t('tasks:details.noDescription', { defaultValue: 'Описание отсутствует...' })}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -428,7 +433,10 @@ export function ClientTaskDetailsPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-400 text-center italic">{t('tasks:details.historyEmpty', { defaultValue: 'История пуста' })}</p>
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                    <Clock className="w-12 h-12 mb-3 opacity-20" />
+                    <p className="text-sm italic">{t('tasks:details.historyEmpty', { defaultValue: 'История пуста' })}</p>
+                  </div>
                 )}
               </div>
             </div>

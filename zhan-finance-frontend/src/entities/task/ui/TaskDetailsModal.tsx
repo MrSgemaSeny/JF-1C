@@ -620,7 +620,10 @@ export function TaskDetailsModal({
                 className="text-[15px] leading-relaxed text-gray-700 bg-gray-50 border border-gray-100 rounded-xl p-5 min-h-[80px] whitespace-pre-wrap cursor-pointer hover:bg-gray-100 hover:border-gray-200 transition-colors"
               >
                 {task.description || (
-                  <span className="text-gray-400 italic">{t('taskModal.noDescription', { defaultValue: 'Описание отсутствует. Нажмите, чтобы добавить.' })}</span>
+                  <div className="flex flex-col items-center justify-center py-6 text-gray-400 border border-dashed border-gray-200/50 dark:border-white/5 rounded-xl">
+                    <FileText className="w-8 h-8 mb-2 opacity-20" />
+                    <span className="text-sm italic">{t('taskModal.noDescription', { defaultValue: 'Описание отсутствует. Нажмите, чтобы добавить.' })}</span>
+                  </div>
                 )}
               </div>
             )}
@@ -846,7 +849,10 @@ export function TaskDetailsModal({
                   </div>
                 ))}
                 {history.length === 0 && (
-                  <p className="text-center text-gray-400 text-sm py-12 italic">{t('taskModal.emptyHistory', { defaultValue: 'История пуста' })}</p>
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                    <Clock className="w-12 h-12 mb-3 opacity-20" />
+                    <p className="text-sm italic">{t('taskModal.emptyHistory', { defaultValue: 'История пуста' })}</p>
+                  </div>
                 )}
               </div>
             )}
