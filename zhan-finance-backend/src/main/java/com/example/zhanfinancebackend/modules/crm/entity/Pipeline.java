@@ -7,9 +7,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
+
 @Entity
 @Table(name = "pipelines")
 @EntityListeners(AuditingEntityListener.class)
+@AuditedEntity
 public class Pipeline extends BaseEntity {
 
     @Column(nullable = false)

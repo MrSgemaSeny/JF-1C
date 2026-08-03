@@ -1,5 +1,6 @@
 package com.example.zhanfinancebackend.modules.billing.entity;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
 import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import jakarta.persistence.Column;
@@ -21,6 +22,7 @@ import com.example.zhanfinancebackend.modules.crm.entity.Task;
 @Entity
 @Table(name = "invoices")
 @EntityListeners(AuditingEntityListener.class)
+@AuditedEntity
 public class Invoice extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

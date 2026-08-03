@@ -13,9 +13,12 @@ import java.util.List;
 
 import com.example.zhanfinancebackend.modules.services.entity.ServiceEntity;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
+
 @Entity
 @Table(name = "tasks")
 @EntityListeners(AuditingEntityListener.class)
+@AuditedEntity
 public class Task extends BaseEntity {
 
     @Column(nullable = false)

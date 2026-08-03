@@ -7,8 +7,11 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
+
 @Entity
 @Table(name = "documents")
+@AuditedEntity
 public class Document {
 
     @Id

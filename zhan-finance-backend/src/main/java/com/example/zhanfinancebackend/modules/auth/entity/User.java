@@ -1,6 +1,7 @@
 package com.example.zhanfinancebackend.modules.auth.entity;
 
 import com.example.zhanfinancebackend.common.audit.BaseEntity;
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -13,6 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "app_users")
+@AuditedEntity
 public class User extends BaseEntity {
 
     @Column(nullable = false, length = 120)

@@ -4,9 +4,12 @@ import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
+
 @Entity
 @Table(name = "stages")
 @EntityListeners(AuditingEntityListener.class)
+@AuditedEntity
 public class Stage extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

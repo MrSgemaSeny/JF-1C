@@ -11,8 +11,11 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
+
 @Entity
 @Table(name = "courses")
+@AuditedEntity
 @Getter
 @Setter
 public class Course extends BaseEntity {

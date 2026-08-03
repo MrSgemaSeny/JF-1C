@@ -2,6 +2,7 @@ package com.example.zhanfinancebackend.modules.courses.entity;
 
 import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 })
 @Getter
 @Setter
+@AuditedEntity
 public class Certificate extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

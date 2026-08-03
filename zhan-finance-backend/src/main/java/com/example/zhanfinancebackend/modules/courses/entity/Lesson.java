@@ -9,10 +9,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
+
 @Entity
 @Table(name = "lessons")
 @Getter
 @Setter
+@AuditedEntity
 public class Lesson extends BaseEntity {
 
     @JsonIgnore

@@ -14,10 +14,12 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 
 @Entity
 @Table(name = "subscriptions")
+@AuditedEntity
 public class Subscription extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

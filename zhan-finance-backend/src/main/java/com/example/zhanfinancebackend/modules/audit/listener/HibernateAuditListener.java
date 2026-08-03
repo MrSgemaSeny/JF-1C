@@ -1,5 +1,7 @@
 package com.example.zhanfinancebackend.modules.audit.listener;
 
+import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.audit.service.AuditService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.event.spi.PostDeleteEvent;
@@ -19,14 +21,16 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class HibernateAuditListener implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(HibernateAuditListener.class);
-    private static final Set<String> AUDITED_ENTITIES = Set.of("User", "Invoice", "Task", "Subscription");
+    
+    // Cache for checking if an entity is auditable to avoid reflection overhead on every operation
+    private final Map<Class<?>, Boolean> auditableCache = new ConcurrentHashMap<>();
+    
     private static final Set<String> SENSITIVE_FIELDS = Set.of("password", "passwordHash", "token", "refreshToken", "secret");
 
     private final AuditService auditService;
@@ -75,11 +79,16 @@ public class HibernateAuditListener implements PostInsertEventListener, PostUpda
     }
 
     private void logAction(String action, Object entity, String details) {
-        String entityName = entity.getClass().getSimpleName();
-        if (!AUDITED_ENTITIES.contains(entityName)) {
+        Class<?> entityClass = entity.getClass();
+        
+        boolean isAuditable = auditableCache.computeIfAbsent(entityClass, 
+                clazz -> clazz.isAnnotationPresent(AuditedEntity.class));
+
+        if (!isAuditable) {
             return;
         }
 
+        String entityName = entityClass.getSimpleName();
         Long userId = getCurrentUserId();
         Long entityId = extractId(entity);
 
