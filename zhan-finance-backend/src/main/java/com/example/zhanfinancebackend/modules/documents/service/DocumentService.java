@@ -37,14 +37,14 @@ public class DocumentService {
     private final EmailNotificationService emailNotificationService;
     private final CrmAccessService crmAccessService;
 
-    // MVP allowed types
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
-            "application/pdf",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
-            "application/xml",
-            "text/xml",
-            "text/csv",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // docx
+            "application/pdf", "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "image/png", "image/jpeg", "image/webp", "image/gif",
+            "text/plain", "text/csv", "text/markdown", "text/x-markdown",
+            "application/zip", "application/x-zip-compressed", "application/x-rar-compressed"
     );
 
     public DocumentService(DocumentRepository documentRepository,
@@ -72,27 +72,19 @@ public class DocumentService {
 
         documentAccessService.assertCanCreateFor(actor, targetUser);
 
-        String contentType = file.getContentType();
-        if (contentType == null) {
-            throw new BadRequestException("File type not recognized");
-        }
-        
-        java.util.Set<String> ALLOWED_CONTENT_TYPES = java.util.Set.of(
-                "application/pdf", "application/msword",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "application/vnd.ms-excel",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "image/png", "image/jpeg", "image/webp", "image/gif",
-                "text/plain", "text/csv", "text/markdown", "text/x-markdown",
-                "application/zip", "application/x-zip-compressed", "application/x-rar-compressed",
-                "application/octet-stream"
-        );
-
-        if (!ALLOWED_CONTENT_TYPES.contains(contentType)) {
-            throw new BadRequestException("Недопустимый формат файла. Загрузка исполняемых файлов (.exe) и скриптов запрещена из соображений безопасности. Разрешены: PDF, DOCX, XLSX, PNG, JPG, ZIP, MD.");
-        }
-
         String originalFilename = file.getOriginalFilename();
+        String contentType = null;
+        try {
+            org.apache.tika.Tika tika = new org.apache.tika.Tika();
+            contentType = tika.detect(file.getInputStream(), originalFilename);
+        } catch (Exception e) {
+            throw new BadRequestException("Ошибка при проверке содержимого файла");
+        }
+
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+            throw new BadRequestException("Недопустимый формат файла (" + contentType + "). Загрузка исполняемых файлов запрещена из соображений безопасности. Разрешены: PDF, DOCX, XLSX, PNG, JPG, ZIP, MD.");
+        }
+
         if (originalFilename != null) {
             String lowerCaseName = originalFilename.toLowerCase();
             if (lowerCaseName.endsWith(".html") || lowerCaseName.endsWith(".htm") || lowerCaseName.endsWith(".svg") || lowerCaseName.endsWith(".exe") || lowerCaseName.endsWith(".js") || lowerCaseName.endsWith(".sh")) {

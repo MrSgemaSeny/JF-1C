@@ -26,7 +26,6 @@
 - **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact
 
 ## Next Steps
-- Epic-10: Monitoring (Prometheus, UptimeRobot, frontend Sentry)
 - Epic-11: Domain zhanfinance.kz + Cloudflare
 - Epic-17: Staging environment
 - Epic-06: Push/Telegram notifications
