@@ -16,9 +16,11 @@
 3. **ADVISOR Role (Epic-19)**: Full role with Overview, Workload, access to all clients/tasks/documents, sidebar navigation.
 4. **Task Pool Logic (Epic-02)**: Auto-reopen LOST tasks to first OPEN stage when assigned from pool.
 5. **Landing Pages (Epic-18)**: Public pages working -- Home, Services, About, Solution Picker, Contact, Leads.
-6. **LeadsPage UX**: Unified page scrolling (no inner overflow-auto).
-7. **API Versioning**: All paths migrated to /api/v1/** (Phase 4 complete).
-8. **GitHub Actions**: Configured DB backups (flyctl) and deploy notifications via Telegram.
+6. **API Versioning**: All paths migrated to /api/v1/** (Phase 4 complete).
+7. **GitHub Actions**: Configured DB backups (flyctl) and deploy notifications via Telegram.
+8. **Observability (Epic-10)**: Configured OTLP push metrics. (Sentry backend paused due to Spring Boot 4.1 incompat). UptimeRobot configured.
+9. **Business Alerts (Epic-06)**: Async Telegram notifications for admins (leads/tasks) using RestClient.
+10. **Security & Audit**: Fixed DocumentService file upload vulnerability (MIME spoofing). Audit logs secured with `@AuditedEntity` and PostgreSQL triggers (UPDATE/DELETE/TRUNCATE blocked).
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
