@@ -1,23 +1,38 @@
-# Project State & Context — ZhanFinance (JF-1C)
+# Project State & Context -- ZhanFinance (JF-1C)
 
-## 📌 Current Phase & Global Goals
-- **Active Phase**: Phase 5 — Стабилизация, исправление багов Auth/2FA и подготовка к полноценному продакшену. 
-- **Главная цель**: Запуск стабильной Production-версии (бэкенд на Fly.io, БД Fly Postgres, фронт GitHub Pages).
+## Current Phase & Global Goals
+- **Active Phase**: Phase 6 -- Feature completion, documentation sync, production stabilization
+- **Main Goal**: Complete all Partial epics, prepare for domain (zhanfinance.kz) and monitoring setup
 
-## ⚠️ Known Issues & Blockers
-- **Разница локальной и продовой БД**: На проде используем чистый Flyway (`spring.jpa.hibernate.ddl-auto=none`), чтобы избежать падений Hibernate при несовпадении схем на старте.
-- **Интеграции**: Google OAuth требует обязательной проверки 2FA (TOTP) для админов.
+## Infrastructure State
+- **Backend (Fly.io)**: Deployed, migrations up to V110 applied. PostgreSQL connected. Secrets in Fly Secrets.
+- **Frontend (GitHub Pages)**: CI/CD configured (deploy-backend.yml + ci.yml). All API paths on /api/v1/**.
+- **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP) fully working.
+- **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
-## 🏗️ Core Infrastructure State
-- **Backend (Fly.io)**: Развернут, миграции проходят автоматически (V110 накатилась). Подключена база PostgreSQL. Секреты хранятся в Fly Secrets.
-- **Frontend (GitHub Pages)**: CI/CD настроен (`deploy-backend.yml` и `ci.yml`). В `ci.yml` добавлены дефолтные переменные для корректной сборки Vite, если секреты не прокинулись. Все API пути переведены на `/api/v1/**` (Phase 4 завершена).
+## Recently Completed
+1. **2FA (Epic-09)**: Fully implemented -- QR setup, TOTP verification, disable, scheduled cleanup. 6 unit tests.
+2. **Documents Redesign (Epic-03)**: Employee + Client pages redesigned with metrics cards, folder pills, source filters, ZIP download.
+3. **ADVISOR Role (Epic-19)**: Full role with Overview, Workload, access to all clients/tasks/documents, sidebar navigation.
+4. **Task Pool Logic (Epic-02)**: Auto-reopen LOST tasks to first OPEN stage when assigned from pool.
+5. **Landing Pages (Epic-18)**: Public pages working -- Home, Services, About, Solution Picker, Contact, Leads.
+6. **LeadsPage UX**: Unified page scrolling (no inner overflow-auto).
+7. **API Versioning**: All paths migrated to /api/v1/** (Phase 4 complete).
 
-## 📝 Recent Major Fixes (Do not regress)
-1. **CORS**: Проблема с кросс-доменными запросами решена динамической подгрузкой `CORS_ALLOWED_ORIGINS` из переменных окружения.
-2. **2FA Auth**: Исправлен `LazyInitializationException` в сервисе верификации 2FA (`/api/v1/auth/2fa/verify`), добавлен UI для защиты от несанкционированного входа.
-3. **2FA Lockout**: Был баг с блокировкой при сбросе аутентификатора. Колонка называется `totp_secret` в таблице `app_users`.
+## Known Issues & Warnings
+- **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
+- **Refresh token race condition**: Known, not critical at current scale
+- **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact
 
-## ⏭️ Next Steps
-- Проверить стабильность входа с 2FA в Production окружении.
-- Проверить работоспособность WebSockets/STOMP.
-- Подключение домена zhanfinance.kz.
+## Next Steps
+- Epic-10: Monitoring (Prometheus, UptimeRobot)
+- Epic-11: Domain zhanfinance.kz + Cloudflare
+- Epic-17: Staging environment
+- Epic-06: Push/Telegram notifications
+- Epic-07: PDF invoices, payment reminders
+- Epic-08: Dashboard analytics (charts, conversion funnel)
+
+## Epic Status Summary
+- Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 09-2fa, 18-landing, 19-advisor (8)
+- Partial: 06-notifications, 07-billing, 08-dashboard (3)
+- Planned: 10-monitoring, 11-domain-cdn, 12-payments, 13-1c-integration, 14-multi-tenancy, 15-storage-r2, 16-lms-quizzes, 17-staging (8)

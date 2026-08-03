@@ -57,6 +57,20 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - Staging environment on Fly.io [NEXT]
 - UptimeRobot monitoring [NEXT]
 - Domain zhanfinance.kz [NEXT]
+- Epic-09 (2FA): Done [DONE]
+- Epic-18 (Landing): Done [DONE]
+- Epic-19 (Advisor): Done [DONE]
+- Documents redesign (Employee + Client pages) [DONE]
+- Task Pool reopening logic [DONE]
+
+## Epic Management
+- **Epic Directory**: `Epics/Plan/Epic-{N}-{slug}/epic.md`
+- **ALWAYS update relevant epic.md** when completing a feature, fixing a bug, or making architectural changes
+- **When adding a new feature**: check if it belongs to an existing epic. If not, create a new Epic-{N+1} directory and epic.md
+- **When modifying existing feature**: update the corresponding epic's Реализовано section
+- **Status values**: Done | In Progress | Partial | Planned
+- **Current epic count**: 19 (Epic-01 through Epic-19)
+- **Format**: Follow the template in AI_agent_instruction.md section 5
 
 ## Behavior & Communication Rules
 - **Token Efficiency**: No preambles. Start directly with the answer. Show diffs for files >30 lines. If task >3 steps, show plan and wait for confirmation.
