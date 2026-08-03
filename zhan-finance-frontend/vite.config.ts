@@ -4,12 +4,18 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs'
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineConfig({
   base: '/JF-1C/',
   plugins: [
     react(), 
-    tailwindcss()
+    tailwindcss(),
+    sentryVitePlugin({
+      org: process.env.SENTRY_ORG || "zhanfinance",
+      project: process.env.SENTRY_PROJECT || "javascript-react",
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    })
   ],
   server: {
     proxy: {
@@ -36,6 +42,7 @@ export default defineConfig({
     }
   },
   build: {
+    sourcemap: true,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {

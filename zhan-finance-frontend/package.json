@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@sentry/vite-plugin": "^5.4.0",
     "@tailwindcss/vite": "^4.3.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@types/node": "^25.9.3",
@@ -30,6 +31,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@react-oauth/google": "^0.13.5",
+    "@sentry/react": "^10.69.0",
     "@stomp/stompjs": "^7.3.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tanstack/react-query": "^5.101.2",

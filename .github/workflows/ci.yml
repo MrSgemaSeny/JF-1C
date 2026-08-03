@@ -33,6 +33,10 @@ jobs:
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL || vars.VITE_API_URL || 'https://zhanfinance.fly.dev' }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID || vars.VITE_GOOGLE_CLIENT_ID || '249161344734-j51fft6shbogf2clnrhofn3l0c1euihl.apps.googleusercontent.com' }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN || vars.VITE_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: "zhanfinance"
+          SENTRY_PROJECT: "javascript-react"
       - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
