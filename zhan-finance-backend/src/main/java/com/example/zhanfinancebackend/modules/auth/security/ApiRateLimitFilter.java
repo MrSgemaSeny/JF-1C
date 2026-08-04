@@ -47,15 +47,9 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        String ip = request.getRemoteAddr();
-        String cfIp = request.getHeader("CF-Connecting-IP");
-        if (cfIp != null && !cfIp.trim().isEmpty()) {
-            ip = cfIp.trim();
-        } else {
-            String forwardedFor = request.getHeader("X-Forwarded-For");
-            if (forwardedFor != null && !forwardedFor.isEmpty()) {
-                ip = forwardedFor.split(",")[0].trim();
-            }
+        String ip = request.getHeader("Fly-Client-IP");
+        if (ip == null || ip.isBlank()) {
+            ip = request.getRemoteAddr();
         }
 
         Bucket bucket = buckets.get(ip, k -> createBucket());
