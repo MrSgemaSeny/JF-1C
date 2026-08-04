@@ -17,7 +17,7 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Enable Backups
-        run: flyctl postgres backup enable -a zhanfinance-db || true
+        run: flyctl postgres backup enable -a zhanfinance-db --yes || true
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
