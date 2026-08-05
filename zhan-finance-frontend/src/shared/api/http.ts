@@ -158,9 +158,8 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
         if (!isRedirectingToLogin) {
           isRedirectingToLogin = true;
           toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
-          const base = import.meta.env.BASE_URL || '/';
-          const cleanBase = base.endsWith('/') ? base : `${base}/`;
-          window.location.href = `${cleanBase}login`;
+          const prefix = window.location.pathname.startsWith('/JF-1C') ? '/JF-1C' : '';
+          window.location.href = `${prefix}/login`;
         }
         throw error;
       }

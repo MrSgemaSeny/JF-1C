@@ -79,7 +79,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/shared/lib/queryClient';
 
 export function App() {
-  const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const routerBasename = typeof window !== 'undefined' && window.location.pathname.startsWith('/JF-1C') ? '/JF-1C' : '';
 
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
