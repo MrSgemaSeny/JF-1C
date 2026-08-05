@@ -50,6 +50,11 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
     try {
       if (credentialResponse.credential) {
         const result = await loginWithGoogle(credentialResponse.credential, role);
+        if (result.requires2FA && result.preAuthToken) {
+          toast.info(t('auth.login.totpRequired', { defaultValue: 'Требуется 2FA подтверждение' }));
+          navigate(ROUTES.LOGIN, { state: { preAuthToken: result.preAuthToken } });
+          return;
+        }
         if (result.isPendingApproval) {
           setSuccessMessage(t('auth.register.pendingApproval'));
         } else if (result.isNewUser && role === 'CLIENT') {
