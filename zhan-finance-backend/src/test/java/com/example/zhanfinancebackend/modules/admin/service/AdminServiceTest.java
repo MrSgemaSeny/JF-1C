@@ -102,4 +102,21 @@ class AdminServiceTest {
         assertEquals(5, result.get(0).activeTasksCount());
         verify(userRepository).getEmployeeWorkloads();
     }
+
+    @Test
+    void testRejectEmployee() {
+        User employee = new User();
+        employee.setId(1L);
+        employee.setRole(Role.EMPLOYEE);
+        employee.setEnabled(false);
+        employee.setRegistrationStatus(RegistrationStatus.PENDING);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(employee));
+
+        adminService.rejectEmployee(1L);
+
+        assertFalse(employee.isEnabled());
+        assertEquals(RegistrationStatus.REJECTED, employee.getRegistrationStatus());
+        verify(userRepository).save(employee);
+    }
 }
