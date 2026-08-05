@@ -91,22 +91,22 @@ public class GoogleAuthService {
                 throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт удален.");
             }
             
-            boolean isEmployeeRole = user.getRole() == Role.EMPLOYEE || 
-                                     user.getRole() == Role.CURATOR || 
-                                     user.getRole() == Role.ADVISOR;
-
-            if (isEmployeeRole) {
-                if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
-                }
-                if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
-                }
-            }
-            
             if (!user.isEnabled()) {
+                boolean isEmployeeRole = user.getRole() == Role.EMPLOYEE || 
+                                         user.getRole() == Role.CURATOR || 
+                                         user.getRole() == Role.ADVISOR;
+
+                if (isEmployeeRole) {
+                    if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
+                        throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
+                    }
+                    if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
+                        throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
+                    }
+                }
                 throw new UnauthorizedException(ErrorCode.ACCOUNT_NOT_ACTIVATED.name());
             }
+
             // Update avatar and provider if they login via Google
             boolean updated = false;
             if (picture != null && user.getAvatarUrl() == null) {

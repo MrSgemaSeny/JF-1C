@@ -129,23 +129,25 @@ public class AuthService {
                     new UsernamePasswordAuthenticationToken(request.email(), request.password())
             );
         } catch (org.springframework.security.authentication.DisabledException e) {
-            User user = userRepository.findByEmailIgnoreCase(request.email()).orElse(null);
-            if (user != null) {
-                if (user.getDeletedAt() != null) {
-                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт удален.");
+            Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(request.email());
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+                    throw new ApiException(ErrorCode.UNAUTHORIZED, "Неверный пароль.");
                 }
-                
-                boolean isEmployeeRole = user.getRole() == Role.EMPLOYEE || 
-                                         user.getRole() == Role.CURATOR || 
-                                         user.getRole() == Role.ADVISOR;
-
-                if (isEmployeeRole) {
-                    if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
-                        throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
+                if (!user.isEnabled()) {
+                    boolean isEmployeeRole = user.getRole() == Role.EMPLOYEE || 
+                                             user.getRole() == Role.CURATOR || 
+                                             user.getRole() == Role.ADVISOR;
+                    if (isEmployeeRole) {
+                        if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
+                            throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
+                        }
+                        if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
+                            throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
+                        }
                     }
-                    if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
-                        throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
-                    }
+                    throw new ApiException(ErrorCode.UNAUTHORIZED, "Аккаунт отключен.");
                 }
             }
             throw e;
