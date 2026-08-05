@@ -49,3 +49,9 @@ export async function toggleUserStatus(id: number): Promise<void> {
     method: 'PATCH'
   });
 }
+
+export async function deleteEmployee(id: number): Promise<void> {
+  return apiRequest<void>(`/api/v1/admin/employees/${id}`, {
+    method: 'DELETE'
+  });
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getEmployees, getPendingEmployees, approveEmployee, rejectEmployee, getEmployeeWorkload, promoteToAdvisor, demoteToEmployee, toggleUserStatus, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
+import { getEmployees, getPendingEmployees, approveEmployee, rejectEmployee, getEmployeeWorkload, promoteToAdvisor, demoteToEmployee, toggleUserStatus, deleteEmployee, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
-import { Check, Clock, UserCheck, Briefcase, ShieldAlert, ShieldCheck, UserX, X } from 'lucide-react';
+import { Check, Clock, UserCheck, Briefcase, ShieldAlert, ShieldCheck, UserX, UserMinus, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 
@@ -95,6 +95,18 @@ export function AdminEmployeesPage() {
     } catch (e) {
       console.error(e);
       toast.error(t('adminEmployees.statusChangeError', { defaultValue: 'Ошибка при изменении статуса' }));
+    }
+  }
+
+  async function handleDelete(id: number) {
+    if (!window.confirm(t('adminEmployees.deleteConfirm', { defaultValue: 'ВЫ УВЕРЕНЫ? Это действие необратимо удалит сотрудника (деактивирует его аккаунт).' }))) return;
+    try {
+      await deleteEmployee(id);
+      await loadData();
+      toast.success(t('adminEmployees.deleteSuccess', { defaultValue: 'Сотрудник успешно удален' }));
+    } catch (e) {
+      console.error(e);
+      toast.error(t('adminEmployees.deleteError', { defaultValue: 'Ошибка при удалении сотрудника' }));
     }
   }
 
@@ -258,6 +270,14 @@ export function AdminEmployeesPage() {
                             title="Изменить статус активности"
                           >
                             <UserX className="w-3 h-3" />
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(emp.id)}
+                            className="px-2.5 py-1 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-md text-xs font-bold transition-colors"
+                            title="Удалить сотрудника"
+                          >
+                            <UserMinus className="w-3 h-3" />
                           </button>
                         </div>
                       )}
