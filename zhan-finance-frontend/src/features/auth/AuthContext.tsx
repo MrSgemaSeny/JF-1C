@@ -33,6 +33,9 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function toStoredAuth(response: AuthResponse): StoredAuth {
+  if (response.refreshToken) {
+    localStorage.setItem('zhan_finance_refresh_token', response.refreshToken);
+  }
   return {
     userId: response.id || 0,
     email: response.email || '',
@@ -137,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         // ignore
       } finally {
+        localStorage.removeItem('zhan_finance_refresh_token');
         setUser(null);
       }
     }
