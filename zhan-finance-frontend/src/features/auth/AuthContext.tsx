@@ -104,7 +104,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async register(req) {
       try {
         const response = await authApi.register(req);
-        if (response) {
+        if (response && !response.accessToken) {
+          return { isPendingApproval: true };
+        } else if (response) {
           setUser(toStoredAuth(response));
           return { isPendingApproval: false };
         } else {
@@ -120,6 +122,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response) {
           if (response.requires2FA && response.preAuthToken) {
             return { requires2FA: true, preAuthToken: response.preAuthToken };
+          }
+          if (!response.accessToken) {
+            return { isPendingApproval: true, isNewUser: !!response.isNewUser };
           }
           setUser(toStoredAuth(response));
           return { isPendingApproval: false, isNewUser: !!response.isNewUser };

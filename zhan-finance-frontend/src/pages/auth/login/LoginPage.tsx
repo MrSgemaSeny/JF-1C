@@ -40,6 +40,8 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
 
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse.credential || isSubmitting || submittingRef.current) return;
     
@@ -53,7 +55,7 @@ export function LoginPage() {
         return;
       }
       if (result.isPendingApproval) {
-        toast.warning(t('auth.login.pendingApproval'));
+        setPendingMessage(t('auth.login.pendingApproval', { defaultValue: 'Ваш аккаунт находится на модерации.' }));
       } else if (result.isNewUser) {
         toast.success(t('auth.login.registerSuccess'));
         navigate(ROUTES.COMPLETE_PROFILE);
@@ -64,7 +66,12 @@ export function LoginPage() {
       }
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
-      toast.error(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.googleError') : msg }));
+      const isPending = msg.includes('модерации') || msg.includes('отклонена');
+      if (isPending) {
+        setPendingMessage(msg);
+      } else {
+        toast.error(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.googleError') : msg }));
+      }
     } finally {
       submittingRef.current = false;
       setIsSubmitting(false);
@@ -108,12 +115,39 @@ export function LoginPage() {
         setValidationErrors(fieldErrors);
       } else {
         const msg = err instanceof ApiError ? err.message : 'UNKNOWN';
-        setGlobalError(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.loginError') : msg }));
+        const isPending = msg.includes('модерации') || msg.includes('отклонена');
+        if (isPending) {
+          setPendingMessage(msg);
+        } else {
+          setGlobalError(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.loginError') : msg }));
+        }
       }
     } finally {
       submittingRef.current = false;
       setIsSubmitting(false);
     }
+  }
+
+  if (pendingMessage) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10 text-center">
+          <div className="mx-auto w-16 h-16 bg-brand-green/10 rounded-full flex items-center justify-center mb-6">
+            <span className="text-3xl">⏳</span>
+          </div>
+          <h2 className="text-2xl font-black uppercase text-brand-green mb-4">Статус аккаунта</h2>
+          <p className="text-brand-green/70 mb-8 leading-relaxed font-medium">
+            {pendingMessage.includes('отклонена') ? 'К сожалению, ваша заявка на регистрацию отклонена.' : 'Ваша заявка в работе. Ожидайте подтверждения от администратора.'}
+          </p>
+          <Link
+            to={ROUTES.HOME}
+            className="inline-flex items-center justify-center w-full py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all"
+          >
+            На главную
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
