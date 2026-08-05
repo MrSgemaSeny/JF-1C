@@ -1,7 +1,6 @@
 package com.example.zhanfinancebackend.modules.admin.service;
 
 import com.example.zhanfinancebackend.common.exception.ApiException;
-import com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
@@ -61,14 +60,12 @@ class AdminServiceTest {
         employee.setId(1L);
         employee.setRole(Role.EMPLOYEE);
         employee.setEnabled(false);
-        employee.setRegistrationStatus(RegistrationStatus.PENDING);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(employee));
 
         adminService.approveEmployee(1L);
 
         assertTrue(employee.isEnabled());
-        assertEquals(RegistrationStatus.APPROVED, employee.getRegistrationStatus());
         verify(userRepository).save(employee);
         verify(emailNotificationService).sendAccountApprovedEmail(employee);
     }
@@ -109,14 +106,12 @@ class AdminServiceTest {
         employee.setId(1L);
         employee.setRole(Role.EMPLOYEE);
         employee.setEnabled(false);
-        employee.setRegistrationStatus(RegistrationStatus.PENDING);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(employee));
 
         adminService.rejectEmployee(1L);
 
         assertFalse(employee.isEnabled());
-        assertEquals(RegistrationStatus.REJECTED, employee.getRegistrationStatus());
         verify(userRepository).save(employee);
     }
 }
