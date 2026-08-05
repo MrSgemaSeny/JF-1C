@@ -10,6 +10,7 @@ export function EmployeeClientsPage() {
   const [clients, setClients] = useState<ClientDto[]>([]);
   const [chatClientId, setChatClientId] = useState<number | null>(null);
   const [chatClientName, setChatClientName] = useState<string>('');
+  const [chatClientAvatar, setChatClientAvatar] = useState<string | null>(null);
 
   useEffect(() => {
     getClients().then(setClients);
@@ -38,6 +39,7 @@ export function EmployeeClientsPage() {
                       onClick={() => {
                         setChatClientId(c.user?.id || null);
                         setChatClientName(c.user?.fullName || '');
+                        setChatClientAvatar(c.user?.avatarUrl || null);
                       }}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-green/10 text-brand-green rounded-lg hover:bg-brand-green hover:text-white transition-colors"
                     >
@@ -57,6 +59,7 @@ export function EmployeeClientsPage() {
         onClose={() => setChatClientId(null)}
         otherUserId={chatClientId}
         otherUserName={chatClientName}
+        otherUserAvatar={chatClientAvatar}
       />
     </div>
   );

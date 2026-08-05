@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { X, Send, User } from 'lucide-react';
 import { getChatHistory, sendChatMessage, markChatAsRead, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useAuth } from '@/features/auth/AuthContext';
-import { getWsEndpointUrl } from '@/shared/api/http';
+import { getWsEndpointUrl, getSecureImageUrl } from '@/shared/api/http';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
@@ -15,9 +15,10 @@ interface ChatDrawerProps {
   onClose: () => void;
   otherUserId: number | null;
   otherUserName: string;
+  otherUserAvatar?: string | null;
 }
 
-export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: ChatDrawerProps) {
+export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName, otherUserAvatar }: ChatDrawerProps) {
   const { user } = useAuth();
   const { t } = useTranslation(['common']);
   const { refreshUnreadChatCount } = useChatNotifications();
@@ -165,19 +166,31 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName }: Chat
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-brand-green text-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-brand-green text-white shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-              <User className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center overflow-hidden relative shrink-0">
+              {otherUserAvatar ? (
+                <>
+                  <User className="w-5 h-5 text-white absolute z-0" />
+                  <img 
+                    src={getSecureImageUrl(otherUserAvatar)} 
+                    alt={otherUserName}
+                    className="w-full h-full object-cover relative z-10"
+                    onError={(e) => e.currentTarget.style.display = 'none'}
+                  />
+                </>
+              ) : (
+                <User className="w-5 h-5 text-white" />
+              )}
             </div>
             <div>
-              <h3 className="font-bold text-sm">{otherUserName || t('nav.chat')}</h3>
+              <h3 className="font-bold text-sm leading-tight">{otherUserName || t('nav.chat')}</h3>
               <p className="text-xs text-white/70">Online</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 hover:bg-white/10 rounded-full transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>

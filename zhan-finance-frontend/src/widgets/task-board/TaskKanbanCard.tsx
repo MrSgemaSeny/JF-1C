@@ -12,7 +12,7 @@ interface TaskKanbanCardProps {
   task: TaskDto;
   onClick: () => void;
   userRole: string;
-  onOpenChat?: (clientId: number, clientName: string) => void;
+  onOpenChat?: (clientId: number, clientName: string, clientAvatar?: string | null) => void;
   onMoveRight?: (task: TaskDto) => void;
   disableMoveRight?: boolean;
 }
@@ -114,7 +114,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRigh
             onClick={(e) => {
               e.stopPropagation();
               if (task.client && onOpenChat) {
-                onOpenChat(task.client.id, task.client.fullName);
+                onOpenChat(task.client.id, task.client.fullName, task.client.avatarUrl);
               }
             }}
             className={`p-0.5 rounded transition-colors ${
@@ -136,7 +136,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRigh
           onClick={(e) => {
             e.stopPropagation();
             if (onOpenChat) {
-              onOpenChat(task.client!.id, task.client!.fullName);
+              onOpenChat(task.client!.id, task.client!.fullName, task.client!.avatarUrl);
             }
           }}
         >

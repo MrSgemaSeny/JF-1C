@@ -15,7 +15,7 @@ interface TaskKanbanColumnProps {
   tasks: TaskDto[];
   onTaskClick: (taskId: number) => void;
   userRole: string;
-  onOpenChat?: (clientId: number, clientName: string) => void;
+  onOpenChat?: (clientId: number, clientName: string, clientAvatar?: string | null) => void;
   onMoveRight?: (task: TaskDto) => void;
 }
 

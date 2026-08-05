@@ -44,6 +44,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
   const [selectedTaskForModal, setSelectedTaskForModal] = useState<TaskDto | null>(null);
   const [chatClientId, setChatClientId] = useState<number | null>(null);
   const [chatClientName, setChatClientName] = useState<string>('');
+  const [chatClientAvatar, setChatClientAvatar] = useState<string | null>(null);
   const [selectedLabelId, setSelectedLabelId] = useState<number | null>(null);
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -376,9 +377,10 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
     return <div className="p-8 text-center text-gray-500">{t('kanban.noPipelines', { defaultValue: 'Воронки не настроены' })}</div>;
   }
 
-  const handleOpenChat = (clientId: number, clientName: string) => {
+  const handleOpenChat = (clientId: number, clientName: string, clientAvatar?: string | null) => {
     setChatClientId(clientId);
     setChatClientName(clientName);
+    setChatClientAvatar(clientAvatar || null);
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -496,6 +498,7 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
         onClose={() => setChatClientId(null)}
         otherUserId={chatClientId}
         otherUserName={chatClientName}
+        otherUserAvatar={chatClientAvatar}
       />
     </div>
   );

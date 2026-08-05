@@ -38,6 +38,7 @@ export interface UserDto {
   fullName: string;
   email: string;
   role: UserRole;
+  avatarUrl?: string;
 }
 
 export interface ClientInfoDto {
@@ -46,6 +47,7 @@ export interface ClientInfoDto {
   email: string;
   phone?: string;
   companyName?: string;
+  avatarUrl?: string;
 }
 
 export interface EmployeeInfoDto {
