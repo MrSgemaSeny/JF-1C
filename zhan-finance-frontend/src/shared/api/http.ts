@@ -57,14 +57,16 @@ export function configureAuth(refreshHandler: RefreshHandler) {
 
 async function rawRequest<T>(path: string, init: RequestInit | undefined): Promise<T> {
   const isFormData = init?.body instanceof FormData;
-  const authHeader = memoryAccessToken ? { 'Authorization': `Bearer ${memoryAccessToken}` } : {};
-  const headers = {
+  const headers: Record<string, string> = {
     'X-Requested-With': 'XMLHttpRequest',
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     'Accept-Language': i18n.language ?? 'ru',
-    ...authHeader,
-    ...init?.headers
+    ...(init?.headers as Record<string, string> | undefined)
   };
+
+  if (memoryAccessToken) {
+    headers['Authorization'] = `Bearer ${memoryAccessToken}`;
+  }
 
   let response: Response;
   try {
@@ -166,12 +168,14 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
 }
 
 async function rawDownload(path: string, init: RequestInit | undefined): Promise<Blob> {
-  const authHeader = memoryAccessToken ? { 'Authorization': `Bearer ${memoryAccessToken}` } : {};
-  const headers = {
+  const headers: Record<string, string> = {
     'X-Requested-With': 'XMLHttpRequest',
-    ...authHeader,
-    ...init?.headers
+    ...(init?.headers as Record<string, string> | undefined)
   };
+
+  if (memoryAccessToken) {
+    headers['Authorization'] = `Bearer ${memoryAccessToken}`;
+  }
 
   let response: Response;
   try {
