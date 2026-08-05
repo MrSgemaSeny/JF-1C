@@ -120,7 +120,7 @@ public class AdminService {
 
     public List<EmployeeDto> getPendingEmployees() {
         return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADVISOR)).stream()
-                .filter(u -> !u.isEnabled())
+                .filter(u -> !u.isEnabled() && u.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING)
                 .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
