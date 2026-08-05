@@ -68,22 +68,7 @@ class TwoFactorServiceTest {
     }
 
     @Test
-    void validatePreAuthToken_ValidToken_ReturnsUser() {
-        TwoFactorPreAuth preAuth = new TwoFactorPreAuth();
-        preAuth.setUser(testUser);
-        preAuth.setToken("valid-token");
-        preAuth.setExpiresAt(LocalDateTime.now().plusMinutes(5));
-
-        when(preAuthRepository.findByToken("valid-token")).thenReturn(Optional.of(preAuth));
-        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
-
-        User result = twoFactorService.validatePreAuthToken("valid-token");
-
-        assertEquals(testUser.getEmail(), result.getEmail());
-    }
-
-    @Test
-    void validatePreAuthToken_ExpiredToken_ThrowsUnauthorizedException() {
+    void verifyCode_ExpiredToken_ThrowsUnauthorizedException() {
         TwoFactorPreAuth preAuth = new TwoFactorPreAuth();
         preAuth.setUser(testUser);
         preAuth.setToken("expired-token");
@@ -91,8 +76,44 @@ class TwoFactorServiceTest {
 
         when(preAuthRepository.findByToken("expired-token")).thenReturn(Optional.of(preAuth));
 
-        assertThrows(UnauthorizedException.class, () -> twoFactorService.validatePreAuthToken("expired-token"));
+        assertThrows(UnauthorizedException.class, () -> twoFactorService.verifyCode("expired-token", "123456"));
         verify(preAuthRepository).delete(preAuth);
+    }
+
+    @Test
+    void verifyCode_MaxAttemptsReached_DeletesTokenAndThrows() {
+        TwoFactorPreAuth preAuth = new TwoFactorPreAuth();
+        preAuth.setUser(testUser);
+        preAuth.setToken("max-attempts-token");
+        preAuth.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        preAuth.setAttempts(5);
+
+        testUser.setTotpSecret("SECRET");
+
+        when(preAuthRepository.findByToken("max-attempts-token")).thenReturn(Optional.of(preAuth));
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
+
+        assertThrows(UnauthorizedException.class, () -> twoFactorService.verifyCode("max-attempts-token", "000000"));
+        verify(preAuthRepository).delete(preAuth);
+    }
+
+    @Test
+    void verifyCode_InvalidCode_IncrementsAttemptsAndThrows() {
+        TwoFactorPreAuth preAuth = new TwoFactorPreAuth();
+        preAuth.setUser(testUser);
+        preAuth.setToken("invalid-code-token");
+        preAuth.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        preAuth.setAttempts(0);
+
+        testUser.setTotpSecret("SECRET");
+
+        when(preAuthRepository.findByToken("invalid-code-token")).thenReturn(Optional.of(preAuth));
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
+
+        assertThrows(UnauthorizedException.class, () -> twoFactorService.verifyCode("invalid-code-token", "000000"));
+        
+        assertEquals(1, preAuth.getAttempts());
+        verify(preAuthRepository).save(preAuth);
     }
 
     @Test
@@ -100,11 +121,5 @@ class TwoFactorServiceTest {
         assertThrows(BadRequestException.class, () -> 
             twoFactorService.confirmSetup(testUser, "JBSWY3DPEHPK3PXP", "000000")
         );
-    }
-
-    @Test
-    void verifyCode_NullSecret_ReturnsFalse() {
-        testUser.setTotpSecret(null);
-        assertFalse(twoFactorService.verifyCode(testUser, "123456"));
     }
 }
