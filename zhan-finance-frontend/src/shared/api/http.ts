@@ -157,9 +157,14 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
         localStorage.removeItem(AUTH_STORAGE_KEY);
         if (!isRedirectingToLogin) {
           isRedirectingToLogin = true;
-          toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
-          const prefix = window.location.pathname.startsWith('/JF-1C') ? '/JF-1C' : '';
-          window.location.href = `${prefix}/login`;
+          const currentPath = window.location.pathname;
+          const isAuthPage = currentPath.endsWith('/login') || currentPath.endsWith('/register');
+          
+          if (!isAuthPage) {
+            toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
+            const prefix = window.location.pathname.startsWith('/JF-1C') ? '/JF-1C' : '';
+            window.location.href = `${prefix}/login`;
+          }
         }
         throw error;
       }
@@ -243,8 +248,14 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
         return await rawDownload(path, init);
       } else {
         localStorage.removeItem(AUTH_STORAGE_KEY);
-        toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
-        window.location.href = import.meta.env.BASE_URL + 'login';
+        const currentPath = window.location.pathname;
+        const isAuthPage = currentPath.endsWith('/login') || currentPath.endsWith('/register');
+        
+        if (!isAuthPage) {
+          toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
+          const prefix = window.location.pathname.startsWith('/JF-1C') ? '/JF-1C' : '';
+          window.location.href = `${prefix}/login`;
+        }
         throw error;
       }
     }
