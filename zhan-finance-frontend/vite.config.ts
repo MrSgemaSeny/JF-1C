@@ -7,7 +7,7 @@ import fs from 'node:fs'
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineConfig({
-  base: './',
+  base: '/JF-1C/',
   plugins: [
     react(), 
     tailwindcss(),
