@@ -190,7 +190,8 @@ public class AuthService {
                 user.getLocale(),
                 false,
                 null,
-                user.isTwoFactorEnabled()
+                user.isTwoFactorEnabled(),
+                false
         );
     }
 
@@ -209,7 +210,8 @@ public class AuthService {
                 user.getLocale(),
                 false,
                 null,
-                user.isTwoFactorEnabled()
+                user.isTwoFactorEnabled(),
+                false
         );
     }
 
