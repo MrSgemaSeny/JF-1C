@@ -1,5 +1,7 @@
 package com.example.zhanfinancebackend.modules.auth.service;
 
+import java.util.Optional;
+
 import com.example.zhanfinancebackend.common.exception.ApiException;
 import com.example.zhanfinancebackend.common.exception.ErrorCode;
 import com.example.zhanfinancebackend.modules.auth.dto.AuthResponse;
@@ -132,7 +134,7 @@ public class AuthService {
             Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(request.email());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+                if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
                     throw new ApiException(ErrorCode.UNAUTHORIZED, "Неверный пароль.");
                 }
                 if (!user.isEnabled()) {
