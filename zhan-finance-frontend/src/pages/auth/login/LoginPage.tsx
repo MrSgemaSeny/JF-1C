@@ -1,5 +1,5 @@
-import { useState, useRef, FormEvent } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useRef, FormEvent, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { ArrowRight, Mail, Lock } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { ApiError, extractValidationErrors } from '@/shared/api/http';
@@ -20,9 +20,18 @@ export function LoginPage() {
   const { login, completeAuth, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const state = location.state as { preAuthToken?: string } | null;
 
   const [step, setStep] = useState<'CREDENTIALS' | 'TOTP'>('CREDENTIALS');
   const [preAuthToken, setPreAuthToken] = useState<string>('');
+
+  useEffect(() => {
+    if (state?.preAuthToken) {
+      setPreAuthToken(state.preAuthToken);
+      setStep('TOTP');
+    }
+  }, [state]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
