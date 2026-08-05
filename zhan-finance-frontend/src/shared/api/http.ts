@@ -141,7 +141,6 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
         return await rawRequest<T>(path, init);
       } else {
         localStorage.removeItem(AUTH_STORAGE_KEY);
-        localStorage.removeItem('zhan_finance_refresh_token');
         if (!isRedirectingToLogin) {
           isRedirectingToLogin = true;
           toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });

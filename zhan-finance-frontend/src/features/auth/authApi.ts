@@ -61,15 +61,10 @@ export function register(request: RegisterRequest): Promise<AuthResponse | null>
 
 export async function refresh(request?: RefreshRequest): Promise<AuthResponse> {
   const url = `${API_BASE_URL}/api/v1/auth/refresh`;
-  const storedRefreshToken = localStorage.getItem('zhan_finance_refresh_token');
-  const body = request?.refreshToken 
-    ? request 
-    : (storedRefreshToken ? { refreshToken: storedRefreshToken } : undefined);
-
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
+    body: request ? JSON.stringify(request) : undefined,
     credentials: 'include'
   });
   
@@ -82,9 +77,6 @@ export async function refresh(request?: RefreshRequest): Promise<AuthResponse> {
     throw new Error(json.message || 'Refresh failed');
   }
   
-  if (json.data?.refreshToken) {
-    localStorage.setItem('zhan_finance_refresh_token', json.data.refreshToken);
-  }
   return json.data as AuthResponse;
 }
 
