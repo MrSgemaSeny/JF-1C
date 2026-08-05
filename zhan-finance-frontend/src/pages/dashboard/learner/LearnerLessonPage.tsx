@@ -7,7 +7,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://zhanfinance.fly.dev';
 
 function getFileUrl(lessonId: number) {
   return `${API_BASE}/api/v1/courses/lessons/${lessonId}/file`;
