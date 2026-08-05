@@ -47,10 +47,6 @@ type RefreshHandler = () => Promise<boolean>;
 
 let onUnauthorized: RefreshHandler = async () => false;
 
-/**
- * Вызывается один раз из AuthProvider, чтобы http-клиент мог пытаться 
- * обновить токен на 401, не зная при этом ничего про React-state.
- */
 export function configureAuth(refreshHandler: RefreshHandler) {
   onUnauthorized = refreshHandler;
 }
@@ -88,21 +84,11 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined): Promi
 
     try {
       const body = await response.json();
-      if (body && body.message) {
-        errorMessage = body.message;
-      }
-      if (body && body.code) {
-        code = body.code;
-      }
-      if (body && Array.isArray(body.details)) {
-        details = body.details;
-      }
-      if (body && body.requestId) {
-        requestId = body.requestId;
-      }
-    } catch (_) {
-      // Ignore JSON parse error for error responses
-    }
+      if (body && body.message) errorMessage = body.message;
+      if (body && body.code) code = body.code;
+      if (body && Array.isArray(body.details)) details = body.details;
+      if (body && body.requestId) requestId = body.requestId;
+    } catch (_) {}
 
     if (response.status === 403) {
       toast.error(i18n.t('common.accessDenied', { defaultValue: 'У вас нет доступа к этому ресурсу.' }), { duration: 5000 });
@@ -111,8 +97,8 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined): Promi
     } else if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After');
       const msg = retryAfter
-        ? `Превышен лимит запросов. Повторите попытку через ${retryAfter} сек.`
-        : 'Превышен лимит запросов. Пожалуйста, подождите.';
+          ? `Превышен лимит запросов. Повторите попытку через ${retryAfter} сек.`
+          : 'Превышен лимит запросов. Пожалуйста, подождите.';
       toast.error(msg, { duration: 5000 });
     } else if (response.status !== 401) {
       toast.error(errorMessage, { duration: 6000 });
@@ -122,7 +108,7 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined): Promi
   }
 
   const body = (await response.json()) as ApiEnvelope<T>;
-  
+
   if (!body.success) {
     throw new ApiError(body.message ?? 'Request failed', response.status);
   }
@@ -130,21 +116,19 @@ async function rawRequest<T>(path: string, init: RequestInit | undefined): Promi
   return body.data;
 }
 
-/**
- * На 401 пытается один раз обновить access-токен через refresh-токен
- * и повторяет исходный запрос. Если обновление не удалось - отдаёт
- * исходную 401-ошибку дальше, вызывающий код решает, что делать
- * (обычно: разлогинить и отправить на /login).
- */
 let refreshPromise: Promise<boolean> | null = null;
-let isRedirectingToLogin = false;
+
+const AUTH_ROUTES = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/google', '/auth/me'];
+
+function isAuthRoute(path: string): boolean {
+  return AUTH_ROUTES.some(r => path.includes(r));
+}
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   try {
     return await rawRequest<T>(path, init);
   } catch (error) {
-    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google');
-    if (error instanceof ApiError && error.status === 401 && !isAuthRoute) {
+    if (error instanceof ApiError && error.status === 401 && !isAuthRoute(path)) {
       if (!refreshPromise) {
         refreshPromise = onUnauthorized().finally(() => {
           refreshPromise = null;
@@ -155,17 +139,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
         return await rawRequest<T>(path, init);
       } else {
         localStorage.removeItem(AUTH_STORAGE_KEY);
-        if (!isRedirectingToLogin) {
-          isRedirectingToLogin = true;
-          const currentPath = window.location.pathname;
-          const isAuthPage = currentPath.endsWith('/login') || currentPath.endsWith('/register');
-          
-          if (!isAuthPage) {
-            toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
-            const prefix = window.location.pathname.startsWith('/JF-1C') ? '/JF-1C' : '';
-            window.location.href = `${prefix}/login`;
-          }
-        }
+        setAccessToken(null);
         throw error;
       }
     }
@@ -204,21 +178,11 @@ async function rawDownload(path: string, init: RequestInit | undefined): Promise
     try {
       const text = await response.text();
       const body = JSON.parse(text);
-      if (body && body.message) {
-        errorMessage = body.message;
-      }
-      if (body && body.code) {
-        code = body.code;
-      }
-      if (body && Array.isArray(body.details)) {
-        details = body.details;
-      }
-      if (body && body.requestId) {
-        requestId = body.requestId;
-      }
-    } catch (_) {
-      // ignore
-    }
+      if (body && body.message) errorMessage = body.message;
+      if (body && body.code) code = body.code;
+      if (body && Array.isArray(body.details)) details = body.details;
+      if (body && body.requestId) requestId = body.requestId;
+    } catch (_) {}
 
     if (response.status === 403) {
       toast.error(i18n.t('common.accessDenied', { defaultValue: 'У вас нет доступа к этому ресурсу.' }), { duration: 5000 });
@@ -236,26 +200,18 @@ export async function apiDownload(path: string, init?: RequestInit): Promise<Blo
   try {
     return await rawDownload(path, init);
   } catch (error) {
-    const isAuthRoute = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh') || path.includes('/auth/google');
-    if (error instanceof ApiError && error.status === 401 && !isAuthRoute) {
+    if (error instanceof ApiError && error.status === 401 && !isAuthRoute(path)) {
       if (!refreshPromise) {
         refreshPromise = onUnauthorized().finally(() => {
           refreshPromise = null;
         });
       }
-      const refreshedToken = await refreshPromise;
-      if (refreshedToken) {
+      const refreshResult = await refreshPromise;
+      if (refreshResult) {
         return await rawDownload(path, init);
       } else {
         localStorage.removeItem(AUTH_STORAGE_KEY);
-        const currentPath = window.location.pathname;
-        const isAuthPage = currentPath.endsWith('/login') || currentPath.endsWith('/register');
-        
-        if (!isAuthPage) {
-          toast.warning(i18n.t('common.sessionExpired', { defaultValue: 'Сессия истекла, пожалуйста, войдите снова.' }), { duration: 5000 });
-          const prefix = window.location.pathname.startsWith('/JF-1C') ? '/JF-1C' : '';
-          window.location.href = `${prefix}/login`;
-        }
+        setAccessToken(null);
         throw error;
       }
     }
