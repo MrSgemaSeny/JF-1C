@@ -80,9 +80,6 @@ public class AuthService {
 
         if (isEmployee) {
             user.setEnabled(false);
-            user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING);
-        } else {
-            user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.APPROVED);
         }
 
         User savedUser = userRepository.save(user);
@@ -138,17 +135,6 @@ public class AuthService {
                     throw new ApiException(ErrorCode.UNAUTHORIZED, "Неверный пароль.");
                 }
                 if (!user.isEnabled()) {
-                    boolean isEmployeeRole = user.getRole() == Role.EMPLOYEE || 
-                                             user.getRole() == Role.CURATOR || 
-                                             user.getRole() == Role.ADVISOR;
-                    if (isEmployeeRole) {
-                        if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
-                            throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
-                        }
-                        if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
-                            throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
-                        }
-                    }
                     throw new ApiException(ErrorCode.UNAUTHORIZED, "Аккаунт отключен.");
                 }
             }

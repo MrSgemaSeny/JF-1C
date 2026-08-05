@@ -56,10 +56,6 @@ public class User extends BaseEntity {
     @Column(name = "two_factor_enabled", nullable = false)
     private boolean twoFactorEnabled = false;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "registration_status", nullable = false, length = 32)
-    private RegistrationStatus registrationStatus = RegistrationStatus.APPROVED;
-
     public User() {
     }
 
@@ -170,11 +166,4 @@ public class User extends BaseEntity {
         this.twoFactorEnabled = twoFactorEnabled;
     }
 
-    public RegistrationStatus getRegistrationStatus() {
-        return registrationStatus;
-    }
-
-    public void setRegistrationStatus(RegistrationStatus registrationStatus) {
-        this.registrationStatus = registrationStatus;
-    }
 }

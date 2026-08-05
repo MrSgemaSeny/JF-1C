@@ -121,7 +121,7 @@ public class AdminService {
 
     public List<EmployeeDto> getPendingEmployees() {
         return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADVISOR)).stream()
-                .filter(u -> !u.isEnabled() && u.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING)
+                .filter(u -> !u.isEnabled())
                 .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
@@ -136,7 +136,6 @@ public class AdminService {
                     "Only staff accounts can be approved");
         }
         user.setEnabled(true);
-        user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.APPROVED);
         userRepository.save(user);
         emailNotificationService.sendAccountApprovedEmail(user);
         notificationService.createNotification(
@@ -157,7 +156,6 @@ public class AdminService {
                     "Only staff accounts can be rejected");
         }
         user.setEnabled(false);
-        user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED);
         userRepository.save(user);
     }
 
