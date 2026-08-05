@@ -32,7 +32,7 @@ public class TwoFactorController {
     }
 
     @PostMapping("/verify")
-    public ApiResponse<AuthResponse> verify(@Valid @RequestBody TwoFactorVerifyRequest request) {
+    public ApiResponse<AuthResponse> verify(@Valid @RequestBody TwoFactorVerifyRequest request, jakarta.servlet.http.HttpServletResponse httpServletResponse) {
         User user = twoFactorService.validatePreAuthToken(request.preAuthToken());
 
         if (!twoFactorService.verifyCode(user, request.code())) {
@@ -41,6 +41,7 @@ public class TwoFactorController {
 
         twoFactorService.deletePreAuthToken(request.preAuthToken());
         AuthResponse response = authService.buildFullAuthResponse(user);
+        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 

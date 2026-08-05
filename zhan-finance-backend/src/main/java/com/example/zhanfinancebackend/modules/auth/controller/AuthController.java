@@ -33,51 +33,7 @@ public class AuthController {
         this.googleAuthService = googleAuthService;
     }
 
-    private void setTokenCookies(HttpServletResponse response, AuthResponse authResponse) {
-        if (authResponse == null || authResponse.accessToken() == null) {
-            return;
-        }
 
-        // SameSite=None; Secure - required for cross-domain requests between github.io and fly.dev
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", authResponse.accessToken())
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .maxAge(15 * 60) // 15 minutes
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-
-        if (authResponse.refreshToken() != null) {
-            ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authResponse.refreshToken())
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .path("/")
-                    .maxAge(7 * 24 * 60 * 60) // 7 days
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-        }
-    }
-
-    private void clearTokenCookies(HttpServletResponse response) {
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .maxAge(0)
-                .build();
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .maxAge(0)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-    }
 
     @PostMapping("/google")
     public ApiResponse<AuthResponse> loginWithGoogle(@Valid @RequestBody GoogleLoginRequest request, HttpServletResponse httpServletResponse) {
@@ -85,7 +41,7 @@ public class AuthController {
         if (response == null) {
             return ApiResponse.success(null, "Заявка на регистрацию отправлена. Ожидайте подтверждения администратора.");
         }
-        setTokenCookies(httpServletResponse, response);
+        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
@@ -107,14 +63,14 @@ public class AuthController {
         if (response == null) {
             return ApiResponse.success(null, "Заявка на регистрацию отправлена. Ожидайте подтверждения администратора.");
         }
-        setTokenCookies(httpServletResponse, response);
+        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse httpServletResponse) {
         AuthResponse response = authService.login(request);
-        setTokenCookies(httpServletResponse, response);
+        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
@@ -133,14 +89,14 @@ public class AuthController {
             );
         }
         AuthResponse response = authService.refresh(new RefreshRequest(tokenToRefresh));
-        setTokenCookies(httpServletResponse, response);
+        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
     @PostMapping("/logout")
     public ApiResponse<Void> logout(@CookieValue(name = "refreshToken", required = false) String refreshTokenCookie, HttpServletResponse httpServletResponse) {
         authService.logout(refreshTokenCookie);
-        clearTokenCookies(httpServletResponse);
+        AuthCookieHelper.clearTokenCookies(httpServletResponse);
         return ApiResponse.success(null, "Успешный выход");
     }
 
