@@ -88,7 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     isLoading,
     async login(email, password) {
-      setIsLoading(true);
       try {
         const response = await authApi.login({ email, password });
         if (response.requires2FA && response.preAuthToken) {
@@ -96,14 +95,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setUser(toStoredAuth(response));
       } finally {
-        setIsLoading(false);
+        // removed setIsLoading
       }
     },
     completeAuth(response) {
       setUser(toStoredAuth(response));
     },
     async register(req) {
-      setIsLoading(true);
       try {
         const response = await authApi.register(req);
         if (response) {
@@ -113,11 +111,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { isPendingApproval: true };
         }
       } finally {
-        setIsLoading(false);
+        // removed setIsLoading
       }
     },
     async loginWithGoogle(credential, role) {
-      setIsLoading(true);
       try {
         const response = await authApi.loginWithGoogle(credential, role);
         if (response) {
@@ -130,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { isPendingApproval: true, isNewUser: false };
         }
       } finally {
-        setIsLoading(false);
+        // removed setIsLoading
       }
     },
     async logout() {
