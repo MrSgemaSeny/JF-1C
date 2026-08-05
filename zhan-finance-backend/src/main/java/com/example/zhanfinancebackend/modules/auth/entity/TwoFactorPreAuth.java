@@ -34,6 +34,9 @@ public class TwoFactorPreAuth {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private int attempts = 0;
+
     public TwoFactorPreAuth() {
     }
 
@@ -75,5 +78,13 @@ public class TwoFactorPreAuth {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(int attempts) {
+        this.attempts = attempts;
     }
 }

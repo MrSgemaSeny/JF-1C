@@ -72,4 +72,13 @@ public class RefreshTokenService {
         int count = refreshTokenRepository.deleteAllByUser(user);
         log.info("Revoked {} refresh tokens for user {}", count, user.getId());
     }
+
+    @org.springframework.scheduling.annotation.Scheduled(cron = "0 0 2 * * ?") // Every day at 2 AM
+    @Transactional
+    public void purgeExpiredTokens() {
+        int deleted = refreshTokenRepository.deleteByExpiresAtBefore(Instant.now());
+        if (deleted > 0) {
+            log.info("Purged {} expired refresh tokens from the database", deleted);
+        }
+    }
 }

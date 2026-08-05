@@ -33,11 +33,7 @@ public class TwoFactorController {
 
     @PostMapping("/verify")
     public ApiResponse<AuthResponse> verify(@Valid @RequestBody TwoFactorVerifyRequest request, jakarta.servlet.http.HttpServletResponse httpServletResponse) {
-        User user = twoFactorService.validatePreAuthToken(request.preAuthToken());
-
-        if (!twoFactorService.verifyCode(user, request.code())) {
-            throw new com.example.zhanfinancebackend.common.exception.UnauthorizedException("Неверный код 2FA");
-        }
+        User user = twoFactorService.verifyCode(request.preAuthToken(), request.code());
 
         twoFactorService.deletePreAuthToken(request.preAuthToken());
         AuthResponse response = authService.buildFullAuthResponse(user);

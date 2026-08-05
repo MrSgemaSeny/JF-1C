@@ -118,7 +118,7 @@ public class TwoFactorService {
     }
 
     @Transactional
-    public User validatePreAuthToken(String token) {
+    public User verifyCode(String token, String code) {
         TwoFactorPreAuth preAuth = preAuthRepository.findByToken(token)
                 .orElseThrow(() -> new UnauthorizedException("Недействительный токен 2FA"));
 
@@ -127,15 +127,29 @@ public class TwoFactorService {
             throw new UnauthorizedException("Срок действия токена 2FA истек. Войдите заново.");
         }
 
-        return userRepository.findById(preAuth.getUser().getId())
+        User user = userRepository.findById(preAuth.getUser().getId())
                 .orElseThrow(() -> new UnauthorizedException("Пользователь не найден"));
-    }
 
-    public boolean verifyCode(User user, String code) {
         if (user.getTotpSecret() == null) {
-            return false;
+            throw new UnauthorizedException("2FA не настроена");
         }
-        return codeVerifier.isValidCode(user.getTotpSecret(), code);
+
+        if (preAuth.getAttempts() >= 5) {
+            preAuthRepository.delete(preAuth);
+            throw new UnauthorizedException("Превышен лимит попыток. Войдите заново.");
+        }
+
+        if (!codeVerifier.isValidCode(user.getTotpSecret(), code)) {
+            preAuth.setAttempts(preAuth.getAttempts() + 1);
+            preAuthRepository.save(preAuth);
+            if (preAuth.getAttempts() >= 5) {
+                preAuthRepository.delete(preAuth);
+                throw new UnauthorizedException("Превышен лимит попыток. Войдите заново.");
+            }
+            throw new UnauthorizedException("Неверный код 2FA");
+        }
+        
+        return user;
     }
 
     @Transactional
