@@ -33,6 +33,16 @@ export class ApiError extends Error {
   }
 }
 
+let memoryAccessToken: string | null = null;
+
+export function setAccessToken(token: string | null) {
+  memoryAccessToken = token;
+}
+
+export function getAccessToken(): string | null {
+  return memoryAccessToken;
+}
+
 type RefreshHandler = () => Promise<boolean>;
 
 let onUnauthorized: RefreshHandler = async () => false;
@@ -47,10 +57,12 @@ export function configureAuth(refreshHandler: RefreshHandler) {
 
 async function rawRequest<T>(path: string, init: RequestInit | undefined): Promise<T> {
   const isFormData = init?.body instanceof FormData;
+  const authHeader = memoryAccessToken ? { 'Authorization': `Bearer ${memoryAccessToken}` } : {};
   const headers = {
     'X-Requested-With': 'XMLHttpRequest',
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     'Accept-Language': i18n.language ?? 'ru',
+    ...authHeader,
     ...init?.headers
   };
 
@@ -154,8 +166,10 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
 }
 
 async function rawDownload(path: string, init: RequestInit | undefined): Promise<Blob> {
+  const authHeader = memoryAccessToken ? { 'Authorization': `Bearer ${memoryAccessToken}` } : {};
   const headers = {
     'X-Requested-With': 'XMLHttpRequest',
+    ...authHeader,
     ...init?.headers
   };
 

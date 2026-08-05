@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
-import { configureAuth } from '@/shared/api/http';
+import { configureAuth, setAccessToken } from '@/shared/api/http';
 import * as authApi from './authApi';
 import type { AuthResponse, UserRole } from './authApi';
 
@@ -33,6 +33,9 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 function toStoredAuth(response: AuthResponse): StoredAuth {
+  if (response.accessToken) {
+    setAccessToken(response.accessToken);
+  }
   return {
     userId: response.id || 0,
     email: response.email || '',
@@ -137,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         // ignore
       } finally {
+        setAccessToken(null);
         setUser(null);
       }
     }
