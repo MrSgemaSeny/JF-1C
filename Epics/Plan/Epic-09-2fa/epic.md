@@ -78,6 +78,7 @@
 
 - `[INFO]` Промежуточные токены до успешного прохождения 2FA сохраняются в `two_factor_pre_auth` в БД и требуют очистки через `@Scheduled`.
 - `[INFO]` Сброс 2FA при утрате как устройства TOTP, так и резервных кодов, производится через обращение к администратору.
+- `[WARNING]` **Frontend SPA Routing & 2FA State**: При логине (Google или email) с включенной 2FA, `AuthContext` не должен использовать глобальный `isLoading = true`, так как это уничтожает `RouterProvider` и стирает переданный `location.state.preAuthToken` и локальный стейт `step = 'TOTP'` в компоненте `LoginPage`.
 
 ---
 

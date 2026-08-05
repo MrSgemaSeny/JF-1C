@@ -23,6 +23,8 @@
 10. **Security & Audit**: Fixed DocumentService file upload vulnerability (MIME spoofing). Audit logs secured with `@AuditedEntity` and PostgreSQL triggers (UPDATE/DELETE/TRUNCATE blocked).
 11. **In-Memory Bearer Auth & Dynamic Base**: Fixed SPA cross-domain 401s by adding in-memory `accessToken` in `Authorization: Bearer` headers (no `localStorage`). Fixed 404 routing on custom domains by dynamically evaluating `base: process.env.VITE_BASE_URL || '/'` and removing `localhost` fallbacks.
 12. **Auth Security & Fixes**: Fixed infinite `/login` redirect loop on frontend. Added 2FA brute-force protection (`TwoFactorPreAuth` attempts counter + V109 migration) and scheduled database purge for expired refresh tokens (`RefreshTokenService.purgeExpiredTokens`).
+13. **Frontend Cache Control**: Added `Cache-Control` meta tags to `index.html` to prevent GitHub Pages from aggressively caching stale SPA chunks (which caused old redirect loops to persist).
+14. **React Router State Preservation**: Fixed silent 2FA failure during Google/local login by removing `setIsLoading(true)` from `AuthContext` auth methods. This prevents the `RouterProvider` from being temporarily unmounted and wiping out `location.state` (which is used for `preAuthToken` tracking) and component local states.
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
