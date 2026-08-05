@@ -131,6 +131,9 @@ public class AuthService {
         } catch (org.springframework.security.authentication.DisabledException e) {
             User user = userRepository.findByEmailIgnoreCase(request.email()).orElse(null);
             if (user != null) {
+                if (user.getDeletedAt() != null) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт удален.");
+                }
                 if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
                     throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
                 }

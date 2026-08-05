@@ -87,6 +87,9 @@ public class GoogleAuthService {
 
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
+            if (user.getDeletedAt() != null) {
+                throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт удален.");
+            }
             if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
                 throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
             }
