@@ -50,8 +50,8 @@ JWT_REFRESH_EXPIRATION_MS=604800000
 cd zhan-finance-backend
 ./gradlew bootRun
 ```
-* При первом запуске Flyway автоматически применит все SQL-миграции `V1`..`V108`.
-* Сидеры (`@EventListener(ApplicationReadyEvent.class)`) подготовят стартовые пайплайны, роли, тестовые учетные записи и справочники.
+* При первом запуске Flyway автоматически применит все SQL-миграции `V1`..`V110+`.
+* Сидеры (`@EventListener(ApplicationReadyEvent.class)`) подготовят стартовые пайплайны, роли (включая ADVISOR), тестовые учетные записи и справочники.
 
 ### Шаг 3.4: Запуск проверочных тестов
 ```bash
@@ -72,7 +72,7 @@ npm install
 ### Шаг 4.2: Переменные окружения фронтенда
 Создайте файл `.env.development`:
 ```env
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=http://localhost:8080/api/v1
 ```
 
 ### Шаг 4.3: Запуск dev-сервера
