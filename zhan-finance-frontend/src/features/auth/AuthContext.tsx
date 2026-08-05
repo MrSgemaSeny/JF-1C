@@ -7,7 +7,7 @@ import { AUTH_STORAGE_KEY } from '@/shared/constants/storageKeys';
 
 const STORAGE_KEY = AUTH_STORAGE_KEY;
 
-interface StoredAuth {
+export interface StoredAuth {
   userId: number;
   email: string;
   fullName: string;
@@ -18,7 +18,7 @@ interface StoredAuth {
   twoFactorEnabled?: boolean;
 }
 
-interface AuthContextValue {
+export interface AuthContextValue {
   user: StoredAuth | null;
   setUser: (user: StoredAuth | null) => void;
   updateUser: (fields: Partial<StoredAuth>) => void;
@@ -52,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<StoredAuth | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Сразу синхронно настраиваем http-клиент перед рендером детей
   useMemo(() => {
     const refresh = async () => {
       try {
@@ -70,15 +69,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     authApi.getMe()
-      .then(response => {
-        setUser(toStoredAuth(response));
-      })
-      .catch(() => {
-        setUser(null);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+        .then(response => {
+          setUser(toStoredAuth(response));
+        })
+        .catch(() => {
+          setUser(null);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
   }, []);
 
   const value = useMemo<AuthContextValue>(() => ({
@@ -147,7 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }), [user, isLoading]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Можно заменить на нормальный лоадер
+    return <div>Loading...</div>;
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

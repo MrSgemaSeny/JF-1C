@@ -3,9 +3,9 @@ import { canMoveTaskFromStage, canMoveTaskToStage } from './stageAccessUtils';
 import type { StageDto } from '../model/types';
 
 describe('stageAccessUtils', () => {
-  const wonStage = { id: 1, name: 'Won', type: 'WON', position: 1, isDeletable: false } as StageDto;
-  const lostStage = { id: 2, name: 'Lost', type: 'LOST', position: 2, isDeletable: false } as StageDto;
-  const openStage = { id: 3, name: 'Open', type: 'OPEN', position: 3, isDeletable: true } as StageDto;
+  const wonStage: StageDto = { id: 1, pipelineId: 1, name: 'Won', type: 'WON', orderIndex: 1, isDefault: false };
+  const lostStage: StageDto = { id: 2, pipelineId: 1, name: 'Lost', type: 'LOST', orderIndex: 2, isDefault: false };
+  const openStage: StageDto = { id: 3, pipelineId: 1, name: 'Open', type: 'OPEN', orderIndex: 3, isDefault: true };
 
   const allRoles = ['ADMIN', 'EMPLOYEE', 'CLIENT', 'LEARNER', 'CURATOR', 'ADVISOR'];
   const nonAdmins = ['EMPLOYEE', 'CLIENT', 'LEARNER', 'CURATOR', 'ADVISOR'];
