@@ -8,8 +8,11 @@ import { checkEmail } from '@/features/auth/authApi';
 import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import LogoImage from '@/shared/assets/icons/logo.png';
+
+const emailSchema = z.string().email("Некорректный адрес электронной почты");
 
 interface RegisterPageProps {
   isEmployeeRoute?: boolean;
@@ -80,6 +83,12 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
     if (isSubmitting || submittingRef.current) return;
     setGlobalError(null);
     setValidationErrors({});
+    
+    const emailResult = emailSchema.safeParse(email);
+    if (!emailResult.success) {
+      setValidationErrors({ email: emailResult.error.errors[0].message });
+      return;
+    }
 
     if (password.length < 8) {
       setValidationErrors({ password: t('auth.register.passwordLengthError') });

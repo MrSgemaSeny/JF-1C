@@ -1,0 +1,1 @@
+ALTER TABLE app_users ADD COLUMN registration_status VARCHAR(32) NOT NULL DEFAULT 'APPROVED';

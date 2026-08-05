@@ -87,6 +87,12 @@ public class GoogleAuthService {
 
         if (optionalUser.isPresent()) {
             user = optionalUser.get();
+            if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
+                throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
+            }
+            if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
+                throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
+            }
             if (!user.isEnabled()) {
                 throw new UnauthorizedException(ErrorCode.ACCOUNT_NOT_ACTIVATED.name());
             }
@@ -106,7 +112,7 @@ public class GoogleAuthService {
             isNewUser = false;
         } else {
             Role assignedRole = requestedRole != null ? requestedRole : Role.CLIENT;
-            boolean isEmployee = assignedRole == Role.EMPLOYEE;
+            boolean isEmployee = assignedRole == Role.EMPLOYEE || assignedRole == Role.CURATOR || assignedRole == Role.ADVISOR;
 
             user = new User(
                     name != null ? name : "Google User",
@@ -121,18 +127,23 @@ public class GoogleAuthService {
 
             if (isEmployee) {
                 user.setEnabled(false);
+                user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING);
+            } else {
+                user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.APPROVED);
             }
 
             user = userRepository.save(user);
 
             if (isEmployee) {
-            notificationService.notifyAdmins(
-                    "Новая регистрация сотрудника",
-                    user.getFullName() + " (" + user.getEmail() + ") запросил доступ как сотрудник — требуется подтверждение",
-                    "/admin/employees"
-            );
-            return null; // pending approval
-        }
+                notificationService.notifyAdmins(
+                        "Новая регистрация сотрудника",
+                        user.getFullName() + " (" + user.getEmail() + ") запросил доступ как сотрудник — требуется подтверждение",
+                        "/admin/employees"
+                );
+                return new AuthResponse(
+                        null, null, "Bearer", user.getId(), user.getEmail(), user.getFullName(), user.getRole(), false, user.getAvatarUrl(), user.getAuthProvider(), user.getLocale(), true, null, false
+                );
+            }
 
             // New Client: create empty profile (phone/company filled later via onboarding)
             clientService.ensureProfile(user);

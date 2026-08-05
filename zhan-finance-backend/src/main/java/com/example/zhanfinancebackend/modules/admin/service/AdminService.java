@@ -129,12 +129,13 @@ public class AdminService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(
                         ErrorCode.NOT_FOUND, "User not found"));
-        if (user.getRole() != Role.EMPLOYEE && user.getRole() != Role.ADMIN) {
+        if (user.getRole() != Role.EMPLOYEE && user.getRole() != Role.ADMIN && user.getRole() != Role.CURATOR && user.getRole() != Role.ADVISOR) {
             throw new ApiException(
                     ErrorCode.BAD_REQUEST,
-                    "Only employees can be approved");
+                    "Only staff accounts can be approved");
         }
         user.setEnabled(true);
+        user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.APPROVED);
         userRepository.save(user);
         emailNotificationService.sendAccountApprovedEmail(user);
         notificationService.createNotification(

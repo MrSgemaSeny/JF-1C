@@ -21,7 +21,7 @@ const FOLDERS = [
   { id: 'other', key: 'documents.folders.other', defaultLabel: 'Разное' },
 ];
 
-const ACCEPT_ATTRIBUTE = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.zip,.rar,.7z';
+const ACCEPT_ATTRIBUTE = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.zip,.rar,.7z,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg,image/webp,image/gif,text/plain,application/zip,application/x-zip-compressed';
 
 export function EmployeeDocumentsPage() {
   const { t } = useTranslation(['common']);

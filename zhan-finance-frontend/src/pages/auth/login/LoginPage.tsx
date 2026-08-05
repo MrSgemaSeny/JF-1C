@@ -9,8 +9,11 @@ import { TotpVerifyForm } from '@/features/auth/ui/TotpVerifyForm';
 import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import LogoImage from '@/shared/assets/icons/logo.png';
+
+const emailSchema = z.string().email("Некорректный адрес электронной почты");
 
 export function LoginPage() {
   const { t } = useTranslation(['common', 'auth']);
@@ -71,6 +74,12 @@ export function LoginPage() {
     if (isSubmitting || submittingRef.current) return;
     setGlobalError(null);
     setValidationErrors({});
+    
+    const emailResult = emailSchema.safeParse(email);
+    if (!emailResult.success) {
+      setValidationErrors({ email: emailResult.error.errors[0].message });
+      return;
+    }
 
     submittingRef.current = true;
     setIsSubmitting(true);

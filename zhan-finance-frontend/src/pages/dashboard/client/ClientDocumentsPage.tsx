@@ -93,7 +93,7 @@ export function ClientDocumentsPage() {
   };
 
   const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.txt', '.md', '.zip', '.rar', '.7z'];
-  const ACCEPT_ATTRIBUTE = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.zip,.rar,.7z';
+  const ACCEPT_ATTRIBUTE = '.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.zip,.rar,.7z,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg,image/webp,image/gif,text/plain,application/zip,application/x-zip-compressed';
 
   const processFileUpload = async (file: File) => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase();

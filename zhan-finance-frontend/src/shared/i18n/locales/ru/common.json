@@ -1429,7 +1429,7 @@
   "details.taskNotFound": "Задача не найдена",
   "details.goBack": "Вернуться назад",
   "more": "Ещё",
-  "clientDashboard.welcomeNew": "Добро пожаловать в Zhan Finance, ${user?.fullName || 'Гость'}!",
+  "clientDashboard.welcomeNew": "Добро пожаловать в Zhan Finance, {{name}}!",
   "clientDashboard.welcomeDesc": "Мы помогаем вашему бизнесу расти, берем на себя бухгалтерию, налоги и финансы. Создайте свою первую заявку прямо сейчас, и наша команда приступит к работе.",
   "clientDashboard.createFirstRequest": "Заказать услугу",
   "clientDashboard.howItWorks": "Как работает процесс?",

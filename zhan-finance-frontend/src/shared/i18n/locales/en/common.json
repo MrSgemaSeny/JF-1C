@@ -1428,7 +1428,7 @@
   "details.taskNotFound": "Task not found",
   "details.goBack": "Go back",
   "more": "More",
-  "clientDashboard.welcomeNew": "Welcome to Zhan Finance, ${user?.fullName || 'Guest'}!",
+  "clientDashboard.welcomeNew": "Welcome to Zhan Finance, {{name}}!",
   "clientDashboard.welcomeDesc": "We help your business grow, handle accounting, taxes, and finances. Create your first request right now, and our team will get to work.",
   "clientDashboard.createFirstRequest": "Order service",
   "clientDashboard.howItWorks": "How does the process work?",

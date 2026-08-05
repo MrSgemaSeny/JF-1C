@@ -15,7 +15,7 @@ export function ClientWelcomeScreen({ onCreateRequest }: ClientWelcomeScreenProp
       <div className="bg-white p-8 md:p-12 border-b border-gray-100">
         <div className="max-w-2xl">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-            {t('clientDashboard.welcomeNew', { defaultValue: `Добро пожаловать в Zhan Finance, ${user?.fullName || 'Гость'}!` })}
+            {t('clientDashboard.welcomeNew', { name: user?.fullName || t('common.guest', { defaultValue: 'Гость' }) })}
           </h1>
           <p className="text-gray-500 text-base mb-8 max-w-xl leading-relaxed">
             {t('clientDashboard.welcomeDesc', { defaultValue: 'Мы помогаем вашему бизнесу расти, берем на себя бухгалтерию, налоги и финансы. Создайте свою первую заявку прямо сейчас, и наша команда приступит к работе.' })}

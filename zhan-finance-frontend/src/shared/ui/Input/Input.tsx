@@ -1,6 +1,6 @@
-import { forwardRef, InputHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, InputHTMLAttributes, ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -25,12 +25,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       disabled,
       maxLength,
       value,
+      type,
       ...props
     },
     ref
   ) => {
     const isError = Boolean(error);
     const charCount = typeof value === 'string' ? value.length : 0;
+    const [showPassword, setShowPassword] = useState(false);
+    
+    const isPasswordType = type === 'password';
+    const currentType = isPasswordType ? (showPassword ? 'text' : 'password') : type;
 
     return (
       <div className={`flex flex-col gap-1.5 ${className}`}>
@@ -65,13 +70,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             disabled={disabled || loading}
             required={required}
             maxLength={maxLength}
+            type={currentType}
             className={`
               w-full rounded-2xl border px-4 py-3 text-brand-green transition-all
               placeholder:text-brand-green/30
               focus:outline-none focus:ring-2 focus:ring-brand-green/20
               disabled:opacity-60 disabled:bg-brand-beige/20 disabled:cursor-not-allowed
               ${icon ? 'pl-10' : ''}
-              ${loading || success ? 'pr-10' : ''}
+              ${loading || success || isPasswordType ? 'pr-10' : ''}
               ${
                 isError
                   ? 'border-red-300 bg-red-50/50 focus:border-red-400 focus:ring-red-200'
@@ -81,10 +87,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
 
-          {/* Right Accessories (Loading / Success) */}
-          <div className="absolute right-3 pointer-events-none flex items-center">
+          {/* Right Accessories (Loading / Success / Password Toggle) */}
+          <div className="absolute right-3 flex items-center">
             {loading && <Loader2 className="w-5 h-5 text-brand-green/50 animate-spin" />}
-            {!loading && success && !isError && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+            {!loading && success && !isError && !isPasswordType && <CheckCircle2 className="w-5 h-5 text-green-500 pointer-events-none" />}
+            {isPasswordType && !loading && (
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-brand-green/40 hover:text-brand-green/70 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-green/20 rounded-md p-0.5"
+                aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            )}
           </div>
         </div>
 

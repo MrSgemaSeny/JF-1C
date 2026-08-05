@@ -67,7 +67,7 @@ public class AuthService {
         }
 
         Role assignedRole = request.role() != null ? request.role() : Role.CLIENT;
-        boolean isEmployee = assignedRole == Role.EMPLOYEE;
+        boolean isEmployee = assignedRole == Role.EMPLOYEE || assignedRole == Role.CURATOR || assignedRole == Role.ADVISOR;
 
         User user = new User(
                 request.fullName(),
@@ -78,6 +78,9 @@ public class AuthService {
 
         if (isEmployee) {
             user.setEnabled(false);
+            user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING);
+        } else {
+            user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.APPROVED);
         }
 
         User savedUser = userRepository.save(user);
@@ -102,7 +105,10 @@ public class AuthService {
                     false,
                     savedUser.getAvatarUrl(),
                     savedUser.getAuthProvider(),
-                    savedUser.getLocale()
+                    savedUser.getLocale(),
+                    false,
+                    null,
+                    false
             );
         } else {
             notificationService.notifyAdmins(
@@ -117,9 +123,23 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.email(), request.password())
+            );
+        } catch (org.springframework.security.authentication.DisabledException e) {
+            User user = userRepository.findByEmailIgnoreCase(request.email()).orElse(null);
+            if (user != null) {
+                if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
+                }
+                if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
+                }
+            }
+            throw e;
+        }
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         User user = principal.getUser();
