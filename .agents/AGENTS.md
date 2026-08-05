@@ -74,6 +74,7 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - **Format**: Follow the template in AI_agent_instruction.md section 5
 
 ## Behavior & Communication Rules
+- **Logical Troubleshooting (NO TUNNEL VISION)**: Think logically and broadly before diving deep. If an issue occurs, map out ALL possible horizontal paths/causes first. Do NOT fall into the trap of: 'problem -> guess path -> not here -> dig deeper in the same wrong place'. Verify the root cause across all potential points of failure before spending tokens on deep dives.
 - **Token Efficiency**: No preambles. Start directly with the answer. Show diffs for files >30 lines. If task >3 steps, show plan and wait for confirmation.
 - **Anti-Looping**: Maximum 3 attempts per problem. If command fails, show exact error and explain WHY before fix.
 - **Risk Flags**: Mark risks with text tags: [CRITICAL], [WARNING], [INFO].
