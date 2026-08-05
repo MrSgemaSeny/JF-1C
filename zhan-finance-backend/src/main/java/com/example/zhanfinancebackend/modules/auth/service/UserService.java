@@ -57,6 +57,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setDeletedAt(java.time.Instant.now());
+        user.setEnabled(false);
         userRepository.save(user);
 
         refreshTokenService.revokeAll(user);

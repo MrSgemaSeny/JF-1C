@@ -62,6 +62,7 @@ public class AdminService {
 
     public List<EmployeeDto> getAllEmployees() {
         return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADVISOR)).stream()
+                .filter(u -> u.getDeletedAt() == null)
                 .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
