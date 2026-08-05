@@ -15,6 +15,12 @@ export async function approveEmployee(id: number): Promise<void> {
   });
 }
 
+export async function rejectEmployee(id: number): Promise<void> {
+  return apiRequest<void>(`/api/v1/admin/employees/${id}/reject`, {
+    method: 'POST'
+  });
+}
+
 export interface EmployeeWorkloadDto {
   employeeId: number;
   fullName: string;

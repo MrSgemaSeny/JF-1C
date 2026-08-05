@@ -62,6 +62,12 @@ public class AdminController {
         return ApiResponse.success(null, "Сотрудник одобрен");
     }
 
+    @PostMapping("/employees/{id}/reject")
+    public ApiResponse<Void> rejectEmployee(@PathVariable Long id) {
+        adminService.rejectEmployee(id);
+        return ApiResponse.success(null, "Сотрудник отклонен");
+    }
+
     @PostMapping("/employees/{id}/promote-to-advisor")
     public ApiResponse<Void> promoteToAdvisor(@PathVariable Long id) {
         adminService.promoteToAdvisor(id);

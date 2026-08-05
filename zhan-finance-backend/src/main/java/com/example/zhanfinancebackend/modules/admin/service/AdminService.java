@@ -146,6 +146,20 @@ public class AdminService {
         );
     }
 
+    public void rejectEmployee(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(
+                        ErrorCode.NOT_FOUND, "User not found"));
+        if (user.getRole() != Role.EMPLOYEE && user.getRole() != Role.ADMIN && user.getRole() != Role.CURATOR && user.getRole() != Role.ADVISOR) {
+            throw new ApiException(
+                    ErrorCode.BAD_REQUEST,
+                    "Only staff accounts can be rejected");
+        }
+        user.setEnabled(false);
+        user.setRegistrationStatus(com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED);
+        userRepository.save(user);
+    }
+
     public List<EmployeeDto> getAssignedEmployees() {
         return userRepository.findAssignedEmployees().stream()
                 .map(userMapper::mapToEmployeeDto)

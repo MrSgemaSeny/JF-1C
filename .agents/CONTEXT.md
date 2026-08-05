@@ -26,6 +26,7 @@
 13. **Frontend Cache Control**: Added `Cache-Control` meta tags to `index.html` to prevent GitHub Pages from aggressively caching stale SPA chunks (which caused old redirect loops to persist).
 14. **React Router State Preservation**: Fixed silent 2FA failure during Google/local login by removing `setIsLoading(true)` from `AuthContext` auth methods. This prevents the `RouterProvider` from being temporarily unmounted and wiping out `location.state` (which is used for `preAuthToken` tracking) and component local states.
 15. **Chat Interface Avatar**: Fixed chat UI to display user's avatar dynamically instead of a static default icon in `ChatDrawer`. Updated DTOs (`UserDto`, `ClientInfoDto`) to support `avatarUrl` natively.
+16. **Employee Registration Status Flow**: Fixed edge case where newly registered employees (who are PENDING) were redirected to the dashboard without tokens, causing crashes. Added dedicated "Ваша заявка в работе" full-page status screen on the Login page for pending/rejected accounts.
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)

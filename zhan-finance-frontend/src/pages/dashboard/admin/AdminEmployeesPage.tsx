@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getEmployees, getPendingEmployees, approveEmployee, getEmployeeWorkload, promoteToAdvisor, demoteToEmployee, toggleUserStatus, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
+import { getEmployees, getPendingEmployees, approveEmployee, rejectEmployee, getEmployeeWorkload, promoteToAdvisor, demoteToEmployee, toggleUserStatus, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
-import { Check, Clock, UserCheck, Briefcase, ShieldAlert, ShieldCheck, UserX } from 'lucide-react';
+import { Check, Clock, UserCheck, Briefcase, ShieldAlert, ShieldCheck, UserX, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 
@@ -46,6 +46,17 @@ export function AdminEmployeesPage() {
     } catch (e) {
       console.error(e);
       toast.error(t('adminEmployees.approveError', { defaultValue: 'Ошибка при одобрении сотрудника' }));
+    }
+  }
+
+  async function handleReject(id: number) {
+    if (!window.confirm(t('adminEmployees.rejectConfirm', { defaultValue: 'Отклонить заявку сотрудника?' }))) return;
+    try {
+      await rejectEmployee(id);
+      await loadData();
+    } catch (e) {
+      console.error(e);
+      toast.error(t('adminEmployees.rejectError', { defaultValue: 'Ошибка при отклонении заявки' }));
     }
   }
 
@@ -189,13 +200,22 @@ export function AdminEmployeesPage() {
                     </td>
                     <td className="px-0 sm:px-6 py-4 sm:py-4 sm:text-right block sm:table-cell border-t border-gray-100 mt-2 sm:border-0 sm:mt-0">
                       {activeTab === 'PENDING' ? (
-                        <button
-                          onClick={() => handleApprove(emp.id)}
-                          className="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-4 py-2 bg-brand-green/10 text-brand-green hover:bg-brand-green/20 rounded-lg text-sm font-bold transition-colors"
-                        >
-                          <Check className="w-4 h-4" />
-                          {t('adminEmployees.approve')}
-                        </button>
+                        <div className="flex items-center justify-end gap-2 flex-wrap sm:flex-nowrap">
+                          <button
+                            onClick={() => handleApprove(emp.id)}
+                            className="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-4 py-2 bg-brand-green/10 text-brand-green hover:bg-brand-green/20 rounded-lg text-sm font-bold transition-colors"
+                          >
+                            <Check className="w-4 h-4" />
+                            {t('adminEmployees.approve', { defaultValue: 'Одобрить' })}
+                          </button>
+                          <button
+                            onClick={() => handleReject(emp.id)}
+                            className="w-full sm:w-auto inline-flex justify-center items-center gap-1.5 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-bold transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                            {t('adminEmployees.reject', { defaultValue: 'Отказать' })}
+                          </button>
+                        </div>
                       ) : (
                         <div className="flex items-center justify-end gap-2 flex-wrap">
                           {(() => {
