@@ -18,7 +18,8 @@ public record AuthResponse(
         String locale,
         Boolean requires2FA,
         String preAuthToken,
-        Boolean twoFactorEnabled
+        Boolean twoFactorEnabled,
+        Boolean isPendingApproval
 ) {
     public AuthResponse(
             String accessToken,
@@ -33,10 +34,10 @@ public record AuthResponse(
             AuthProvider authProvider,
             String locale
     ) {
-        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null, false);
+        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null, false, false);
     }
 
     public static AuthResponse requires2FA(String preAuthToken) {
-        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false);
+        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false, false);
     }
 }

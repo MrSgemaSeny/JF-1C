@@ -16,6 +16,7 @@ export interface AuthResponse {
   requires2FA?: boolean;
   preAuthToken?: string;
   twoFactorEnabled?: boolean;
+  isPendingApproval?: boolean;
 }
 
 export interface LoginRequest {

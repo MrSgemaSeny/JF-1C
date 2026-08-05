@@ -107,7 +107,8 @@ public class AuthService {
                     savedUser.getLocale(),
                     false,
                     null,
-                    false
+                    false,
+                    true
             );
         } else {
             notificationService.notifyAdmins(

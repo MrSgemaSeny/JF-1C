@@ -92,7 +92,9 @@ public class GoogleAuthService {
             }
             
             if (!user.isEnabled()) {
-                throw new UnauthorizedException(ErrorCode.ACCOUNT_NOT_ACTIVATED.name());
+                return new AuthResponse(
+                        null, null, "Bearer", user.getId(), user.getEmail(), user.getFullName(), user.getRole(), false, user.getAvatarUrl(), user.getAuthProvider(), user.getLocale(), true, null, false, true
+                );
             }
 
             // Update avatar and provider if they login via Google
@@ -137,7 +139,7 @@ public class GoogleAuthService {
                         "/admin/employees"
                 );
                 return new AuthResponse(
-                        null, null, "Bearer", user.getId(), user.getEmail(), user.getFullName(), user.getRole(), false, user.getAvatarUrl(), user.getAuthProvider(), user.getLocale(), true, null, false
+                        null, null, "Bearer", user.getId(), user.getEmail(), user.getFullName(), user.getRole(), false, user.getAvatarUrl(), user.getAuthProvider(), user.getLocale(), true, null, false, true
                 );
             }
 
