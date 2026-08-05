@@ -25,6 +25,7 @@
 12. **Auth Security & Fixes**: Fixed infinite `/login` redirect loop on frontend. Added 2FA brute-force protection (`TwoFactorPreAuth` attempts counter + V109 migration) and scheduled database purge for expired refresh tokens (`RefreshTokenService.purgeExpiredTokens`).
 13. **Frontend Cache Control**: Added `Cache-Control` meta tags to `index.html` to prevent GitHub Pages from aggressively caching stale SPA chunks (which caused old redirect loops to persist).
 14. **React Router State Preservation**: Fixed silent 2FA failure during Google/local login by removing `setIsLoading(true)` from `AuthContext` auth methods. This prevents the `RouterProvider` from being temporarily unmounted and wiping out `location.state` (which is used for `preAuthToken` tracking) and component local states.
+15. **Chat Interface Avatar**: Fixed chat UI to display user's avatar dynamically instead of a static default icon in `ChatDrawer`. Updated DTOs (`UserDto`, `ClientInfoDto`) to support `avatarUrl` natively.
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
