@@ -44,6 +44,7 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 8. **Communication**: NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
 9. **Tests before pushing**: Never push to branches if there are errors or failing tests.
 10. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
+11. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
 
 ## Current Status
 - Flyway migration chain V1->V108 verified on clean DB [DONE]
