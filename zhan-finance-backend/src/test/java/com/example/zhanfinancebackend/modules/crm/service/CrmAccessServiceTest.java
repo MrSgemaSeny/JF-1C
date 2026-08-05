@@ -21,6 +21,7 @@ class CrmAccessServiceTest {
     private User employee2;
     private User client1;
     private User client2;
+    private User advisor;
 
     private Task task1;
 
@@ -49,6 +50,10 @@ class CrmAccessServiceTest {
         client2.setId(5L);
         client2.setRole(Role.CLIENT);
         client2.setAssignedEmployee(employee2);
+
+        advisor = new User();
+        advisor.setId(6L);
+        advisor.setRole(Role.ADVISOR);
 
         task1 = new Task();
         task1.setId(10L);
@@ -101,6 +106,34 @@ class CrmAccessServiceTest {
 
         assertFalse(accessService.canUpdateTaskStage(employee1, task1, openStage));
         assertFalse(accessService.canUpdateTaskStage(client1, task1, openStage));
+        assertTrue(accessService.canUpdateTaskStage(advisor, task1, openStage));
         assertTrue(accessService.canUpdateTaskStage(admin, task1, openStage));
+    }
+
+    @Test
+    @DisplayName("ADVISOR edge cases")
+    void testAdvisor_EdgeCases() {
+        Task task2 = new Task();
+        task2.setId(11L);
+        task2.setClient(client2); // Unassigned task to client 2
+
+        // Advisor can read any client and any task
+        assertTrue(accessService.canReadClient(advisor, client1));
+        assertTrue(accessService.canReadClient(advisor, client2));
+        assertTrue(accessService.canReadTask(advisor, task1));
+        assertTrue(accessService.canReadTask(advisor, task2));
+
+        // Advisor can create task for any client
+        assertTrue(accessService.canCreateTaskFor(advisor, client1));
+        assertTrue(accessService.canCreateTaskFor(advisor, client2));
+
+        // Advisor can update stage (except WON/LOST -> OPEN)
+        Stage openStage = new Stage();
+        openStage.setType(StageType.OPEN);
+        Stage openStageNew = new Stage();
+        openStageNew.setType(StageType.OPEN);
+        task2.setStage(openStage);
+        
+        assertTrue(accessService.canUpdateTaskStage(advisor, task2, openStageNew));
     }
 }

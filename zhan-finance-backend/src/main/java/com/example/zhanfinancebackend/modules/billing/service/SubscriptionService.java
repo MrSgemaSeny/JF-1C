@@ -29,6 +29,9 @@ public class SubscriptionService {
 
     @Transactional
     public SubscriptionDto create(User user, SubscriptionDto request) {
+        if (hasOverlap(user, null, request.startsAt(), request.endsAt())) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Subscription dates overlap with an existing subscription");
+        }
         Subscription subscription = new Subscription(
                 user,
                 request.planName(),
@@ -44,6 +47,9 @@ public class SubscriptionService {
 
     @Transactional
     public SubscriptionDto update(User user, Long id, SubscriptionDto request) {
+        if (hasOverlap(user, id, request.startsAt(), request.endsAt())) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "Subscription dates overlap with an existing subscription");
+        }
         Subscription subscription = get(user, id);
         subscription.setPlanName(request.planName());
         subscription.setMonthlyPrice(request.monthlyPrice());
@@ -75,5 +81,21 @@ public class SubscriptionService {
                 subscription.getEndsAt()
         );
     }
-}
 
+    private boolean hasOverlap(User user, Long excludeId, java.time.LocalDate startsAt, java.time.LocalDate endsAt) {
+        List<Subscription> existing = subscriptionRepository.findAllByUser(user);
+        for (Subscription sub : existing) {
+            if (excludeId != null && sub.getId().equals(excludeId)) {
+                continue;
+            }
+            if (sub.getStatus() == com.example.zhanfinancebackend.modules.billing.entity.Subscription.SubscriptionStatus.CANCELED) {
+                continue; // Can overlap with canceled ones
+            }
+            // Overlap condition: start1 <= end2 && end1 >= start2
+            if (!startsAt.isAfter(sub.getEndsAt()) && !endsAt.isBefore(sub.getStartsAt())) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

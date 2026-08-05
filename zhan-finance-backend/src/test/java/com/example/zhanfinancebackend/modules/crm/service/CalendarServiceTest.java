@@ -84,4 +84,22 @@ class CalendarServiceTest {
         assertTrue(events.get(2).isCompleted()); // because StageType.WON
         assertEquals("RED", events.get(2).color()); // Task default color
     }
+
+    @Test
+    void testGetCalendarEvents_EmptyRange() {
+        User user = new User();
+        user.setId(1L);
+
+        LocalDate startDate = LocalDate.of(2026, 8, 1);
+        LocalDate endDate = LocalDate.of(2026, 8, 31);
+
+        when(eventRepository.findEventsByUserAndDateRange(1L, startDate, endDate))
+                .thenReturn(List.of());
+
+        when(taskRepository.findTasksForCalendar(1L, startDate, endDate))
+                .thenReturn(List.of());
+
+        List<CalendarEventDto> events = calendarService.getCalendarEvents(user, startDate, endDate);
+        assertTrue(events.isEmpty());
+    }
 }

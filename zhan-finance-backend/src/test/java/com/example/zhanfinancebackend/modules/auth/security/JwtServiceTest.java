@@ -68,4 +68,19 @@ class JwtServiceTest {
         assertFalse(shortLivedJwtService.isTokenValid(token, "test@example.com"));
         assertNull(shortLivedJwtService.extractUsernameIfValidAccessToken(token));
     }
+
+    @Test
+    void testIsTokenValid_WrongTypeClaim() {
+        // Manually build a token with "refresh" type instead of "access"
+        String refreshSecret = "01234567890123456789012345678912";
+        javax.crypto.SecretKey key = io.jsonwebtoken.security.Keys.hmacShaKeyFor(refreshSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        String refreshToken = io.jsonwebtoken.Jwts.builder()
+                .subject(testUser.getEmail())
+                .claim("type", "refresh")
+                .signWith(key)
+                .compact();
+
+        assertFalse(jwtService.isTokenValid(refreshToken, "test@example.com"));
+        assertNull(jwtService.extractUsernameIfValidAccessToken(refreshToken));
+    }
 }

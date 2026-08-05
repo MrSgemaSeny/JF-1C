@@ -7,10 +7,16 @@ describe('useTaskActions', () => {
   const employeeUser = { id: 2, role: 'EMPLOYEE' } as UserDto;
   const otherEmployeeUser = { id: 3, role: 'EMPLOYEE' } as UserDto;
   const clientUser = { id: 4, role: 'CLIENT' } as UserDto;
+  const learnerUser = { id: 5, role: 'LEARNER' } as UserDto;
+  const curatorUser = { id: 6, role: 'CURATOR' } as UserDto;
+  const advisorUser = { id: 7, role: 'ADVISOR' } as UserDto;
 
   const unassignedTask = { id: 100 } as TaskDto;
   const assignedToMeTask = { id: 101, assignedToId: 2, assignedTo: { id: 2 } } as unknown as TaskDto;
   const assignedToOtherTask = { id: 102, assignedToId: 3, assignedTo: { id: 3 } } as unknown as TaskDto;
+
+  const nonAdmins = [employeeUser, clientUser, learnerUser, curatorUser, advisorUser];
+  const nonEmployees = [adminUser, clientUser, learnerUser, curatorUser, advisorUser];
 
   it('allows ADMIN to assign any task', () => {
     expect(useTaskActions(unassignedTask, adminUser).canAssign).toBe(true);
@@ -19,8 +25,9 @@ describe('useTaskActions', () => {
   });
 
   it('does not allow non-ADMIN to assign tasks', () => {
-    expect(useTaskActions(unassignedTask, employeeUser).canAssign).toBe(false);
-    expect(useTaskActions(unassignedTask, clientUser).canAssign).toBe(false);
+    nonAdmins.forEach(user => {
+      expect(useTaskActions(unassignedTask, user).canAssign).toBe(false);
+    });
   });
 
   it('allows EMPLOYEE to take unassigned task', () => {
@@ -32,9 +39,10 @@ describe('useTaskActions', () => {
     expect(useTaskActions(assignedToMeTask, employeeUser).canTake).toBe(false); // already theirs
   });
 
-  it('does not allow ADMIN or CLIENT to take unassigned task', () => {
-    expect(useTaskActions(unassignedTask, adminUser).canTake).toBe(false);
-    expect(useTaskActions(unassignedTask, clientUser).canTake).toBe(false);
+  it('does not allow non-EMPLOYEE to take unassigned task', () => {
+    nonEmployees.forEach(user => {
+      expect(useTaskActions(unassignedTask, user).canTake).toBe(false);
+    });
   });
 
   it('allows EMPLOYEE to drop their own task', () => {
@@ -45,9 +53,10 @@ describe('useTaskActions', () => {
     expect(useTaskActions(assignedToOtherTask, employeeUser).canDrop).toBe(false);
   });
 
-  it('does not allow ADMIN or CLIENT to drop tasks', () => {
-    expect(useTaskActions(assignedToMeTask, adminUser).canDrop).toBe(false);
-    expect(useTaskActions(assignedToMeTask, clientUser).canDrop).toBe(false);
+  it('does not allow non-EMPLOYEE to drop tasks', () => {
+    nonEmployees.forEach(user => {
+      expect(useTaskActions(assignedToMeTask, user).canDrop).toBe(false);
+    });
   });
 
   it('correctly computes isUnassigned', () => {

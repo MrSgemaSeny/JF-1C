@@ -89,4 +89,22 @@ describe('http.ts', () => {
     expect(refreshMock).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
+
+  it('does not trigger refresh or retry for isAuthRoute on 401', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      json: async () => ({ success: false, message: 'Unauthorized' }),
+    });
+
+    const refreshMock = vi.fn().mockResolvedValue(true);
+    configureAuth(refreshMock);
+
+    await expect(apiRequest('/auth/login', { method: 'POST' })).rejects.toThrow(ApiError);
+    
+    // Refresh should not be called because it is an auth route
+    expect(refreshMock).not.toHaveBeenCalled();
+    // Fetch should only be called once, no retry
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
 });

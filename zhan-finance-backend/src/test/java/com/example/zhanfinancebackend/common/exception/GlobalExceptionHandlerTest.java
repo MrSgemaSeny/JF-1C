@@ -62,6 +62,51 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void testHandleMethodArgumentNotValid() {
+        org.springframework.web.bind.MethodArgumentNotValidException ex = mock(org.springframework.web.bind.MethodArgumentNotValidException.class);
+        org.springframework.validation.BindingResult bindingResult = mock(org.springframework.validation.BindingResult.class);
+        when(ex.getBindingResult()).thenReturn(bindingResult);
+        when(bindingResult.getFieldErrors()).thenReturn(java.util.Collections.emptyList());
+        
+        ResponseEntity<ErrorResponse> response = handler.handleValidation(ex, request);
+        
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("VALIDATION_ERROR", response.getBody().getCode());
+    }
+
+    @Test
+    void testHandleUnauthorized() {
+        UnauthorizedException ex = new UnauthorizedException("Unauthorized");
+        ResponseEntity<ErrorResponse> response = handler.handleUnauthorized(ex, request, Locale.ENGLISH);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("UNAUTHORIZED", response.getBody().getCode());
+    }
+
+    @Test
+    void testHandleAccessDenied() {
+        org.springframework.security.access.AccessDeniedException ex = new org.springframework.security.access.AccessDeniedException("Denied");
+        ResponseEntity<ErrorResponse> response = handler.handleAccessDenied(ex, request, Locale.ENGLISH);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals("FORBIDDEN", response.getBody().getCode());
+    }
+
+    @Test
+    void testHandleUnprocessableEntity() {
+        InvalidStateException ex = new InvalidStateException("Invalid state");
+        ResponseEntity<ErrorResponse> response = handler.handleUnprocessableEntity(ex, request, Locale.ENGLISH);
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        assertEquals("UNPROCESSABLE_ENTITY", response.getBody().getCode());
+    }
+
+    @Test
+    void testHandleApiException() {
+        ApiException ex = new ApiException(ErrorCode.BAD_REQUEST, "API error");
+        ResponseEntity<ErrorResponse> response = handler.handleApiException(ex, request, Locale.ENGLISH);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(ErrorCode.BAD_REQUEST.name(), response.getBody().getCode());
+    }
+
+    @Test
     void testHandleUnexpectedException() {
         Exception ex = new Exception("Unexpected error");
         when(messageSource.getMessage(anyString(), any(), anyString(), any())).thenReturn("Translated internal error");

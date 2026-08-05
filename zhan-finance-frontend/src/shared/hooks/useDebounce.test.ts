@@ -71,4 +71,22 @@ describe('useDebounce', () => {
 
     expect(result.current).toBe('update2');
   });
+
+  it('clears the timeout on unmount', () => {
+    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+    const { unmount, rerender } = renderHook(
+      ({ value, delay }) => useDebounce(value, delay),
+      { initialProps: { value: 'initial', delay: 500 } }
+    );
+    
+    rerender({ value: 'update', delay: 500 });
+    
+    // Unmount before the timer finishes
+    unmount();
+    
+    // clearTimeout should have been called on unmount
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+    
+    clearTimeoutSpy.mockRestore();
+  });
 });

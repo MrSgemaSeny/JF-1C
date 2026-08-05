@@ -82,4 +82,44 @@ describe('SolutionPicker Component', () => {
     
     expect(screen.getByText(/Спасибо! Мы свяжемся с вами в ближайшее время/i)).toBeInTheDocument();
   });
+
+  it('submits contact request with files and verifies file upload API is called', async () => {
+    const apiRequestMock = vi.mocked(http.apiRequest).mockResolvedValueOnce({ id: 123 });
+    const fetchMock = vi.fn().mockResolvedValueOnce({ ok: true });
+    global.fetch = fetchMock;
+    
+    renderComponent();
+    
+    // Skip to the end quickly if possible, or just go through steps
+    fireEvent.click(screen.getByText('ИП'));
+    fireEvent.click(screen.getByRole('button', { name: /Далее/i }));
+    fireEvent.click(screen.getByText('1-3 млн'));
+    fireEvent.click(screen.getByRole('button', { name: /Далее/i }));
+    fireEvent.click(screen.getByText('1–10'));
+    fireEvent.click(screen.getByRole('button', { name: /Далее/i }));
+    fireEvent.click(screen.getByText('Бухгалтерия'));
+    fireEvent.click(screen.getByRole('button', { name: /Далее/i }));
+    fireEvent.click(screen.getByText('1-3 дня'));
+    fireEvent.click(screen.getByRole('button', { name: /Далее/i }));
+    
+    expect(screen.getByText('Оставьте контакты')).toBeInTheDocument();
+    
+    // Upload a file
+    const file = new File(['dummy content'], 'test.pdf', { type: 'application/pdf' });
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(fileInput, { target: { files: [file] } });
+    
+    // Fill contact form
+    fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: 'Ivan' } });
+    fireEvent.change(screen.getAllByRole('textbox')[1], { target: { value: '7771112233' } });
+    
+    fireEvent.click(screen.getByRole('button', { name: /Отправить/i }));
+    
+    await waitFor(() => {
+      expect(apiRequestMock).toHaveBeenCalled();
+      expect(fetchMock).toHaveBeenCalledWith('/api/v1/contact-requests/123/files', expect.any(Object));
+    });
+    
+    expect(screen.getByText(/Спасибо! Мы свяжемся с вами в ближайшее время/i)).toBeInTheDocument();
+  });
 });
