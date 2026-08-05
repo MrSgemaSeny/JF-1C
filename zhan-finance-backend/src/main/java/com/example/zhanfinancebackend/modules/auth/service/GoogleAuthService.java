@@ -90,12 +90,20 @@ public class GoogleAuthService {
             if (user.getDeletedAt() != null) {
                 throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт удален.");
             }
-            if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
-                throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
+            
+            boolean isEmployeeRole = user.getRole() == Role.EMPLOYEE || 
+                                     user.getRole() == Role.CURATOR || 
+                                     user.getRole() == Role.ADVISOR;
+
+            if (isEmployeeRole) {
+                if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.PENDING) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваш аккаунт находится на модерации.");
+                }
+                if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
+                    throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
+                }
             }
-            if (user.getRegistrationStatus() == com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus.REJECTED) {
-                throw new ApiException(ErrorCode.FORBIDDEN, "Ваша заявка на регистрацию отклонена.");
-            }
+            
             if (!user.isEnabled()) {
                 throw new UnauthorizedException(ErrorCode.ACCOUNT_NOT_ACTIVATED.name());
             }
