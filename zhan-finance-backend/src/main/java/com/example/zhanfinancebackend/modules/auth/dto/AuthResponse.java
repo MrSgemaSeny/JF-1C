@@ -5,7 +5,7 @@ import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public record AuthResponse(
-        @JsonIgnore String accessToken,
+        String accessToken,
         @JsonIgnore String refreshToken,
         String tokenType,
         Long id,

@@ -60,7 +60,6 @@ public class DeadlineAlertScheduler {
                 updatedTasks.add(task);
             }
         }
-        }
         
         for (Task task : dueTomorrow) {
             if (task.getAssignedTo() != null) {
