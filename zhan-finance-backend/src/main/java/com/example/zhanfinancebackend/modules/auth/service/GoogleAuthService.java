@@ -26,6 +26,7 @@ import com.example.zhanfinancebackend.common.exception.UnauthorizedException;
 import com.example.zhanfinancebackend.modules.auth.entity.AuthProvider;
 import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
 import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
+import com.example.zhanfinancebackend.modules.notifications.service.TelegramNotifierService;
 
 @Service
 public class GoogleAuthService {
@@ -40,6 +41,7 @@ public class GoogleAuthService {
     private final NotificationService notificationService;
     private final EmailNotificationService emailNotificationService;
     private final TwoFactorService twoFactorService;
+    private final TelegramNotifierService telegramNotifierService;
 
     public GoogleAuthService(
 
@@ -49,7 +51,8 @@ public class GoogleAuthService {
             ClientService clientService,
             NotificationService notificationService,
             EmailNotificationService emailNotificationService,
-            TwoFactorService twoFactorService
+            TwoFactorService twoFactorService,
+            TelegramNotifierService telegramNotifierService
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
@@ -58,6 +61,7 @@ public class GoogleAuthService {
         this.notificationService = notificationService;
         this.emailNotificationService = emailNotificationService;
         this.twoFactorService = twoFactorService;
+        this.telegramNotifierService = telegramNotifierService;
     }
 
     @Transactional
@@ -157,6 +161,13 @@ public class GoogleAuthService {
         }
 
         if (user.isTwoFactorEnabled()) {
+            if (user.getRole() == Role.ADMIN) {
+                telegramNotifierService.sendAdminNotificationAsync(
+                    "🔐 Попытка входа администратора",
+                    "Администратор " + user.getEmail() + " проходит авторизацию (Google, ожидается 2FA).",
+                    null
+                );
+            }
             String preAuthToken = twoFactorService.createPreAuthToken(user);
             return AuthResponse.requires2FA(preAuthToken);
         }
