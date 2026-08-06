@@ -235,7 +235,7 @@ export function LearnerCourseDetailPage() {
       {progress?.isCompleted && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-bold text-green-800">{t('learnerCourseDetail.congrats', { defaultValue: 'Поздравляем! 🎉' })}</h3>
+            <h3 className="text-lg font-bold text-green-800">{t('learnerCourseDetail.congrats', { defaultValue: 'Поздравляем!' })}</h3>
             <p className="text-sm text-green-700 mt-1">{t('learnerCourseDetail.completedMsg', { defaultValue: 'Вы успешно завершили этот курс и освоили все материалы.' })}</p>
           </div>
           <CourseCertificate 

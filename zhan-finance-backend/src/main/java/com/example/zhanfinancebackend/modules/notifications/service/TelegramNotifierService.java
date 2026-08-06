@@ -33,9 +33,9 @@ public class TelegramNotifierService {
         try {
             String url = "https://api.telegram.org/bot" + botToken + "/sendMessage";
             
-            String text = "🔔 *" + escapeMarkdown(title) + "*\n\n" +
+            String text = "*" + escapeMarkdown(title) + "*\n\n" +
                           escapeMarkdown(message) + "\n\n" +
-                          (relativeLink != null ? "🔗 [Перейти](" + escapeMarkdown(relativeLink) + ")" : "");
+                          (relativeLink != null ? "[Перейти](" + escapeMarkdown(relativeLink) + ")" : "");
 
             Map<String, Object> body = Map.of(
                     "chat_id", adminChatId,

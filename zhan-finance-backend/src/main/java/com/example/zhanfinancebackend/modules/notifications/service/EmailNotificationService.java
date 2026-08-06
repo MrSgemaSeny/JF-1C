@@ -172,7 +172,7 @@ public class EmailNotificationService {
     public void sendTaskDeadlineAlertEmail(User user, Task task) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
-        String subject = "🚨 Приближается дедлайн по задаче: " + task.getTitle();
+        String subject = "Приближается дедлайн по задаче: " + task.getTitle();
         String deadlineStr = task.getDueDate() != null ? task.getDueDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) : "Не указан";
         
         String contentHtml = String.format(
@@ -233,7 +233,7 @@ public class EmailNotificationService {
     public void sendTaskCompletedEmailWithDocuments(User user, Task task, List<Document> documents, StorageService storageService) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
-        String subject = "✅ Ваша задача успешно завершена: " + task.getTitle();
+        String subject = "Ваша задача успешно завершена: " + task.getTitle();
         
         String contentHtml = String.format(
             "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">С радостью сообщаем, что работа по вашей задаче полностью завершена.</p>" +

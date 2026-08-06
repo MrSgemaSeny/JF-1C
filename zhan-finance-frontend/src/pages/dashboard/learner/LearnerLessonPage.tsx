@@ -189,7 +189,7 @@ export function LearnerLessonPage() {
           {isCompleting ? (
             <Spinner size="sm" className="text-current" />
           ) : progress?.completedLessonIds.includes(lesson.id) ? (
-            t('learnerLesson.passed', { defaultValue: 'Пройдено ✅' })
+            t('learnerLesson.passed', { defaultValue: 'Пройдено' })
           ) : isLastLessonInCourse ? (
             <span className="flex items-center gap-2">
               <Award className="w-5 h-5 text-yellow-300" />

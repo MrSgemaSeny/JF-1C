@@ -645,7 +645,7 @@
     "noLessonsTitle": "No lessons added yet",
     "noLessonsSubtext": "Course author is still working on materials",
     "progress": "Progress",
-    "congrats": "Congratulations! 🎉",
+    "congrats": "Congratulations!",
     "completedMsg": "You have successfully completed this course and mastered all materials.",
     "student": "Student"
   },
@@ -664,7 +664,7 @@
     "additionalMaterial": "Additional material",
     "attachedDoc": "Attached document",
     "downloadOpen": "Download / Open",
-    "passed": "Passed ✅",
+    "passed": "Passed",
     "completeAndNext": "Complete lesson and go to next",
     "finishCurrentFirst": "Finish the current lesson first"
   },

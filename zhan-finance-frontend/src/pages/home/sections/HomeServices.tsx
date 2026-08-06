@@ -130,7 +130,7 @@ export function HomeServices() {
             exit={{ opacity: 0 }}
             className="mb-8 rounded-2xl bg-green-50 border border-green-200 p-4 text-green-800 font-medium text-center"
           >
-            ✅ {successMessage}
+            {successMessage}
           </motion.div>
         )}
 

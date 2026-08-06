@@ -52,7 +52,7 @@ public class DeadlineAlertScheduler {
                 emailNotificationService.sendTaskDeadlineAlertEmail(task.getAssignedTo(), task);
                 notificationService.createNotification(
                     task.getAssignedTo(),
-                    "🔥 Горит дедлайн!",
+                    "Горит дедлайн!",
                     "Дедлайн по задаче '" + task.getTitle() + "' наступает сегодня!",
                     "/employee/tasks"
                 );
@@ -60,13 +60,14 @@ public class DeadlineAlertScheduler {
                 updatedTasks.add(task);
             }
         }
+        }
         
         for (Task task : dueTomorrow) {
             if (task.getAssignedTo() != null) {
                 emailNotificationService.sendTaskDeadlineAlertEmail(task.getAssignedTo(), task);
                 notificationService.createNotification(
                     task.getAssignedTo(),
-                    "⏰ Приближается дедлайн",
+                    "Приближается дедлайн",
                     "Дедлайн по задаче '" + task.getTitle() + "' наступает завтра.",
                     "/employee/tasks"
                 );
