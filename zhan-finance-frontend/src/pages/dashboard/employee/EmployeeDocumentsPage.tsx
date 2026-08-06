@@ -630,18 +630,19 @@ export function EmployeeDocumentsPage() {
                           <button
                             type="button"
                             onClick={() => handleDownload(doc)}
-                            className="p-2 text-gray-400 hover:text-brand-green hover:bg-emerald-50 rounded-xl transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 hover:text-brand-green hover:bg-emerald-50 border border-gray-200/80 hover:border-brand-green/30 rounded-xl font-bold text-xs transition-all cursor-pointer"
                             title="Скачать"
                           >
-                            <Download size={18} />
+                            <Download size={14} />
+                            <span className="hidden sm:inline">Скачать</span>
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(doc.id)}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200/50 rounded-xl transition-all cursor-pointer"
                             title="Удалить"
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>

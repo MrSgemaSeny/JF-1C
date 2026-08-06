@@ -1,4 +1,4 @@
-import { apiRequest, API_BASE_URL } from '@/shared/api/http';
+import { apiRequest, apiDownload } from '@/shared/api/http';
 import type { DocumentDto, DocumentUploadResponse } from '../model/types';
 
 export async function uploadDocument(file: File, userId?: number, taskId?: number): Promise<DocumentDto> {
@@ -43,15 +43,7 @@ export async function deleteDocument(id: number): Promise<void> {
 }
 
 export async function downloadDocument(id: number, fileName: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/documents/${id}/download`, {
-    credentials: 'include'
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download: ${response.status}`);
-  }
-
-  const blob = await response.blob();
+  const blob = await apiDownload(`/api/v1/documents/${id}/download`);
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -70,15 +62,7 @@ export async function confirmDocument(id: number): Promise<DocumentDto> {
 
 export async function downloadZipDocuments(ids: number[], zipName = 'documents_archive.zip'): Promise<void> {
   const query = ids.join(',');
-  const response = await fetch(`${API_BASE_URL}/api/v1/documents/download-zip?ids=${query}`, {
-    credentials: 'include'
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download zip: ${response.status}`);
-  }
-
-  const blob = await response.blob();
+  const blob = await apiDownload(`/api/v1/documents/download-zip?ids=${query}`);
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
