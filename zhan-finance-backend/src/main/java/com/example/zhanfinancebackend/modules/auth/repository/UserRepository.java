@@ -22,6 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByAssignedEmployee(User employee);
 
     List<User> findAllByRole(Role role);
+
+    List<User> findAllByRoleInAndRegistrationStatus(List<Role> roles, com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus status);
     
     List<User> findAllByAssignedEmployee(User employee);
 

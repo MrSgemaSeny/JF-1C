@@ -1,5 +1,6 @@
 package com.example.zhanfinancebackend.modules.admin.service;
 
+import com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
@@ -120,8 +121,7 @@ public class AdminService {
     }
 
     public List<EmployeeDto> getPendingEmployees() {
-        return userRepository.findAllByRoleIn(List.of(Role.EMPLOYEE, Role.ADVISOR)).stream()
-                .filter(u -> !u.isEnabled())
+        return userRepository.findAllByRoleInAndRegistrationStatus(List.of(Role.EMPLOYEE, Role.ADVISOR), RegistrationStatus.PENDING).stream()
                 .map(userMapper::mapToEmployeeDto)
                 .toList();
     }
@@ -136,6 +136,7 @@ public class AdminService {
                     "Only staff accounts can be approved");
         }
         user.setEnabled(true);
+        user.setRegistrationStatus(RegistrationStatus.APPROVED);
         userRepository.save(user);
         emailNotificationService.sendAccountApprovedEmail(user);
         notificationService.createNotification(
@@ -156,6 +157,7 @@ public class AdminService {
                     "Only staff accounts can be rejected");
         }
         user.setEnabled(false);
+        user.setRegistrationStatus(RegistrationStatus.REJECTED);
         userRepository.save(user);
     }
 

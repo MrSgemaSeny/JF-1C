@@ -8,6 +8,8 @@ import com.example.zhanfinancebackend.modules.auth.dto.AuthResponse;
 import com.example.zhanfinancebackend.modules.auth.dto.LoginRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.RefreshRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest;
+import com.example.zhanfinancebackend.modules.auth.entity.AuthProvider;
+import com.example.zhanfinancebackend.modules.auth.entity.RegistrationStatus;
 import com.example.zhanfinancebackend.modules.auth.entity.RefreshToken;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
@@ -84,6 +86,9 @@ public class AuthService {
 
         if (isEmployee) {
             user.setEnabled(false);
+            user.setRegistrationStatus(RegistrationStatus.PENDING);
+        } else {
+            user.setRegistrationStatus(RegistrationStatus.APPROVED);
         }
 
         User savedUser = userRepository.save(user);

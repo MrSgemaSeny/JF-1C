@@ -37,6 +37,10 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 32)
     private Role role = Role.CLIENT;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "registration_status", nullable = false, length = 32)
+    private RegistrationStatus registrationStatus = RegistrationStatus.APPROVED;
+
     @Column(nullable = false)
     private boolean enabled = true;
 
@@ -164,6 +168,14 @@ public class User extends BaseEntity {
 
     public void setTwoFactorEnabled(boolean twoFactorEnabled) {
         this.twoFactorEnabled = twoFactorEnabled;
+    }
+
+    public RegistrationStatus getRegistrationStatus() {
+        return registrationStatus;
+    }
+
+    public void setRegistrationStatus(RegistrationStatus registrationStatus) {
+        this.registrationStatus = registrationStatus;
     }
 
 }
