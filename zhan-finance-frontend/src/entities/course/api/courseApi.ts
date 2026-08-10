@@ -138,6 +138,12 @@ export async function updateCourse(id: number, title: string, description: strin
   });
 }
 
+export async function deleteCourse(id: number): Promise<void> {
+  await apiRequest(`/api/v1/admin/courses/${id}`, {
+    method: 'DELETE'
+  });
+}
+
 export async function createLesson(
   courseId: number, 
   title: string, 
@@ -207,6 +213,12 @@ export async function createChapter(
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formData.toString()
+  });
+}
+
+export async function deleteChapter(chapterId: number): Promise<void> {
+  await apiRequest(`/api/v1/admin/courses/chapters/${chapterId}`, {
+    method: 'DELETE'
   });
 }
 

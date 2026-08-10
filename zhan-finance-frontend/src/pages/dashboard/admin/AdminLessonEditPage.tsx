@@ -143,18 +143,7 @@ export function AdminLessonEditPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 mt-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={isPreview}
-                            onChange={e => setIsPreview(e.target.checked)}
-                            className="w-4 h-4 text-brand-green rounded border-gray-300 focus:ring-brand-green"
-                        />
-                        <span className="text-sm font-semibold text-gray-700">{t('adminLessonEdit.isPreviewLabel', { defaultValue: 'Ознакомительный урок (доступен без покупки)' })}</span>
-                    </label>
                 </div>
-            </div>
 
             {/* Секция загрузки медиа */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

@@ -109,6 +109,12 @@ public class AdminCourseController {
         return ApiResponse.success(courseService.createChapter(courseId, title, orderIndex));
     }
 
+    @DeleteMapping("/chapters/{chapterId}")
+    public ApiResponse<Void> deleteChapter(@PathVariable Long chapterId) {
+        courseService.deleteChapter(chapterId);
+        return ApiResponse.success(null);
+    }
+
     @PostMapping("/chapters/{chapterId}/lessons")
     public ApiResponse<Lesson> createLessonForChapter(
             @PathVariable Long chapterId,

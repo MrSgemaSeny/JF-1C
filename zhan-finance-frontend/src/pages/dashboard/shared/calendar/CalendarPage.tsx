@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, X, Clock, AlignLeft, Tag, Edit2 } from 'lucide-react';
 import { CalendarEventDto } from '@/entities/calendar/api/calendarApi';
-import { useCalendarEventsQuery, useCreateCalendarEventMutation, useDeleteCalendarEventMutation } from '@/entities/calendar/api/calendarQueries';
+import { useCalendarEventsQuery, useCreateCalendarEventMutation, useDeleteCalendarEventMutation, useUpdateCalendarEventMutation } from '@/entities/calendar/api/calendarQueries';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 
@@ -26,7 +27,9 @@ export function CalendarPage() {
   const endDate = `${currentYear}-12-31`;
   const { data: events = [], isLoading } = useCalendarEventsQuery(startDate, endDate);
   const createMutation = useCreateCalendarEventMutation();
+  const updateMutation = useUpdateCalendarEventMutation();
   const deleteMutation = useDeleteCalendarEventMutation();
+  const navigate = useNavigate();
 
   // Modal State
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -79,19 +82,50 @@ export function CalendarPage() {
     if (!selectedDate || !title.trim()) return;
     setIsSaving(true);
     try {
-      await createMutation.mutateAsync({
-        date: selectedDate,
-        title,
-        description,
-        time: time || undefined,
-        color
-      });
-      setIsModalOpen(false);
+      if (editingEventId) {
+        await updateMutation.mutateAsync({
+          id: parseInt(editingEventId.replace('event_', '')),
+          request: {
+            date: selectedDate,
+            title,
+            description,
+            time: time || undefined,
+            color
+          }
+        });
+      } else {
+        await createMutation.mutateAsync({
+          date: selectedDate,
+          title,
+          description,
+          time: time || undefined,
+          color
+        });
+      }
+      // Reset form instead of closing modal completely, so user can see it updated or close if they want
+      setEditingEventId(null);
+      setTitle('');
+      setDescription('');
+      setTime('09:00');
+      setColor('BLUE');
     } catch (e) {
       console.error(e);
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleEditClick = (e: CalendarEventDto) => {
+    setTitle(e.title);
+    setDescription(e.description || '');
+    setTime(e.time || '09:00');
+    setColor(e.color || 'BLUE');
+    setEditingEventId(e.id);
+  };
+
+  const handleOpenTask = (taskId: number) => {
+    const rolePath = user?.role === 'ADMIN' ? 'admin' : 'employee';
+    navigate(`/dashboard/${rolePath}/tasks?taskId=${taskId}`);
   };
 
   const handleDeleteEvent = async (eventId: string, isTask: boolean) => {
@@ -257,15 +291,35 @@ export function CalendarPage() {
                             </span>
                           )}
                         </div>
-                        {e.type === 'EVENT' && (
-                          <button 
-                            onClick={() => handleDeleteEvent(e.id, false)}
-                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100"
-                            title={t('common:actions.delete', { defaultValue: 'Удалить' })}
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        )}
+                        <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {e.type === 'EVENT' && (
+                            <>
+                              <button 
+                                onClick={() => handleEditClick(e)}
+                                className="p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors"
+                                title={t('common:actions.edit', { defaultValue: 'Редактировать' })}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteEvent(e.id, false)}
+                                className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                title={t('common:actions.delete', { defaultValue: 'Удалить' })}
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
+                          {e.type === 'TASK' && (
+                            <button 
+                              onClick={() => handleOpenTask(e.originalId)}
+                              className="p-1.5 text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors"
+                              title={t('common:actions.open', { defaultValue: 'Открыть' })}
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     );
                   })
@@ -276,9 +330,26 @@ export function CalendarPage() {
               <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                 <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Plus className="w-4 h-4 text-brand-green" />
-                  {t('calendarWidget.addEvent', { defaultValue: 'Добавить событие' })}
+                  {editingEventId 
+                    ? t('calendarWidget.editEvent', { defaultValue: 'Редактировать событие' }) 
+                    : t('calendarWidget.addEvent', { defaultValue: 'Добавить событие' })}
                 </h4>
                 <form onSubmit={handleSaveEvent} className="space-y-4">
+                  {editingEventId && (
+                    <div className="flex justify-end mb-2">
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setEditingEventId(null);
+                          setTitle('');
+                          setDescription('');
+                        }}
+                        className="text-xs text-brand-green hover:underline"
+                      >
+                        {t('common:actions.cancel', { defaultValue: 'Отменить редактирование' })}
+                      </button>
+                    </div>
+                  )}
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1">{t('calendarWidget.eventTitle', { defaultValue: 'Название события' })}</label>
                     <input

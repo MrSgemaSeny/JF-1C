@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { CourseDto, LessonDto, createChapter, createLessonForChapter } from '@/entities/course/api/courseApi';
-import { ChevronDown, ChevronRight, Plus, Video, FileText, Layers, Edit3, Check, X } from 'lucide-react';
+import { CourseDto, LessonDto, createChapter, createLessonForChapter, deleteChapter, deleteLesson } from '@/entities/course/api/courseApi';
+import { ChevronDown, ChevronRight, Plus, Video, FileText, Layers, Edit3, Check, X, Trash2 } from 'lucide-react';
 
 interface CourseCurriculumTabProps {
   course: CourseDto;
@@ -42,6 +42,30 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
     } catch (e) {
       console.error(e);
       alert('Ошибка при создании урока');
+    }
+  };
+
+  const handleDeleteChapter = async (chapterId: number) => {
+    if (window.confirm('Удалить этот модуль и все его уроки? Это действие нельзя отменить.')) {
+      try {
+        await deleteChapter(chapterId);
+        onReload();
+      } catch (e) {
+        console.error(e);
+        alert('Ошибка при удалении модуля');
+      }
+    }
+  };
+
+  const handleDeleteLesson = async (lessonId: number) => {
+    if (window.confirm('Удалить этот урок?')) {
+      try {
+        await deleteLesson(lessonId);
+        onReload();
+      } catch (e) {
+        console.error(e);
+        alert('Ошибка при удалении урока');
+      }
     }
   };
 
@@ -129,6 +153,16 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
+                        handleDeleteChapter(chapter.id);
+                      }}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 hover:text-red-500 hover:bg-red-50 px-2.5 py-1 rounded-lg transition-colors"
+                      title="Удалить модуль"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setAddingLessonToChapter(chapter.id);
                         if (!isExpanded) toggleChapter(chapter.id);
                       }}
@@ -167,11 +201,6 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                                   <span className="text-sm font-semibold text-gray-800 group-hover:text-brand-green transition-colors truncate">
                                     {lesson.title}
                                   </span>
-                                  {lesson.isPreview && (
-                                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200 shrink-0">
-                                      Ознакомление
-                                    </span>
-                                  )}
                                 </div>
                               </div>
                             </div>
@@ -185,6 +214,16 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                               <span className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-xs font-bold text-brand-green bg-brand-green/10 px-2.5 py-1 rounded-lg transition-all">
                                 <Edit3 className="w-3.5 h-3.5" /> Изменить
                               </span>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteLesson(lesson.id);
+                                }}
+                                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-colors"
+                                title="Удалить урок"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
                         );

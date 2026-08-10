@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CourseDto, getAdminCourses } from '@/entities/course/api/courseApi';
+import { CourseDto, getAdminCourses, deleteCourse } from '@/entities/course/api/courseApi';
 import { ROUTES } from '@/shared/config/routes';
-import { Plus, Edit2 } from 'lucide-react';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function AdminCoursesPage() {
@@ -10,9 +10,25 @@ export function AdminCoursesPage() {
   const navigate = useNavigate();
   const { t } = useTranslation(['common']);
 
-  useEffect(() => {
+  const fetchCourses = () => {
     getAdminCourses().then(setCourses).catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchCourses();
   }, []);
+
+  const handleDelete = async (courseId: number) => {
+    if (window.confirm(t('common:actions.confirmDelete', { defaultValue: 'Вы уверены, что хотите удалить?' }))) {
+      try {
+        await deleteCourse(courseId);
+        fetchCourses();
+      } catch (e) {
+        console.error(e);
+        alert('Ошибка при удалении');
+      }
+    }
+  };
 
   return (
     <div className="p-6">
@@ -55,6 +71,13 @@ export function AdminCoursesPage() {
                     title={t('adminCourses.edit')}
                   >
                     <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(course.id)}
+                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    title={t('common:actions.delete', { defaultValue: 'Удалить' })}
+                  >
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </td>
               </tr>

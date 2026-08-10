@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.zhanfinancebackend.modules.courses.entity.Chapter;
 import com.example.zhanfinancebackend.modules.courses.repository.ChapterRepository;
+import com.example.zhanfinancebackend.modules.courses.repository.LessonProgressRepository;
 
 @Service
 public class LessonService {
@@ -20,12 +21,14 @@ public class LessonService {
     private final ChapterRepository chapterRepository;
     private final CourseRepository courseRepository;
     private final StorageService storageService;
+    private final LessonProgressRepository lessonProgressRepository;
 
-    public LessonService(LessonRepository lessonRepository, ChapterRepository chapterRepository, CourseRepository courseRepository, StorageService storageService) {
+    public LessonService(LessonRepository lessonRepository, ChapterRepository chapterRepository, CourseRepository courseRepository, StorageService storageService, LessonProgressRepository lessonProgressRepository) {
         this.lessonRepository = lessonRepository;
         this.chapterRepository = chapterRepository;
         this.courseRepository = courseRepository;
         this.storageService = storageService;
+        this.lessonProgressRepository = lessonProgressRepository;
     }
 
     @Transactional(readOnly = true)
@@ -115,7 +118,7 @@ Integer durationMinutes, Boolean isPreview, String mediaUrl, MultipartFile video
 
     @Transactional
     public void deleteLesson(Long id) {
-        Lesson lesson = getLessonById(id);
+        lessonProgressRepository.deleteByLessonId(id);
         lessonRepository.deleteById(id);
     }
 }

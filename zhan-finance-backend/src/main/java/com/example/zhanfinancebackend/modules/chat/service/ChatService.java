@@ -77,21 +77,25 @@ public class ChatService {
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        List<User> usersToInclude = new ArrayList<>();
+        java.util.Map<Long, User> uniqueUsers = new java.util.HashMap<>();
 
         if (currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.ADVISOR) {
-            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR, Role.EMPLOYEE, Role.CLIENT)));
+            userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR, Role.EMPLOYEE, Role.CLIENT))
+                    .forEach(u -> uniqueUsers.put(u.getId(), u));
         } else if (currentUser.getRole() == Role.EMPLOYEE) {
-            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR, Role.EMPLOYEE)));
-            usersToInclude.addAll(userRepository.findAllByAssignedEmployee(currentUser));
+            userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR, Role.EMPLOYEE))
+                    .forEach(u -> uniqueUsers.put(u.getId(), u));
+            userRepository.findAllByAssignedEmployee(currentUser)
+                    .forEach(u -> uniqueUsers.put(u.getId(), u));
         } else if (currentUser.getRole() == Role.CLIENT || currentUser.getRole() == Role.LEARNER) {
             if (currentUser.getAssignedEmployee() != null) {
-                usersToInclude.add(currentUser.getAssignedEmployee());
+                uniqueUsers.put(currentUser.getAssignedEmployee().getId(), currentUser.getAssignedEmployee());
             }
-            usersToInclude.addAll(userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR)));
+            userRepository.findAllByRoleIn(List.of(Role.ADMIN, Role.ADVISOR))
+                    .forEach(u -> uniqueUsers.put(u.getId(), u));
         }
 
-        return usersToInclude.stream()
+        return uniqueUsers.values().stream()
                 .filter(u -> !u.getId().equals(currentUserId))
                 .map(u -> {
                     int unread = chatMessageRepository.countBySenderIdAndReceiverIdAndIsReadFalse(u.getId(), currentUserId);

@@ -10,14 +10,30 @@ import java.util.List;
 
 import com.example.zhanfinancebackend.modules.courses.entity.Chapter;
 import com.example.zhanfinancebackend.modules.courses.entity.CourseStatus;
+import com.example.zhanfinancebackend.modules.courses.repository.ChapterRepository;
+import com.example.zhanfinancebackend.modules.courses.repository.EnrollmentRepository;
+import com.example.zhanfinancebackend.modules.courses.repository.CertificateRepository;
+import com.example.zhanfinancebackend.modules.courses.repository.LessonProgressRepository;
 
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final ChapterRepository chapterRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final CertificateRepository certificateRepository;
+    private final LessonProgressRepository lessonProgressRepository;
 
-    public CourseService(CourseRepository courseRepository) {
+    public CourseService(CourseRepository courseRepository, 
+                         ChapterRepository chapterRepository,
+                         EnrollmentRepository enrollmentRepository,
+                         CertificateRepository certificateRepository,
+                         LessonProgressRepository lessonProgressRepository) {
         this.courseRepository = courseRepository;
+        this.chapterRepository = chapterRepository;
+        this.enrollmentRepository = enrollmentRepository;
+        this.certificateRepository = certificateRepository;
+        this.lessonProgressRepository = lessonProgressRepository;
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +105,16 @@ public class CourseService {
 
     @Transactional
     public void deleteCourse(Long id) {
+        lessonProgressRepository.deleteByCourseId(id);
+        certificateRepository.deleteByCourseId(id);
+        enrollmentRepository.deleteByCourseId(id);
         courseRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteChapter(Long id) {
+        lessonProgressRepository.deleteByChapterId(id);
+        chapterRepository.deleteById(id);
     }
 
     @Transactional
