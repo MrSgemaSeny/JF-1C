@@ -132,7 +132,6 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
       onCreated();
     } catch (err: any) {
       setError(err.message || t('taskCreate.error', { defaultValue: 'Ошибка при создании задачи' }));
-    } finally {
       setIsSubmitting(false);
     }
   };

@@ -3,6 +3,7 @@
 ## Current Phase & Global Goals
 - **Active Phase**: Phase 6 -- Feature completion, documentation sync, production stabilization
 - **Main Goal**: Complete all Partial epics, prepare for domain (zhanfinance.kz) and monitoring setup
+- **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure State
 - **Backend (Fly.io)**: Deployed, migrations up to V110 applied. PostgreSQL connected. Secrets in Fly Secrets.
@@ -27,6 +28,7 @@
 14. **React Router State Preservation**: Fixed silent 2FA failure during Google/local login by removing `setIsLoading(true)` from `AuthContext` auth methods. This prevents the `RouterProvider` from being temporarily unmounted and wiping out `location.state` (which is used for `preAuthToken` tracking) and component local states.
 15. **Chat Interface Avatar**: Fixed chat UI to display user's avatar dynamically instead of a static default icon in `ChatDrawer`. Updated DTOs (`UserDto`, `ClientInfoDto`) to support `avatarUrl` natively.
 16. **Employee Registration Status Flow**: Fixed edge case where newly registered employees (who are PENDING) were redirected to the dashboard without tokens, causing crashes. Added dedicated "Ваша заявка в работе" full-page status screen on the Login page for pending/rejected accounts.
+17. **Mobile OAuth Fix (Safari ITP Bypass)**: Fixed mobile OAuth login (iOS Safari/Chrome) by reverting `@JsonIgnore` from `accessToken` in `AuthResponse`. This bypasses Apple's Intelligent Tracking Prevention (ITP) which blocks cross-domain HttpOnly cookies, allowing the frontend to capture the token in JSON and use `Authorization: Bearer` memory fallback.
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
@@ -34,15 +36,13 @@
 - **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact
 
 ## Next Steps
+- Epic-07 / Epic-12: Billing & Payments (WebKassa / Kaspi Pay integration)
 - Epic-11: Domain zhanfinance.kz + Cloudflare
-- Epic-17: Staging environment
-- Epic-06: Push/Telegram notifications
-- Epic-07: PDF invoices, payment reminders
-- Epic-08: Dashboard analytics (charts, conversion funnel)
+- Dashboard, Staging, Notifications postponed until billing/domain MVP is complete.
 
 ## Epic Status Summary
-- Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 09-2fa, 10-monitoring, 18-landing, 19-advisor (9)
-- Partial: 06-notifications, 07-billing, 08-dashboard (3)
+- Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 08-dashboard, 09-2fa, 10-monitoring, 18-landing, 19-advisor (10)
+- Partial: 06-notifications, 07-billing (2)
 - Planned: 11-domain-cdn, 12-payments, 13-1c-integration, 15-storage-r2, 16-lms-quizzes, 17-staging (6)
 
 ## Technical Backlog

@@ -34,18 +34,18 @@ LMS (Course -> Chapter -> Lesson -> LessonBlock, Certificate),
 Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 
 ## Critical Rules — NEVER violate
-1. **Flyway Migrations**: NEVER modify files in db/migration/ — existing Flyway migrations are immutable. New changes require V109+.
-2. **Secrets**: Secrets and passwords belong strictly in env vars and GitHub Secrets, never hardcoded in source files.
-3. **DB Operations**: DB seeding/startup operations strictly via @EventListener(ApplicationReadyEvent.class).
-4. **No @PostConstruct**: @PostConstruct for DB operations is forbidden (race condition with Flyway).
-5. **Flyway Clean**: flywayClean only on local throwaway DB, never on production.
-6. **Checksum Integrity**: Modifying applied Flyway migrations breaks checksums and breaks deployment.
-7. **Docker**: Do not suggest or configure Docker unless explicitly requested.
-8. **Communication**: NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
-9. **Tests before pushing**: Never push to branches if there are errors or failing tests.
-10. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
-11. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
-
+1. **Brain's Protocol (Second Brain)**: You MUST strictly obey and read the global Second Brain context before making major architectural decisions. It is located at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`. Update it if necessary.
+2. **Flyway Migrations**: NEVER modify files in db/migration/ — existing Flyway migrations are immutable. New changes require V109+.
+3. **Secrets**: Secrets and passwords belong strictly in env vars and GitHub Secrets, never hardcoded in source files.
+4. **DB Operations**: DB seeding/startup operations strictly via @EventListener(ApplicationReadyEvent.class).
+5. **No @PostConstruct**: @PostConstruct for DB operations is forbidden (race condition with Flyway).
+6. **Flyway Clean**: flywayClean only on local throwaway DB, never on production.
+7. **Checksum Integrity**: Modifying applied Flyway migrations breaks checksums and breaks deployment.
+8. **Docker**: Do not suggest or configure Docker unless explicitly requested.
+9. **Communication**: NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
+10. **Tests before pushing**: Never push to branches if there are errors or failing tests.
+11. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
+12. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
 ## Current Status
 - Flyway migration chain V1->V108 verified on clean DB [DONE]
 - GitHub Actions DB backups + Telegram notifications [DONE]
@@ -55,9 +55,10 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - Rate limit filters updated for new paths [DONE]
 - Phase 3: updating tests for new API paths [DONE]
 - Phase 4: updating frontend for new API paths [IN_PROGRESS]
-- Staging environment on Fly.io [NEXT]
-- UptimeRobot monitoring [NEXT]
+- Billing & Payments (WebKassa / Kaspi Pay) [NEXT]
 - Domain zhanfinance.kz [NEXT]
+- Dashboard Analytics [DONE]
+- Staging environment on Fly.io [PLANNED]
 - Epic-09 (2FA): Done [DONE]
 - Epic-18 (Landing): Done [DONE]
 - Epic-19 (Advisor): Done [DONE]

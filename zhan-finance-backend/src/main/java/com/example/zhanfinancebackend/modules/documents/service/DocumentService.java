@@ -81,6 +81,13 @@ public class DocumentService {
             throw new BadRequestException("Ошибка при проверке содержимого файла");
         }
 
+        if (contentType != null && contentType.equals("application/octet-stream")) {
+            String ext = originalFilename != null && originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase() : "";
+            if (Set.of("md", "txt", "csv").contains(ext)) {
+                contentType = "text/plain"; // fallback for text files misidentified by Tika
+            }
+        }
+
         if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
             throw new BadRequestException("Недопустимый формат файла (" + contentType + "). Загрузка исполняемых файлов запрещена из соображений безопасности. Разрешены: PDF, DOCX, XLSX, PNG, JPG, ZIP, MD.");
         }

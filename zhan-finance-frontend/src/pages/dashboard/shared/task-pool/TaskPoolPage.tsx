@@ -199,7 +199,7 @@ export function TaskPoolPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-3" onClick={e => e.stopPropagation()}>
-                      {user?.role === 'EMPLOYEE' && (
+                      {user?.role === 'EMPLOYEE' && task.stage?.type !== 'WON' && task.stage?.type !== 'LOST' && (
                         <button
                           title={t('taskPool.actions.take', 'Взять в работу')}
                           disabled={assigningTaskId === task.id}
@@ -210,7 +210,7 @@ export function TaskPoolPage() {
                         </button>
                       )}
 
-                      {user?.role === 'ADMIN' && (
+                      {user?.role === 'ADMIN' && task.stage?.type !== 'WON' && task.stage?.type !== 'LOST' && (
                         <CustomAssignDropdown
                           taskId={task.id}
                           assigningTaskId={assigningTaskId}
