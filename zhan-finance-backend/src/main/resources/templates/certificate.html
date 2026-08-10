@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Сертификат</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f4f6f8;
+            text-align: center;
+        }
+        .certificate-container {
+            width: 800px;
+            height: 560px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border: 10px solid #10b981; /* brand-green */
+            border-radius: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .header {
+            font-size: 36px;
+            font-weight: bold;
+            color: #10b981;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .sub-header {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .presented-to {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        .name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+            display: inline-block;
+            padding-bottom: 5px;
+            min-width: 400px;
+        }
+        .course-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .course-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 50px;
+        }
+        .footer {
+            display: table;
+            width: 100%;
+            margin-top: 40px;
+        }
+        .footer-cell {
+            display: table-cell;
+            width: 33.33%;
+            vertical-align: bottom;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            width: 150px;
+            margin: 0 auto 5px auto;
+        }
+        .footer-text {
+            font-size: 14px;
+            color: #666;
+        }
+        .certificate-code {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="header">СЕРТИФИКАТ</div>
+        <div class="sub-header">О ПРОХОЖДЕНИИ КУРСА</div>
+        
+        <div class="presented-to">Настоящим подтверждается, что</div>
+        <div class="name" th:text="${studentName}">Иван Иванов</div>
+        
+        <div class="course-label">успешно завершил(а) курс обучения по программе</div>
+        <div class="course-title" th:text="${courseTitle}">Название курса</div>
+        
+        <div class="footer">
+            <div class="footer-cell">
+                <div class="footer-text" th:text="${issueDate}">01.01.2024</div>
+                <div class="signature-line" style="visibility: hidden;"></div>
+                <div class="footer-text">Дата выдачи</div>
+            </div>
+            <div class="footer-cell">
+                <!-- Placeholder for logo or seal -->
+            </div>
+            <div class="footer-cell">
+                <div class="signature-line"></div>
+                <div class="footer-text">ZhanFinance</div>
+            </div>
+        </div>
+        
+        <div class="certificate-code" th:text="'Код: ' + ${certificateCode}">Код: CERT-2024-XXXX</div>
+    </div>
+</body>
+</html>

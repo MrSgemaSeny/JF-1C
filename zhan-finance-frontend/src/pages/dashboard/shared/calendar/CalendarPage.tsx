@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, X, Clock, AlignLeft, Tag, Edit2 } from 'lucide-react';
-import { getCalendarEvents, createCalendarEvent, deleteCalendarEvent, CalendarEventDto } from '@/entities/calendar/api/calendarApi';
+import { CalendarEventDto } from '@/entities/calendar/api/calendarApi';
+import { useCalendarEventsQuery, useCreateCalendarEventMutation, useDeleteCalendarEventMutation } from '@/entities/calendar/api/calendarQueries';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 
@@ -18,10 +19,14 @@ const COLORS = [
 
 export function CalendarPage() {
   const { user } = useAuth();
-  const { t, i18n } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['calendar', 'common']);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [events, setEvents] = useState<CalendarEventDto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const startDate = `${currentYear}-01-01`;
+  const endDate = `${currentYear}-12-31`;
+  const { data: events = [], isLoading } = useCalendarEventsQuery(startDate, endDate);
+  const createMutation = useCreateCalendarEventMutation();
+  const deleteMutation = useDeleteCalendarEventMutation();
 
   // Modal State
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -34,10 +39,6 @@ export function CalendarPage() {
   const [color, setColor] = useState('BLUE');
   const [isSaving, setIsSaving] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadEvents();
-  }, [currentYear]);
 
   // Auto-scroll to current month on mobile
   useEffect(() => {
@@ -54,21 +55,6 @@ export function CalendarPage() {
       }
     }
   }, [isLoading, currentYear]);
-
-  const loadEvents = async () => {
-    setIsLoading(true);
-    try {
-      // Load events for the whole year
-      const startDate = `${currentYear}-01-01`;
-      const endDate = `${currentYear}-12-31`;
-      const data = await getCalendarEvents(startDate, endDate);
-      setEvents(data);
-    } catch (e) {
-      console.error('Failed to load events', e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handlePrevYear = () => setCurrentYear(y => y - 1);
   const handleNextYear = () => setCurrentYear(y => y + 1);
@@ -93,14 +79,13 @@ export function CalendarPage() {
     if (!selectedDate || !title.trim()) return;
     setIsSaving(true);
     try {
-      const newEvent = await createCalendarEvent({
+      await createMutation.mutateAsync({
         date: selectedDate,
         title,
         description,
         time: time || undefined,
         color
       });
-      setEvents(prev => [...prev, newEvent]);
       setIsModalOpen(false);
     } catch (e) {
       console.error(e);
@@ -113,8 +98,7 @@ export function CalendarPage() {
     if (isTask) return; // Cannot delete tasks from calendar
     try {
       const originalId = parseInt(eventId.replace('event_', ''));
-      await deleteCalendarEvent(originalId);
-      setEvents(prev => prev.filter(e => e.id !== eventId));
+      await deleteMutation.mutateAsync(originalId);
     } catch (e) {
       console.error(e);
     }
@@ -255,7 +239,7 @@ export function CalendarPage() {
                   selectedDayEvents.map(e => {
                     const colorObj = COLORS.find(c => c.value === e.color) || COLORS[0];
                     return (
-                      <div key={e.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-start gap-3">
+                      <div key={e.id} className="group bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-start gap-3">
                         <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${colorObj.bg}`} />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">

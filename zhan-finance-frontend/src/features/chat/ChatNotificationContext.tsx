@@ -41,6 +41,14 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
         },
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        onWebSocketError: (event) => {
+          console.error('[STOMP NOTIF] WebSocket Error', event);
+        },
+        onStompError: (frame) => {
+          console.error('[STOMP NOTIF] Broker reported error: ' + frame.headers['message']);
+          console.error('[STOMP NOTIF] Additional details: ' + frame.body);
+        },
         onConnect: () => {
           client.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {
@@ -55,8 +63,19 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
 
       client.activate();
 
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          if (!client.connected) {
+            client.forceDisconnect();
+            setTimeout(() => client.activate(), 100);
+          }
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
       return () => {
         clearInterval(interval);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
         client.deactivate();
       };
     } else {

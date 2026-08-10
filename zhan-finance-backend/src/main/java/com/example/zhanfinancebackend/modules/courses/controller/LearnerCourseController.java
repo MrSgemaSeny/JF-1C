@@ -5,6 +5,7 @@ import com.example.zhanfinancebackend.modules.courses.entity.Course;
 import com.example.zhanfinancebackend.modules.courses.service.CourseService;
 import com.example.zhanfinancebackend.modules.courses.service.LessonProgressService;
 import com.example.zhanfinancebackend.modules.courses.service.LessonService;
+import com.example.zhanfinancebackend.modules.courses.service.CertificateGeneratorService;
 import com.example.zhanfinancebackend.modules.documents.service.StorageService;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import org.springframework.core.io.Resource;
@@ -29,12 +30,14 @@ public class LearnerCourseController {
     private final LessonService lessonService;
     private final StorageService storageService;
     private final LessonProgressService lessonProgressService;
+    private final CertificateGeneratorService certificateGeneratorService;
 
-    public LearnerCourseController(CourseService courseService, LessonService lessonService, StorageService storageService, LessonProgressService lessonProgressService) {
+    public LearnerCourseController(CourseService courseService, LessonService lessonService, StorageService storageService, LessonProgressService lessonProgressService, CertificateGeneratorService certificateGeneratorService) {
         this.courseService = courseService;
         this.lessonService = lessonService;
         this.storageService = storageService;
         this.lessonProgressService = lessonProgressService;
+        this.certificateGeneratorService = certificateGeneratorService;
     }
 
     @GetMapping
@@ -61,6 +64,15 @@ public class LearnerCourseController {
     @GetMapping("/{courseId}/certificate")
     public ApiResponse<com.example.zhanfinancebackend.modules.courses.dto.CertificateDto> getCertificate(@PathVariable Long courseId, @AuthenticationPrincipal UserPrincipal principal) {
         return ApiResponse.success(lessonProgressService.getCertificate(courseId, principal.getId()));
+    }
+
+    @GetMapping("/{courseId}/certificate/download")
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable Long courseId, @AuthenticationPrincipal UserPrincipal principal) {
+        byte[] pdfBytes = certificateGeneratorService.generateCertificatePdf(courseId, principal.getId());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"certificate.pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 
     @GetMapping("/certificates/verify/{code}")

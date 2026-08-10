@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, X, Clock, AlignLeft, Tag } from 'lucide-react';
-import { getCalendarEvents, createCalendarEvent, deleteCalendarEvent, CalendarEventDto } from '@/entities/calendar/api/calendarApi';
+import { CalendarEventDto } from '@/entities/calendar/api/calendarApi';
+import { useCalendarEventsQuery, useCreateCalendarEventMutation, useDeleteCalendarEventMutation } from '@/entities/calendar/api/calendarQueries';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -18,8 +19,15 @@ export function MiniCalendarWidget() {
   const { user } = useAuth();
   const { t, i18n } = useTranslation(['common']);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<CalendarEventDto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const startDate = `${year}-${month}-01`;
+  const endDate = `${year}-${month}-${new Date(year, currentDate.getMonth() + 1, 0).getDate()}`;
+  
+  const { data: events = [], isLoading } = useCalendarEventsQuery(startDate, endDate);
+  const createMutation = useCreateCalendarEventMutation();
+  const deleteMutation = useDeleteCalendarEventMutation();
 
   // Modal State
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -32,9 +40,16 @@ export function MiniCalendarWidget() {
   const [color, setColor] = useState('BLUE');
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    loadEvents();
-  }, [currentDate]);
+  // loadEvents is no longer needed manually
+
+  const handleDayClick = (dateStr: string) => {
+    setSelectedDate(dateStr);
+    setTitle('');
+    setDescription('');
+    setTime('');
+    setColor('BLUE');
+    setIsModalOpen(true);
+  };
 
   const locale = i18n.language === 'en' ? 'en-US' : 'ru-RU';
   
@@ -52,46 +67,18 @@ export function MiniCalendarWidget() {
     });
   }, [locale]);
 
-  const loadEvents = async () => {
-    setIsLoading(true);
-    try {
-      const year = currentDate.getFullYear();
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      // Load current month
-      const startDate = `${year}-${month}-01`;
-      const endDate = `${year}-${month}-${new Date(year, currentDate.getMonth() + 1, 0).getDate()}`;
-      
-      const data = await getCalendarEvents(startDate, endDate);
-      setEvents(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDayClick = (dateStr: string) => {
-    setSelectedDate(dateStr);
-    setTitle('');
-    setDescription('');
-    setTime('');
-    setColor('BLUE');
-    setIsModalOpen(true);
-  };
-
   const handleSaveEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !title.trim()) return;
     setIsSaving(true);
     try {
-      const newEvent = await createCalendarEvent({
+      await createMutation.mutateAsync({
         date: selectedDate,
         title,
         description,
         time: time || undefined,
         color
       });
-      setEvents(prev => [...prev, newEvent]);
       setIsModalOpen(false);
     } catch (e) {
       console.error(e);
@@ -101,11 +88,10 @@ export function MiniCalendarWidget() {
   };
 
   const handleDeleteEvent = async (eventId: string, isTask: boolean) => {
-    if (isTask) return; // Cannot delete tasks from calendar
+    if (isTask) return;
     try {
       const originalId = parseInt(eventId.replace('event_', ''));
-      await deleteCalendarEvent(originalId);
-      setEvents(prev => prev.filter(e => e.id !== eventId));
+      await deleteMutation.mutateAsync(originalId);
     } catch (e) {
       console.error(e);
     }
@@ -246,8 +232,8 @@ export function MiniCalendarWidget() {
                   events.filter(e => e.date === selectedDate).map(e => {
                     const colorObj = COLORS.find(c => c.value === e.color) || COLORS[0];
                     return (
-                      <div key={e.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-start gap-3">
-                        <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${colorObj.bg}`} />
+                      <div key={e.id} className="group bg-gray-50 p-3 rounded-xl border border-gray-100 flex items-start gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${colorObj.bg}`} />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
                             <p className={`font-medium ${e.isCompleted ? 'text-gray-400 line-through' : 'text-gray-900'}`}>

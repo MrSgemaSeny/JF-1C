@@ -108,6 +108,13 @@ export function EmployeeChatPage() {
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
+        onWebSocketError: (event) => {
+          console.error('[STOMP] WebSocket Error', event);
+        },
+        onStompError: (frame) => {
+          console.error('[STOMP] Broker reported error: ' + frame.headers['message']);
+          console.error('[STOMP] Additional details: ' + frame.body);
+        },
         onConnect: () => {
           stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {
@@ -157,10 +164,22 @@ export function EmployeeChatPage() {
         }
       });
       stompClient.activate();
+
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          if (stompClient && !stompClient.connected) {
+            stompClient.forceDisconnect();
+            setTimeout(() => stompClient?.activate(), 100);
+          }
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (stompClient) stompClient.deactivate();
+      };
     }
-    return () => {
-      if (stompClient) stompClient.deactivate();
-    };
   }, [user]);
 
   useEffect(() => {

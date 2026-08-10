@@ -94,14 +94,28 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName, otherU
           console.error('Broker reported error: ' + frame.headers['message']);
           console.error('Additional details: ' + frame.body);
         },
+        onWebSocketError: (event) => {
+          console.error('[STOMP] WebSocket Error', event);
+        },
       });
 
       stompClient.activate();
-    }
 
-    return () => {
-      if (stompClient) stompClient.deactivate();
-    };
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          if (stompClient && !stompClient.connected) {
+            stompClient.forceDisconnect();
+            setTimeout(() => stompClient?.activate(), 100);
+          }
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (stompClient) stompClient.deactivate();
+      };
+    }
   }, [isOpen, otherUserId, user]);
 
   const loadInitialHistory = async () => {

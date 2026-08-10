@@ -76,6 +76,29 @@ export async function getCertificate(courseId: number): Promise<CertificateDto> 
   return await apiRequest<CertificateDto>(`/api/v1/courses/${courseId}/certificate`);
 }
 
+export async function downloadCertificatePdf(courseId: number): Promise<void> {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/courses/${courseId}/certificate/download`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to download certificate');
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `certificate-${courseId}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}
+
 export async function verifyCertificate(code: string): Promise<CertificateDto> {
   return await apiRequest<CertificateDto>(`/api/v1/courses/certificates/verify/${code}`);
 }

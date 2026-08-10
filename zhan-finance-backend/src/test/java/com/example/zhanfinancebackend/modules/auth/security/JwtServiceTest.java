@@ -48,9 +48,7 @@ class JwtServiceTest {
     @Test
     void testExtractUsername_TamperedToken() {
         String token = jwtService.generateAccessToken(testUser);
-        char lastChar = token.charAt(token.length() - 1);
-        char newChar = (lastChar == 'a') ? 'b' : 'a';
-        String tamperedToken = token.substring(0, token.length() - 1) + newChar;
+        String tamperedToken = token.substring(0, token.length() - 5) + "invalid";
         
         assertNull(jwtService.extractUsernameIfValidAccessToken(tamperedToken));
         assertFalse(jwtService.isTokenValid(tamperedToken, "test@example.com"));

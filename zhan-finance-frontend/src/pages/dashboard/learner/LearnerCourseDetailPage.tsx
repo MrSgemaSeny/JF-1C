@@ -239,9 +239,7 @@ export function LearnerCourseDetailPage() {
             <p className="text-sm text-green-700 mt-1">{t('learnerCourseDetail.completedMsg', { defaultValue: 'Вы успешно завершили этот курс и освоили все материалы.' })}</p>
           </div>
           <CourseCertificate 
-            courseTitle={course.title} 
-            studentName={user?.fullName || t('learnerCourseDetail.student', { defaultValue: 'Студент' })} 
-            date={new Date().toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} 
+            courseId={course.id}
           />
         </div>
       )}
