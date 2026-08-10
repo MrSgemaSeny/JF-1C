@@ -105,15 +105,11 @@ public class CourseService {
 
     @Transactional
     public void deleteCourse(Long id) {
-        lessonProgressRepository.deleteByCourseId(id);
-        certificateRepository.deleteByCourseId(id);
-        enrollmentRepository.deleteByCourseId(id);
         courseRepository.deleteById(id);
     }
 
     @Transactional
     public void deleteChapter(Long id) {
-        lessonProgressRepository.deleteByChapterId(id);
         chapterRepository.deleteById(id);
     }
 

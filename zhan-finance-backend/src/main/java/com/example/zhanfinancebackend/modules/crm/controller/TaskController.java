@@ -162,7 +162,8 @@ public class TaskController {
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id
     ) {
-        accessService.assertCanUnassignTask(principal.getUser());
+        Task task = taskService.getTaskEntity(id);
+        accessService.assertCanUnassignTask(principal.getUser(), task);
         return ApiResponse.success(taskService.unassignTask(id, principal.getUser()));
     }
 

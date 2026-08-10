@@ -139,6 +139,9 @@ public class CrmAccessService {
     }
 
     public boolean canAssignTask(User actor, Task task) {
+        if (task.getStage() != null && (task.getStage().getType() == StageType.WON || task.getStage().getType() == StageType.LOST)) {
+            return false;
+        }
         if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) return true;
         if (actor.getRole() != Role.EMPLOYEE) return false;
         return task.getAssignedTo() == null
@@ -152,13 +155,16 @@ public class CrmAccessService {
         }
     }
 
-    public boolean canUnassignTask(User actor) {
+    public boolean canUnassignTask(User actor, Task task) {
+        if (task.getStage() != null && (task.getStage().getType() == StageType.WON || task.getStage().getType() == StageType.LOST)) {
+            return false;
+        }
         return actor.getRole() == Role.ADMIN;
     }
 
-    public void assertCanUnassignTask(User actor) {
-        if (!canUnassignTask(actor)) {
-            throw new org.springframework.security.access.AccessDeniedException("Unassigning task denied. Only ADMIN can clear task assignee.");
+    public void assertCanUnassignTask(User actor, Task task) {
+        if (!canUnassignTask(actor, task)) {
+            throw new org.springframework.security.access.AccessDeniedException("Unassigning task denied. Only ADMIN can clear task assignee or task is closed.");
         }
     }
 

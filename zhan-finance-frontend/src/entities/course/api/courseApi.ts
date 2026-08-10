@@ -77,11 +77,8 @@ export async function getCertificate(courseId: number): Promise<CertificateDto> 
 }
 
 export async function downloadCertificatePdf(courseId: number): Promise<void> {
-  const token = localStorage.getItem('token');
   const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/courses/${courseId}/certificate/download`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    credentials: 'include'
   });
 
   if (!response.ok) {

@@ -118,7 +118,6 @@ Integer durationMinutes, Boolean isPreview, String mediaUrl, MultipartFile video
 
     @Transactional
     public void deleteLesson(Long id) {
-        lessonProgressRepository.deleteByLessonId(id);
         lessonRepository.deleteById(id);
     }
 }

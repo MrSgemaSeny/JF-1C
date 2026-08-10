@@ -171,8 +171,7 @@ public class GlobalExceptionHandler {
             else if (exception instanceof AccessDeniedException) messageKey = "error.access.denied";
             else if (exception instanceof ConflictException) messageKey = "error.conflict";
             else if (exception instanceof BadRequestException || exception instanceof InvalidStateException || exception instanceof UnprocessableEntityException) {
-                translatedMessage = exception.getMessage(); // Use specific message
-                messageKey = null; // Prevent overwrite
+                messageKey = exception.getMessage();
             }
             else if (exception instanceof ApiException apiEx) {
                 messageKey = "error." + apiEx.getErrorCode().name().toLowerCase();
