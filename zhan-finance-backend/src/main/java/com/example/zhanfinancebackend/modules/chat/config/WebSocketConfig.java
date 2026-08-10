@@ -59,10 +59,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                                 try {
                                     String token = authHeader.substring(7);
-                                    String username = jwtService.extractUsername(token);
+                                    String username = jwtService.extractUsernameIfValidAccessToken(token);
                                     if (username != null) {
                                         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                                        if (jwtService.isTokenValid(token, userDetails)) {
+                                        if (jwtService.isTokenValid(token, userDetails.getUsername())) {
                                             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                                             accessor.setUser(auth);
                                             principal = auth;
