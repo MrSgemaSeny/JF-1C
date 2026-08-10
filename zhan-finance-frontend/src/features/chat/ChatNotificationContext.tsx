@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getUnreadChatCount } from '@/entities/chat/api/chatApi';
 import { Client } from '@stomp/stompjs';
-import { getWsEndpointUrl } from '@/shared/api/http';
+import { getWsEndpointUrl, getAccessToken } from '@/shared/api/http';
 import SockJS from 'sockjs-client';
 
 interface ChatNotificationContextType {
@@ -35,7 +35,7 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
       // Setup Stomp client
       const client = new Client({
         webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
-        connectHeaders: {},
+        connectHeaders: getAccessToken() ? { 'Authorization': `Bearer ${getAccessToken()}` } : {},
         debug: (str) => {
           // console.log('[STOMP NOTIF]', str);
         },

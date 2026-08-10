@@ -55,7 +55,25 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                         java.security.Principal principal = accessor.getUser();
                         if (principal == null) {
-                            throw new IllegalArgumentException("Unauthorized: WebSocket connection requires authentication via cookies");
+                            String authHeader = accessor.getFirstNativeHeader("Authorization");
+                            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                                try {
+                                    String token = authHeader.substring(7);
+                                    String username = jwtService.extractUsername(token);
+                                    if (username != null) {
+                                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                                        if (jwtService.isTokenValid(token, userDetails)) {
+                                            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                                            accessor.setUser(auth);
+                                            principal = auth;
+                                        }
+                                    }
+                                } catch (Exception ignored) {
+                                }
+                            }
+                        }
+                        if (principal == null) {
+                            throw new IllegalArgumentException("Unauthorized: WebSocket connection requires authentication via cookies or token");
                         }
 
                     } else if (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) || StompCommand.SEND.equals(accessor.getCommand())) {

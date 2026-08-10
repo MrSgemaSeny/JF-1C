@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { getChatContacts, getChatHistory, sendChatMessage, markChatAsRead, deleteChatMessage, ChatContactDto, ChatMessageDto } from '@/entities/chat/api/chatApi';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
 import { useAuth } from '@/features/auth/AuthContext';
-import { getSecureImageUrl, getWsEndpointUrl } from '@/shared/api/http';
+import { getWsEndpointUrl, getSecureImageUrl, getAccessToken } from '@/shared/api/http';
 import { Spinner } from '@/shared/ui/Spinner';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -94,7 +94,7 @@ export function ClientChatPage() {
     if (user) {
       stompClient = new Client({
         webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
-        connectHeaders: {},
+        connectHeaders: getAccessToken() ? { 'Authorization': `Bearer ${getAccessToken()}` } : {},
         debug: (str) => {
           // console.log('[STOMP]', str);
         },
