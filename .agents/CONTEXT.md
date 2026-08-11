@@ -41,8 +41,8 @@
 - Dashboard, Staging, Notifications postponed until billing/domain MVP is complete.
 
 ## Epic Status Summary
-- Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 08-dashboard, 09-2fa, 10-monitoring, 18-landing, 19-advisor (10)
-- Partial: 06-notifications, 07-billing (2)
+- Done: 01-auth, 02-crm, 03-documents, 04-lms, 05-chat, 06-notifications, 08-dashboard, 09-2fa, 10-monitoring, 18-landing, 19-advisor (11)
+- Partial: 07-billing (1)
 - Planned: 11-domain-cdn, 12-payments, 13-1c-integration, 15-storage-r2, 16-lms-quizzes, 17-staging (6)
 
 ## Technical Backlog
