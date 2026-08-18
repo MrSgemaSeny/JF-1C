@@ -114,6 +114,12 @@ public class ExportController {
      */
     private String escapeCsvValue(String value) {
         if (value == null) return "\"\"";
+        
+        // Предотвращение CSV Formula Injection
+        if (value.startsWith("=") || value.startsWith("+") || value.startsWith("-") || value.startsWith("@")) {
+            value = "\t" + value;
+        }
+
         // Удваиваем кавычки внутри значения
         String escaped = value.replace("\"", "\"\"");
         return "\"" + escaped + "\"";

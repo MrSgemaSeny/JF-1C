@@ -52,6 +52,7 @@ class RefreshTokenRotationTest {
     void verify_ValidToken_ReturnsRefreshToken() {
         RefreshToken validToken = new RefreshToken("valid-token", testUser, Instant.now().plusSeconds(3600));
         when(refreshTokenRepository.findByToken("valid-token")).thenReturn(Optional.of(validToken));
+        when(refreshTokenRepository.deleteByToken("valid-token")).thenReturn(1);
 
         RefreshToken result = refreshTokenService.verify("valid-token");
 
@@ -64,6 +65,7 @@ class RefreshTokenRotationTest {
     void verify_ExpiredToken_ThrowsUnauthorizedException() {
         RefreshToken expiredToken = new RefreshToken("expired-token", testUser, Instant.now().minusSeconds(10));
         when(refreshTokenRepository.findByToken("expired-token")).thenReturn(Optional.of(expiredToken));
+        when(refreshTokenRepository.deleteByToken("expired-token")).thenReturn(1);
 
         assertThrows(UnauthorizedException.class, () -> refreshTokenService.verify("expired-token"));
     }

@@ -105,9 +105,9 @@ public class DatabaseStorageService implements StorageService {
             Path root = Paths.get("./uploads").toAbsolutePath().normalize();
             String cleanKey = storageKey.startsWith("avatars/") ? storageKey.substring("avatars/".length()) : storageKey;
             Path p1 = root.resolve(cleanKey).normalize();
-            if (Files.exists(p1)) return Files.readAllBytes(p1);
+            if (p1.startsWith(root) && Files.exists(p1)) return Files.readAllBytes(p1);
             Path p2 = root.resolve("avatars").resolve(cleanKey).normalize();
-            if (Files.exists(p2)) return Files.readAllBytes(p2);
+            if (p2.startsWith(root) && Files.exists(p2)) return Files.readAllBytes(p2);
         } catch (Exception ignored) {}
 
         throw new ResourceNotFoundException("Could not read file: " + storageKey);
@@ -146,9 +146,9 @@ public class DatabaseStorageService implements StorageService {
             Path root = Paths.get("./uploads").toAbsolutePath().normalize();
             String cleanKey = storageKey.startsWith("avatars/") ? storageKey.substring("avatars/".length()) : storageKey;
             Path p1 = root.resolve(cleanKey).normalize();
-            if (Files.exists(p1)) return new UrlResource(p1.toUri());
+            if (p1.startsWith(root) && Files.exists(p1)) return new UrlResource(p1.toUri());
             Path p2 = root.resolve("avatars").resolve(cleanKey).normalize();
-            if (Files.exists(p2)) return new UrlResource(p2.toUri());
+            if (p2.startsWith(root) && Files.exists(p2)) return new UrlResource(p2.toUri());
         } catch (Exception ignored) {}
 
         throw new ResourceNotFoundException("Could not read file: " + storageKey);

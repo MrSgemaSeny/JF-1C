@@ -115,11 +115,7 @@ public class DocumentController {
             @PathVariable Long id,
             jakarta.servlet.http.HttpServletRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        String cfIp = request.getHeader("CF-Connecting-IP");
-        String clientIp = (cfIp != null && !cfIp.isBlank()) ? cfIp.trim()
-                : java.util.Optional.ofNullable(request.getHeader("X-Forwarded-For"))
-                .map(h -> h.split(",")[0].trim())
-                .orElse(request.getRemoteAddr());
+        String clientIp = request.getRemoteAddr();
         return ApiResponse.success(documentService.confirmDocument(id, clientIp, principal.getUser()));
     }
 

@@ -128,15 +128,23 @@ public class ContactRequestService {
 
     private static final List<String> ALLOWED_EXTENSIONS = List.of("pdf", "doc", "docx", "png", "jpg", "jpeg", "txt", "zip", "xlsx", "xls");
 
-    @Transactional
-    public List<ContactRequestFileDto> uploadFiles(Long id, MultipartFile[] files) {
-        ContactRequest contactRequest = get(id);
+    @org.springframework.transaction.annotation.Transactional
+    public List<ContactRequestFileDto> uploadFiles(Long requestId, org.springframework.web.multipart.MultipartFile[] files) {
+        ContactRequest contactRequest = get(requestId);
+
+        if (contactRequest.getCreatedAt().isBefore(java.time.Instant.now().minus(30, java.time.temporal.ChronoUnit.MINUTES))) {
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Время для загрузки файлов истекло");
+        }
 
         if (files == null || files.length == 0) {
             throw new com.example.zhanfinancebackend.common.exception.BadRequestException("No files provided");
         }
 
-        long existingCount = fileRepository.countByContactRequestId(id);
+        if (files.length > 5) {
+            throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Too many files");
+        }
+
+        long existingCount = fileRepository.countByContactRequestId(requestId);
         if (existingCount + files.length > 5) {
             throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Maximum 5 files allowed per contact request");
         }

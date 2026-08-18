@@ -50,8 +50,14 @@ public class RefreshTokenService {
                     return new UnauthorizedException("Invalid refresh token");
                 });
 
+        int deleted = refreshTokenRepository.deleteByToken(token);
+        if (deleted == 0) {
+            log.warn("Refresh token already consumed by another transaction. Token: {}",
+                    token.substring(0, Math.min(8, token.length())) + "...");
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+
         if (refreshToken.getExpiresAt().isBefore(Instant.now())) {
-            refreshTokenRepository.delete(refreshToken);
             throw new UnauthorizedException("Refresh token expired");
         }
 

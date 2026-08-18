@@ -16,9 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class CourseMediaController {
 
     private final StorageService storageService;
+    private final com.example.zhanfinancebackend.modules.courses.repository.LessonRepository lessonRepository;
+    private final com.example.zhanfinancebackend.modules.courses.repository.EnrollmentRepository enrollmentRepository;
 
-    public CourseMediaController(StorageService storageService) {
+    public CourseMediaController(StorageService storageService,
+                                 com.example.zhanfinancebackend.modules.courses.repository.LessonRepository lessonRepository,
+                                 com.example.zhanfinancebackend.modules.courses.repository.EnrollmentRepository enrollmentRepository) {
         this.storageService = storageService;
+        this.lessonRepository = lessonRepository;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     /**
@@ -34,7 +40,26 @@ public class CourseMediaController {
      */
     @GetMapping("/{storageKey:.+}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LEARNER')")
-    public ResponseEntity<Resource> downloadMedia(@PathVariable String storageKey) {
+    public ResponseEntity<Resource> downloadMedia(
+            @PathVariable String storageKey,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.example.zhanfinancebackend.modules.auth.security.UserPrincipal principal) {
+        
+        if (principal.getUser().getRole() == com.example.zhanfinancebackend.modules.auth.entity.Role.LEARNER) {
+             String fullPath = "/uploads/" + storageKey;
+             java.util.Optional<com.example.zhanfinancebackend.modules.courses.entity.Lesson> lessonOpt = 
+                     lessonRepository.findByMediaUrlOrFileUrl(fullPath, fullPath);
+             
+             if (lessonOpt.isEmpty()) {
+                  // Fail-closed: do not allow accessing orphan files or files not belonging to a lesson
+                  throw new org.springframework.security.access.AccessDeniedException("File is not associated with any accessible lesson");
+             }
+             
+             Long courseId = lessonOpt.get().getChapter().getCourse().getId();
+             if (!enrollmentRepository.existsByCourseIdAndUserId(courseId, principal.getId())) {
+                  throw new org.springframework.security.access.AccessDeniedException("You are not enrolled in this course");
+             }
+        }
+
         Resource resource = storageService.loadAsResource(storageKey);
         
         String contentType = "application/octet-stream";
