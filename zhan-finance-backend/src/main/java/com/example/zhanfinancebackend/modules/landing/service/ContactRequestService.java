@@ -162,15 +162,23 @@ public class ContactRequestService {
                 throw new com.example.zhanfinancebackend.common.exception.BadRequestException("File type not allowed: " + ext);
             }
 
-            String storageKey = storageService.store(file);
-            ContactRequestFile requestFile = new ContactRequestFile(
-                    contactRequest,
-                    originalFilename,
-                    storageKey,
-                    file.getContentType() != null ? file.getContentType() : "application/octet-stream",
-                    file.getSize()
-            );
-            savedFiles.add(fileRepository.save(requestFile));
+            try {
+                org.apache.tika.Tika tika = new org.apache.tika.Tika();
+                String detectedType = tika.detect(file.getInputStream());
+                
+                String storageKey = storageService.store(file);
+                ContactRequestFile crFile = new ContactRequestFile(
+                        contactRequest,
+                        originalFilename,
+                        storageKey,
+                        detectedType != null ? detectedType : "application/octet-stream",
+                        file.getSize()
+                );
+                
+                savedFiles.add(fileRepository.save(crFile));
+            } catch (Exception e) {
+                throw new com.example.zhanfinancebackend.common.exception.BadRequestException("Failed to process file: " + e.getMessage());
+            }
         }
 
         return savedFiles.stream()
@@ -211,7 +219,7 @@ public class ContactRequestService {
         
         return org.springframework.http.ResponseEntity.ok()
                 .contentType(org.springframework.http.MediaType.parseMediaType(file.getContentType()))
-                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFileName() + "\"")
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, org.springframework.http.ContentDisposition.inline().filename(file.getFileName(), java.nio.charset.StandardCharsets.UTF_8).build().toString())
                 .body(resource);
     }
 }

@@ -25,10 +25,21 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
             .expireAfterAccess(30, TimeUnit.MINUTES)
             .maximumSize(10000)
             .build();
+            
+    private final Cache<String, Bucket> uploadBuckets = Caffeine.newBuilder()
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .maximumSize(10000)
+            .build();
 
     private Bucket createBucket() {
         return Bucket.builder()
                 .addLimit(Bandwidth.classic(100, Refill.greedy(100, Duration.ofMinutes(1))))
+                .build();
+    }
+
+    private Bucket createUploadBucket() {
+        return Bucket.builder()
+                .addLimit(Bandwidth.classic(10, Refill.greedy(10, Duration.ofHours(1))))
                 .build();
     }
 
@@ -52,7 +63,13 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
             ip = request.getRemoteAddr();
         }
 
-        Bucket bucket = buckets.get(ip, k -> createBucket());
+        Bucket bucket;
+        if (uri.contains("/files")) {
+            bucket = uploadBuckets.get(ip, k -> createUploadBucket());
+        } else {
+            bucket = buckets.get(ip, k -> createBucket());
+        }
+
         if (bucket.tryConsume(1)) {
             chain.doFilter(request, response);
         } else {

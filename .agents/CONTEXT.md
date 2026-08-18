@@ -48,3 +48,4 @@
 ## Technical Backlog
 - Check `sentry-spring-boot-starter-jakarta` version compatibility with Spring Boot 4.1.0 to restore backend Sentry error tracking (crashed on 8.51.0 due to `RestClientCustomizer`).
 8. **Testing & Security**: Implemented Registration Status (PENDING, APPROVED, REJECTED) logic for strict security check and fail-closed anti-enumeration. Fully implemented frontend and backend test suites (Vitest & JUnit/Mockito).
+- Security vulnerabilities (Path Traversal, IP Spoofing, IDOR, CSV Injection, DoS uploads, Token Race Condition) identified in verification audit have been fixed and pushed to main [DONE]

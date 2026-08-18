@@ -45,8 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Fallback for tools like Postman or old clients
         if (token == null && authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-        } else if (token == null && request.getRequestURI().contains("/ws/")) {
-            token = request.getParameter("token");
         }
 
         if (token == null || token.isBlank()) {
