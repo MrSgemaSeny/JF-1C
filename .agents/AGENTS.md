@@ -54,7 +54,7 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - PipelineSeederService -> ApplicationReadyEvent [DONE]
 - Rate limit filters updated for new paths [DONE]
 - Phase 3: updating tests for new API paths [DONE]
-- Phase 4: updating frontend for new API paths [IN_PROGRESS]
+- Phase 4: updating frontend for new API paths [DONE]
 - Billing & Payments (WebKassa / Kaspi Pay) [NEXT]
 - Domain zhanfinance.kz [NEXT]
 - Dashboard Analytics [DONE]
