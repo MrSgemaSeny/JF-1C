@@ -70,6 +70,7 @@ public class AdminService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public void promoteToAdvisor(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -99,6 +100,7 @@ public class AdminService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public void demoteToEmployee(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -112,6 +114,7 @@ public class AdminService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public void toggleUserStatus(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -130,6 +133,7 @@ public class AdminService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public void approveEmployee(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(
@@ -152,6 +156,7 @@ public class AdminService {
     }
 
     @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public void rejectEmployee(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(

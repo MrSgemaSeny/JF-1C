@@ -42,6 +42,7 @@ public class PipelineController {
 
     @PostMapping("/{pipelineId}/stages")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public ApiResponse<StageDto> createStage(@PathVariable Long pipelineId, @Valid @RequestBody StageCreateRequest request) {
         Pipeline pipeline = pipelineRepository.findById(pipelineId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pipeline not found"));
@@ -59,6 +60,7 @@ public class PipelineController {
 
     @PatchMapping("/{pipelineId}/stages/{stageId}")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public ApiResponse<StageDto> updateStage(@PathVariable Long pipelineId, @PathVariable Long stageId, @RequestBody StageUpdateRequest request) {
         Stage stage = stageRepository.findById(stageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Stage not found"));
@@ -77,6 +79,7 @@ public class PipelineController {
 
     @DeleteMapping("/{pipelineId}/stages/{stageId}")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.cache.annotation.CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
     public ApiResponse<Void> deleteStage(@PathVariable Long pipelineId, @PathVariable Long stageId) {
         Stage stage = stageRepository.findById(stageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Stage not found"));
