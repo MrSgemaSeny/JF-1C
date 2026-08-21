@@ -130,3 +130,40 @@ CRITICAL WORKFLOW RULES:
 1. JOURNAL & PUSH: You must always run git add, git commit, git push and update the journal (C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain\journal\2026-08-21\jf-1c.md) after completing any stage or task.
 2. SECOND BRAIN: If you learn important project info, make architectural decisions, or discover critical debt, YOU MUST document it in the Second Brain (the context/ folder or valeur.md) so it isn't lost.
 
+## Phase 2 Authorization — 2026-08-21T07:30:44Z
+
+Authorization granted for Phase 2 (Remediation).
+Plan file: C:\Users\murat\Downloads\jf1c-phase2-remediation-plan.md
+
+Execution Order for Tier 1 (CRITICAL):
+1. C6 — OfficialDocumentTemplateSeeder: remove delete-then-insert, only seed missing templates (upsert/skip existing).
+2. C5 — Missing @Transactional on 6 methods (TaskService.requestTask + 5 methods in AdminService).
+3. C4 — V107 NULL violation on clean DB: create V111 migration backfilling created_by to first ADMIN user id.
+4. C1 — Avatar 404 (prefix mismatch).
+5. C3 — Unbounded queries / missing pagination + TaskSpecification in-memory pagination fix.
+6. C2 — N+1 queries (LMS -> Documents -> Chat).
+
+Rules:
+- 1 issue = 1 commit with descriptive reason.
+- Show diff for approval before each commit.
+- After each fix: regression test verifying the specific fix.
+- Do NOT touch fly.toml, GitHub Actions workflows, build.gradle, Dockerfile.
+- Migrations V1-V110 immutable.
+- Update Journal & Push after completing stage/task.
+
+## Autonomous Commit Authorization — 2026-08-21T07:50:10Z
+
+The user has explicitly authorized autonomous commits on branch 'audit/pre-release' (NEVER commit to main).
+1. Continue strictly on branch 'audit/pre-release'.
+2. 1 issue = 1 commit with descriptive reason + regression test.
+3. Automatically commit and push to origin/audit/pre-release as soon as regression tests pass for each issue, without waiting for manual human approval per commit.
+4. Proceed autonomously through Tier 1 in order:
+   - C5 (@Transactional on AdminService / TaskService)
+   - C4 (V111 migration backfilling courses.created_by)
+   - C1 (Avatar 404 normalization)
+   - C3 (Unbounded queries pagination + TaskSpecification)
+   - C2 (N+1 queries: LMS -> Documents -> Chat)
+5. Stop at Checkpoint 1 (after all 6 CRITICAL are complete) with full diff --stat for tier review.
+
+
+
