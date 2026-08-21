@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
-import { getTasks } from '@/entities/task/api/taskApi';
 import { useTasksQuery } from '@/entities/task/api/taskQueries';
+import { useQueryClient } from '@tanstack/react-query';
 import { Users, Loader2, Inbox } from 'lucide-react';
 import { TaskDetailsModal } from '@/entities/task/ui/TaskDetailsModal';
 import { StatusBadge } from '@/shared/ui/Badge';
@@ -11,6 +11,7 @@ import type { TaskDto } from '@/entities/task/model/types';
 import { assignTask } from '@/entities/task/api/taskApi';
 import { ChevronDown, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 function CustomAssignDropdown({ employees, disabled, onAssign, assigningTaskId, taskId }: any) {
   const { t } = useTranslation(['common']);
@@ -72,6 +73,7 @@ import { TaskPoolTabs } from './TaskPoolTabs';
 export function TaskPoolPage() {
   const { t } = useTranslation(['common']);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { data: tasksData, isLoading, error, refetch } = useTasksQuery(
     user?.role === 'ADMIN' ? undefined : { unassigned: true },
     !!user // Only run the query when user object is loaded
@@ -92,10 +94,13 @@ export function TaskPoolPage() {
     setAssigningTaskId(taskId);
     try {
       await assignTask(taskId, assigneeId);
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeStats'] });
       refetch();
     } catch (err) {
       console.error('Failed to assign task:', err);
-      alert(t('taskPool.error.assign', { defaultValue: 'Не удалось назначить задачу' }));
+      toast.error(t('taskPool.error.assign', { defaultValue: 'Не удалось назначить задачу' }));
     } finally {
       setAssigningTaskId(null);
     }
