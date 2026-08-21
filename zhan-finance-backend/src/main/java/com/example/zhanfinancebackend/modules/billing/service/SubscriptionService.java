@@ -6,6 +6,10 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.billing.dto.SubscriptionDto;
 import com.example.zhanfinancebackend.modules.billing.entity.Subscription;
 import com.example.zhanfinancebackend.modules.billing.repository.SubscriptionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +27,14 @@ public class SubscriptionService {
     }
 
     @Transactional(readOnly = true)
+    public Page<SubscriptionDto> findAllPaged(User user, Pageable pageable) {
+        return subscriptionRepository.findAllByUser(user, pageable).map(this::toDto);
+    }
+
+    @Transactional(readOnly = true)
     public List<SubscriptionDto> findAll(User user) {
-        return subscriptionRepository.findAllByUser(user).stream().map(this::toDto).toList();
+        Pageable bounded = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "id"));
+        return findAllPaged(user, bounded).getContent();
     }
 
     @Transactional
@@ -83,6 +93,9 @@ public class SubscriptionService {
     }
 
     private boolean hasOverlap(User user, Long excludeId, java.time.LocalDate startsAt, java.time.LocalDate endsAt) {
+        if (startsAt == null) {
+            return false;
+        }
         List<Subscription> existing = subscriptionRepository.findAllByUser(user);
         for (Subscription sub : existing) {
             if (excludeId != null && sub.getId().equals(excludeId)) {
@@ -91,8 +104,17 @@ public class SubscriptionService {
             if (sub.getStatus() == com.example.zhanfinancebackend.modules.billing.entity.Subscription.SubscriptionStatus.CANCELED) {
                 continue; // Can overlap with canceled ones
             }
-            // Overlap condition: start1 <= end2 && end1 >= start2
-            if (!startsAt.isAfter(sub.getEndsAt()) && !endsAt.isBefore(sub.getStartsAt())) {
+            java.time.LocalDate subStartsAt = sub.getStartsAt();
+            java.time.LocalDate subEndsAt = sub.getEndsAt();
+            if (subStartsAt == null) {
+                continue;
+            }
+
+            // Overlap condition: start1 <= end2 && end1 >= start2 with open-ended (null) support
+            boolean startBeforeSubEnd = (subEndsAt == null) || !startsAt.isAfter(subEndsAt);
+            boolean endAfterSubStart = (endsAt == null) || !endsAt.isBefore(subStartsAt);
+
+            if (startBeforeSubEnd && endAfterSubStart) {
                 return true;
             }
         }

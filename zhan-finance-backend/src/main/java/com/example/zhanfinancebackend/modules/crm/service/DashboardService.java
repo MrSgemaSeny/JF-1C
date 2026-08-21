@@ -71,8 +71,9 @@ public class DashboardService {
         List<Map<String, Object>> reasonList = taskRepository.countTasksByLostReason();
         Map<String, Long> tasksByLostReason = reasonList.stream()
             .collect(Collectors.toMap(
-                m -> m.get("reason").toString(),
-                m -> ((Number) m.get("count")).longValue()
+                m -> m.get("reason") != null ? m.get("reason").toString() : "Не указана",
+                m -> ((Number) m.get("count")).longValue(),
+                Long::sum
             ));
             
         List<User> employees = userRepository.findAllByRole(Role.EMPLOYEE);
