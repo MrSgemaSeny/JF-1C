@@ -63,20 +63,24 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
 
       client.activate();
 
+      let isMounted = true;
+
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-          if (!client.connected) {
-            client.forceDisconnect();
-            setTimeout(() => client.activate(), 100);
+        if (document.visibilityState === 'visible' && isMounted) {
+          if (!client.connected && !client.active) {
+            client.activate();
           }
         }
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
 
       return () => {
+        isMounted = false;
         clearInterval(interval);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        client.deactivate();
+        if (client.active || client.connected) {
+          client.deactivate();
+        }
       };
     } else {
       setUnreadChatCount(0);
