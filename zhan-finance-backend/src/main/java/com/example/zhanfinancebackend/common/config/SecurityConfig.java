@@ -98,9 +98,9 @@ public class SecurityConfig {
                         .requestMatchers("/v1/internal/**").denyAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(apiRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(apiRateLimitFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 

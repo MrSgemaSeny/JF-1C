@@ -82,5 +82,16 @@ class JwtServiceTest {
 
         assertFalse(jwtService.isTokenValid(refreshToken, "test@example.com"));
         assertNull(jwtService.extractUsernameIfValidAccessToken(refreshToken));
+        assertNull(jwtService.extractUserIdIfValidAccessToken(refreshToken));
+    }
+
+    @Test
+    void testExtractUserIdIfValidAccessToken() {
+        String token = jwtService.generateAccessToken(testUser);
+        assertNotNull(token);
+        assertEquals(1L, jwtService.extractUserIdIfValidAccessToken(token));
+
+        String tamperedToken = token.substring(0, token.length() - 5) + "invalid";
+        assertNull(jwtService.extractUserIdIfValidAccessToken(tamperedToken));
     }
 }

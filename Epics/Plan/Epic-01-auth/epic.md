@@ -42,6 +42,7 @@
 - **Custom CsrfHeaderFilter (X-Requested-With)** — защита от CSRF для SPA без необходимости стейтфул CSRF-токенов.
 - **Refresh token rotation + revocation** — автоматическое продление сессии и полный отзыв (revokeAll) при смене пароля или логауте.
 - **WebSocket Auth через Cookie** — отказ от передачи токена в URL, что предотвращает утечку токенов в access логах.
+- **Бизнес-уровневый Rate Limiting (Bucket4j)** — защита API через `ApiRateLimitFilter` с ключеванием по `userId` (`user:<id>`) для авторизованных пользователей и IP (`ip:<ip>`) для анонимных, с гранулярными тирами (Tasks 100/min, Documents 20/min, Search 30/min, General 100/min) и сквозным пропуском health-check и auth эндпоинтов.
 
 ---
 

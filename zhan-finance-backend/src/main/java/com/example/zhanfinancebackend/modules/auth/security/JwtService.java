@@ -66,6 +66,25 @@ public class JwtService {
         return claims.getSubject();
     }
 
+    public Long extractUserIdIfValidAccessToken(String token) {
+        Claims claims = parseClaimsOrNull(token);
+        if (claims == null || !TOKEN_TYPE_ACCESS.equals(claims.get(CLAIM_TOKEN_TYPE, String.class))) {
+            return null;
+        }
+        Object uid = claims.get("uid");
+        if (uid instanceof Number number) {
+            return number.longValue();
+        }
+        if (uid instanceof String str) {
+            try {
+                return Long.parseLong(str);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     private Claims parseClaimsOrNull(String token) {
         try {
             return Jwts.parser()
