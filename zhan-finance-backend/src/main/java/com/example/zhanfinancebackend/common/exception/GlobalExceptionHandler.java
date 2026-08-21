@@ -128,6 +128,25 @@ public class GlobalExceptionHandler {
         return buildResponse(status, exception.getErrorCode().name(), exception, request, locale);
     }
 
+    // --- ResponseStatusException ---
+
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(org.springframework.web.server.ResponseStatusException exception, HttpServletRequest request, Locale locale) {
+        HttpStatus status = HttpStatus.valueOf(exception.getStatusCode().value());
+        String reason = exception.getReason() != null ? exception.getReason() : status.getReasonPhrase();
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] ResponseStatusException {}: {}", requestId, status.value(), reason);
+
+        ErrorResponse response = new ErrorResponse(
+                status.value(),
+                status.name(),
+                reason,
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(status).body(response);
+    }
+
     // --- 500 Internal Server Error ---
     
     @ExceptionHandler(Exception.class)
