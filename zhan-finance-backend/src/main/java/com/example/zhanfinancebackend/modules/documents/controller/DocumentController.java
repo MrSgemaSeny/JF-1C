@@ -14,6 +14,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,26 +51,44 @@ public class DocumentController {
 
     @GetMapping
     @Operation(summary = "Get list of documents for a user")
-    public ApiResponse<List<DocumentDto>> getDocuments(
+    public ApiResponse<?> getDocuments(
             @RequestParam(value = "userId", required = false) Long targetUserId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
             @AuthenticationPrincipal UserPrincipal principal) {
         
         Long finalTargetUserId = targetUserId != null ? targetUserId : principal.getUser().getId();
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, Math.min(size, 100), Sort.by(Sort.Direction.DESC, "createdAt"));
+            return ApiResponse.success(documentService.getUserDocumentsPaged(finalTargetUserId, principal.getUser(), pageable));
+        }
         return ApiResponse.success(documentService.getUserDocuments(finalTargetUserId, principal.getUser()));
     }
 
     @GetMapping("/all")
     @Operation(summary = "Get all visible documents for the current employee/admin")
-    public ApiResponse<List<DocumentDto>> getAllDocuments(
+    public ApiResponse<?> getAllDocuments(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
             @AuthenticationPrincipal UserPrincipal principal) {
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, Math.min(size, 100), Sort.by(Sort.Direction.DESC, "createdAt"));
+            return ApiResponse.success(documentService.getAllVisibleDocumentsPaged(principal.getUser(), pageable));
+        }
         return ApiResponse.success(documentService.getAllVisibleDocuments(principal.getUser()));
     }
 
     @GetMapping("/task/{taskId}")
     @Operation(summary = "Get documents for a specific task")
-    public ApiResponse<List<DocumentDto>> getTaskDocuments(
+    public ApiResponse<?> getTaskDocuments(
             @PathVariable Long taskId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
             @AuthenticationPrincipal UserPrincipal principal) {
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, Math.min(size, 100), Sort.by(Sort.Direction.DESC, "createdAt"));
+            return ApiResponse.success(documentService.getTaskDocumentsPaged(taskId, principal.getUser(), pageable));
+        }
         return ApiResponse.success(documentService.getTaskDocuments(taskId, principal.getUser()));
     }
 

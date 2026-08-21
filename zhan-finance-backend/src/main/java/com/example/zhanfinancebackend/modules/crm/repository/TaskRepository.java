@@ -54,7 +54,7 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
            "where (lower(t.title) like lower(concat('%', :query, '%')) or lower(t.description) like lower(concat('%', :query, '%'))) and t.archived = false")
     List<Task> searchTasks(@Param("query") String query);
 
-    @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s " +
+    @Query("select distinct t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s left join fetch s.pipeline left join fetch t.services " +
            "where t.id in :ids")
     List<Task> findAllByIdInWithDetails(@Param("ids") List<Long> ids);
 

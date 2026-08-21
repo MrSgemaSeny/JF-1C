@@ -7,8 +7,12 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.billing.dto.InvoiceDto;
 import com.example.zhanfinancebackend.modules.billing.entity.Invoice;
-import com.example.zhanfinancebackend.modules.billing.repository.InvoiceRepository;
 import com.example.zhanfinancebackend.modules.audit.service.AuditService;
+import com.example.zhanfinancebackend.modules.billing.repository.InvoiceRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,14 +41,20 @@ public class InvoiceService {
     }
 
     @Transactional(readOnly = true)
-    public List<InvoiceDto> findAll(User user) {
+    public Page<InvoiceDto> findAllPaged(User user, Pageable pageable) {
         if (user.getRole() == Role.ADMIN) {
-            return invoiceRepository.findAllWithClient().stream().map(this::toDto).toList();
+            return invoiceRepository.findAllWithClient(pageable).map(this::toDto);
         }
         if (user.getRole() == Role.EMPLOYEE) {
-            return invoiceRepository.findAllByUserAssignedEmployee(user).stream().map(this::toDto).toList();
+            return invoiceRepository.findAllByUserAssignedEmployee(user, pageable).map(this::toDto);
         }
-        return invoiceRepository.findAllByUser(user).stream().map(this::toDto).toList();
+        return invoiceRepository.findAllByUser(user, pageable).map(this::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public List<InvoiceDto> findAll(User user) {
+        Pageable bounded = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "id"));
+        return findAllPaged(user, bounded).getContent();
     }
 
     @Transactional(readOnly = true)

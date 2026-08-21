@@ -110,14 +110,44 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks(Long clientId, Long assignedToId, Long stageId, Boolean unassigned) {
         org.springframework.data.jpa.domain.Specification<Task> spec = TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
-        return taskRepository.findAll(spec).stream().map(taskMapper::mapToDto).toList();
+        List<Task> tasks = taskRepository.findAll(spec);
+        if (tasks.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        List<Long> ids = tasks.stream().map(Task::getId).toList();
+        List<Task> detailedTasks = taskRepository.findAllByIdInWithDetails(ids);
+        java.util.Map<Long, Task> taskMap = detailedTasks.stream()
+                .collect(java.util.stream.Collectors.toMap(Task::getId, java.util.function.Function.identity(), (a, b) -> a));
+        return ids.stream()
+                .map(taskMap::get)
+                .filter(java.util.Objects::nonNull)
+                .map(taskMapper::mapToDto)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public org.springframework.data.domain.Page<TaskDto> getAllTasksPaged(Long clientId, Long assignedToId, Long stageId, Boolean unassigned, int page, int size) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by("id").descending());
         org.springframework.data.jpa.domain.Specification<Task> spec = TaskSpecification.filterTasks(clientId, assignedToId, stageId, unassigned);
-        return taskRepository.findAll(spec, pageable).map(taskMapper::mapToDto);
+
+        org.springframework.data.domain.Page<Task> taskPage = taskRepository.findAll(spec, pageable);
+        if (taskPage.isEmpty()) {
+            return org.springframework.data.domain.Page.empty(pageable);
+        }
+
+        List<Long> taskIds = taskPage.getContent().stream().map(Task::getId).toList();
+        List<Task> detailedTasks = taskRepository.findAllByIdInWithDetails(taskIds);
+
+        java.util.Map<Long, Task> taskMap = detailedTasks.stream()
+                .collect(java.util.stream.Collectors.toMap(Task::getId, java.util.function.Function.identity(), (a, b) -> a));
+
+        List<TaskDto> dtos = taskIds.stream()
+                .map(taskMap::get)
+                .filter(java.util.Objects::nonNull)
+                .map(taskMapper::mapToDto)
+                .toList();
+
+        return new org.springframework.data.domain.PageImpl<>(dtos, pageable, taskPage.getTotalElements());
     }
 
     @Transactional(readOnly = true)
