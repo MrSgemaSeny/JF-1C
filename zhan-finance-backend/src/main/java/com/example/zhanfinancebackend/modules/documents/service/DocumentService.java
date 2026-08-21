@@ -12,6 +12,10 @@ import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
 import com.example.zhanfinancebackend.modules.notifications.service.EmailNotificationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -165,45 +169,56 @@ public class DocumentService {
     }
 
     @Transactional(readOnly = true)
-    public List<DocumentDto> getUserDocuments(Long targetUserId, User actor) {
+    public Page<DocumentDto> getUserDocumentsPaged(Long targetUserId, User actor, Pageable pageable) {
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Target user not found"));
 
-        // If you can create for them, you can generally read their list
         documentAccessService.assertCanCreateFor(actor, targetUser);
 
-        return documentRepository.findByUserIdOrTaskClientId(targetUserId).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+        return documentRepository.findByUserIdOrTaskClientId(targetUserId, pageable)
+                .map(this::mapToDto);
     }
 
     @Transactional(readOnly = true)
-    public List<DocumentDto> getAllVisibleDocuments(User actor) {
+    public List<DocumentDto> getUserDocuments(Long targetUserId, User actor) {
+        Pageable bounded = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return getUserDocumentsPaged(targetUserId, actor, bounded).getContent();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<DocumentDto> getAllVisibleDocumentsPaged(User actor, Pageable pageable) {
         if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
-            return documentRepository.findAllByOrderByCreatedAtDesc().stream()
-                    .map(this::mapToDto)
-                    .collect(Collectors.toList());
+            return documentRepository.findAllByOrderByCreatedAtDesc(pageable)
+                    .map(this::mapToDto);
         } else if (actor.getRole() == Role.EMPLOYEE) {
-            return documentRepository.findForEmployee(actor.getId()).stream()
-                    .map(this::mapToDto)
-                    .collect(Collectors.toList());
+            return documentRepository.findForEmployee(actor.getId(), pageable)
+                    .map(this::mapToDto);
         } else {
-            return getUserDocuments(actor.getId(), actor);
+            return getUserDocumentsPaged(actor.getId(), actor, pageable);
         }
     }
 
     @Transactional(readOnly = true)
-    public List<DocumentDto> getTaskDocuments(Long taskId, User actor) {
-        // Technically anyone who can read the task should be able to read its documents.
-        // For simplicity, we just fetch them. Ideally we check task access here.
+    public List<DocumentDto> getAllVisibleDocuments(User actor) {
+        Pageable bounded = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return getAllVisibleDocumentsPaged(actor, bounded).getContent();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<DocumentDto> getTaskDocumentsPaged(Long taskId, User actor, Pageable pageable) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         
         crmAccessService.assertCanReadTask(actor, task);
 
-        return documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+        return documentRepository.findByTaskIdOrderByCreatedAtDesc(taskId, pageable)
+                .map(this::mapToDto);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DocumentDto> getTaskDocuments(Long taskId, User actor) {
+        Pageable bounded = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return getTaskDocumentsPaged(taskId, actor, bounded).getContent();
     }
 
     @Transactional

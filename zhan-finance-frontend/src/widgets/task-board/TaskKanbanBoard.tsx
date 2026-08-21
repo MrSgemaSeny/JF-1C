@@ -222,9 +222,14 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
 
   const [activeTaskInitialStageId, setActiveTaskInitialStageId] = useState<number | null>(null);
   const columnsSnapshotRef = useRef<Record<string, TaskDto[]>>({});
+  const movingTaskIdsRef = useRef<Set<number>>(new Set());
 
   const onDragStart = (event: DragStartEvent) => {
     const { active } = event;
+    const taskIdNum = typeof active.id === 'number' ? active.id : parseInt(String(active.id), 10);
+    if (!isNaN(taskIdNum) && movingTaskIdsRef.current.has(taskIdNum)) {
+      return;
+    }
     columnsSnapshotRef.current = { ...columns };
     const container = findContainer(active.id);
     if (container) {
@@ -315,6 +320,11 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
 
     // Save stage change if the target stage differs from initial stage before dragging
     if (activeTaskInitialStageId !== null && !isNaN(targetStageId) && targetStageId !== activeTaskInitialStageId && !isNaN(taskIdNum)) {
+      if (movingTaskIdsRef.current.has(taskIdNum)) {
+        setActiveTaskInitialStageId(null);
+        return;
+      }
+      movingTaskIdsRef.current.add(taskIdNum);
       try {
         await updateTaskStage({ id: taskIdNum, stageId: targetStageId });
       } catch (e) {
@@ -323,6 +333,8 @@ export const TaskKanbanBoard = forwardRef<TaskKanbanBoardRef, TaskKanbanBoardPro
           setColumns(columnsSnapshotRef.current);
         }
         toast.error(t('kanban.moveError', { defaultValue: 'Не удалось переместить задачу' }));
+      } finally {
+        movingTaskIdsRef.current.delete(taskIdNum);
       }
     }
     setActiveTaskInitialStageId(null);

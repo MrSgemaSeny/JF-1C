@@ -13,4 +13,5 @@ public interface DocumentTemplateRepository extends JpaRepository<DocumentTempla
     @Query(value = "SELECT nextval('doc_number_seq')", nativeQuery = true)
     Long getNextDocNumber();
 
+    boolean existsByNameIgnoreCase(String name);
 }

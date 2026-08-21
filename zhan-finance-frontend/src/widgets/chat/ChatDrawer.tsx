@@ -57,63 +57,97 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName, otherU
 
   useEffect(() => {
     let stompClient: Client | null = null;
+    let isMounted = true;
+    let isConnecting = false;
+    let pendingDisconnect = false;
     
     if (isOpen && otherUserId && user) {
       // 1. Setup Stomp client
       stompClient = new Client({
         webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
-        connectHeaders: getAccessToken() ? { 'Authorization': `Bearer ${getAccessToken()}` } : {},
-        debug: (str) => {
-          // console.log('[STOMP]', str);
+        beforeConnect: () => {
+          const token = getAccessToken();
+          if (stompClient) {
+            stompClient.connectHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+          }
         },
+        debug: () => {},
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
+        onWebSocketError: (event) => {
+          isConnecting = false;
+          if (isMounted) {
+            console.error('[STOMP] WebSocket Error', event);
+          }
+        },
+        onWebSocketClose: () => {
+          isConnecting = false;
+        },
+        onStompError: (frame) => {
+          isConnecting = false;
+          if (isMounted) {
+            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Additional details: ' + frame.body);
+          }
+        },
         onConnect: () => {
+          isConnecting = false;
+          if (!isMounted || pendingDisconnect) {
+            if (stompClient) {
+              void stompClient.deactivate().catch(() => {});
+            }
+            return;
+          }
           // Subscribe to my own chat updates
           stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {
-              const chatMessage: ChatMessageDto = JSON.parse(message.body);
-              // Only add if it's from/to the person we're chatting with
-              if (chatMessage.senderId === otherUserId || chatMessage.receiverId === otherUserId) {
-                 setMessages(prev => {
-                   if (prev.find(m => m.id === chatMessage.id)) return prev;
-                   return [...prev, chatMessage];
-                 });
-                 if (chatMessage.id > lastMessageIdRef.current) {
-                   lastMessageIdRef.current = chatMessage.id;
-                 }
-                 markChatAsRead(otherUserId)
-                   .then(() => refreshUnreadChatCount())
-                   .catch(console.error);
+              try {
+                const chatMessage: ChatMessageDto = JSON.parse(message.body);
+                // Only add if it's from/to the person we're chatting with
+                if (chatMessage.senderId === otherUserId || chatMessage.receiverId === otherUserId) {
+                   setMessages(prev => {
+                     if (prev.find(m => m.id === chatMessage.id)) return prev;
+                     return [...prev, chatMessage];
+                   });
+                   if (chatMessage.id > lastMessageIdRef.current) {
+                     lastMessageIdRef.current = chatMessage.id;
+                   }
+                   markChatAsRead(otherUserId)
+                     .then(() => refreshUnreadChatCount())
+                     .catch(console.error);
+                }
+              } catch {
+                // Ignore parse error
               }
             }
           });
         },
-        onStompError: (frame) => {
-          console.error('Broker reported error: ' + frame.headers['message']);
-          console.error('Additional details: ' + frame.body);
-        },
-        onWebSocketError: (event) => {
-          console.error('[STOMP] WebSocket Error', event);
-        },
       });
 
+      isConnecting = true;
       stompClient.activate();
 
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-          if (stompClient && !stompClient.connected) {
-            stompClient.forceDisconnect();
-            setTimeout(() => stompClient?.activate(), 100);
+        if (document.visibilityState === 'visible' && isMounted) {
+          if (stompClient && !stompClient.connected && !isConnecting && !stompClient.active) {
+            isConnecting = true;
+            stompClient.activate();
           }
         }
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
 
       return () => {
+        isMounted = false;
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        if (stompClient) stompClient.deactivate();
+        if (stompClient) {
+          if (stompClient.connected) {
+            stompClient.deactivate().catch(() => {});
+          } else if (isConnecting) {
+            pendingDisconnect = true;
+          }
+        }
       };
     }
   }, [isOpen, otherUserId, user]);

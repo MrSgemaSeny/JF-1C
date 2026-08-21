@@ -6,6 +6,9 @@ import com.example.zhanfinancebackend.modules.notifications.dto.NotificationDto;
 import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +27,14 @@ public class NotificationController {
 
     @GetMapping
     @Operation(summary = "Get all notifications for the current user")
-    public ApiResponse<List<NotificationDto>> getUserNotifications(@AuthenticationPrincipal UserPrincipal principal) {
+    public ApiResponse<?> getUserNotifications(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        if (page != null && size != null) {
+            Pageable pageable = PageRequest.of(page, Math.min(size, 100), Sort.by(Sort.Direction.DESC, "createdAt"));
+            return ApiResponse.success(notificationService.getUserNotificationsPaged(principal.getUser().getId(), pageable));
+        }
         return ApiResponse.success(notificationService.getUserNotifications(principal.getUser().getId()));
     }
 

@@ -1,0 +1,38 @@
+{
+  "details": {
+    "taskNotFound": "Тапсырма табылмады",
+    "goBack": "Артқа қайту",
+    "backToList": "Тізімге қайту",
+    "editTask": "Өңдеу",
+    "rejectTask": "Тапсырмадан бас тарту",
+    "archive": "Мұрағатқа жіберу",
+    "created": "Құрылды",
+    "edited": "Өңделді",
+    "confirm": "Растау",
+    "toRework": "Қайта өңдеуге жіберу",
+    "cancelled": "Тапсырма тоқтатылды",
+    "reason": "Себебі:",
+    "description": "Сипаттама",
+    "noDescription": "Сипаттама көрсетілмеген...",
+    "relatedServices": "Байланысты қызметтер",
+    "documents": "Құжаттар",
+    "additionalInfo": "Қосымша ақпарат",
+    "amount": "Сомасы:",
+    "deadline": "Мерзімі:",
+    "source": "Көзі:",
+    "recentEvents": "Соңғы оқиғалар",
+    "historyEmpty": "Тарих бос",
+    "download": "Жүктеп алу"
+  },
+  "editModal": {
+    "title": "Тапсырманы өңдеу",
+    "taskTitle": "Тапсырма атауы",
+    "taskTitlePlaceholder": "Тапсырма атауын енгізіңіз",
+    "description": "Сипаттамасы",
+    "descriptionPlaceholder": "Толық сипаттамасын жазыңыз...",
+    "deadline": "Мерзімі",
+    "cancel": "Болдырмау",
+    "save": "Сақтау",
+    "saving": "Сақталуда..."
+  }
+}

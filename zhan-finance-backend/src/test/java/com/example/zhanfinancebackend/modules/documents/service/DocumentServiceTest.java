@@ -110,13 +110,14 @@ class DocumentServiceTest {
         org.springframework.test.util.ReflectionTestUtils.setField(doc2, "id", 102L);
         doc2.setTask(task); // task belongs to client
 
-        when(documentRepository.findByUserIdOrTaskClientId(client.getId())).thenReturn(List.of(doc1, doc2));
+        when(documentRepository.findByUserIdOrTaskClientId(eq(client.getId()), any(org.springframework.data.domain.Pageable.class)))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(doc1, doc2)));
 
         // Act
         List<DocumentDto> results = documentService.getUserDocuments(client.getId(), client);
 
         // Assert
         assertEquals(2, results.size());
-        verify(documentRepository).findByUserIdOrTaskClientId(client.getId());
+        verify(documentRepository).findByUserIdOrTaskClientId(eq(client.getId()), any(org.springframework.data.domain.Pageable.class));
     }
 }

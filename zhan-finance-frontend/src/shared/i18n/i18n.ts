@@ -21,6 +21,13 @@ import tasksEN from './locales/en/tasks.json';
 import modalsRU from './locales/ru/modals.json';
 import modalsEN from './locales/en/modals.json';
 
+import commonKK from './locales/kk/common.json';
+import authKK from './locales/kk/auth.json';
+import crmKK from './locales/kk/crm.json';
+import landingKK from './locales/kk/landing.json';
+import tasksKK from './locales/kk/tasks.json';
+import modalsKK from './locales/kk/modals.json';
+
 i18n
   .use(initReactI18next)
   .use(LanguageDetector)
@@ -52,6 +59,15 @@ i18n
         tasks: tasksEN,
         modals: modalsEN,
         zod: translationEN
+      },
+      kk: {
+        common: commonKK,
+        auth: authKK,
+        crm: crmKK,
+        landing: landingKK,
+        tasks: tasksKK,
+        modals: modalsKK,
+        zod: translationRU
       },
     },
   });

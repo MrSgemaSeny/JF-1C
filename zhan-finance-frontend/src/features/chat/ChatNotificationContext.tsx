@@ -32,51 +32,80 @@ export function ChatNotificationProvider({ children }: { children: React.ReactNo
       fetchUnreadCount();
       const interval = setInterval(fetchUnreadCount, 30000);
       
+      let isMounted = true;
+      let isConnecting = false;
+      let pendingDisconnect = false;
+
       // Setup Stomp client
       const client = new Client({
         webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
-        connectHeaders: getAccessToken() ? { 'Authorization': `Bearer ${getAccessToken()}` } : {},
-        debug: (str) => {
-          // console.log('[STOMP NOTIF]', str);
+        beforeConnect: () => {
+          const token = getAccessToken();
+          client.connectHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
         },
+        debug: () => {},
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
         onWebSocketError: (event) => {
-          console.error('[STOMP NOTIF] WebSocket Error', event);
+          isConnecting = false;
+          if (isMounted) {
+            console.error('[STOMP NOTIF] WebSocket Error', event);
+          }
+        },
+        onWebSocketClose: () => {
+          isConnecting = false;
         },
         onStompError: (frame) => {
-          console.error('[STOMP NOTIF] Broker reported error: ' + frame.headers['message']);
-          console.error('[STOMP NOTIF] Additional details: ' + frame.body);
+          isConnecting = false;
+          if (isMounted) {
+            console.error('[STOMP NOTIF] Broker reported error: ' + frame.headers['message']);
+            console.error('[STOMP NOTIF] Additional details: ' + frame.body);
+          }
         },
         onConnect: () => {
+          isConnecting = false;
+          if (!isMounted || pendingDisconnect) {
+            void client.deactivate().catch(() => {});
+            return;
+          }
           client.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {
-               const chatMessage = JSON.parse(message.body);
-               if (chatMessage.receiverId === user.userId && !chatMessage.isRead) {
-                 fetchUnreadCount();
-               }
+              try {
+                const chatMessage = JSON.parse(message.body);
+                if (chatMessage.receiverId === user.userId && !chatMessage.isRead) {
+                  fetchUnreadCount();
+                }
+              } catch {
+                // Ignore malformed payload
+              }
             }
           });
         },
       });
 
+      isConnecting = true;
       client.activate();
 
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-          if (!client.connected) {
-            client.forceDisconnect();
-            setTimeout(() => client.activate(), 100);
+        if (document.visibilityState === 'visible' && isMounted) {
+          if (!client.connected && !isConnecting && !client.active) {
+            isConnecting = true;
+            client.activate();
           }
         }
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
 
       return () => {
+        isMounted = false;
         clearInterval(interval);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        client.deactivate();
+        if (client.connected) {
+          client.deactivate().catch(() => {});
+        } else if (isConnecting) {
+          pendingDisconnect = true;
+        }
       };
     } else {
       setUnreadChatCount(0);

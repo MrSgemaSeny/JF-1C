@@ -97,87 +97,121 @@ export function EmployeeChatPage() {
   // WebSockets for active chat and contact updates
   useEffect(() => {
     let stompClient: Client | null = null;
+    let isMounted = true;
+    let isConnecting = false;
+    let pendingDisconnect = false;
     
     if (user) {
       stompClient = new Client({
         webSocketFactory: () => new SockJS(getWsEndpointUrl(), null, { withCredentials: true } as any),
-        connectHeaders: getAccessToken() ? { 'Authorization': `Bearer ${getAccessToken()}` } : {},
-        debug: (str) => {
-          // console.log('[STOMP]', str);
+        beforeConnect: () => {
+          const token = getAccessToken();
+          if (stompClient) {
+            stompClient.connectHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+          }
         },
+        debug: () => {},
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
         onWebSocketError: (event) => {
-          console.error('[STOMP] WebSocket Error', event);
+          isConnecting = false;
+          if (isMounted) {
+            console.error('[STOMP] WebSocket Error', event);
+          }
+        },
+        onWebSocketClose: () => {
+          isConnecting = false;
         },
         onStompError: (frame) => {
-          console.error('[STOMP] Broker reported error: ' + frame.headers['message']);
-          console.error('[STOMP] Additional details: ' + frame.body);
+          isConnecting = false;
+          if (isMounted) {
+            console.error('[STOMP] Broker reported error: ' + frame.headers['message']);
+            console.error('[STOMP] Additional details: ' + frame.body);
+          }
         },
         onConnect: () => {
+          isConnecting = false;
+          if (!isMounted || pendingDisconnect) {
+            if (stompClient) {
+              void stompClient.deactivate().catch(() => {});
+            }
+            return;
+          }
           stompClient?.subscribe(`/topic/chat/${user.userId}`, (message) => {
             if (message.body) {
-              const chatMessage: ChatMessageDto = JSON.parse(message.body);
-              
-              // Update contacts list
-              setContacts(prev => {
-                const isCurrentChat = selectedContactIdRef.current === chatMessage.senderId || selectedContactIdRef.current === chatMessage.receiverId;
-                const contactId = chatMessage.senderId === user.userId ? chatMessage.receiverId : chatMessage.senderId;
+              try {
+                const chatMessage: ChatMessageDto = JSON.parse(message.body);
                 
-                // If contact is not in list, we could fetch contacts, but for now we'll just update if exists
-                const updated = prev.map(c => {
-                  if (c.id === contactId) {
-                    return {
-                      ...c,
-                      lastMessage: chatMessage,
-                      unreadCount: (isCurrentChat || chatMessage.senderId === user.userId) ? 0 : c.unreadCount + 1
-                    };
-                  }
-                  return c;
+                // Update contacts list
+                setContacts(prev => {
+                  const isCurrentChat = selectedContactIdRef.current === chatMessage.senderId || selectedContactIdRef.current === chatMessage.receiverId;
+                  const contactId = chatMessage.senderId === user.userId ? chatMessage.receiverId : chatMessage.senderId;
+                  
+                  // If contact is not in list, we could fetch contacts, but for now we'll just update if exists
+                  const updated = prev.map(c => {
+                    if (c.id === contactId) {
+                      return {
+                        ...c,
+                        lastMessage: chatMessage,
+                        unreadCount: (isCurrentChat || chatMessage.senderId === user.userId) ? 0 : c.unreadCount + 1
+                      };
+                    }
+                    return c;
+                  });
+                  
+                  updated.sort((a, b) => {
+                    if (b.unreadCount !== a.unreadCount) return b.unreadCount - a.unreadCount;
+                    const timeA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
+                    const timeB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
+                    return timeB - timeA;
+                  });
+                  return updated;
                 });
-                
-                updated.sort((a, b) => {
-                  if (b.unreadCount !== a.unreadCount) return b.unreadCount - a.unreadCount;
-                  const timeA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
-                  const timeB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
-                  return timeB - timeA;
-                });
-                return updated;
-              });
 
-              // Update messages list if it's the active chat
-              if (selectedContactIdRef.current && (chatMessage.senderId === selectedContactIdRef.current || chatMessage.receiverId === selectedContactIdRef.current)) {
-                 setMessages(prev => {
-                   if (prev.find(m => m.id === chatMessage.id)) return prev;
-                   return [...prev, chatMessage];
-                 });
-                 if (chatMessage.id > lastMessageIdRef.current) {
-                   lastMessageIdRef.current = chatMessage.id;
-                 }
-                 markChatAsRead(selectedContactIdRef.current)
-                   .then(() => refreshUnreadChatCount())
-                   .catch(console.error);
+                // Update messages list if it's the active chat
+                if (selectedContactIdRef.current && (chatMessage.senderId === selectedContactIdRef.current || chatMessage.receiverId === selectedContactIdRef.current)) {
+                   setMessages(prev => {
+                     if (prev.find(m => m.id === chatMessage.id)) return prev;
+                     return [...prev, chatMessage];
+                   });
+                   if (chatMessage.id > lastMessageIdRef.current) {
+                     lastMessageIdRef.current = chatMessage.id;
+                   }
+                   markChatAsRead(selectedContactIdRef.current)
+                     .then(() => refreshUnreadChatCount())
+                     .catch(console.error);
+                }
+              } catch {
+                // Ignore parse errors
               }
             }
           });
         }
       });
+      isConnecting = true;
       stompClient.activate();
 
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-          if (stompClient && !stompClient.connected) {
-            stompClient.forceDisconnect();
-            setTimeout(() => stompClient?.activate(), 100);
+        if (document.visibilityState === 'visible' && isMounted) {
+          if (stompClient && !stompClient.connected && !isConnecting && !stompClient.active) {
+            isConnecting = true;
+            stompClient.activate();
           }
         }
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
 
       return () => {
+        isMounted = false;
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        if (stompClient) stompClient.deactivate();
+        if (stompClient) {
+          if (stompClient.connected) {
+            stompClient.deactivate().catch(() => {});
+          } else if (isConnecting) {
+            pendingDisconnect = true;
+          }
+        }
       };
     }
   }, [user]);

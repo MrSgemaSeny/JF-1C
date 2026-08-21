@@ -1,6 +1,8 @@
 package com.example.zhanfinancebackend.modules.notifications.repository;
 
 import com.example.zhanfinancebackend.modules.notifications.entity.Notification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
     List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     @Modifying

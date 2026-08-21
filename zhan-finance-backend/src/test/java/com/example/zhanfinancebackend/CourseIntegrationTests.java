@@ -180,7 +180,7 @@ class CourseIntegrationTests {
         // 4. Learner should get error when accessing directly
         mockMvc.perform(get("/api/v1/courses/" + courseId).contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
-                .andExpect(status().isInternalServerError()); // Or 403/404 depending on error handling
+                .andExpect(status().isForbidden());
 
         // 5. Learner should get 403 when trying to access the lesson's file (if it had one)
         // TODO: Phase 2 - Re-enable file streaming tests

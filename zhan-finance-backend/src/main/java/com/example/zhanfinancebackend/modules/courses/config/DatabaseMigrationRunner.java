@@ -20,18 +20,6 @@ public class DatabaseMigrationRunner {
     public void runMigration() {
         try {
             jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS course_curators (
-                    id BIGSERIAL PRIMARY KEY,
-                    course_id BIGINT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
-                    curator_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
-                    assigned_by BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
-                    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                    CONSTRAINT uk_course_curator UNIQUE (course_id, curator_id)
-                )
-            """);
-
-            jdbcTemplate.execute("""
                 INSERT INTO app_users (full_name, email, password_hash, role, auth_provider, enabled, locale, created_at, updated_at)
                 SELECT 'Виктор Сергеевич (Куратор 1С)', 'curator1c@zhanfinance.kz',
                        '$2a$10$y1/xsqpoLRTwGMuopoLSROiC4VXrd88lZcvaTD.gz8nFuN7k6kYmy',

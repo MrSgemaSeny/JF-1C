@@ -6,6 +6,10 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.notifications.dto.NotificationDto;
 import com.example.zhanfinancebackend.modules.notifications.entity.Notification;
 import com.example.zhanfinancebackend.modules.notifications.repository.NotificationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,10 +69,14 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
+    public Page<NotificationDto> getUserNotificationsPaged(Long userId, Pageable pageable) {
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable).map(this::mapToDto);
+    }
+
+    @Transactional(readOnly = true)
     public List<NotificationDto> getUserNotifications(Long userId) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+        Pageable bounded = PageRequest.of(0, 50, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return getUserNotificationsPaged(userId, bounded).getContent();
     }
 
     @Transactional

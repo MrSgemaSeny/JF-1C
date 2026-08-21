@@ -2,25 +2,38 @@ package com.example.zhanfinancebackend.modules.billing.repository;
 
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.billing.entity.Invoice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
+    Page<Invoice> findAllByUser(User user, Pageable pageable);
     List<Invoice> findAllByUser(User user);
 
     Optional<Invoice> findByIdAndUser(Long id, User user);
 
+    Page<Invoice> findAllByUserAssignedEmployee(User employee, Pageable pageable);
     List<Invoice> findAllByUserAssignedEmployee(User employee);
+
+    @Query(
+        value = "select invoice from Invoice invoice join fetch invoice.user client left join fetch client.assignedEmployee",
+        countQuery = "select count(invoice) from Invoice invoice"
+    )
+    Page<Invoice> findAllWithClient(Pageable pageable);
 
     @Query("select invoice from Invoice invoice join fetch invoice.user client left join fetch client.assignedEmployee")
     List<Invoice> findAllWithClient();
 
     @Query("select invoice from Invoice invoice join fetch invoice.user client left join fetch client.assignedEmployee where invoice.id = :id")
-    Optional<Invoice> findByIdWithClient(Long id);
+    Optional<Invoice> findByIdWithClient(@Param("id") Long id);
 
     interface InvoiceStatusSummary {
         Invoice.InvoiceStatus getStatus();
@@ -28,14 +41,14 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
         java.math.BigDecimal getTotalAmount();
     }
 
-    List<Invoice> findByStatusAndDueDateBefore(Invoice.InvoiceStatus status, java.time.LocalDate date);
+    List<Invoice> findByStatusAndDueDateBefore(Invoice.InvoiceStatus status, LocalDate date);
 
-    @org.springframework.data.jpa.repository.Modifying
+    @Modifying
     @Query("UPDATE Invoice i SET i.status = :targetStatus WHERE i.status = :sourceStatus AND i.dueDate < :date")
     int bulkUpdateInvoiceStatus(
-            @org.springframework.data.repository.query.Param("sourceStatus") Invoice.InvoiceStatus sourceStatus,
-            @org.springframework.data.repository.query.Param("targetStatus") Invoice.InvoiceStatus targetStatus,
-            @org.springframework.data.repository.query.Param("date") java.time.LocalDate date
+            @Param("sourceStatus") Invoice.InvoiceStatus sourceStatus,
+            @Param("targetStatus") Invoice.InvoiceStatus targetStatus,
+            @Param("date") LocalDate date
     );
 
     @Query("SELECT i.status as status, COUNT(i.id) as count, SUM(i.amount) as totalAmount FROM Invoice i GROUP BY i.status")
