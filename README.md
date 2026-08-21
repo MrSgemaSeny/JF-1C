@@ -17,12 +17,12 @@ Zhan Finance (JF-1C) — специализированная высокопро
 
 ### Backend
 - **Core Framework**: Java 17, Spring Boot 3.4+
-- **Security & Auth**: Spring Security 6, JWT (Access + Refresh с полной ротацией и аннулированием сессий), 2FA (TOTP)
-- **Data & Migration**: PostgreSQL 17, Spring Data JPA, Flyway DB Migrations (цепочка миграций V1–V110+)
+- **Security & Auth**: Spring Security 6, JWT (Access + Refresh с полной ротацией в HttpOnly cookie и Bearer memory), 2FA (TOTP с защитой от brute-force)
+- **Data & Migration**: PostgreSQL 17, Spring Data JPA, Flyway DB Migrations (цепочка миграций V1–V120)
 - **Real-Time Communication**: WebSocket, STOMP, SockJS с точечной авторизацией подписок
 - **Caching & Metrics**: Caffeine (per-region cache), Micrometer Metrics (OTLP Push), Prometheus, UptimeRobot
 - **PDF & Documents**: Thymeleaf, OpenHTMLtoPDF (полная поддержка кириллицы и шрифтов), DocumentGeneratorService
-- **Audit & Security**: Hibernate Interceptor / Entity Listener с автоматическим маскированием полей, PostgreSQL триггеры на блокировку UPDATE/DELETE аудита.
+- **Audit & Security**: Hibernate Interceptor / Entity Listener с автоматическим маскированием полей `[PROTECTED]`, PostgreSQL триггеры на блокировку UPDATE/DELETE аудита, строгие Security Headers (CSP, X-Content-Type-Options, X-Frame-Options).
 - **Rate Limiting**: ApiRateLimitFilter и AuthRateLimitFilter
 
 ### Frontend
@@ -30,13 +30,14 @@ Zhan Finance (JF-1C) — специализированная высокопро
 - **Architecture**: Feature-Sliced Design (FSD) (shared -> entities -> features -> widgets -> pages)
 - **Styling**: Tailwind CSS v4, Vanilla CSS Design System, Framer Motion
 - **Data Fetching**: TanStack React Query v5 с глобальной обработкой ошибок и ретраями
-- **Localization**: i18next (Русский и Английский язык из коробки)
-- **Interactive UI**: @dnd-kit (Канбан-доски), SunEditor (Rich Text), Lucide Icons
+- **Localization**: i18next (Русский, Английский и Казахский языки из коробки)
+- **Interactive UI**: @dnd-kit (Канбан-доски с защитой от race conditions), SunEditor (Rich Text), Lucide Icons
 
 ### Infrastructure & Deployment
 - **API Base Path**: Context-Path `/api`, Versioned Endpoints `/v1/**` (`/api/v1/...`)
 - **Hosting**: Fly.io (Backend Docker Container), GitHub Pages (Frontend Single Page App)
 - **CI/CD**: GitHub Actions (Автоматическое тестирование, проверка типов, создание дампов PostgreSQL с алертами в Telegram, деплой)
+- **Production Status**: Release `v1.0.0` — Level 4 (Traction / боевой деплой, 545 коммитов, 33 чистых рабочих дня)
 
 ---
 
@@ -73,7 +74,7 @@ Zhan Finance (JF-1C) — специализированная высокопро
 JF-1C/
 ├── zhan-finance-backend/     # Spring Boot backend приложение
 │   ├── src/main/java/        # Исходный код Java
-│   ├── src/main/resources/   # Конфигурации и Flyway миграции (V1..V110+)
+│   ├── src/main/resources/   # Конфигурации и Flyway миграции (V1..V120)
 │   └── src/test/java/        # Unit & Integration тесты (JUnit + Mockito)
 ├── zhan-finance-frontend/    # React TypeScript SPA приложение
 │   ├── src/app/              # Инициализация приложения
@@ -140,8 +141,10 @@ npx tsc --noEmit
 
 ---
 
-## Политический статус безопасности и комплаенса
-- **Flyway Migrations**: Миграции строго неизменяемы, целостность чексумм критична.
-- **Безопасность токенов**: Полная защита от брутфорса, автоматическая очистка устаревших refresh-токенов, 2FA (TOTP) для всех администраторов и эдвайзеров.
-- **Защита от утекших секретов**: Отсутствует хардкод секретов, настройка исключительно через env и GitHub Secrets.
-- **Интегритет БД**: Исключено прямое удаление логов аудита и подделка MIME-типов документов.
+## Статус Безопасности, Аудита и Комплаенса (v1.0.0)
+- **Pre-Release Audit Remediation**: 100% закрытие 28 пунктов аудита (6 CRITICAL, 9 WARNING, 5 INFO).
+- **Производительность и Zero-N+1**: Оптимизация Hibernate-запросов через `@BatchSize`, `@EntityGraph`, батч-обработку сообщений и постраничную загрузку `AuditLog`.
+- **Flyway Migrations**: Миграции строго неизменяемы (цепочка V1–V120), идемпотентные сидеры.
+- **Безопасность авторизации**: Защита 2FA (TOTP) от brute-force перебора через `two_factor_pre_auth`, периодическая очистка просроченных refresh-токенов (`RefreshTokenService`).
+- **Сетевая защита**: Строгие Security Headers (CSP, X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Referrer-Policy, Permissions-Policy).
+- **Интегритет БД**: Исключено прямое удаление логов аудита (триггеры PostgreSQL) и подделка MIME-типов загружаемых документов.
