@@ -45,7 +45,7 @@ public class FileDownloadController {
     }
     @GetMapping("/uploads/avatars/{storageKey:.+}")
     public ResponseEntity<Resource> downloadAvatar(@PathVariable String storageKey) {
-        return serveResource("avatars/" + storageKey);
+        return serveResource(storageKey);
     }
 
     private ResponseEntity<Resource> serveResource(String storageKey) {

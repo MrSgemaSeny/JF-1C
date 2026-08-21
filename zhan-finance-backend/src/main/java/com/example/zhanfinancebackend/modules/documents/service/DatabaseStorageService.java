@@ -81,6 +81,12 @@ public class DatabaseStorageService implements StorageService {
     @Override
     public byte[] loadAsBytes(String storageKey) {
         java.util.Optional<StoredFile> fileOpt = storedFileRepository.findById(storageKey);
+        if (fileOpt.isEmpty()) {
+            String altKey = storageKey.startsWith("avatars/")
+                    ? storageKey.substring("avatars/".length())
+                    : "avatars/" + storageKey;
+            fileOpt = storedFileRepository.findById(altKey);
+        }
         if (fileOpt.isPresent()) {
             return fileOpt.get().getData();
         }
@@ -116,6 +122,12 @@ public class DatabaseStorageService implements StorageService {
     @Override
     public Resource loadAsResource(String storageKey) {
         java.util.Optional<StoredFile> fileOpt = storedFileRepository.findById(storageKey);
+        if (fileOpt.isEmpty()) {
+            String altKey = storageKey.startsWith("avatars/")
+                    ? storageKey.substring("avatars/".length())
+                    : "avatars/" + storageKey;
+            fileOpt = storedFileRepository.findById(altKey);
+        }
         if (fileOpt.isPresent()) {
             StoredFile storedFile = fileOpt.get();
             return new ByteArrayResource(storedFile.getData()) {
