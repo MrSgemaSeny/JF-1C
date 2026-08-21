@@ -40,9 +40,11 @@ public class Course extends BaseEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 50)
     private List<CourseCurator> curators = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC, id ASC")
+    @org.hibernate.annotations.BatchSize(size = 50)
     private List<Chapter> chapters = new ArrayList<>();
 }

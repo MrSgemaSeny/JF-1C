@@ -8,16 +8,24 @@ import java.util.List;
 
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
     List<Document> findByUserIdOrderByCreatedAtDesc(Long userId);
     
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
     @org.springframework.data.jpa.repository.Query("SELECT DISTINCT d FROM Document d LEFT JOIN d.task t LEFT JOIN t.client c WHERE d.user.id = :userId OR d.uploadedBy.id = :userId OR c.id = :userId ORDER BY d.createdAt DESC")
     List<Document> findByUserIdOrTaskClientId(@org.springframework.data.repository.query.Param("userId") Long userId);
     
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
     List<Document> findByUser_AssignedEmployee_IdOrderByCreatedAtDesc(Long employeeId);
     
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
     @org.springframework.data.jpa.repository.Query("SELECT DISTINCT d FROM Document d LEFT JOIN d.user u LEFT JOIN d.task t WHERE u.assignedEmployee.id = :employeeId OR d.uploadedBy.id = :employeeId OR t.assignedTo.id = :employeeId ORDER BY d.createdAt DESC")
     List<Document> findForEmployee(@org.springframework.data.repository.query.Param("employeeId") Long employeeId);
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
     List<Document> findAllByOrderByCreatedAtDesc();
+
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
     List<Document> findByTaskIdOrderByCreatedAtDesc(Long taskId);
     java.util.Optional<Document> findByStorageKey(String storageKey);
     

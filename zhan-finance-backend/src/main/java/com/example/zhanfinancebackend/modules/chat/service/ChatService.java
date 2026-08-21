@@ -95,10 +95,17 @@ public class ChatService {
                     .forEach(u -> uniqueUsers.put(u.getId(), u));
         }
 
+        java.util.Map<Long, Integer> unreadMap = new java.util.HashMap<>();
+        for (Object[] row : chatMessageRepository.countUnreadByReceiverGroupedBySender(currentUserId)) {
+            Long senderId = ((Number) row[0]).longValue();
+            Integer count = ((Number) row[1]).intValue();
+            unreadMap.put(senderId, count);
+        }
+
         return uniqueUsers.values().stream()
                 .filter(u -> !u.getId().equals(currentUserId))
                 .map(u -> {
-                    int unread = chatMessageRepository.countBySenderIdAndReceiverIdAndIsReadFalse(u.getId(), currentUserId);
+                    int unread = unreadMap.getOrDefault(u.getId(), 0);
                     ChatMessage lastMsg = chatMessageRepository.findLastMessage(currentUserId, u.getId());
                     return new ChatContactDto(
                             u.getId(),

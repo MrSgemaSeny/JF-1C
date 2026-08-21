@@ -28,5 +28,6 @@ public class Chapter extends BaseEntity {
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC, id ASC")
+    @org.hibernate.annotations.BatchSize(size = 50)
     private List<Lesson> lessons = new ArrayList<>();
 }
