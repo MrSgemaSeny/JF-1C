@@ -1,14 +1,14 @@
 # Project State & Context -- ZhanFinance (JF-1C)
 
 ## Current Phase & Global Goals
-- **Active Phase**: Phase 7 -- Pre-release audit remediation (audit/pre-release branch)
-- **Main Goal**: Fix 6 CRITICAL findings from pre-release audit, then merge to main and proceed to domain/billing
-- **Audit report**: `.agents/audit_report.md` on branch `audit/pre-release` (28 findings total)
+- **Active Phase**: Production Release v1.0.0 (Tag v1.0.0 published on GitHub)
+- **Main Goal**: Transition to Billing & Payments (WebKassa / Kaspi Pay) and custom domain (zhanfinance.kz)
+- **Audit status**: 28 findings total (6 CRITICAL, 9 WARNING, 5 INFO) — 100% resolved and verified.
 - **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure State
-- **Backend (Fly.io)**: Deployed, migrations up to V110 applied. PostgreSQL connected. Secrets in Fly Secrets.
-- **Frontend (GitHub Pages)**: CI/CD configured (deploy-backend.yml + ci.yml). All API paths on /api/v1/**.
+- **Backend (Fly.io)**: Deployed, migrations up to V120 applied. PostgreSQL connected. Secrets in Fly Secrets.
+- **Frontend (GitHub Pages)**: CI/CD configured (deploy-backend.yml + ci.yml). All API paths on /api/v1/**. Release v1.0.0 published.
 - **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP) fully working.
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
