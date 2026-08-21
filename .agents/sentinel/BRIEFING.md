@@ -1,21 +1,20 @@
-# BRIEFING — 2026-08-21T09:48:30Z
+# BRIEFING — 2026-08-21T09:56:45Z
 
 ## Mission
-Coordinate Phase 2 Remediation of JF-1C SaaS CRM/accounting platform. Tier 1 (CRITICAL) issues C6 -> C5 -> C4 -> C1 -> C3 -> C2 are completed. Reached Checkpoint 1.
+Coordinate autonomous Tier 2 (Known Issues & WARNINGs) remediation on branch `audit/pre-release`: W2 -> W1 -> W3 -> W7 -> W8 -> W9 -> W4 -> W5 -> W6 -> Checkpoint 2.
 
 ## 🔒 My Identity
 - Archetype: sentinel
 - Working directory: c:\Users\murat\IdeaProjects\JF-1C\.agents\sentinel
 - Orchestrator: eb1b34f5-626b-48fb-93c8-870f74a30ac3
-- Victory Auditor: to be spawned on full Phase 2 completion
+- Victory Auditor: to be spawned on Checkpoint 2 / remediation victory claim
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
 - Victory Audit is MANDATORY before reporting completion
 - Work only in branch `audit/pre-release`, never in main
-- Phase 2 remediation: one bug = one commit with reason in message
-- Show diff for approval before each commit / tier review
-- After each fix: regression test verifying the specific fix
+- Autonomous commits on audit/pre-release enabled: 1 issue = 1 commit with descriptive reason + regression test
+- Automatically push to origin/audit/pre-release after regression tests pass
 - Do NOT touch fly.toml, GitHub Actions workflow files, build.gradle, Dockerfile
 - Do NOT edit applied Flyway migrations V1-V110+
 - No DROP/DELETE/wipe on DB without explicit human confirmation
@@ -25,18 +24,12 @@ Coordinate Phase 2 Remediation of JF-1C SaaS CRM/accounting platform. Tier 1 (CR
 - Second Brain: Document critical architectural info and debt in Second Brain context/ or valeur.md.
 
 ## User Context
-- **Last user request**: Autonomous commits authorized through Tier 1 CRITICAL, stopping at Checkpoint 1 for tier review.
-- **Pending clarifications**: Awaiting tier review for Checkpoint 1 (All 6 CRITICAL completed) and instructions for Tier 2 (Known Issues R1.1 / WARNINGs).
-- **Delivered results**:
-  * C6: `d336623` (OfficialDocumentTemplateSeeder idempotency)
-  * C5: `ba0caaf` (@Transactional on AdminService mutation methods)
-  * C4: `a818d15`, `d1d14f3` (Migration V119 courses.created_by backfill)
-  * C1: `08c2cda` (Avatar 404 storage key lookup normalization)
-  * C3: `04c65a3` (AuditLog pagination & TaskSpecification in-memory pagination fix)
-  * C2: `9ce22be` (N+1 query elimination in LMS, Documents, and Chat)
+- **Last user request**: Checkpoint 1 approved. Proceed with Tier 2: W2 -> W1 -> W3 -> W7 -> W8 -> W9 -> W4 -> W5 -> W6. Stop at Checkpoint 2.
+- **Pending clarifications**: none
+- **Delivered results**: Tier 1 (C6, C5, C4, C1, C3, C2) complete and verified. Tier 2 commencing.
 
 ## Project Status
-- **Phase**: Checkpoint 1 reached (All 6 Tier 1 CRITICAL issues fixed and pushed to origin/audit/pre-release)
+- **Phase**: in progress (Tier 2 Remediation — starting with W2 WebSocket teardown race)
 
 ## Victory Audit Status
 - **Triggered**: no
@@ -49,3 +42,4 @@ Coordinate Phase 2 Remediation of JF-1C SaaS CRM/accounting platform. Tier 1 (CR
 - c:\Users\murat\IdeaProjects\JF-1C\.agents\audit_report.md — Comprehensive Phase 1 Audit Report
 - C:\Users\murat\Downloads\jf1c-phase2-remediation-plan.md — Phase 2 Remediation Plan
 - C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain\journal\2026-08-21\jf-1c.md — Second Brain Journal
+- c:\Users\murat\IdeaProjects\JF-1C\.agents\teamwork_preview_orchestrator_2\ — Phase 2 Orchestrator workspace

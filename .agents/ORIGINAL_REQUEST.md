@@ -165,5 +165,22 @@ The user has explicitly authorized autonomous commits on branch 'audit/pre-relea
    - C2 (N+1 queries: LMS -> Documents -> Chat)
 5. Stop at Checkpoint 1 (after all 6 CRITICAL are complete) with full diff --stat for tier review.
 
+## Tier 2 Authorization — 2026-08-21T09:56:19Z
+
+Checkpoint 1 approved.
+Proceed immediately with Tier 2 (Known Issues & WARNINGs) remediation on branch 'audit/pre-release' in the following order:
+1. W2 — WebSocket teardown race (ChatNotificationContext.tsx: add isConnecting guard and check client.connected before deactivate).
+2. W1 — LMS sort order — add secondary sort key created_at ASC in ChapterRepository and LessonRepository queries.
+3. W3 — Missing @CacheEvict on stage (pipelines) and employee (users) mutations.
+4. W7 — GlobalExceptionHandler: add handler for ResponseStatusException to ensure structured JSON with requestId.
+5. W8 — Null-safety on DashboardService.lostReason and SubscriptionService.endsAt.
+6. W9 — DatabaseMigrationRunner: extract DDL CREATE TABLE IF NOT EXISTS course_curators into new Flyway migration V120, keeping only idempotent DML in runner.
+7. W4 — React Query invalidation: fix direct fetch in TaskPoolPage & remove window.location.reload() in TaskDetailsModal.
+8. W5 — dnd-kit Kanban double-submit race condition lock.
+9. W6 — Hardcoded i18n strings: batch extraction and scaffold kk locale dictionary.
+
+Continue autonomous commit & push policy on 'audit/pre-release' (1 issue = 1 commit + regression test). Stop at Checkpoint 2.
+
+
 
 
