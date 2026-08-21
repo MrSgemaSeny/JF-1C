@@ -1,8 +1,9 @@
 # Project State & Context -- ZhanFinance (JF-1C)
 
 ## Current Phase & Global Goals
-- **Active Phase**: Phase 6 -- Feature completion, documentation sync, production stabilization
-- **Main Goal**: Complete all Partial epics, prepare for domain (zhanfinance.kz) and monitoring setup
+- **Active Phase**: Phase 7 -- Pre-release audit remediation (audit/pre-release branch)
+- **Main Goal**: Fix 6 CRITICAL findings from pre-release audit, then merge to main and proceed to domain/billing
+- **Audit report**: `.agents/audit_report.md` on branch `audit/pre-release` (28 findings total)
 - **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure State
@@ -35,6 +36,16 @@
 - **Refresh token race condition**: Known, not critical at current scale
 - **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact
 
+## Pre-Release Audit Findings [CRITICAL — Phase 2 Remediation Required]
+Full report: `.agents/audit_report.md` on `audit/pre-release` branch.
+- **C1** [CRITICAL] Avatar 404: `FileDownloadController.java:48` prefix `"avatars/"` + storageKey, but DB stores key WITHOUT prefix → 404 on all avatar loads
+- **C2** [CRITICAL] N+1 queries: Course catalog (1+N+NM), Curators (1+N), Documents (1+3N), Chat contacts (1+2N) → OOM risk under load
+- **C3** [CRITICAL] Unbounded queries: AuditLog, Notifications, Invoices, Subscriptions — no pagination. `TaskSpecification.java:36` fetch join → Hibernate in-memory pagination (loads ALL rows)
+- **C4** [CRITICAL] V107 migration: inserts NULL into `courses.created_by` (NOT NULL) → clean DB from scratch fails. Fix: new migration V111
+- **C5** [CRITICAL] Missing @Transactional: `TaskService.requestTask()` + 5 methods in `AdminService` (demote/toggle/approve/reject/createLearner) → audit events lost on partial failure
+- **C6** [CRITICAL] `OfficialDocumentTemplateSeeder` deletes all templates on EVERY app start → prod customized templates wiped on every deploy
+
+
 ## Next Steps
 - Epic-07 / Epic-12: Billing & Payments (WebKassa / Kaspi Pay integration)
 - Epic-11: Domain zhanfinance.kz + Cloudflare
@@ -49,3 +60,4 @@
 - Check `sentry-spring-boot-starter-jakarta` version compatibility with Spring Boot 4.1.0 to restore backend Sentry error tracking (crashed on 8.51.0 due to `RestClientCustomizer`).
 8. **Testing & Security**: Implemented Registration Status (PENDING, APPROVED, REJECTED) logic for strict security check and fail-closed anti-enumeration. Fully implemented frontend and backend test suites (Vitest & JUnit/Mockito).
 - Security vulnerabilities (Path Traversal, IP Spoofing, IDOR, CSV Injection, DoS uploads, Token Race Condition) identified in verification audit have been fixed and pushed to main [DONE]
+- Security vulnerabilities Phase 2 (JWT URL leak, DoS file uploads, Actuator port leak, Content-Disposition Header Injection, MIME Spoofing) fixed and pushed to main [DONE]
