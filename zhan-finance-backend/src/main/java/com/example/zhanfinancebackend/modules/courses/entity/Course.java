@@ -44,7 +44,7 @@ public class Course extends BaseEntity {
     private List<CourseCurator> curators = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("orderIndex ASC, id ASC")
+    @OrderBy("orderIndex ASC, createdAt ASC, id ASC")
     @org.hibernate.annotations.BatchSize(size = 50)
     private List<Chapter> chapters = new ArrayList<>();
 }
