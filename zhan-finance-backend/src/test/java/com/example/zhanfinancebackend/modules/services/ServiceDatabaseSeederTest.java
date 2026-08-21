@@ -11,7 +11,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+import com.example.zhanfinancebackend.ZhanFinanceBackendApplication;
+
+@SpringBootTest(classes = ZhanFinanceBackendApplication.class)
 @ActiveProfiles("test")
 public class ServiceDatabaseSeederTest {
 

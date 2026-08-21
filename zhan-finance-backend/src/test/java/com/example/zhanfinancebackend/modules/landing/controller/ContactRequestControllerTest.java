@@ -25,7 +25,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.mock.web.MockMultipartFile;
 
-@SpringBootTest
+import com.example.zhanfinancebackend.ZhanFinanceBackendApplication;
+
+@SpringBootTest(classes = ZhanFinanceBackendApplication.class)
 @AutoConfigureMockMvc(addFilters = false) // disable security filters for simple controller test if needed, or use @WithMockUser
 public class ContactRequestControllerTest {
 
