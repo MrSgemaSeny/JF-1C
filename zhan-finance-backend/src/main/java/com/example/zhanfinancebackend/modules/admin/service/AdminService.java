@@ -9,6 +9,7 @@ import com.example.zhanfinancebackend.modules.crm.dto.EmployeeDto;
 import com.example.zhanfinancebackend.modules.crm.repository.ClientProfileRepository;
 import com.example.zhanfinancebackend.modules.crm.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneOffset;
 import java.util.List;
@@ -68,7 +69,7 @@ public class AdminService {
                 .toList();
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void promoteToAdvisor(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -97,6 +98,7 @@ public class AdminService {
             "User " + user.getEmail() + " promoted to ADVISOR. Unassigned " + assignedClients.size() + " clients and " + assignedTasks.size() + " tasks.");
     }
 
+    @Transactional
     public void demoteToEmployee(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -109,6 +111,7 @@ public class AdminService {
         auditService.logAction("DEMOTE_TO_EMPLOYEE", "User", user.getId(), "User " + user.getEmail() + " demoted to EMPLOYEE");
     }
 
+    @Transactional
     public void toggleUserStatus(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "User not found"));
@@ -126,6 +129,7 @@ public class AdminService {
                 .toList();
     }
 
+    @Transactional
     public void approveEmployee(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(
@@ -147,6 +151,7 @@ public class AdminService {
         );
     }
 
+    @Transactional
     public void rejectEmployee(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(
@@ -206,6 +211,7 @@ public class AdminService {
                 .toList();
     }
 
+    @Transactional
     public void createLearner(RegisterRequest request) {
         if (userRepository.existsByEmailIgnoreCase(request.email())) {
             throw new ApiException(
