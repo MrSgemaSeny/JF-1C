@@ -8,42 +8,35 @@ import com.example.zhanfinancebackend.modules.documents.service.StorageService;
 import org.apache.poi.xwpf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.ByteArrayOutputStream;
 
 @Component
-public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
+public class OfficialDocumentTemplateSeeder {
 
     private static final Logger log = LoggerFactory.getLogger(OfficialDocumentTemplateSeeder.class);
 
     private final DocumentTemplateRepository templateRepository;
     private final StorageService storageService;
     private final UserRepository userRepository;
-    private final com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository;
-    private final org.springframework.transaction.support.TransactionTemplate transactionTemplate;
+    private final TransactionTemplate transactionTemplate;
 
     public OfficialDocumentTemplateSeeder(DocumentTemplateRepository templateRepository,
                                          StorageService storageService,
                                          UserRepository userRepository,
-                                         com.example.zhanfinancebackend.modules.documents.repository.DocumentRepository documentRepository,
-                                         org.springframework.transaction.support.TransactionTemplate transactionTemplate) {
+                                         TransactionTemplate transactionTemplate) {
         this.templateRepository = templateRepository;
         this.storageService = storageService;
         this.userRepository = userRepository;
-        this.documentRepository = documentRepository;
         this.transactionTemplate = transactionTemplate;
     }
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        if (templateRepository.count() >= 3) {
-            log.info("Official document templates already exist, skipping DOCX generation.");
-            return;
-        }
-
+    @EventListener(ApplicationReadyEvent.class)
+    public void seedOfficialTemplates() {
         User admin = userRepository.findAll().stream().findFirst().orElse(null);
 
         // 1. Act of Completed Works (Form R-1 RK)
@@ -51,7 +44,7 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
                 "Акт выполненных работ (Форма Р-1)",
                 "Официальная форма Р-1 утверждена МФ РК для акта приём-передачи оказанных услуг",
                 admin,
-                generateFormR1Docx()
+                this::generateFormR1Docx
         );
 
         // 2. Report of Rendered Services
@@ -59,7 +52,7 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
                 "Отчет об оказанных услугах (АВР)",
                 "Подробный отчет о выполненных бухгалтерских и юридических работах по задаче",
                 admin,
-                generateServicesReportDocx()
+                this::generateServicesReportDocx
         );
 
         // 3. Client Approval and Signature Sheet
@@ -67,21 +60,24 @@ public class OfficialDocumentTemplateSeeder implements ApplicationRunner {
                 "Лист согласования и подписи",
                 "Официальный протокол подтверждения приема оказанных услуг клиентом",
                 admin,
-                generateApprovalSheetDocx()
+                this::generateApprovalSheetDocx
         );
     }
 
-    private void createTemplateIfAbsent(String name, String description, User admin, byte[] docxBytes) {
+    @FunctionalInterface
+    private interface DocxGenerator {
+        byte[] generate() throws Exception;
+    }
+
+    private void createTemplateIfAbsent(String name, String description, User admin, DocxGenerator generator) {
+        if (templateRepository.existsByNameIgnoreCase(name)) {
+            log.debug("Official document template already exists, skipping: {}", name);
+            return;
+        }
+
         transactionTemplate.execute(status -> {
-            templateRepository.findAll().stream()
-                    .filter(t -> name.equalsIgnoreCase(t.getName()))
-                    .findFirst()
-                    .ifPresent(t -> {
-                        documentRepository.nullifyTemplateReference(t.getId());
-                        templateRepository.delete(t);
-                    });
-                    
             try {
+                byte[] docxBytes = generator.generate();
                 String storageKey = storageService.store(
                         docxBytes,
                         name.replaceAll("[^a-zA-Z0-9_-]", "_") + ".docx",
