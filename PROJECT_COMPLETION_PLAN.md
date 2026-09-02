@@ -1,108 +1,98 @@
-﻿# Project Completion & Final Release Plan — JF-1C (ZhanFinance)
-**Target Date**: Next Working Day (Final Sign-off)
-**Role**: Senior Tech Lead / Full-Stack Engineer
-**Status**: Ready for Final Smoke Testing and Project Delivery
+﻿# Project Completion, Boss Demo & Release Plan — JF-1C (ZhanFinance)
+**Target Date**: 3 Сентября (Полный показ проекта Боссу / Финальная сдача)
+**Author / Tech Lead**: MrDeveloper
+**Product Ecosystem**: JF-1C (ZhanFinance SaaS) | Medev | MrDev Courses | Valeur | Second Brain
 
 ---
 
-## 1. Executive Summary & Objective
+## 1. Главная цель на 3 Сентября (Показ Боссу)
 
-The objective for tomorrow is to conduct a systematic, zero-regression smoke test across the entire ZhanFinance (JF-1C) SaaS platform, verify end-to-end operational stability on production environments (Fly.io + GitHub Pages), and achieve 100% formal acceptance for project delivery.
+3 сентября — ключевая веха: **полная демонстрация готового продукта JF-1C руководству (Боссу)**, подтверждение готовности к запуску в промышленную эксплуатацию и защита архитектурной зрелости для дальнейшего масштабирования (Astana Hub, домен, VPS/DevOps, интеграции).
 
-### Key Success Criteria:
-1. All automated test suites (Backend JUnit/Mockito and Frontend Vitest/TypeScript) pass with zero errors.
-2. Production builds (Fly.io backend, GitHub Pages frontend) are healthy and synchronized with the latest `main` branch.
-3. Every user persona (Admin, Employee, Client, Learner, Curator, Advisor) can execute their mission-critical user journeys without UI freezes or API errors.
-4. Core security boundaries (JWT Bearer flow, 2FA TOTP, Role-Based Access Control via `CrmAccessService`, DB immutable audit logs) operate without vulnerabilities or data leakage.
-5. Automated database backups and Telegram operational alerts function properly.
-
----
-
-## 2. Pre-Flight Architecture Verification
-
-Before running interactive tests, verify core system health:
-
-### 2.1 Backend Services (Fly.io)
-- Verify Fly.io app status: `fly status --app jf-1c`
-- Verify DB connectivity: PostgreSQL migrations V1 through V120 applied cleanly without schema drift.
-- Verify health check endpoint: `GET /api/v1/health` (or Actuator `/actuator/health`) returns HTTP 200 `UP`.
-- Verify secrets configuration: JWT secret, DB credentials, Gmail SMTP, Telegram Bot tokens present in Fly secrets.
-
-### 2.2 Frontend Delivery (GitHub Pages)
-- Verify GitHub Actions deployment status on `main` branch (`deploy-backend.yml`, `ci.yml`).
-- Verify production assets loaded with proper `Cache-Control` meta headers.
-- Verify SPA routing (`/login`, `/dashboard`, `/tasks`, `/documents`, `/lms`, `/advisor`, `/landing`) without 404 on hard refresh.
+### Стратегические метрики готовности:
+1. **100% стабильность UI/UX**: Отсутствие бесконечных редиректов, зависаний и белых экранов при переходе по всем ролям.
+2. **Безопасность и отказоустойчивость**: Аутентификация через JWT Bearer (in-memory, без уязвимостей XSS в localStorage), 2FA TOTP, защита от брутфорса, неизменяемый аудит-лог.
+3. **Реальный бизнес-процесс (End-to-End)**: Демонстрация полного цикла от заявки с лендинга до закрытия бухгалтерской задачи, генерации акта в PDF и общения в чате.
+4. **Готовность к масштабированию**: База данных с 120 версионированными миграциями Flyway, автоматические бэкапы, асинхронные алерты в Telegram.
 
 ---
 
-## 3. End-to-End Smoke Test Checklist by Role
+## 2. Сценарий показа проекта руководству (Demo Script для Босса)
 
-Execute tests in the following order to validate the system layer by layer:
+Показ строится по принципу «Путь клиента и команды» (от внешнего мира до внутреннего управления):
 
-### Phase A: Public & Landing Experience (Unauthenticated)
-- [ ] **Landing Pages**: Open public landing page (`/`). Verify all sections render (Services, About, Solution Picker, Contact form).
-- [ ] **Lead Submission**: Fill out and submit the "Leave Request" form. Verify lead is recorded in DB and Telegram alert is dispatched.
-- [ ] **Auth Navigation**: Click "Login" / "Register". Verify login modal/page displays smoothly without redirect loops.
+```
+[1. Публичный лендинг] ➔ [2. Заявка / Лид] ➔ [3. Уведомление в Telegram]
+       │
+       ▼
+[4. Панель Админа] ➔ [5. CRM / Kanban] ➔ [6. Назначение Сотруднику]
+       │
+       ▼
+[7. Кабинет Сотрудника] ➔ [8. Документы & PDF] ➔ [9. Чат с Клиентом]
+       │
+       ▼
+[10. Кабинет Клиента] ➔ [11. LMS Академия] ➔ [12. Кабинет Советника (ADVISOR)]
+```
 
-### Phase B: Authentication & Security (All Roles)
-- [ ] **Email/Password Login**: Log in with standard credentials. Confirm in-memory JWT `accessToken` acquisition and refresh token rotation.
-- [ ] **2FA (TOTP) Flow**:
-  - Enable 2FA from profile settings -> scan QR code -> enter TOTP code.
-  - Log out and log back in -> enter pre-auth code -> verify successful dashboard entry.
-  - Test anti-brute-force: enter invalid TOTP 5 times -> verify account protection response.
-- [ ] **Pending Registration Flow**: Register new Employee account -> verify redirect to status screen ("Ваша заявка в работе").
-- [ ] **Session Expiry & Refresh**: Verify token auto-refresh silently refreshes access without dropping user state.
+### Шаг 1. Публичная витрина и сбор лидов (B2C / Landing)
+- Открытие главной страницы лендинга (`/`).
+- Демонстрация разделов: Услуги бухгалтерского учета, О компании, Интерактивный калькулятор/подборщик решений.
+- Отправка тестовой заявки через форму обратной связи.
+- **Акцент для Босса**: Мгновенное поступление уведомления в Telegram руководству без задержек.
 
-### Phase C: Admin Role (`ADMIN`)
-- [ ] **User Management**: Approve pending employee account, toggle user roles, verify audit log record.
-- [ ] **Pipeline & Stage Config**: View CRM pipelines, create/edit stages.
-- [ ] **Business Overview**: Check Dashboard analytics (leads, revenues, conversion rates, task metrics).
-- [ ] **System Audit Logs**: Verify immutability of audit log table (read-only verification).
+### Шаг 2. Безопасность и Вход (Security & 2FA)
+- Вход под учетной записью с включенной двухфакторной аутентификацией (TOTP).
+- Демонстрация экрана статуса для новых сотрудников (`PENDING` — заявка на рассмотрении).
+- **Акцент для Босса**: Корпоративная безопасность данных, защита от утечек и подбора паролей.
 
-### Phase D: Advisor Role (`ADVISOR`)
-- [ ] **Advisor Overview**: Navigate to Advisor dashboard, verify global workload metrics and active company distribution.
-- [ ] **Cross-Client Access**: Open any client task or document without permission errors (read/advisory scope).
-- [ ] **Workload Matrix**: Verify employee assignment load visualizer displays properly.
+### Шаг 3. Управление бизнесом (Панель ADMIN)
+- Обзор Дашборда: ключевые бизнес-показатели, динамика заявок, распределение выручки.
+- Управление сотрудниками: модерация заявок, назначение ролей.
+- Неизменяемый системный аудит-лог (защита от несанкционированных действий).
 
-### Phase E: Employee Role (`EMPLOYEE`)
-- [ ] **CRM Task Board**:
-  - Open Kanban task board -> move task across stages -> verify state persistence.
-  - Assign task from Task Pool -> verify auto-reopening logic if task was previously marked as LOST.
-- [ ] **Document Management**:
-  - Upload client accounting file (PDF/Excel) -> verify MIME validation and storage key.
-  - Download single document and test ZIP bulk download.
-  - Filter documents by folder pills and source tags.
-- [ ] **Client Communication**: Send a message in internal chat -> verify STOMP/SockJS real-time delivery to Client.
+### Шаг 4. Аналитический контроль (Панель ADVISOR)
+- Демонстрация роли Советника/Аудитора: тепловая карта нагрузки сотрудников, сквозной аудит клиентов и задач без права разрушающего редактирования.
+- **Акцент для Босса**: Прозрачность работы каждого бухгалтера в реальном времени.
 
-### Phase F: Client Role (`CLIENT`)
-- [ ] **Client Portal**: View assigned tasks, current status, and invoice summaries.
-- [ ] **Document Center**: Download generated act/invoice PDF templates with proper Cyrillic rendering.
-- [ ] **Chat with Manager**: Verify incoming employee messages and send reply.
+### Шаг 5. Операционная работа бухгалтера (Панель EMPLOYEE)
+- CRM Kanban-доска: перемещение карточек задач по этапам.
+- Пул задач (Task Pool): умное автопереоткрытие отмененных задач при повторном взятии в работу.
+- Хранилище документов: загрузка накладных/отчетов, фильтрация по папкам, скачивание пакета документов в один клик (ZIP-архив).
+- Встроенный WebSocket чат с клиентом: отправка сообщений и обмен файлами.
 
-### Phase G: LMS Platform (`LEARNER` & `CURATOR`)
-- [ ] **Learner Journey**:
-  - Open Course Catalog -> enroll in course -> navigate Course -> Chapter -> Lesson -> LessonBlock.
-  - Complete lesson -> check progress bar updates.
-  - Verify completion certificate generation (PDF).
-- [ ] **Curator Management**:
-  - Create/edit course content, review learner progress and homework submissions.
+### Шаг 6. Личный кабинет Клиента (Панель CLIENT)
+- Просмотр статуса своих бухгалтерских задач и взаиморасчетов.
+- Скачивание сгенерированных официальных документов (Акты, Счета) в PDF с идеальным рендерингом кириллицы.
 
----
-
-## 4. Operational & Observability Verification
-
-- [ ] **Telegram Alerts**: Verify admin alerts received on lead submission and critical workflow events.
-- [ ] **Uptime & Metrics**: Confirm Prometheus/OTLP metric ingestion and UptimeRobot heartbeat.
-- [ ] **Automated Backups**: Verify scheduled DB backup action (GitHub Actions / Flyctl) has recorded latest snapshot.
+### Шаг 7. Корпоративное обучение (LMS Академия)
+- Обучающая платформа: Курсы -> Главы -> Уроки -> Блоки.
+- Прохождение урока студентом, фиксация прогресса и выдача официального сертификата.
+- Кабинет Куратора: проверка домашних заданий.
 
 ---
 
-## 5. Final Sign-Off & Project Acceptance Procedure
+## 3. Чек-лист смок-тестирования перед показом
 
-When all smoke test items are checked:
-1. **Automated Quality Gate**: Run local backend tests (`./gradlew test`) and frontend tests (`npm run test && npm run build`) to ensure 100% green status.
-2. **Git Tag & Branch Hygiene**:
-   - Ensure `main` is clean, all epics updated to `Done` in `Epics/Plan/`.
-   - Update `.agents/CONTEXT.md` with final release status.
-   - Tag release `v1.0.0-final` or target version.
-3. **Formal Handover**: Present the completed smoke test checklist to stakeholders for final acceptance sign-off.
+- [ ] **Fly.io Backend**: `fly status` в норме, health-check `/api/v1/health` возвращает `200 OK`.
+- [ ] **GitHub Pages Frontend**: Свежий билд, чистый роутинг без 404 при F5.
+- [ ] **Auth / Bearer**: Сессия держится стабильно, токен обновляется в фоне без вылета на логин.
+- [ ] **Telegram Bot**: Алерты по новым лидам и критическим событиям приходят.
+- [ ] **Генерация PDF**: Документы и сертификаты формируются без ошибок шрифтов.
+- [ ] **Тестовые данные**: База наполнена красивыми реалистичными демонстрационными данными (клиенты, задачи, документы, курсы).
+
+---
+
+## 4. Дорожная карта развития после сдачи (Сентябрь 2026)
+
+1. **Astana Hub**: Подготовка проекта и юридической документации к подаче заявки в технопарк Astana Hub (налоговые преференции, аккредитация).
+2. **Инфраструктура & DevOps**:
+   - Привязка официального домена `zhanfinance.kz` + Cloudflare SSL/CDN.
+   - Настройка production VPS/Fly конфигурации и мониторинга безопасности.
+3. **Модули и расширения**:
+   - Интеграция онлайн-кассы и платежей (WebKassa / Kaspi Pay).
+   - Интеграция с 1С (обмен проводками и номенклатурой).
+4. **Развитие экосистемы продуктов**:
+   - **Medev**: масштабирование AI-генератора резюме на базе GitHub-активности, мобильная адаптация, публикация в Chrome Store / App Store.
+   - **MrDev Courses**: запуск менторской программы (24 990 тг) и кураторских курсов (9 900 тг) по вайбкодингу с реестром сертификатов.
+   - **Valeur**: развитие платформы найма и стажировок для студентов.
+   - **Second Brain**: оформление интеллектуальной собственности и внедрение методологии как премиальной B2B услуги.
