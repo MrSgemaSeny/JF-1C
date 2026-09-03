@@ -292,7 +292,7 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public byte[] generateZipArchive(List<Long> documentIds, User actor) {
-        List<Document> documents = documentRepository.findAllById(documentIds);
+        List<Document> documents = documentRepository.findDocumentsByIds(documentIds);
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
         java.util.Set<String> usedNames = new java.util.HashSet<>();
 

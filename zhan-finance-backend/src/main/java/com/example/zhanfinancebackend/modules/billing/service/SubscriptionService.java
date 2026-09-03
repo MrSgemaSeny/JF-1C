@@ -96,28 +96,6 @@ public class SubscriptionService {
         if (startsAt == null) {
             return false;
         }
-        List<Subscription> existing = subscriptionRepository.findAllByUser(user);
-        for (Subscription sub : existing) {
-            if (excludeId != null && sub.getId().equals(excludeId)) {
-                continue;
-            }
-            if (sub.getStatus() == com.example.zhanfinancebackend.modules.billing.entity.Subscription.SubscriptionStatus.CANCELED) {
-                continue; // Can overlap with canceled ones
-            }
-            java.time.LocalDate subStartsAt = sub.getStartsAt();
-            java.time.LocalDate subEndsAt = sub.getEndsAt();
-            if (subStartsAt == null) {
-                continue;
-            }
-
-            // Overlap condition: start1 <= end2 && end1 >= start2 with open-ended (null) support
-            boolean startBeforeSubEnd = (subEndsAt == null) || !startsAt.isAfter(subEndsAt);
-            boolean endAfterSubStart = (endsAt == null) || !endsAt.isBefore(subStartsAt);
-
-            if (startBeforeSubEnd && endAfterSubStart) {
-                return true;
-            }
-        }
-        return false;
+        return subscriptionRepository.existsOverlappingSubscription(user, excludeId, startsAt, endsAt);
     }
 }

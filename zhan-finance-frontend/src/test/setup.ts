@@ -11,3 +11,27 @@ vi.mock('react-i18next', async () => {
     }),
   };
 });
+
+vi.mock('@stomp/stompjs', () => {
+  return {
+    Client: vi.fn().mockImplementation(() => ({
+      activate: vi.fn(),
+      deactivate: vi.fn(),
+      subscribe: vi.fn(),
+      publish: vi.fn(),
+      onConnect: vi.fn(),
+      onDisconnect: vi.fn(),
+      onStompError: vi.fn(),
+      onWebSocketError: vi.fn(),
+    }))
+  };
+});
+
+vi.mock('@/shared/ui/Toast/useToast', () => ({
+  useToast: () => ({
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  })
+}));

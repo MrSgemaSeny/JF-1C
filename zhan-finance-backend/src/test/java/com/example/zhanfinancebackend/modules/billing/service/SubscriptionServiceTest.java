@@ -35,7 +35,7 @@ class SubscriptionServiceTest {
 
         SubscriptionDto request = new SubscriptionDto(null, "Pro", BigDecimal.TEN, SubscriptionStatus.ACTIVE, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 1, 31));
 
-        when(subscriptionRepository.findAllByUser(user)).thenReturn(List.of());
+        // when(subscriptionRepository.findAllByUser(user)).thenReturn(List.of());
         when(subscriptionRepository.save(any())).thenAnswer(inv -> {
             Subscription s = inv.getArgument(0);
             s.setId(100L);
@@ -58,9 +58,9 @@ class SubscriptionServiceTest {
         existing.setId(10L);
         existing.setStatus(SubscriptionStatus.ACTIVE);
 
-        when(subscriptionRepository.findAllByUser(user)).thenReturn(List.of(existing));
-
         SubscriptionDto request = new SubscriptionDto(null, "Pro", BigDecimal.TEN, SubscriptionStatus.ACTIVE, LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 28));
+
+        when(subscriptionRepository.existsOverlappingSubscription(eq(user), isNull(), eq(request.startsAt()), eq(request.endsAt()))).thenReturn(true);
 
         ApiException ex = assertThrows(ApiException.class, () -> subscriptionService.create(user, request));
         assertEquals("Subscription dates overlap with an existing subscription", ex.getMessage());
@@ -76,7 +76,7 @@ class SubscriptionServiceTest {
         existing.setStatus(SubscriptionStatus.ACTIVE);
 
         when(subscriptionRepository.findByIdAndUser(10L, user)).thenReturn(Optional.of(existing));
-        when(subscriptionRepository.findAllByUser(user)).thenReturn(List.of(existing)); // self overlap ignored
+        // when(subscriptionRepository.findAllByUser(user)).thenReturn(List.of(existing)); // self overlap ignored
 
         SubscriptionDto request = new SubscriptionDto(10L, "Basic", BigDecimal.ONE, SubscriptionStatus.CANCELED, LocalDate.of(2026, 1, 15), LocalDate.of(2026, 2, 15));
 

@@ -62,6 +62,10 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
     List<Document> findByTaskIdOrderByCreatedAtDesc(Long taskId);
 
+    @EntityGraph(attributePaths = {"user", "uploadedBy", "task", "generatedFromTemplate"})
+    @Query("SELECT d FROM Document d WHERE d.id IN :ids")
+    List<Document> findDocumentsByIds(@Param("ids") List<Long> ids);
+
     Optional<Document> findByStorageKey(String storageKey);
     
     @Modifying

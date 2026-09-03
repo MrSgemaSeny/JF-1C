@@ -39,8 +39,8 @@
 ## Pre-Release Audit Findings [CRITICAL — Phase 2 Remediation Required]
 Full report: `.agents/audit_report.md` on `audit/pre-release` branch.
 - **C1** [CRITICAL] Avatar 404: `FileDownloadController.java:48` prefix `"avatars/"` + storageKey, but DB stores key WITHOUT prefix → 404 on all avatar loads
-- **C2** [CRITICAL] N+1 queries: Course catalog (1+N+NM), Curators (1+N), Documents (1+3N), Chat contacts (1+2N) → OOM risk under load
-- **C3** [CRITICAL] Unbounded queries: AuditLog, Notifications, Invoices, Subscriptions — no pagination. `TaskSpecification.java:36` fetch join → Hibernate in-memory pagination (loads ALL rows)
+- **C2** [CRITICAL] N+1 queries: Course catalog, Curators, Documents (1+3N), Chat contacts (1+2N) → OOM risk under load [FIXED: Added findLastMessagesForUser in Chat, findDocumentsByIds in Document]
+- **C3** [CRITICAL] Unbounded queries: AuditLog, Notifications, Invoices, Subscriptions. `SubscriptionService.hasOverlap` loop → OOM risk. [FIXED: Added SQL EXISTS in SubscriptionRepository, paginated others]
 - **C4** [CRITICAL] V107 migration: inserts NULL into `courses.created_by` (NOT NULL) → clean DB from scratch fails. Fix: new migration V111
 - **C5** [CRITICAL] Missing @Transactional: `TaskService.requestTask()` + 5 methods in `AdminService` (demote/toggle/approve/reject/createLearner) → audit events lost on partial failure
 - **C6** [CRITICAL] `OfficialDocumentTemplateSeeder` deletes all templates on EVERY app start → prod customized templates wiped on every deploy

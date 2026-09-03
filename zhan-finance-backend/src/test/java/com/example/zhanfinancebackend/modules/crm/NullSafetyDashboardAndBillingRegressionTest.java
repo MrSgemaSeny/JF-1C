@@ -95,11 +95,11 @@ class NullSafetyDashboardAndBillingRegressionTest {
         );
         existingOpenEnded.setId(10L);
 
-        when(subscriptionRepository.findAllByUser(user)).thenReturn(List.of(existingOpenEnded));
-
+        // when(subscriptionRepository.findAllByUser(user)).thenReturn(List.of(existingOpenEnded));
         SubscriptionDto newRequest = new SubscriptionDto(
                 null, "Pro Plan", BigDecimal.valueOf(100000), Subscription.SubscriptionStatus.ACTIVE, LocalDate.now(), null
         );
+        when(subscriptionRepository.existsOverlappingSubscription(user, null, newRequest.startsAt(), newRequest.endsAt())).thenReturn(true);
 
         // When creating an overlapping subscription, it should throw ApiException(BAD_REQUEST) rather than NullPointerException
         com.example.zhanfinancebackend.common.exception.ApiException ex = assertThrows(

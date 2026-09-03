@@ -48,4 +48,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     @Query("SELECT m.sender.id, COUNT(m) FROM ChatMessage m WHERE m.receiver.id = :receiverId AND m.isRead = false GROUP BY m.sender.id")
     List<Object[]> countUnreadByReceiverGroupedBySender(@Param("receiverId") Long receiverId);
+
+    @Query(value = "SELECT DISTINCT ON (CASE WHEN sender_id = :userId THEN receiver_id ELSE sender_id END) * " +
+           "FROM chat_messages " +
+           "WHERE sender_id = :userId OR receiver_id = :userId " +
+           "ORDER BY CASE WHEN sender_id = :userId THEN receiver_id ELSE sender_id END, created_at DESC", 
+           nativeQuery = true)
+    List<ChatMessage> findLastMessagesForUser(@Param("userId") Long userId);
 }

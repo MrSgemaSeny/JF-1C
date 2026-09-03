@@ -102,11 +102,18 @@ public class ChatService {
             unreadMap.put(senderId, count);
         }
 
+        List<ChatMessage> lastMessages = chatMessageRepository.findLastMessagesForUser(currentUserId);
+        java.util.Map<Long, ChatMessage> lastMessageMap = new java.util.HashMap<>();
+        for (ChatMessage msg : lastMessages) {
+            Long contactId = msg.getSender().getId().equals(currentUserId) ? msg.getReceiver().getId() : msg.getSender().getId();
+            lastMessageMap.put(contactId, msg);
+        }
+
         return uniqueUsers.values().stream()
                 .filter(u -> !u.getId().equals(currentUserId))
                 .map(u -> {
                     int unread = unreadMap.getOrDefault(u.getId(), 0);
-                    ChatMessage lastMsg = chatMessageRepository.findLastMessage(currentUserId, u.getId());
+                    ChatMessage lastMsg = lastMessageMap.get(u.getId());
                     return new ChatContactDto(
                             u.getId(),
                             u.getFullName(),
