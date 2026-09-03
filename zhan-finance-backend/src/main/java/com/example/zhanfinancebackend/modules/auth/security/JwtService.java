@@ -66,6 +66,14 @@ public class JwtService {
         return claims.getSubject();
     }
 
+    public String extractRoleIfValidAccessToken(String token) {
+        Claims claims = parseClaimsOrNull(token);
+        if (claims == null || !TOKEN_TYPE_ACCESS.equals(claims.get(CLAIM_TOKEN_TYPE, String.class))) {
+            return null;
+        }
+        return claims.get("role", String.class);
+    }
+
     public Long extractUserIdIfValidAccessToken(String token) {
         Claims claims = parseClaimsOrNull(token);
         if (claims == null || !TOKEN_TYPE_ACCESS.equals(claims.get(CLAIM_TOKEN_TYPE, String.class))) {

@@ -54,12 +54,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String username = jwtService.extractUsernameIfValidAccessToken(token);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                if (jwtService.isTokenValid(token, userDetails.getUsername())) {
+                String role = jwtService.extractRoleIfValidAccessToken(token);
+                Long uid = jwtService.extractUserIdIfValidAccessToken(token);
+
+                if (role != null && uid != null) {
+                    com.example.zhanfinancebackend.modules.auth.entity.User stubUser = new com.example.zhanfinancebackend.modules.auth.entity.User();
+                    stubUser.setId(uid);
+                    stubUser.setEmail(username);
+                    stubUser.setRole(com.example.zhanfinancebackend.modules.auth.entity.Role.valueOf(role));
+                    stubUser.setEnabled(true);
+                    
+                    UserPrincipal principal = new UserPrincipal(stubUser);
+
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            principal,
                             null,
-                            userDetails.getAuthorities()
+                            principal.getAuthorities()
                     );
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);

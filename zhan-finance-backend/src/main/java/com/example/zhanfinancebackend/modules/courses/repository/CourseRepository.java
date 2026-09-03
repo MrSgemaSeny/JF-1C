@@ -10,8 +10,10 @@ import com.example.zhanfinancebackend.modules.courses.entity.CourseStatus;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"chapters"})
     List<Course> findAllByOrderByIdDesc();
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"chapters"})
     List<Course> findAllByStatusOrderByIdDesc(CourseStatus status);
 
     @org.springframework.data.jpa.repository.Query("select c from Course c where c.status = 'PUBLISHED' and (lower(c.title) like lower(concat('%', :query, '%')) or lower(c.description) like lower(concat('%', :query, '%')))")

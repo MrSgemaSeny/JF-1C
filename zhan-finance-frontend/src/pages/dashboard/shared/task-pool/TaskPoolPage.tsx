@@ -9,6 +9,7 @@ import { getEmployees } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
 import type { TaskDto } from '@/entities/task/model/types';
 import { assignTask } from '@/entities/task/api/taskApi';
+import { TASK_QUERY_KEYS } from '@/entities/task/api/taskQueries';
 import { ChevronDown, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/shared/ui/Toast/ToastContext';
@@ -94,7 +95,7 @@ export function TaskPoolPage() {
     setAssigningTaskId(taskId);
     try {
       await assignTask(taskId, assigneeId);
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['employeeStats'] });
       refetch();

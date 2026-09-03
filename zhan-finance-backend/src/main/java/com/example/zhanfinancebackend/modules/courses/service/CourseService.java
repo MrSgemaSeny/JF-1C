@@ -38,25 +38,19 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
-        List<Course> courses = courseRepository.findAllByOrderByIdDesc();
-        courses.forEach(this::initializeCourse);
-        return courses;
+        return courseRepository.findAllByOrderByIdDesc();
     }
 
     @Transactional(readOnly = true)
     public List<Course> getPublishedCourses() {
-        List<Course> courses = courseRepository.findAllByStatusOrderByIdDesc(CourseStatus.PUBLISHED);
-        courses.forEach(this::initializeCourse);
-        return courses;
+        return courseRepository.findAllByStatusOrderByIdDesc(CourseStatus.PUBLISHED);
     }
 
     @Transactional(readOnly = true)
     public Course getCourseById(Long id) {
-        Course course = courseRepository.findById(id)
+        return courseRepository.findById(id)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
-        initializeCourse(course);
-        return course;
     }
 
     @Transactional(readOnly = true)
@@ -69,17 +63,6 @@ public class CourseService {
         return course;
     }
 
-    private void initializeCourse(Course course) {
-        if (course.getChapters() != null) {
-            course.getChapters().size();
-            for (Chapter chapter : course.getChapters()) {
-                if (chapter.getLessons() != null) {
-                    chapter.getLessons().size();
-                }
-            }
-        }
-    }
-
     @Transactional
     public Course createCourse(String title, String description, String thumbnail, boolean isPublished, User admin) {
         Course course = new Course();
@@ -88,9 +71,7 @@ public class CourseService {
         course.setThumbnail(thumbnail);
         course.setStatus(isPublished ? CourseStatus.PUBLISHED : CourseStatus.DRAFT);
         course.setCreatedBy(admin);
-        course = courseRepository.save(course);
-        initializeCourse(course);
-        return course;
+        return courseRepository.save(course);
     }
 
     @Transactional

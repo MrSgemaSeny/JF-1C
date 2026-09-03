@@ -22,6 +22,7 @@ import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { usePipelinesQuery } from '@/entities/pipeline/api/pipelineQueries';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { TASK_QUERY_KEYS } from '../api/taskQueries';
 
 export interface TaskDetailsModalProps {
   task: TaskDto;
@@ -344,7 +345,7 @@ export function TaskDetailsModal({
     if (!window.confirm(t('taskModal.confirmDelete', { defaultValue: 'Удалить задачу? Это действие необратимо.' }))) return;
     try {
       await deleteTask(task.id);
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
       queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
       onClose?.();
     } catch { toast.error(t('taskModal.deleteError', { defaultValue: 'Ошибка удаления' })); }
