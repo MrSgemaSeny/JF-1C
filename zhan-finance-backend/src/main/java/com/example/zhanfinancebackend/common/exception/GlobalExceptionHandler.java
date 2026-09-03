@@ -188,7 +188,14 @@ public class GlobalExceptionHandler {
             else if (exception instanceof org.springframework.security.authentication.BadCredentialsException) messageKey = "error.bad.credentials";
             else if (exception instanceof UnauthorizedException || exception instanceof org.springframework.security.core.AuthenticationException) messageKey = "error.unauthorized";
             else if (exception instanceof AccessDeniedException) messageKey = "error.access.denied";
-            else if (exception instanceof ConflictException) messageKey = "error.conflict";
+            else if (exception instanceof ConflictException) {
+                String msg = exception.getMessage();
+                if (msg != null && msg.equals("EMAIL_ALREADY_REGISTERED")) {
+                    messageKey = "error.email_already_registered";
+                } else {
+                    messageKey = "error.conflict";
+                }
+            }
             else if (exception instanceof BadRequestException || exception instanceof InvalidStateException || exception instanceof UnprocessableEntityException) {
                 String msg = exception.getMessage();
                 if (msg != null && msg.startsWith("error.")) {

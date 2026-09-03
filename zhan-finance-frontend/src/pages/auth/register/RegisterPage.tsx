@@ -106,6 +106,9 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           setGooglePromptShownFor(email);
           setStep('SOCIAL_PROMPT');
           return;
+        } else if (res.exists) {
+          setGlobalError(t('auth:errors.EMAIL_ALREADY_REGISTERED', { defaultValue: 'Этот email уже зарегистрирован' }));
+          return;
         } else if (!res.exists && email.toLowerCase().endsWith('@gmail.com')) {
           setGooglePromptShownFor(email);
           setStep('SOCIAL_PROMPT');
