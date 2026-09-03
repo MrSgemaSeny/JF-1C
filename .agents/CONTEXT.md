@@ -8,7 +8,7 @@
 
 ## Infrastructure State
 - **Backend (Fly.io)**: Deployed, migrations up to V120 applied. PostgreSQL connected. Secrets in Fly Secrets.
-- **Frontend (GitHub Pages)**: CI/CD configured (deploy-backend.yml + ci.yml). All API paths on /api/v1/**. Release v1.0.0 published.
+- **Frontend (GitHub Pages)**: CI/CD configured and active (`ci.yml` deploy-pages). GitHub Pages enabled via API (`build_type: workflow`). Live at https://mrsgemaseny.github.io/JF-1C/. Release v1.0.0 published.
 - **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP) fully working.
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
