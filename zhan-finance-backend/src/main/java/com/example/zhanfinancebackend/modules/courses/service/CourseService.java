@@ -38,19 +38,21 @@ public class CourseService {
 
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
-        return courseRepository.findAllByOrderByIdDesc();
+        return initializeCourses(courseRepository.findAllByOrderByIdDesc());
     }
 
     @Transactional(readOnly = true)
     public List<Course> getPublishedCourses() {
-        return courseRepository.findAllByStatusOrderByIdDesc(CourseStatus.PUBLISHED);
+        return initializeCourses(courseRepository.findAllByStatusOrderByIdDesc(CourseStatus.PUBLISHED));
     }
 
     @Transactional(readOnly = true)
     public Course getCourseById(Long id) {
-        return courseRepository.findById(id)
+        Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
+        initializeCourseChaptersAndLessons(course);
+        return course;
     }
 
     @Transactional(readOnly = true)
@@ -61,6 +63,23 @@ public class CourseService {
                     org.springframework.http.HttpStatus.FORBIDDEN, "Course is not published");
         }
         return course;
+    }
+
+    private void initializeCourseChaptersAndLessons(Course course) {
+        if (course != null && course.getChapters() != null) {
+            course.getChapters().forEach(ch -> {
+                if (ch.getLessons() != null) {
+                    ch.getLessons().size();
+                }
+            });
+        }
+    }
+
+    private List<Course> initializeCourses(List<Course> courses) {
+        if (courses != null) {
+            courses.forEach(this::initializeCourseChaptersAndLessons);
+        }
+        return courses;
     }
 
     @Transactional

@@ -44,15 +44,16 @@
 15. **Chat Interface Avatar**: Fixed chat UI to display user's avatar dynamically instead of a static default icon in `ChatDrawer`. Updated DTOs (`UserDto`, `ClientInfoDto`) to support `avatarUrl` natively.
 16. **Employee Registration Status Flow**: Fixed edge case where newly registered employees (who are PENDING) were redirected to the dashboard without tokens, causing crashes. Added dedicated "Ваша заявка в работе" full-page status screen on the Login page for pending/rejected accounts.
 17. **Mobile OAuth Fix (Safari ITP Bypass)**: Fixed mobile OAuth login (iOS Safari/Chrome) by reverting `@JsonIgnore` from `accessToken` in `AuthResponse`. This bypasses Apple's Intelligent Tracking Prevention (ITP) which blocks cross-domain HttpOnly cookies, allowing the frontend to capture the token in JSON and use `Authorization: Bearer` memory fallback.
+18. **Database & ORM Compatibility Fixes (Chat & LMS)**:
+   - Fixed 500 on `/api/v1/chat/contacts`: Rewrote `ChatMessageRepository.findLastMessagesForUser` using CTE (`WITH user_chats AS ... SELECT DISTINCT ON (other_user_id)`) resolving PostgreSQL 17 planner rejection while maintaining full compatibility with PostgreSQL 14.
+   - Fixed 500 on `/api/v1/admin/courses`: Resolved `LazyInitializationException` on `Chapter.lessons` by batch-initializing chapters and lessons within `@Transactional(readOnly = true)` in `CourseService` (2 batch queries, zero N+1, avoiding Hibernate `MultipleBagFetchException`).
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
 - **Refresh token race condition**: Known, not critical at current scale
 - **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact
-- **Local Dev Warnings & 500s (Observed on localhost, noted for future investigation, do not fix now)**:
-  - Initial `ERR_CONNECTION_REFUSED` on `/api/v1/auth/me` and `/api/v1/services/highlighted` occurs before Spring Boot finishes booting.
-  - 500 on `/api/v1/admin/courses`: `LazyInitializationException` on `Chapter.lessons` (`no session` during Jackson serialization outside transaction with `open-in-view=false`).
-  - 500 on `/api/v1/chat/contacts`: PostgreSQL version incompatibility (Prod is PostgreSQL 14.0 on Fly.io, local is PostgreSQL 17.6). PostgreSQL 17 planner strictly validates parameter expressions in `SELECT DISTINCT ON (CASE WHEN sender_id = ? ...) ORDER BY (CASE WHEN sender_id = ? ...)`.
+- **Local Dev Warnings**:
+  - Initial `ERR_CONNECTION_REFUSED` on `/api/v1/auth/me` and `/api/v1/services/highlighted` occurs normally before Spring Boot completes startup.
   - Google Sign-In console warning: `google.accounts.id.initialize() is called multiple times`.
   - Accessibility warning on `/settings`: Password forms missing username field for autofill/screenreaders.
 
