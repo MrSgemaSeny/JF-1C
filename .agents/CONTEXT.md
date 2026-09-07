@@ -49,6 +49,11 @@
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
 - **Refresh token race condition**: Known, not critical at current scale
 - **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact
+- **Local Dev Warnings & 500s (Observed on localhost, noted for future investigation, do not fix now)**:
+  - Initial `ERR_CONNECTION_REFUSED` on `/api/v1/auth/me` and `/api/v1/services/highlighted` occurs before Spring Boot finishes booting.
+  - 500 Internal Server Error on `/api/v1/admin/courses` and `/api/v1/chat/contacts` on local dev database.
+  - Google Sign-In console warning: `google.accounts.id.initialize() is called multiple times`.
+  - Accessibility warning on `/settings`: Password forms missing username field for autofill/screenreaders.
 
 ## Pre-Release Audit Findings [CRITICAL — Phase 2 Remediation Required]
 Full report: `.agents/audit_report.md` on `audit/pre-release` branch.
