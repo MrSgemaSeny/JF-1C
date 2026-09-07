@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '@/shared/config/routes';
 import { useContactForm } from './useContactForm';
 
 interface ContactFormProps {
@@ -110,9 +112,19 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
                 {t('contactForm.buttons.submitting', { defaultValue: 'Отправляем...' })}
               </>
             ) : (
-              t('contactForm.buttons.submit', { defaultValue: 'Отправить заявку' })
+              t('contactForm.buttons.submit', { defaultValue: 'Отправить заявку на консультацию' })
             )}
           </button>
+          <p className="text-xs text-brand-green/70 text-center mt-3 leading-relaxed">
+            Нажимая кнопку, вы соглашаетесь с{' '}
+            <Link to={ROUTES.PRIVACY_POLICY} className="underline font-semibold hover:text-brand-green">
+              Политикой конфиденциальности
+            </Link>{' '}
+            и{' '}
+            <Link to={ROUTES.TERMS} className="underline font-semibold hover:text-brand-green">
+              Пользовательским соглашением
+            </Link>
+          </p>
         </form>
       )}
     </div>

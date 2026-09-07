@@ -47,7 +47,9 @@
     "discussTask": "Discuss a project?",
     "allRightsReserved": "All rights reserved.",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Service"
+    "terms": "Terms of Service",
+    "refund": "Refund Policy",
+    "cookies": "Cookie Policy"
   },
   "hero": {
     "circleText": "accounting • taxes • consulting • outsourcing •",
@@ -800,7 +802,7 @@
     "guarantees": {
       "badge": "Responsibility",
       "title": "Legally Binding Guarantees",
-      "p1": "The words 'we are professionals' mean nothing without financial responsibility. Our confidence in our processes allows us to assume 100% of material risks.",
+      "p1": "Financial security and accounting accuracy are bound by contract with material liability for errors under IFRS standards.",
       "items": [
         {
           "title": "Financial security:",

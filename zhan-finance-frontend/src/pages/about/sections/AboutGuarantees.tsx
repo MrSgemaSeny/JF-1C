@@ -15,7 +15,7 @@ export function AboutGuarantees() {
           {t('about.guarantees.title', { defaultValue: 'Гарантии, закрепленные юридически' })}
         </h2>
         <div className="text-lg md:text-xl leading-relaxed text-brand-beige/80 space-y-4">
-          <p>{t('about.guarantees.p1', { defaultValue: 'Слова "мы профессионалы" ничего не стоят без финансовой ответственности. Наша уверенность в своих процессах позволяет нам брать на себя 100% материальных рисков.' })}</p>
+          <p>{t('about.guarantees.p1', { defaultValue: 'Финансовая безопасность и качество учета закрепляются договором с материальной ответственностью за допущенные ошибки согласно стандартам МСФО.' })}</p>
           <ul className="list-disc pl-6 space-y-2 mt-4">
             <li><strong>{t('about.guarantees.items.0.title', { defaultValue: 'Финансовая безопасность:' })}</strong> {t('about.guarantees.items.0.text', { defaultValue: 'Полная компенсация штрафов и пеней, если они возникли из-за нашей ошибки.' })}</li>
             <li><strong>{t('about.guarantees.items.1.title', { defaultValue: 'Конфиденциальность (NDA):' })}</strong> {t('about.guarantees.items.1.text', { defaultValue: 'Строгий режим коммерческой тайны. Шифрованные каналы связи и защищенные серверы.' })}</li>

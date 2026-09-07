@@ -100,6 +100,11 @@ export function Footer() {
                       ЖАН FINANCE
                     </span>
                   </li>
+                  <li className="pt-3 border-t border-brand-beige/15 text-xs text-brand-beige/80 space-y-1">
+                    <p className="font-bold text-brand-beige">ТОО «ZhanFinance»</p>
+                    <p>БИН: 240140023819</p>
+                    <p>г. Алматы, пр. Достык, 180</p>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -131,15 +136,21 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-brand-beige/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-medium opacity-60">
-          <p>© {new Date().getFullYear()} Zhan Finance. {t('footer.allRightsReserved')}</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">
+        <div className="pt-8 border-t border-brand-beige/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-medium opacity-75">
+          <p>© {new Date().getFullYear()} ТОО «ZhanFinance». {t('footer.allRightsReserved')}</p>
+          <div className="flex flex-wrap gap-4 md:gap-6 text-xs md:text-sm">
+            <Link to={ROUTES.PRIVACY_POLICY} className="hover:text-white transition-colors">
               {t('footer.privacy')}
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </Link>
+            <Link to={ROUTES.TERMS} className="hover:text-white transition-colors">
               {t('footer.terms')}
-            </a>
+            </Link>
+            <Link to={ROUTES.REFUND_POLICY} className="hover:text-white transition-colors">
+              {t('footer.refund')}
+            </Link>
+            <Link to={ROUTES.COOKIE_POLICY} className="hover:text-white transition-colors">
+              {t('footer.cookies')}
+            </Link>
           </div>
         </div>
       </div>

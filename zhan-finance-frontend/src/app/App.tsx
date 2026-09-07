@@ -10,6 +10,11 @@ const AboutPage = lazy(() => import('@/pages/about/AboutPage').then(m => ({ defa
 const ServicesPage = lazy(() => import('@/pages/services/ServicesPage').then(m => ({ default: m.ServicesPage })));
 const LoginPage = lazy(() => import('@/pages/auth/login/LoginPage').then(m => ({ default: m.LoginPage })));
 const RegisterPage = lazy(() => import('@/pages/auth/register/RegisterPage').then(m => ({ default: m.RegisterPage })));
+const PrivacyPolicyPage = lazy(() => import('@/pages/legal/PrivacyPolicyPage').then(m => ({ default: m.PrivacyPolicyPage })));
+const TermsPage = lazy(() => import('@/pages/legal/TermsPage').then(m => ({ default: m.TermsPage })));
+const RefundPolicyPage = lazy(() => import('@/pages/legal/RefundPolicyPage').then(m => ({ default: m.RefundPolicyPage })));
+const CookiePolicyPage = lazy(() => import('@/pages/legal/CookiePolicyPage').then(m => ({ default: m.CookiePolicyPage })));
+import { CookieConsent } from '@/widgets/cookie-consent/CookieConsent';
 import { AuthProvider } from '@/features/auth/AuthContext';
 import { NotificationProvider } from '@/features/notifications/NotificationContext';
 import { ChatNotificationProvider } from '@/features/chat/ChatNotificationContext';
@@ -113,6 +118,7 @@ export function App() {
           <ChatNotificationProvider>
           <BrowserRouter basename={routerBasename}>
           <ScrollToTop />
+          <CookieConsent />
           <ErrorBoundary>
           <Suspense fallback={<div className="flex h-screen items-center justify-center"><Spinner className="w-8 h-8 text-brand-green" /></div>}>
           <Routes>
@@ -120,6 +126,10 @@ export function App() {
               <Route path={ROUTES.HOME} element={<HomePage />} />
               <Route path={ROUTES.ABOUT} element={<AboutPage />} />
               <Route path={ROUTES.SERVICES} element={<ServicesPage />} />
+              <Route path={ROUTES.PRIVACY_POLICY} element={<PrivacyPolicyPage />} />
+              <Route path={ROUTES.TERMS} element={<TermsPage />} />
+              <Route path={ROUTES.REFUND_POLICY} element={<RefundPolicyPage />} />
+              <Route path={ROUTES.COOKIE_POLICY} element={<CookiePolicyPage />} />
             </Route>
 
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />

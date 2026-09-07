@@ -269,6 +269,17 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
               </div>
             </div>
 
+            <p className="text-[11px] text-center text-brand-green/60 mt-4 leading-relaxed">
+              Продолжая регистрацию, вы принимаете{' '}
+              <Link to={ROUTES.PRIVACY_POLICY} target="_blank" className="underline font-semibold hover:text-brand-green">
+                Политику конфиденциальности
+              </Link>{' '}
+              и{' '}
+              <Link to={ROUTES.TERMS} target="_blank" className="underline font-semibold hover:text-brand-green">
+                Пользовательское соглашение
+              </Link>
+            </p>
+
             <p className="text-center text-sm text-brand-green/70 mt-6">
               {t('auth.register.hasAccount')}{' '}
               <Link to={`${ROUTES.LOGIN}${searchParams.get('from') ? `?from=${encodeURIComponent(searchParams.get('from')!)}` : ''}`} className="font-bold text-brand-green hover:underline">
@@ -380,6 +391,17 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
                 {isSubmitting ? t('auth.register.registering') : t('auth.register.registerBtn')}
                 {!isSubmitting && <ArrowRight className="w-4 h-4" />}
               </button>
+
+              <p className="text-[11px] text-center text-brand-green/60 mt-2 leading-relaxed">
+                Нажимая «{t('auth.register.registerBtn') || 'Зарегистрироваться'}», вы принимаете{' '}
+                <Link to={ROUTES.PRIVACY_POLICY} target="_blank" className="underline font-semibold hover:text-brand-green">
+                  Политику конфиденциальности
+                </Link>{' '}
+                и{' '}
+                <Link to={ROUTES.TERMS} target="_blank" className="underline font-semibold hover:text-brand-green">
+                  Пользовательское соглашение
+                </Link>
+              </p>
               
               <button 
                 type="button"
