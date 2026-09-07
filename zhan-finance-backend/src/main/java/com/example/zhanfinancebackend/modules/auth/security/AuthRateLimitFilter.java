@@ -30,6 +30,11 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             .maximumSize(10000)
             .build();
 
+    private final Cache<String, Bucket> passwordResetCache = Caffeine.newBuilder()
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .maximumSize(10000)
+            .build();
+
     private Bucket createNewBucket() {
         Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
         return Bucket.builder()
@@ -44,7 +49,17 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
                 .build();
     }
 
-    private Bucket resolveBucket(String ip, boolean isCheckEmail) {
+    private Bucket createPasswordResetBucket() {
+        Bandwidth limit = Bandwidth.classic(3, Refill.greedy(3, Duration.ofMinutes(15)));
+        return Bucket.builder()
+                .addLimit(limit)
+                .build();
+    }
+
+    private Bucket resolveBucket(String ip, boolean isCheckEmail, boolean isPasswordReset) {
+        if (isPasswordReset) {
+            return passwordResetCache.get(ip, k -> createPasswordResetBucket());
+        }
         if (isCheckEmail) {
             return checkEmailCache.get(ip, k -> createCheckEmailBucket());
         }
@@ -62,7 +77,8 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
         boolean isCheckEmail = uri.contains("/auth/check-email");
-        boolean isAuth = uri.startsWith("/api/v1/auth/") || uri.startsWith("/api/auth/") || uri.startsWith("/v1/auth/") || isCheckEmail;
+        boolean isPasswordReset = uri.contains("/auth/forgot-password") || uri.contains("/auth/reset-password");
+        boolean isAuth = uri.startsWith("/api/v1/auth/") || uri.startsWith("/api/auth/") || uri.startsWith("/v1/auth/") || isCheckEmail || isPasswordReset;
 
         if (isAuth) {
             String ip = request.getHeader("Fly-Client-IP");
@@ -70,7 +86,7 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
                 ip = request.getRemoteAddr();
             }
 
-            Bucket bucket = resolveBucket(ip, isCheckEmail);
+            Bucket bucket = resolveBucket(ip, isCheckEmail, isPasswordReset);
             if (bucket != null && bucket.tryConsume(1)) {
                 filterChain.doFilter(request, response);
             } else {

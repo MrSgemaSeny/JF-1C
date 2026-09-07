@@ -7,23 +7,27 @@
 - **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure State
-- **Backend (Fly.io)**: Deployed, migrations up to V120 applied. PostgreSQL connected. Secrets in Fly Secrets.
+- **Backend (Fly.io)**: Deployed, migrations up to V121 applied. PostgreSQL connected. Secrets in Fly Secrets.
 - **Frontend (GitHub Pages)**: CI/CD configured and active (`ci.yml` deploy-pages). GitHub Pages enabled via API (`build_type: workflow`). Live at https://mrsgemaseny.github.io/JF-1C/. Release v1.0.0 published.
-- **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP) fully working.
+- **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP), secure Password Reset (#25) fully working.
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Legal & Compliance Day 2-3 (#3, #4, #7, #10, #12, #14, #15, #16, #19)**:
+1. **Password Reset Flow (#25)**:
+   - Implemented zero-enumeration password recovery: `V121__create_password_reset_tokens.sql`, `PasswordResetService.java` with SHA-256 token hashing, 15-minute expiration, and session revocation (`refreshTokenRepository.deleteAllByUser`).
+   - Rate limiting via `AuthRateLimitFilter.java` (3 req/15 min per IP for `/forgot-password` and `/reset-password`).
+   - Frontend pages `/forgot-password` (`ForgotPasswordPage.tsx`) and `/reset-password` (`ResetPasswordPage.tsx`), plus login page shortcut and Vitest/JUnit coverage.
+2. **Legal & Compliance Day 2-3 (#3, #4, #7, #10, #12, #14, #15, #16, #19)**:
    - Added 4 dedicated legal pages (`/privacy-policy`, `/terms`, `/refund-policy`, `/cookie-policy`) with Kazakhstan Law No. 94-V compliance and Article 12 data localization.
    - Built `CookieConsent` banner widget with persistent choice in `localStorage` (`accepted` / `essential_only`).
    - Updated `Footer.tsx` with legal entity details (ТОО «ZhanFinance», БИН 240140023819, contact details) and active legal routes.
    - Added PDn processing consent disclaimers under submit buttons in `ContactForm.tsx` and `RegisterPage.tsx`.
    - Replaced unsupported claims on landing pages with measurable standards (IFRS / contract SLA).
-2. **Security Hardening Day 1 (#37, #33, #35)**: 
+3. **Security Hardening Day 1 (#37, #33, #35)**: 
    - Disabled source maps in `vite.config.ts` (`sourcemap: false`) to prevent original TypeScript code leak on GitHub Pages.
    - Fixed invoice IDOR / mutation vulnerability (#33): removed `Role.CLIENT` from `canWrite` and `canCreateFor` in `InvoiceAccessService.java`, restricted PUT/POST to ADMIN/EMPLOYEE and DELETE to ADMIN.
    - Fixed account enumeration risk (#35): added strict rate limiter (`checkEmailCache`, 5 req/min per IP) in `AuthRateLimitFilter.java` for `/api/v1/auth/check-email`.
-3. **2FA (Epic-09)**: Fully implemented -- QR setup, TOTP verification, disable, scheduled cleanup. 6 unit tests.
+4. **2FA (Epic-09)**: Fully implemented -- QR setup, TOTP verification, disable, scheduled cleanup. 6 unit tests.
 2. **Documents Redesign (Epic-03)**: Employee + Client pages redesigned with metrics cards, folder pills, source filters, ZIP download.
 3. **ADVISOR Role (Epic-19)**: Full role with Overview, Workload, access to all clients/tasks/documents, sidebar navigation.
 4. **Task Pool Logic (Epic-02)**: Auto-reopen LOST tasks to first OPEN stage when assigned from pool.

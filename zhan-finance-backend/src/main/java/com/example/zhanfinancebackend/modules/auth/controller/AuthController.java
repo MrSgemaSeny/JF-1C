@@ -8,8 +8,11 @@ import com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.GoogleLoginRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.CheckEmailRequest;
 import com.example.zhanfinancebackend.modules.auth.dto.CheckEmailResponse;
+import com.example.zhanfinancebackend.modules.auth.dto.ForgotPasswordRequest;
+import com.example.zhanfinancebackend.modules.auth.dto.ResetPasswordRequest;
 import com.example.zhanfinancebackend.modules.auth.service.AuthService;
 import com.example.zhanfinancebackend.modules.auth.service.GoogleAuthService;
+import com.example.zhanfinancebackend.modules.auth.service.PasswordResetService;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +30,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final GoogleAuthService googleAuthService;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(AuthService authService, GoogleAuthService googleAuthService) {
+    public AuthController(AuthService authService, GoogleAuthService googleAuthService, PasswordResetService passwordResetService) {
         this.authService = authService;
         this.googleAuthService = googleAuthService;
+        this.passwordResetService = passwordResetService;
     }
 
 
@@ -114,5 +119,17 @@ public class AuthController {
     @PostMapping("/check-email")
     public ApiResponse<CheckEmailResponse> checkEmail(@Valid @RequestBody CheckEmailRequest request) {
         return ApiResponse.success(authService.checkEmail(request.email()));
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.requestPasswordReset(request.email());
+        return ApiResponse.success(null, "Если аккаунт с таким адресом существует, мы отправили инструкцию по сбросу пароля.");
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request.token(), request.newPassword());
+        return ApiResponse.success(null, "Пароль успешно изменен. Теперь вы можете войти в аккаунт.");
     }
 }

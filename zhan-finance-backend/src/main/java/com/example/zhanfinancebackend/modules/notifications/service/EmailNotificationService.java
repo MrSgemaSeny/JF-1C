@@ -393,4 +393,23 @@ public class EmailNotificationService {
         String html = buildFormalEmailHtml("Новый документ", user.getFullName(), contentHtml, "Перейти в личный кабинет", frontendUrl + "/client");
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+
+    @Async
+    public void sendPasswordResetEmail(User user, String rawToken) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+
+        String subject = "Восстановление пароля — Zhan Finance";
+        String resetUrl = frontendUrl + "/reset-password?token=" + rawToken;
+
+        String contentHtml = 
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Вы запросили сброс пароля для вашей учетной записи в системе Zhan Finance.</p>" +
+            "<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;\">" +
+            "  <tr><td style=\"padding: 24px;\">" +
+            "    <p style=\"color: #166534; font-size: 14px; line-height: 22px; margin: 0;\">Ссылка действительна в течение <strong>15 минут</strong>. Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо — ваш аккаунт находится в полной безопасности.</p>" +
+            "  </td></tr>" +
+            "</table>";
+
+        String html = buildFormalEmailHtml("Сброс пароля", user.getFullName(), contentHtml, "Задать новый пароль", resetUrl);
+        sendHtmlEmail(user.getEmail(), subject, html);
+    }
 }

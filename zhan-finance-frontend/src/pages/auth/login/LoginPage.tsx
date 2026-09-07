@@ -201,6 +201,15 @@ export function LoginPage() {
                 placeholder="••••••••"
               />
 
+              <div className="flex justify-end -mt-2 mb-2">
+                <Link
+                  to={ROUTES.FORGOT_PASSWORD}
+                  className="text-xs font-semibold text-brand-green/75 hover:text-brand-green hover:underline transition-colors"
+                >
+                  Забыли пароль?
+                </Link>
+              </div>
+
               {globalError && (
                 <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
                   {globalError}

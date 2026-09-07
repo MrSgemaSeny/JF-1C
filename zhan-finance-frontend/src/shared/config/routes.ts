@@ -8,6 +8,8 @@ export const ROUTES = {
   COOKIE_POLICY: '/cookie-policy',
   LOGIN: '/login',
   LOGIN_EMPLOYEE: '/login/employee',
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password',
   REGISTER: '/register',
   REGISTER_EMPLOYEE: '/register/employee',
   COMPLETE_PROFILE: '/complete-profile',

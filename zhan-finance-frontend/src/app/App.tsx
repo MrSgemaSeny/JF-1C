@@ -9,6 +9,8 @@ const HomePage = lazy(() => import('@/pages/home/HomePage').then(m => ({ default
 const AboutPage = lazy(() => import('@/pages/about/AboutPage').then(m => ({ default: m.AboutPage })));
 const ServicesPage = lazy(() => import('@/pages/services/ServicesPage').then(m => ({ default: m.ServicesPage })));
 const LoginPage = lazy(() => import('@/pages/auth/login/LoginPage').then(m => ({ default: m.LoginPage })));
+const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage = lazy(() => import('@/pages/auth/reset-password/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })));
 const RegisterPage = lazy(() => import('@/pages/auth/register/RegisterPage').then(m => ({ default: m.RegisterPage })));
 const PrivacyPolicyPage = lazy(() => import('@/pages/legal/PrivacyPolicyPage').then(m => ({ default: m.PrivacyPolicyPage })));
 const TermsPage = lazy(() => import('@/pages/legal/TermsPage').then(m => ({ default: m.TermsPage })));
@@ -134,6 +136,8 @@ export function App() {
 
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.LOGIN_EMPLOYEE} element={<Navigate to={ROUTES.REGISTER_EMPLOYEE} replace />} />
+            <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+            <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
             <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
             <Route path={ROUTES.REGISTER_EMPLOYEE} element={<RegisterPage isEmployeeRoute={true} />} />
             <Route path={ROUTES.COMPLETE_PROFILE} element={<CompleteProfilePage />} />
