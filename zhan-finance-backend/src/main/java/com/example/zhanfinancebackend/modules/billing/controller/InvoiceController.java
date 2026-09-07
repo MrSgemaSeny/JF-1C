@@ -92,7 +92,7 @@ public class InvoiceController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<InvoiceDto> create(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody InvoiceDto request
@@ -101,7 +101,7 @@ public class InvoiceController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<InvoiceDto> update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
@@ -111,7 +111,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> delete(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id

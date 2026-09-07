@@ -87,7 +87,7 @@ class InvoiceAccessServiceTest {
     void testCanWrite() {
         assertTrue(invoiceAccessService.canWrite(admin, invoiceWithEmployee));
         
-        assertTrue(invoiceAccessService.canWrite(clientWithEmployee, invoiceWithEmployee));
+        assertFalse(invoiceAccessService.canWrite(clientWithEmployee, invoiceWithEmployee));
         
         assertTrue(invoiceAccessService.canWrite(employee, invoiceWithEmployee));
         assertFalse(invoiceAccessService.canWrite(otherEmployee, invoiceWithEmployee));
@@ -108,7 +108,7 @@ class InvoiceAccessServiceTest {
     void testCanCreateFor() {
         assertTrue(invoiceAccessService.canCreateFor(admin, clientWithEmployee));
         
-        assertTrue(invoiceAccessService.canCreateFor(clientWithEmployee, clientWithEmployee));
+        assertFalse(invoiceAccessService.canCreateFor(clientWithEmployee, clientWithEmployee));
         assertFalse(invoiceAccessService.canCreateFor(clientWithEmployee, clientWithoutEmployee));
         
         assertTrue(invoiceAccessService.canCreateFor(employee, clientWithEmployee));

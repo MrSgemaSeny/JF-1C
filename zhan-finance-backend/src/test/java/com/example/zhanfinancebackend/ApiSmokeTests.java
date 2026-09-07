@@ -46,6 +46,9 @@ class ApiSmokeTests {
     @Autowired
     private StageRepository stageRepository;
 
+    @Autowired
+    private com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
+
     @BeforeEach
     void setup() {
         if (pipelineRepository.findByIsDefaultTrue().isEmpty()) {
@@ -89,6 +92,10 @@ class ApiSmokeTests {
         assertThat(accessToken).isNotBlank();
         assertThat(refreshToken).isNotBlank();
 
+        com.example.zhanfinancebackend.modules.auth.entity.User smokeUser = userRepository.findByEmailIgnoreCase("smoke@example.com").orElseThrow();
+        smokeUser.setRole(com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN);
+        userRepository.save(smokeUser);
+
         MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -101,6 +108,7 @@ class ApiSmokeTests {
                 .andExpect(jsonPath("$.data.tokenType").value("Bearer"))
                 .andReturn();
 
+        accessToken = loginResult.getResponse().getCookie("accessToken").getValue();
         String currentRefreshToken = loginResult.getResponse().getCookie("refreshToken").getValue();
 
         mockMvc.perform(post("/api/v1/auth/refresh").contextPath("/api")

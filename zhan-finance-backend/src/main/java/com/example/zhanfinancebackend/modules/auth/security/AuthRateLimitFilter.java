@@ -25,6 +25,11 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             .maximumSize(10000)
             .build();
 
+    private final Cache<String, Bucket> checkEmailCache = Caffeine.newBuilder()
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .maximumSize(10000)
+            .build();
+
     private Bucket createNewBucket() {
         Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
         return Bucket.builder()
@@ -32,7 +37,17 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
                 .build();
     }
 
-    private Bucket resolveBucket(String ip) {
+    private Bucket createCheckEmailBucket() {
+        Bandwidth limit = Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1)));
+        return Bucket.builder()
+                .addLimit(limit)
+                .build();
+    }
+
+    private Bucket resolveBucket(String ip, boolean isCheckEmail) {
+        if (isCheckEmail) {
+            return checkEmailCache.get(ip, k -> createCheckEmailBucket());
+        }
         return cache.get(ip, k -> createNewBucket());
     }
 
@@ -45,13 +60,17 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (request.getRequestURI().startsWith("/api/v1/auth/") || request.getRequestURI().startsWith("/api/auth/")) {
+        String uri = request.getRequestURI();
+        boolean isCheckEmail = uri.contains("/auth/check-email");
+        boolean isAuth = uri.startsWith("/api/v1/auth/") || uri.startsWith("/api/auth/") || uri.startsWith("/v1/auth/") || isCheckEmail;
+
+        if (isAuth) {
             String ip = request.getHeader("Fly-Client-IP");
             if (ip == null || ip.isBlank()) {
                 ip = request.getRemoteAddr();
             }
 
-            Bucket bucket = resolveBucket(ip);
+            Bucket bucket = resolveBucket(ip, isCheckEmail);
             if (bucket != null && bucket.tryConsume(1)) {
                 filterChain.doFilter(request, response);
             } else {

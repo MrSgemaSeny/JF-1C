@@ -22,8 +22,7 @@ public class InvoiceAccessService {
 
     public boolean canWrite(User actor, Invoice invoice) {
         return actor.getRole() == Role.ADMIN
-                || actor.getRole() == Role.EMPLOYEE && assignedToEmployee(actor, invoice.getUser())
-                || actor.getRole() == Role.CLIENT && sameUser(actor, invoice.getUser());
+                || actor.getRole() == Role.EMPLOYEE && assignedToEmployee(actor, invoice.getUser());
     }
 
     public void assertCanRead(User actor, Invoice invoice) {
@@ -40,7 +39,6 @@ public class InvoiceAccessService {
 
     public boolean canCreateFor(User actor, User client) {
         return actor.getRole() == Role.ADMIN
-                || actor.getRole() == Role.CLIENT && sameUser(actor, client)
                 || actor.getRole() == Role.EMPLOYEE && assignedToEmployee(actor, client);
     }
 
