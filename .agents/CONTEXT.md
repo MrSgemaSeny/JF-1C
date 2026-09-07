@@ -7,7 +7,7 @@
 - **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure State
-- **Backend (Fly.io)**: Deployed, migrations up to V121 applied. PostgreSQL connected. Secrets in Fly Secrets.
+- **Backend (Fly.io)**: Fly.io deploy paused (status 403 overdue invoice on fly.io/dashboard/orka-best/billing). CI/CD build & test pipeline passes 100%. PostgreSQL connected. Secrets in Fly Secrets.
 - **Frontend (GitHub Pages)**: CI/CD configured and active (`ci.yml` deploy-pages). GitHub Pages enabled via API (`build_type: workflow`). Live at https://mrsgemaseny.github.io/JF-1C/. Release v1.0.0 published.
 - **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP), secure Password Reset (#25) fully working.
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
