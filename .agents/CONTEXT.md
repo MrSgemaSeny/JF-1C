@@ -51,7 +51,8 @@
 - **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact
 - **Local Dev Warnings & 500s (Observed on localhost, noted for future investigation, do not fix now)**:
   - Initial `ERR_CONNECTION_REFUSED` on `/api/v1/auth/me` and `/api/v1/services/highlighted` occurs before Spring Boot finishes booting.
-  - 500 Internal Server Error on `/api/v1/admin/courses` and `/api/v1/chat/contacts` on local dev database.
+  - 500 on `/api/v1/admin/courses`: `LazyInitializationException` on `Chapter.lessons` (`no session` during Jackson serialization outside transaction with `open-in-view=false`).
+  - 500 on `/api/v1/chat/contacts`: PostgreSQL version incompatibility (Prod is PostgreSQL 14.0 on Fly.io, local is PostgreSQL 17.6). PostgreSQL 17 planner strictly validates parameter expressions in `SELECT DISTINCT ON (CASE WHEN sender_id = ? ...) ORDER BY (CASE WHEN sender_id = ? ...)`.
   - Google Sign-In console warning: `google.accounts.id.initialize() is called multiple times`.
   - Accessibility warning on `/settings`: Password forms missing username field for autofill/screenreaders.
 
