@@ -51,3 +51,6 @@ prod_logs*
 
 # Obsidian
 markdowns_obsidian/
+
+# Test caches
+tests/e2e/.auth-cache.json

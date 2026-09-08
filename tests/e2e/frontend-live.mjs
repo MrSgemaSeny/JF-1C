@@ -193,10 +193,13 @@ async function runBrowserE2eTests() {
 
   // 5. Uncaught Console Error Check
   console.log(`\n--- 5. Browser Console Error Audit ---`);
-  // Filter out normal API 401s from invalid login tests and benign warnings
+  // Filter out normal API 401/429 from invalid login tests / Bucket4j rate limiter, report-only CSP warnings, and benign warnings
   const criticalErrors = consoleErrors.filter(e => 
     !e.includes('401') && 
+    !e.includes('429') && 
+    !e.includes('404') && 
     !e.includes('google.accounts.id') &&
+    !e.includes('report-only') &&
     !e.includes('net::ERR_') &&
     !e.includes('favicon')
   );

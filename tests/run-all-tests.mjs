@@ -43,14 +43,29 @@ runCommand('3. Live Authenticated User Journeys (Playwright/Chrome)', 'node e2e/
 // 4. Live IDOR Security Audit
 runCommand('4. Live IDOR Security Audit Suite', 'node e2e/idor-live.mjs');
 
-// 3. Artillery Catalog & Public Load Test
-runCommand('3. Artillery Public Load Test', 'npx artillery run artillery/scenarios/catalog-and-public.yml --output artillery/reports/report-public.json');
+// 5. Live CRM Pipeline & Tasks Lifecycle
+runCommand('5. Live CRM Pipeline & Tasks Lifecycle', 'node e2e/crm-lifecycle-live.mjs');
 
-// 4. Artillery Frontend Static Load Test
-runCommand('4. Artillery Frontend CDN Benchmark', 'npx artillery run artillery/scenarios/frontend-static.yml --output artillery/reports/report-frontend.json');
+// 6. Live LMS Courses & Learner Progression Lifecycle
+runCommand('6. Live LMS Courses & Learner Progression Lifecycle', 'node e2e/lms-lifecycle-live.mjs');
 
-// 5. Artillery Rate Limit Stress Test
-runCommand('5. Artillery Rate Limiter Burst Test', 'npx artillery run artillery/scenarios/rate-limit-boundary.yml --output artillery/reports/report-ratelimit.json');
+// 7. Live Chat & Notifications Lifecycle
+runCommand('7. Live Chat & Notifications Lifecycle', 'node e2e/chat-notifications-live.mjs');
+
+// 8. Live Documents & Global Search Lifecycle
+runCommand('8. Live Documents & Global Search Lifecycle', 'node e2e/documents-search-live.mjs');
+
+// 9. Live Billing & Invoices Lifecycle
+runCommand('9. Live Billing & Invoices Lifecycle', 'node e2e/billing-invoices-live.mjs');
+
+// 10. Artillery Catalog & Public Load Test
+runCommand('10. Artillery Public Load Test', 'npx artillery run artillery/scenarios/catalog-and-public.yml --output artillery/reports/report-public.json');
+
+// 11. Artillery Frontend Static Load Test
+runCommand('11. Artillery Frontend CDN Benchmark', 'npx artillery run artillery/scenarios/frontend-static.yml --output artillery/reports/report-frontend.json');
+
+// 12. Artillery Rate Limit Stress Test
+runCommand('12. Artillery Rate Limiter Burst Test', 'npx artillery run artillery/scenarios/rate-limit-boundary.yml --output artillery/reports/report-ratelimit.json');
 
 console.log(`\n======================================================================`);
 console.log(`FINAL SUMMARY`);

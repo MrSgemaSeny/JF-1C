@@ -57,6 +57,14 @@
 21. **Live Browser Authenticated Journeys (`tests/e2e/authenticated-journeys-live.mjs`)**:
    - 17/17 tests passed in headless Chrome against live GitHub Pages & Fly.io.
    - Verified end-to-end user workflows for ADMIN (Dashboard, Tasks, Clients, Employees, Leads, Invoices, Audit Logs), EMPLOYEE (Tasks, Clients, Documents, Calendar), and CLIENT (Documents, Services, Calendar) with automated rate-limit recovery.
+22. **Comprehensive Live E2E Functional Test Suites (`tests/run-all-e2e.mjs`)**:
+   - Built 5 dedicated live lifecycle test suites verified against production:
+     - `crm-lifecycle-live.mjs` (12/12 PASS): Pipeline discovery, task creation, details editing, stage transition, employee assignment, comments, audit history, deletion, 404 verification.
+     - `lms-lifecycle-live.mjs` (11/11 PASS): Course creation, chapter creation, lesson creation, publishing, catalog discovery, outline retrieval, lesson completion, progress tracking, unpublishing, unpublished hiding, deletion.
+     - `chat-notifications-live.mjs` (8/8 PASS): Notifications list, read-all, chat contacts, direct messaging, unread counter detection, thread history, read status, unread reset.
+     - `documents-search-live.mjs` (9/9 PASS): Document templates, multipart upload, visible documents, status update, client document access, stream download verification, global search, deletion, 404 verification.
+     - `billing-invoices-live.mjs` (5/5 PASS): Invoice creation (ISSUED), client querying, adjustment to PAID, deletion, list removal.
+   - Built central authentication helper `auth-helper.mjs` with disk caching and Bucket4j rate-limit backoff. Master runner `run-all-e2e.mjs` orchestrates all 9 E2E suites.
 
 
 ## Known Issues & Warnings
