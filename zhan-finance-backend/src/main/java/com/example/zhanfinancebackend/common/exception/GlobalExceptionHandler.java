@@ -106,6 +106,23 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, "NOT_FOUND", exception, request, locale);
     }
 
+    // --- 405 Method Not Allowed ---
+
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotAllowed(org.springframework.web.HttpRequestMethodNotSupportedException exception, HttpServletRequest request) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Method Not Allowed (405) {}: {}", requestId, request.getMethod(), exception.getMessage());
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.METHOD_NOT_ALLOWED.value(),
+                "METHOD_NOT_ALLOWED",
+                exception.getMessage(),
+                null,
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
+    }
+
     // --- 409 Conflict ---
     
     @ExceptionHandler(ConflictException.class)

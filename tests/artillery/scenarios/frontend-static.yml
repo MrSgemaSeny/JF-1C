@@ -1,0 +1,28 @@
+config:
+  target: "https://mrsgemaseny.github.io"
+  phases:
+    - duration: 10
+      arrivalRate: 3
+      name: "Warmup GitHub Pages CDN (3 req/s)"
+    - duration: 20
+      arrivalRate: 8
+      name: "Sustained static assets & pages load (8 req/s)"
+  headers:
+    User-Agent: "Artillery Load Test Client"
+scenarios:
+  - name: "Frontend Navigation & Asset Loading"
+    flow:
+      - get:
+          url: "/JF-1C/"
+      - think: 1
+      - get:
+          url: "/JF-1C/services"
+      - think: 1
+      - get:
+          url: "/JF-1C/about"
+      - think: 1
+      - get:
+          url: "/JF-1C/privacy-policy"
+      - think: 1
+      - get:
+          url: "/JF-1C/login"

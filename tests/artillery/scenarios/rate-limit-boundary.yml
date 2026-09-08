@@ -1,0 +1,17 @@
+config:
+  target: "https://zhanfinance.fly.dev"
+  phases:
+    - duration: 5
+      arrivalRate: 6
+      name: "Burst Rate Limit Test (6 req/s over 5s = 30 reqs vs 5 req/min limit)"
+  headers:
+    Accept: "application/json"
+    Content-Type: "application/json"
+    X-Requested-With: "XMLHttpRequest"
+scenarios:
+  - name: "Rate Limiter Stress & Protection Check"
+    flow:
+      - post:
+          url: "/api/v1/auth/check-email"
+          json:
+            email: "stress-test@zhanfinance.kz"

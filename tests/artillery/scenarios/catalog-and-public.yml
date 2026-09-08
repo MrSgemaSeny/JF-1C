@@ -1,0 +1,35 @@
+config:
+  target: "https://zhanfinance.fly.dev"
+  phases:
+    - duration: 15
+      arrivalRate: 2
+      name: "Warmup phase (2 req/s)"
+    - duration: 20
+      arrivalRate: 5
+      name: "Sustained load phase (5 req/s)"
+    - duration: 15
+      arrivalRate: 10
+      name: "Peak load phase (10 req/s)"
+  headers:
+    Accept: "application/json"
+    X-Requested-With: "XMLHttpRequest"
+scenarios:
+  - name: "Public Catalog & Health Exploration"
+    flow:
+      - get:
+          url: "/api/actuator/health"
+      - think: 1
+      - get:
+          url: "/api/v1/services/highlighted"
+      - think: 1
+      - get:
+          url: "/api/v1/services"
+      - think: 1
+      - post:
+          url: "/api/v1/contact-requests"
+          json:
+            name: "[Artillery Load Test]"
+            phone: "+77000000088"
+            email: "load-test@zhanfinance.kz"
+            message: "Artillery benchmark request"
+            source: "ARTILLERY_TEST"
