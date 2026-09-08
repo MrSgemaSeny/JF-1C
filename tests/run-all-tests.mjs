@@ -34,8 +34,14 @@ function runCommand(name, cmd) {
 // 1. Live API E2E
 runCommand('1. Live Backend API E2E Tests', 'node e2e/api-live.mjs');
 
-// 2. Live Browser E2E
+// 2. Live Browser Public E2E
 runCommand('2. Live Browser E2E Tests (Playwright/Chrome)', 'node e2e/frontend-live.mjs');
+
+// 3. Live Authenticated User Journeys (Admin, Employee, Client)
+runCommand('3. Live Authenticated User Journeys (Playwright/Chrome)', 'node e2e/authenticated-journeys-live.mjs');
+
+// 4. Live IDOR Security Audit
+runCommand('4. Live IDOR Security Audit Suite', 'node e2e/idor-live.mjs');
 
 // 3. Artillery Catalog & Public Load Test
 runCommand('3. Artillery Public Load Test', 'npx artillery run artillery/scenarios/catalog-and-public.yml --output artillery/reports/report-public.json');

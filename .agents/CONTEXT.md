@@ -54,6 +54,10 @@
 20. **Live Production IDOR Audit (`tests/e2e/idor-live.mjs`)**:
    - Executed 21 live security checks against production API.
    - Identified 4 security & operational bugs: ADVISOR write access to CRM tasks, ADVISOR delete access to documents, CLIENT write access to invoices, and missing `arial.ttf` font breaking invoice PDF rendering. Recorded in Second Brain journal and knowledge base.
+21. **Live Browser Authenticated Journeys (`tests/e2e/authenticated-journeys-live.mjs`)**:
+   - 17/17 tests passed in headless Chrome against live GitHub Pages & Fly.io.
+   - Verified end-to-end user workflows for ADMIN (Dashboard, Tasks, Clients, Employees, Leads, Invoices, Audit Logs), EMPLOYEE (Tasks, Clients, Documents, Calendar), and CLIENT (Documents, Services, Calendar) with automated rate-limit recovery.
+
 
 ## Known Issues & Warnings
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
