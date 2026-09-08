@@ -395,9 +395,7 @@ scenarios:
       - think: 1
       - get:
           url: "/v1/admin/employees/pending"
-          capture:
-            - json: "$.data[0].id"
-              as: "pendingEmpId"
+          afterResponse: "extractPendingEmpId"
           expect:
             - statusCode: 200
             - contentType: json
