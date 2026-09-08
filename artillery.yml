@@ -2,27 +2,31 @@ config:
   target: "https://zhanfinance.fly.dev/api"
   phases:
     - duration: 30
-      arrivalRate: 2
+      arrivalRate: 1
       name: "Warmup"
-      maxVusers: 20
+      maxVusers: 10
     - duration: 60
-      arrivalRate: 5
-      name: "Sustained"
-      maxVusers: 20
+      arrivalRate: 3
+      name: "Smoke"
+      maxVusers: 10
   variables:
-    adminEmail: "{{ $processEnvironment.ADMIN_EMAIL || 'admin@zhanfinance.kz' }}"
-    adminPassword: "{{ $processEnvironment.ADMIN_PASSWORD || 'AdminPassword123!' }}"
+    adminEmail: "{{ $processEnvironment.ADMIN_EMAIL }}"
+    adminPassword: "{{ $processEnvironment.ADMIN_PASSWORD }}"
+  plugins:
+    metrics-by-endpoint: {}
   http:
     headers:
       Content-Type: "application/json"
       Accept: "application/json"
       X-Requested-With: "XMLHttpRequest"
-  plugins:
-    metrics-by-endpoint: {}
+  ensure:
+    thresholds:
+      - "http.response_time.p95": 3000
 
 scenarios:
+  # Scenario 1: Проверка общедоступных публичных эндпоинтов без аутентификации
   - name: "Public Endpoints"
-    weight: 30
+    weight: 5
     flow:
       - get:
           url: "/actuator/health"
@@ -43,27 +47,29 @@ scenarios:
             - hasProperty: "success"
       - think: 1
       - post:
-          url: "/v1/contact-requests"
+          url: "/v1/auth/check-email"
           json:
-            name: "Test"
-            phone: "+77000000000"
-            email: "test@test.com"
-            message: "smoke test"
+            email: "noone@test.com"
           expect:
             - statusCode: 200
             - hasProperty: "success"
       - think: 1
       - post:
-          url: "/v1/auth/check-email"
+          url: "/v1/contact-requests"
           json:
-            email: "nonexistent@test.com"
+            name: "Artillery Test"
+            phone: "+77000000000"
+            email: "artillery@test.com"
+            message: "Automated smoke test"
           expect:
             - statusCode: 200
             - hasProperty: "success"
 
-  - name: "Authenticated Flow"
-    weight: 70
+  # Scenario 2: Сквозной CRUD-сценарий администратора по всем ключевым модулям системы
+  - name: "Admin Full CRUD"
+    weight: 40
     flow:
+      # Step 1 — Login as ADMIN
       - post:
           url: "/v1/auth/login"
           json:
@@ -76,45 +82,517 @@ scenarios:
               as: "accessToken"
           expect:
             - statusCode: 200
+            - hasProperty: "success"
       - think: 1
+
+      # Step 2 — Auth checks
       - get:
           url: "/v1/auth/me"
           expect:
             - statusCode: 200
             - hasProperty: "success"
+      - get:
+          url: "/v1/users/me"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
       - think: 1
+
+      # Step 3 — Admin dashboard
+      - get:
+          url: "/v1/admin/dashboard"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/finance/summary"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/clients/stats"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/employees"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/employees/pending"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/employees/workload"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/employees/assigned"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/employees/unassigned"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/learners"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/admin/audit-logs"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 4 — CRM Tasks CRUD
       - get:
           url: "/v1/crm/tasks?page=0&size=10"
           expect:
             - statusCode: 200
             - hasProperty: "success"
+      - get:
+          url: "/v1/crm/tasks/archived"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - post:
+          url: "/v1/crm/tasks"
+          json:
+            title: "Artillery Task {{ $randomNumber(1000,9999) }}"
+            description: "Created by Artillery smoke test"
+            priority: "MEDIUM"
+          capture:
+            - json: "$.data.id"
+              as: "taskId"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
       - think: 1
+      - get:
+          url: "/v1/crm/tasks/{{ taskId }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/tasks/{{ taskId }}/comments"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - post:
+          url: "/v1/crm/tasks/{{ taskId }}/comments"
+          json:
+            text: "Artillery comment"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/tasks/{{ taskId }}/history"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 5 — CRM Dashboard
       - get:
           url: "/v1/crm/dashboard/admin"
           expect:
             - statusCode: 200
             - hasProperty: "success"
-      - think: 1
       - get:
-          url: "/v1/crm/dashboard/employee"
+          url: "/v1/crm/dashboard/weekly-summary"
           expect:
             - statusCode: 200
             - hasProperty: "success"
       - think: 1
+
+      # Step 6 — CRM Pipeline
       - get:
-          url: "/v1/crm/dashboard/client"
+          url: "/v1/crm/pipelines"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+      # Step 7 — CRM Clients
+      - get:
+          url: "/v1/crm/clients"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+      # Step 8 — CRM Employees
+      - get:
+          url: "/v1/crm/employees"
           expect:
             - statusCode: 200
             - hasProperty: "success"
       - think: 1
+
+      # Step 9 — Labels
+      - get:
+          url: "/v1/crm/labels"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - post:
+          url: "/v1/crm/labels"
+          json:
+            name: "Artillery Label {{ $randomNumber(1,999) }}"
+            color: "#FF5733"
+          capture:
+            - json: "$.data.id"
+              as: "labelId"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - delete:
+          url: "/v1/crm/labels/{{ labelId }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 10 — Calendar
+      - get:
+          url: "/v1/crm/calendar?startDate=2026-09-01&endDate=2026-09-30"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - post:
+          url: "/v1/crm/calendar"
+          json:
+            title: "Artillery Event"
+            date: "2026-09-15"
+            time: "10:00:00"
+            startDate: "2026-09-15T10:00:00"
+            endDate: "2026-09-15T11:00:00"
+            type: "EVENT"
+          capture:
+            - json: "$.data.id"
+              as: "calendarEventId"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - delete:
+          url: "/v1/crm/calendar/{{ calendarEventId }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 11 — Billing
+      - get:
+          url: "/v1/billing/invoices"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+      # Step 12 — Documents
+      - get:
+          url: "/v1/documents"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/documents/all"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 13 — Search
+      - get:
+          url: "/v1/search?q=test"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+      # Step 14 — Notifications
       - get:
           url: "/v1/notifications"
           expect:
             - statusCode: 200
             - hasProperty: "success"
+      - get:
+          url: "/v1/chat/unread"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/chat/contacts"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 15 — Export
+      - get:
+          url: "/v1/crm/export/tasks"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+      # Step 16 — Contact requests (admin view)
+      - get:
+          url: "/v1/contact-requests"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+      # Step 17 — LMS (admin)
+      - get:
+          url: "/v1/admin/courses"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 18 — Logout
+      - post:
+          url: "/v1/auth/logout"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+  # Scenario 3: Жизненный цикл сотрудника: регистрация, одобрение админом и рабочий процесс
+  - name: "Employee Flow"
+    weight: 30
+    flow:
+      # Step 1 — Register Employee
+      - post:
+          url: "/v1/auth/register"
+          json:
+            fullName: "Artillery Employee {{ $randomNumber(1000,9999) }}"
+            email: "artillery.emp.{{ $randomNumber(10000,99999) }}@testmail.com"
+            password: "TestPass123"
+            role: "EMPLOYEE"
+            phone: "+77001234567"
+            companyName: "Artillery Corp"
+          capture:
+            - json: "$.data.email"
+              as: "empEmail"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 2 — Login as ADMIN и апрув
+      - post:
+          url: "/v1/auth/login"
+          json:
+            email: "{{ adminEmail }}"
+            password: "{{ adminPassword }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
       - think: 1
       - get:
+          url: "/v1/admin/employees/pending"
+          capture:
+            - json: "$.data[0].id"
+              as: "pendingEmpId"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - post:
+          url: "/v1/admin/employees/{{ pendingEmpId }}/approve"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - post:
+          url: "/v1/auth/logout"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 3 — Login as Employee
+      - post:
+          url: "/v1/auth/login"
+          json:
+            email: "{{ empEmail }}"
+            password: "TestPass123"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 4 — Employee actions
+      - get:
+          url: "/v1/auth/me"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/tasks?page=0&size=10"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/dashboard/employee"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/dashboard/weekly-summary"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
           url: "/v1/crm/clients"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/employees"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/labels"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/calendar?startDate=2026-09-01&endDate=2026-09-30"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/notifications"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/chat/contacts"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/billing/invoices"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/documents"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/search?q=test"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/export/tasks"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/contact-requests"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - post:
+          url: "/v1/auth/logout"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+  # Scenario 4: Жизненный цикл клиента: регистрация, просмотр данных и создание заявки на услугу
+  - name: "Client Flow"
+    weight: 25
+    flow:
+      # Step 1 — Register Client
+      - post:
+          url: "/v1/auth/register"
+          json:
+            fullName: "Artillery Client {{ $randomNumber(1000,9999) }}"
+            email: "artillery.cli.{{ $randomNumber(10000,99999) }}@testmail.com"
+            password: "TestPass123"
+            role: "CLIENT"
+            phone: "+77009876543"
+            companyName: "Client Corp"
+          capture:
+            - json: "$.data.email"
+              as: "cliEmail"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 2 — Login as Client (Клиенты активируются сразу)
+      - post:
+          url: "/v1/auth/login"
+          json:
+            email: "{{ cliEmail }}"
+            password: "TestPass123"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+
+      # Step 3 — Client actions
+      - get:
+          url: "/v1/auth/me"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/tasks?page=0&size=10"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/dashboard/client"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/dashboard/weekly-summary"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/crm/calendar?startDate=2026-09-01&endDate=2026-09-30"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/notifications"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/billing/invoices"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - get:
+          url: "/v1/search?q=test"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - post:
+          url: "/v1/crm/tasks/request"
+          json:
+            title: "Client Task Request {{ $randomNumber(1,999) }}"
+            description: "I need help with accounting"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - post:
+          url: "/v1/auth/logout"
           expect:
             - statusCode: 200
             - hasProperty: "success"
