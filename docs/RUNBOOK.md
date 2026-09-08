@@ -77,3 +77,34 @@
   3. Если релиз сломал прод — откат к стабильной версии:
      - `flyctl releases list --app zhan-finance-backend`
      - `flyctl releases rollback v<НОМЕР> --app zhan-finance-backend`
+
+### Сценарий F: Алерт `metaspace-near-limit` в Grafana
+* **Симптом**: Grafana генерирует алерт `JVM Metaspace близок к лимиту на zhan-finance-backend` (потребление > 120MB).
+* **Причина**: Прогрев рефлексии (Jackson, Thymeleaf, Spring AOP/CGLIB) и загрузка классов всех модулей при интенсивных прогонах.
+* **Действие**:
+  1. Проверить реальное состояние через Actuator: `/actuator/metrics/jvm.memory.used?tag=id:Metaspace` и `jvm.memory.max`.
+  2. Убедиться, что в конфигурации машины Fly.io установлен флаг `JAVA_TOOL_OPTIONS = "-XX:MaxMetaspaceSize=256m"`.
+  3. Если потребление стабилизировалось на плато (~126MB), скорректировать порог алерта в Grafana до 220MB.
+
+---
+
+## 5. Регламент верификации и запуска тестов
+
+Перед любым релизом или после внесения правок в логику безопасности обязателен полный прогон верификационного контура:
+
+1. **Юнит и интеграционные тесты бэкенда**:
+   ```bash
+   cd zhan-finance-backend
+   ./gradlew test --rerun-tasks
+   ```
+2. **Тесты компонентов фронтенда**:
+   ```bash
+   cd zhan-finance-frontend
+   npm test -- --run
+   ```
+3. **Сквозные E2E-сьюты на боевом контуре**:
+   ```bash
+   cd tests
+   node run-all-e2e.mjs
+   ```
+   *Примечание:* скрипты автоматически используют дисковое кеширование токенов (`tests/e2e/.auth-cache.json`) и бэкофф при получении HTTP 429 от Bucket4j.
