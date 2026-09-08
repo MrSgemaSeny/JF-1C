@@ -105,7 +105,11 @@ public class CourseService {
 
     @Transactional
     public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
+        Course course = getCourseById(id);
+        lessonProgressRepository.deleteByCourseId(id);
+        enrollmentRepository.deleteByCourseId(id);
+        certificateRepository.deleteByCourseId(id);
+        courseRepository.delete(course);
     }
 
     @Transactional
@@ -120,9 +124,8 @@ public class CourseService {
         chapter.setCourse(course);
         chapter.setTitle(title);
         chapter.setOrderIndex(orderIndex);
-        course.getChapters().add(chapter);
-        courseRepository.save(course);
-        // We might want to save chapter directly if there's a ChapterRepository, but CascadeType.ALL should handle it.
-        return chapter;
+        Chapter saved = chapterRepository.save(chapter);
+        course.getChapters().add(saved);
+        return saved;
     }
 }

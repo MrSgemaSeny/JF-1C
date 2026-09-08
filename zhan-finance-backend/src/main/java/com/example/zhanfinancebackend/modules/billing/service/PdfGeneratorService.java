@@ -29,14 +29,14 @@ public class PdfGeneratorService {
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.useFastMode();
             
-            // Register Arial font to support Cyrillic characters
-            builder.useFont(() -> {
-                InputStream is = PdfGeneratorService.class.getResourceAsStream("/fonts/arial.ttf");
-                if (is == null) {
-                    throw new RuntimeException("Font file arial.ttf not found in resources!");
-                }
-                return is;
-            }, "Arial");
+            // Register Arial font to support Cyrillic characters if present in classpath
+            InputStream fontCheck = PdfGeneratorService.class.getResourceAsStream("/fonts/arial.ttf");
+            if (fontCheck != null) {
+                try {
+                    fontCheck.close();
+                } catch (Exception ignored) {}
+                builder.useFont(() -> PdfGeneratorService.class.getResourceAsStream("/fonts/arial.ttf"), "Arial");
+            }
             
             builder.withHtmlContent(htmlContent, "/");
             builder.toStream(os);

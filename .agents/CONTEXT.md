@@ -64,7 +64,13 @@
      - `chat-notifications-live.mjs` (8/8 PASS): Notifications list, read-all, chat contacts, direct messaging, unread counter detection, thread history, read status, unread reset.
      - `documents-search-live.mjs` (9/9 PASS): Document templates, multipart upload, visible documents, status update, client document access, stream download verification, global search, deletion, 404 verification.
      - `billing-invoices-live.mjs` (5/5 PASS): Invoice creation (ISSUED), client querying, adjustment to PAID, deletion, list removal.
-   - Built central authentication helper `auth-helper.mjs` with disk caching and Bucket4j rate-limit backoff. Master runner `run-all-e2e.mjs` orchestrates all 9 E2E suites.
+23. **Vulnerability Remediation & Production Hardening**:
+   - Fixed Invoice IDOR and mutation: added `GET /api/v1/invoices/{id}` with `assertCanRead`, revoked client invoice write/create permissions.
+   - Enforced strict Read-Only mode for `ADVISOR`: removed advisor mutation rights from `TaskController`, `CrmAccessService.canUpdateTaskDetails`, and `DocumentAccessService.canWrite` / `canCreateFor`.
+   - Fixed PDF generation 500 failure in `PdfGeneratorService` with safe font classpath probe and graceful fallback.
+   - Fixed PostgreSQL foreign key constraint violation on course deletion: added cascade cleanup of progress, enrollments, and certificates in `CourseService.deleteCourse`.
+   - Fixed null chapter ID return in `CourseService.createChapter` via explicit `chapterRepository.save(chapter)`.
+   - Standardized `README.md` into a sober, engineering-focused reference documenting the 243 unit/integration tests and 9 live E2E suites without marketing hype.
 
 
 ## Known Issues & Warnings

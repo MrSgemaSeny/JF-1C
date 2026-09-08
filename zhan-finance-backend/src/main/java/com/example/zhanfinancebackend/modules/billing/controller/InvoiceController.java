@@ -91,6 +91,15 @@ public class InvoiceController {
         return ApiResponse.success(invoiceService.findAll(principal.getUser()));
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
+    public ApiResponse<InvoiceDto> getById(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(invoiceService.getById(principal.getUser(), id));
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ApiResponse<InvoiceDto> create(

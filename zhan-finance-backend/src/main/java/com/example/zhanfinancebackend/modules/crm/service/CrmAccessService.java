@@ -110,7 +110,7 @@ public class CrmAccessService {
     }
 
     public boolean canUpdateTaskDetails(User actor, Task task) {
-        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
+        if (actor.getRole() == Role.ADMIN) {
             return true;
         }
         if (actor.getRole() == Role.EMPLOYEE) {

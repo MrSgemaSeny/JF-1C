@@ -126,7 +126,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT', 'ADVISOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'CLIENT')")
     public ApiResponse<TaskDto> updateTaskDetails(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,

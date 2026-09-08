@@ -63,6 +63,11 @@ public class InvoiceService {
     }
 
     @Transactional(readOnly = true)
+    public InvoiceDto getById(User user, Long id) {
+        return toDto(get(user, id));
+    }
+
+    @Transactional(readOnly = true)
     public com.example.zhanfinancebackend.modules.billing.dto.FinanceSummaryDto getFinanceSummary() {
         List<InvoiceRepository.InvoiceStatusSummary> summaryList = invoiceRepository.getFinanceSummaryByStatus();
         java.util.Map<String, Long> countMap = new java.util.HashMap<>();

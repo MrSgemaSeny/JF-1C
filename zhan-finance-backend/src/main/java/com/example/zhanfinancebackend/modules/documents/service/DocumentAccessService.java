@@ -24,7 +24,6 @@ public class DocumentAccessService {
     public boolean canWrite(User actor, Document document) {
         if (actor == null || document == null) return false;
         return actor.getRole() == Role.ADMIN
-                || actor.getRole() == Role.ADVISOR
                 || actor.getRole() == Role.EMPLOYEE
                 || (actor.getRole() == Role.CLIENT && sameUser(actor, document.getUser()));
     }
@@ -44,7 +43,6 @@ public class DocumentAccessService {
     public boolean canCreateFor(User actor, User targetUser) {
         if (actor == null) return false;
         return actor.getRole() == Role.ADMIN
-                || actor.getRole() == Role.ADVISOR
                 || actor.getRole() == Role.EMPLOYEE
                 || (actor.getRole() == Role.CLIENT && sameUser(actor, targetUser));
     }
