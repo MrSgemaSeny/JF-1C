@@ -49,7 +49,7 @@
    - Fixed 500 on `/api/v1/admin/courses`: Resolved `LazyInitializationException` on `Chapter.lessons` by batch-initializing chapters and lessons within `@Transactional(readOnly = true)` in `CourseService` (2 batch queries, zero N+1, avoiding Hibernate `MultipleBagFetchException`).
 19. **Live Production E2E & Load Testing (Playwright + Artillery)**:
    - Built automated E2E test suites: `tests/e2e/api-live.mjs` (34 endpoints & security boundaries) and `tests/e2e/frontend-live.mjs` (Playwright real browser tests against live GitHub Pages).
-   - Built Artillery load testing scenarios: `catalog-and-public.yml` (1114 reqs, 36 RPS, 0 5xx errors, p95 368ms), `rate-limit-boundary.yml` (verified Bucket4j rate limiting enforces HTTP 429 cleanly without resource leak), and `frontend-static.yml` (CDN benchmark, median 70ms).
+   - Configured full end-to-end CRUD Artillery suite (`artillery.yml`) covering Public, Admin Full CRUD, Employee Approval Flow, and Client Request Flow with SLA P95 < 3000ms.
    - Fixed `GlobalExceptionHandler.java`: added explicit `@ExceptionHandler(HttpRequestMethodNotSupportedException.class)` returning HTTP 405 Method Not Allowed instead of 500.
 
 ## Known Issues & Warnings
