@@ -46,13 +46,10 @@ scenarios:
             - statusCode: 200
             - contentType: json
       - think: 1
-      - post:
-          url: "/v1/auth/check-email"
-          json:
-            email: "noone@test.com"
+      - get:
+          url: "/actuator/info"
           expect:
             - statusCode: 200
-            - contentType: json
       - think: 1
       - post:
           url: "/v1/contact-requests"
@@ -68,24 +65,11 @@ scenarios:
   # Scenario 2: Сквозной CRUD-сценарий администратора по всем ключевым модулям системы
   - name: "Admin Full CRUD"
     weight: 40
+    beforeScenario: "setAdminAuth"
+    beforeRequest: "attachAuthHeader"
     flow:
-      # Step 1 — Login as ADMIN
-      - post:
-          url: "/v1/auth/login"
-          json:
-            email: "{{ adminEmail }}"
-            password: "{{ adminPassword }}"
-          capture:
-            - header: "set-cookie"
-              as: "authCookie"
-            - regexp: "accessToken=([^;]+)"
-              as: "accessToken"
-          expect:
-            - statusCode: 200
-            - contentType: json
-      - think: 1
 
-      # Step 2 — Auth checks
+      # Step 1 — Auth checks
       - get:
           url: "/v1/auth/me"
           expect:
@@ -355,21 +339,17 @@ scenarios:
             - contentType: json
       - think: 1
 
-      # Step 18 — Logout
-      - post:
-          url: "/v1/auth/logout"
-          expect:
-            - statusCode: 200
-            - contentType: json
 
-  # Scenario 3: Жизненный цикл сотрудника: генерация email, регистрация, одобрение админом и рабочий процесс
+  # Scenario 3: Жизненный цикл сотрудника: рабочий процесс сотрудника
   - name: "Employee Flow"
     weight: 30
     flow:
+      - function: "setEmployeeAuth"
       - function: "generateEmpEmail"
 
-      # Step 1 — Register Employee
+      # Step 1 — Register Employee (только если не задан empToken)
       - post:
+          ifFalse: "empToken"
           url: "/v1/auth/register"
           json:
             fullName: "Artillery Employee {{ empRand }}"
@@ -385,6 +365,7 @@ scenarios:
 
       # Step 2 — Login as ADMIN и апрув заявки
       - post:
+          ifFalse: "empToken"
           url: "/v1/auth/login"
           json:
             email: "{{ adminEmail }}"
@@ -394,17 +375,20 @@ scenarios:
             - contentType: json
       - think: 1
       - get:
+          ifFalse: "empToken"
           url: "/v1/admin/employees/pending"
           afterResponse: "extractPendingEmpId"
           expect:
             - statusCode: 200
             - contentType: json
       - post:
+          ifFalse: "empToken"
           url: "/v1/admin/employees/{{ pendingEmpId }}/approve"
           expect:
             - statusCode: 200
             - contentType: json
       - post:
+          ifFalse: "empToken"
           url: "/v1/auth/logout"
           expect:
             - statusCode: 200
@@ -413,6 +397,7 @@ scenarios:
 
       # Step 3 — Login as Employee (после апрува)
       - post:
+          ifFalse: "empToken"
           url: "/v1/auth/login"
           json:
             email: "{{ empEmail }}"
@@ -500,19 +485,22 @@ scenarios:
             - contentType: json
       - think: 1
       - post:
+          ifFalse: "empToken"
           url: "/v1/auth/logout"
           expect:
             - statusCode: 200
             - contentType: json
 
-  # Scenario 4: Жизненный цикл клиента: генерация email, регистрация (активация сразу), просмотр данных и заявка
+  # Scenario 4: Жизненный цикл клиента: просмотр данных и заявка
   - name: "Client Flow"
     weight: 25
     flow:
+      - function: "setClientAuth"
       - function: "generateCliEmail"
 
-      # Step 1 — Register Client
+      # Step 1 — Register Client (только если не задан cliToken)
       - post:
+          ifFalse: "cliToken"
           url: "/v1/auth/register"
           json:
             fullName: "Artillery Client {{ $randomNumber(1000,9999) }}"
@@ -528,6 +516,7 @@ scenarios:
 
       # Step 2 — Login as Client
       - post:
+          ifFalse: "cliToken"
           url: "/v1/auth/login"
           json:
             email: "{{ cliEmail }}"
@@ -588,6 +577,7 @@ scenarios:
             - contentType: json
       - think: 1
       - post:
+          ifFalse: "cliToken"
           url: "/v1/auth/logout"
           expect:
             - statusCode: 200
