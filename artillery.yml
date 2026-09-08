@@ -1,0 +1,120 @@
+config:
+  target: "https://zhanfinance.fly.dev/api"
+  phases:
+    - duration: 30
+      arrivalRate: 2
+      name: "Warmup"
+      maxVusers: 20
+    - duration: 60
+      arrivalRate: 5
+      name: "Sustained"
+      maxVusers: 20
+  variables:
+    adminEmail: "{{ $processEnvironment.ADMIN_EMAIL || 'admin@zhanfinance.kz' }}"
+    adminPassword: "{{ $processEnvironment.ADMIN_PASSWORD || 'AdminPassword123!' }}"
+  http:
+    headers:
+      Content-Type: "application/json"
+      Accept: "application/json"
+      X-Requested-With: "XMLHttpRequest"
+  plugins:
+    metrics-by-endpoint: {}
+
+scenarios:
+  - name: "Public Endpoints"
+    weight: 30
+    flow:
+      - get:
+          url: "/actuator/health"
+          expect:
+            - statusCode: 200
+            - hasProperty: "status"
+      - think: 1
+      - get:
+          url: "/v1/services"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - get:
+          url: "/v1/services/highlighted"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - post:
+          url: "/v1/contact-requests"
+          json:
+            name: "Test"
+            phone: "+77000000000"
+            email: "test@test.com"
+            message: "smoke test"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - post:
+          url: "/v1/auth/check-email"
+          json:
+            email: "nonexistent@test.com"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+
+  - name: "Authenticated Flow"
+    weight: 70
+    flow:
+      - post:
+          url: "/v1/auth/login"
+          json:
+            email: "{{ adminEmail }}"
+            password: "{{ adminPassword }}"
+          capture:
+            - header: "set-cookie"
+              as: "authCookie"
+            - regexp: "accessToken=([^;]+)"
+              as: "accessToken"
+          expect:
+            - statusCode: 200
+      - think: 1
+      - get:
+          url: "/v1/auth/me"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - get:
+          url: "/v1/crm/tasks?page=0&size=10"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - get:
+          url: "/v1/crm/dashboard/admin"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - get:
+          url: "/v1/crm/dashboard/employee"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - get:
+          url: "/v1/crm/dashboard/client"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - get:
+          url: "/v1/notifications"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
+      - think: 1
+      - get:
+          url: "/v1/crm/clients"
+          expect:
+            - statusCode: 200
+            - hasProperty: "success"
