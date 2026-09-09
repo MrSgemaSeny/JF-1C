@@ -34,7 +34,7 @@ class RateLimitIntegrationTest {
     void testDocumentDownloadRateLimit_MockMvc() throws Exception {
         // Perform 20 requests
         for (int i = 0; i < 20; i++) {
-            mockMvc.perform(get("/api/v1/documents/non-existent-doc/download")
+            mockMvc.perform(get("/api/v1/documents/999999/download")
                             .contextPath("/api")
                             .with(user("rate_doc_user").roles("ADMIN")))
                     .andExpect(result -> {
@@ -44,7 +44,7 @@ class RateLimitIntegrationTest {
         }
 
         // 21st request should receive 429 Too Many Requests
-        mockMvc.perform(get("/api/v1/documents/non-existent-doc/download")
+        mockMvc.perform(get("/api/v1/documents/999999/download")
                         .contextPath("/api")
                         .with(user("rate_doc_user").roles("ADMIN")))
                 .andExpect(status().isTooManyRequests())

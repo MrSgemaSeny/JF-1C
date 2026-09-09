@@ -4,20 +4,17 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.documents.entity.Document;
 import com.example.zhanfinancebackend.modules.documents.service.StorageService;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.example.zhanfinancebackend.modules.notifications.event.EmailAttachment;
+import com.example.zhanfinancebackend.modules.notifications.event.SendHtmlEmailEvent;
+import com.example.zhanfinancebackend.modules.notifications.event.SendSimpleEmailEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,7 +22,7 @@ public class EmailNotificationService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailNotificationService.class);
 
-    private final JavaMailSender mailSender;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${app.mail.from-address:no-reply@zhan-finance.com}")
     private String fromAddress;
@@ -33,46 +30,18 @@ public class EmailNotificationService {
     @Value("${app.frontend.url:http://localhost:5173/JF-1C}")
     private String frontendUrl;
 
-    public EmailNotificationService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailNotificationService(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
-    @Async
     public void sendEmailAsync(String to, String subject, String text) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromAddress);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(text);
-
-            mailSender.send(message);
-            log.info("Email sent successfully to {}", to);
-        } catch (Exception e) {
-            log.warn("Failed to send email to {}. Reason: {}", to, e.getMessage());
-        }
+        if (to == null || to.isBlank()) return;
+        eventPublisher.publishEvent(new SendSimpleEmailEvent(to, subject, text));
     }
 
-    @Async
     public void sendHtmlEmail(String to, String subject, String htmlBody) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            
-            helper.setFrom(fromAddress);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true);
-            
-            mailSender.send(message);
-            log.info("Sent email to: {}", to);
-        } catch (MailAuthenticationException e) {
-            log.warn("Mocking email to {}. (SMTP authentication failed - skipping real email)", to);
-        } catch (MessagingException e) {
-            log.error("Failed to send email to: {}", to, e);
-        } catch (Exception e) {
-            log.error("Error sending email: ", e);
-        }
+        if (to == null || to.isBlank()) return;
+        eventPublisher.publishEvent(new SendHtmlEmailEvent(to, subject, htmlBody));
     }
 
     /**
@@ -138,7 +107,6 @@ public class EmailNotificationService {
         return frontendUrl;
     }
 
-    @Async
     public void sendTaskAssignedEmail(User assignee, Task task) {
         if (assignee.getEmail() == null || assignee.getEmail().isBlank()) return;
 
@@ -168,7 +136,6 @@ public class EmailNotificationService {
         sendHtmlEmail(assignee.getEmail(), subject, html);
     }
 
-    @Async
     public void sendTaskDeadlineAlertEmail(User user, Task task) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -196,7 +163,6 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    @Async
     public void sendTaskStatusUpdatedEmail(User user, Task task, String oldStatus, String newStatus, String lostReason) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -229,7 +195,6 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    @Async
     public void sendTaskCompletedEmailWithDocuments(User user, Task task, List<Document> documents, StorageService storageService) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -251,42 +216,25 @@ public class EmailNotificationService {
 
         String html = buildFormalEmailHtml("Задача успешно выполнена!", user.getFullName(), contentHtml, "Перейти в личный кабинет", frontendUrl);
 
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            
-            helper.setFrom(fromAddress);
-            helper.setTo(user.getEmail());
-            helper.setSubject(subject);
-            helper.setText(html, true);
-            
-            if (documents != null && !documents.isEmpty() && storageService != null) {
-                for (Document doc : documents) {
-                    try {
-                        if (doc.getStorageKey() == null || doc.getStorageKey().isBlank()) {
-                            log.warn("Document {} has no storageKey, skipping attachment", doc.getId());
-                            continue;
-                        }
-                        byte[] fileData = storageService.loadAsBytes(doc.getStorageKey());
-                        helper.addAttachment(doc.getFileName(), new ByteArrayResource(fileData));
-                    } catch (Exception e) {
-                        log.warn("Failed to attach document {} to email: {}", doc.getFileName(), e.getMessage());
+        List<EmailAttachment> attachments = new ArrayList<>();
+        if (documents != null && !documents.isEmpty() && storageService != null) {
+            for (Document doc : documents) {
+                try {
+                    if (doc.getStorageKey() == null || doc.getStorageKey().isBlank()) {
+                        log.warn("Document {} has no storageKey, skipping attachment", doc.getId());
+                        continue;
                     }
+                    byte[] fileData = storageService.loadAsBytes(doc.getStorageKey());
+                    attachments.add(new EmailAttachment(doc.getFileName(), fileData));
+                } catch (Exception e) {
+                    log.warn("Failed to attach document {} to email: {}", doc.getFileName(), e.getMessage());
                 }
             }
-            
-            mailSender.send(message);
-            log.info("Sent completed task email with documents to: {}", user.getEmail());
-        } catch (MailAuthenticationException e) {
-            log.warn("Mocking email to {}. (SMTP authentication failed - skipping real email)", user.getEmail());
-        } catch (MessagingException e) {
-            log.error("Failed to send email to: {}", user.getEmail(), e);
-        } catch (Exception e) {
-            log.error("Error sending email: ", e);
         }
+
+        eventPublisher.publishEvent(new SendHtmlEmailEvent(user.getEmail(), subject, html, attachments));
     }
 
-    @Async
     public void sendWelcomeEmail(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -303,7 +251,6 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    @Async
     public void sendAccountApprovedEmail(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -320,7 +267,6 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    @Async
     public void sendTaskEditedByClientEmail(User user, Task task, User client) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -343,7 +289,6 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    @Async
     public void sendTaskDeletedByClientEmail(User user, String taskTitle, User client) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -366,7 +311,6 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    @Async
     public void sendDocumentAttachedEmail(User user, Document document, Task task) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 
@@ -394,7 +338,6 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
-    @Async
     public void sendPasswordResetEmail(User user, String rawToken) {
         if (user.getEmail() == null || user.getEmail().isBlank()) return;
 

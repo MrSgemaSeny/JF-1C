@@ -4,26 +4,26 @@ import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.documents.entity.Document;
+import com.example.zhanfinancebackend.modules.notifications.event.SendHtmlEmailEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.Session;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class EmailNotificationServiceTest {
 
     @Mock
-    private JavaMailSender mailSender;
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private EmailNotificationService emailNotificationService;
@@ -37,44 +37,41 @@ class EmailNotificationServiceTest {
         ReflectionTestUtils.setField(emailNotificationService, "fromAddress", "noreply@zhanfinance.com");
         ReflectionTestUtils.setField(emailNotificationService, "frontendUrl", "http://localhost:5173/JF-1C");
 
-        client = new User("client@test.com", "pass", "John Doe", Role.CLIENT);
+        client = new User("John Doe", "client@test.com", "pass", Role.CLIENT);
         
         task = new Task("Annual Report", client, null);
-        org.springframework.test.util.ReflectionTestUtils.setField(task, "id", 10L);
+        ReflectionTestUtils.setField(task, "id", 10L);
 
         document = new Document(client, null, "report.pdf", "key", "application/pdf", 1024L);
-
-        MimeMessage mimeMessage = new MimeMessage((Session) null);
-        lenient().when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
     }
 
     @Test
-    void sendDocumentAttachedEmail_sendsEmailWithTaskLink() {
+    void sendDocumentAttachedEmail_publishesEventWithTaskLink() {
         // Act
         emailNotificationService.sendDocumentAttachedEmail(client, document, task);
 
         // Assert
-        verify(mailSender).send(argThat((MimeMessage msg) -> {
-            try {
-                return msg.getSubject().contains("Новый документ");
-            } catch (Exception e) {
-                return false;
-            }
-        }));
+        ArgumentCaptor<SendHtmlEmailEvent> captor = ArgumentCaptor.forClass(SendHtmlEmailEvent.class);
+        verify(eventPublisher).publishEvent(captor.capture());
+        SendHtmlEmailEvent event = captor.getValue();
+
+        assertEquals("client@test.com", event.to());
+        assertTrue(event.subject().contains("Новый документ"));
+        assertTrue(event.htmlBody().contains("Annual Report"));
     }
 
     @Test
-    void sendDocumentAttachedEmail_sendsEmailWithDocumentsLink_whenTaskIsNull() {
+    void sendDocumentAttachedEmail_publishesEventWithDocumentsLink_whenTaskIsNull() {
         // Act
         emailNotificationService.sendDocumentAttachedEmail(client, document, null);
 
         // Assert
-        verify(mailSender).send(argThat((MimeMessage msg) -> {
-            try {
-                return msg.getSubject().contains("Новый документ");
-            } catch (Exception e) {
-                return false;
-            }
-        }));
+        ArgumentCaptor<SendHtmlEmailEvent> captor = ArgumentCaptor.forClass(SendHtmlEmailEvent.class);
+        verify(eventPublisher).publishEvent(captor.capture());
+        SendHtmlEmailEvent event = captor.getValue();
+
+        assertEquals("client@test.com", event.to());
+        assertTrue(event.subject().contains("Новый документ"));
+        assertTrue(event.htmlBody().contains("report.pdf"));
     }
 }

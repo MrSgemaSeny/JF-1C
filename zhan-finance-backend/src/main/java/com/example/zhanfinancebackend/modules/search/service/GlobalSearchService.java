@@ -44,7 +44,7 @@ public class GlobalSearchService {
 
     @Transactional(readOnly = true)
     public GlobalSearchResponse search(User user, String query) {
-        if (query == null || query.trim().length() < 2) {
+        if (query == null || query.trim().length() < 2 || user == null) {
             return new GlobalSearchResponse(List.of(), List.of(), List.of(), List.of());
         }
 

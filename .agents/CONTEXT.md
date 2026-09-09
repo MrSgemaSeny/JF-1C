@@ -78,6 +78,10 @@
      - 11 test tasks (`id >= 35`) deleted; 26 real tasks (`id 1..34`) intact.
      - 4 test courses (`id 21, 22, 24, 26`), 4 chapters, 4 lessons, 4 progress entries, 4 enrollments, 4 certificates deleted; 4 production courses intact.
      - 3 test invoices deleted; 27 real document records (`id 17..45`) 100% untouched.
+25. **Email Engine Async Hardening & AFTER_COMMIT Event Dispatching**:
+   - Added SMTP socket timeouts (5000ms connect, read, write) in `application.properties` to prevent indefinite socket hangs.
+   - Configured isolated `mailExecutor` (core 2, max 6, queue 200, prefix `mail-worker-`) in `AsyncConfig.java` with logging DiscardPolicy, eliminating `CallerRunsPolicy` to protect HikariCP DB pool from starvation.
+   - Refactored email dispatching to Spring Events + `@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)`: emails are sent asynchronously in `mailExecutor` strictly AFTER successful DB transaction commit, preventing ghost emails on transaction rollback and eliminating `LazyInitializationException`.
 
 
 

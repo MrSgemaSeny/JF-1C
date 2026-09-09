@@ -1,6 +1,7 @@
 package com.example.zhanfinancebackend.modules.search.controller;
 
 import com.example.zhanfinancebackend.common.response.ApiResponse;
+import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.search.dto.GlobalSearchResponse;
 import com.example.zhanfinancebackend.modules.search.service.GlobalSearchService;
@@ -27,7 +28,8 @@ public class GlobalSearchController {
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam("q") String query
     ) {
-        GlobalSearchResponse response = globalSearchService.search(principal.getUser(), query);
+        User user = principal != null ? principal.getUser() : null;
+        GlobalSearchResponse response = globalSearchService.search(user, query);
         return ApiResponse.success(response);
     }
 }
