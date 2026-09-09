@@ -71,6 +71,15 @@
    - Fixed PostgreSQL foreign key constraint violation on course deletion: added cascade cleanup of progress, enrollments, and certificates in `CourseService.deleteCourse`.
    - Fixed null chapter ID return in `CourseService.createChapter` via explicit `chapterRepository.save(chapter)`.
    - Standardized `README.md` into a sober, engineering-focused reference documenting the 243 unit/integration tests and 9 live E2E suites without marketing hype.
+24. **Production Database Test Data Cleanup**:
+   - Safely purged all load testing and E2E artifacts via an interactive atomic transaction on `zhanfinance-db`:
+     - 125 test contact requests (`id >= 16`) deleted; 15 real client requests (`id 1..15`) preserved.
+     - 33 test users (`id > 22`, emails `artillery.*`, `e2e.*`), 31 client profiles, 22 refresh tokens, 32 notifications, 3 chat messages deleted; 16 real persistent accounts (`id 1..22`) intact.
+     - 11 test tasks (`id >= 35`) deleted; 26 real tasks (`id 1..34`) intact.
+     - 4 test courses (`id 21, 22, 24, 26`), 4 chapters, 4 lessons, 4 progress entries, 4 enrollments, 4 certificates deleted; 4 production courses intact.
+     - 3 test invoices deleted; 27 real document records (`id 17..45`) 100% untouched.
+
+
 
 
 ## Known Issues & Warnings
