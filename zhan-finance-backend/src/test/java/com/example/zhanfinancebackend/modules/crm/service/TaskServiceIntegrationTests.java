@@ -2,6 +2,7 @@ package com.example.zhanfinancebackend.modules.crm.service;
 
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
+import java.util.List;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
 import com.example.zhanfinancebackend.modules.auth.security.JwtService;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
@@ -284,5 +285,34 @@ class TaskServiceIntegrationTests {
         // STEP 5: Verify notification was sent (interaction with mock)
         org.mockito.Mockito.verify(emailNotificationService, org.mockito.Mockito.atLeastOnce())
                 .sendTaskStatusUpdatedEmail(org.mockito.Mockito.any(), org.mockito.Mockito.any(), org.mockito.Mockito.anyString(), org.mockito.Mockito.anyString(), org.mockito.Mockito.eq("Client rejected the work"));
+    }
+
+    @Test
+    void stageUpdate_SendsEmailNotificationToClient() throws Exception {
+        org.mockito.Mockito.clearInvocations(emailNotificationService);
+
+        List<Stage> stages = stageRepository.findAll();
+        Stage initialStage = stages.get(0);
+        Stage nextStage = stages.size() > 1 ? stages.get(1) : stages.get(0);
+
+        Task task = new Task("Email notification test task", client, client);
+        task.setStage(initialStage);
+        task.setAssignedTo(employee);
+        task = taskRepository.save(task);
+
+        mockMvc.perform(
+                patch("/api/v1/crm/tasks/{id}/stage", task.getId()).contextPath("/api")
+                        .header("X-Requested-With", "XMLHttpRequest")
+                        .header("Authorization", "Bearer " + employeeToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "stageId": %d
+                            }
+                            """.formatted(nextStage.getId())))
+                .andExpect(status().isOk());
+
+        org.mockito.Mockito.verify(emailNotificationService, org.mockito.Mockito.atLeastOnce())
+                .sendTaskStatusUpdatedEmail(org.mockito.Mockito.eq(client), org.mockito.Mockito.any(Task.class), org.mockito.Mockito.anyString(), org.mockito.Mockito.eq(nextStage.getName()), org.mockito.Mockito.isNull());
     }
 }

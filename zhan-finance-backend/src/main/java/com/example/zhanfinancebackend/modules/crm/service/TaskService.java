@@ -458,11 +458,16 @@ public class TaskService {
                     if (employee != null) {
                         emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), lostReason);
                     }
-                } else if ("Доработка".equalsIgnoreCase(newStage.getName()) || "Rework".equalsIgnoreCase(newStage.getName())) {
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), lostReason);
+                    }
+                } else {
                     if (employee != null) {
                         emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), null);
                     }
-                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), null);
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), null);
+                    }
                 }
             } else {
                 notificationService.createNotification(
@@ -492,11 +497,26 @@ public class TaskService {
 
                 if (newStage.getType() == StageType.WON) {
                     java.util.List<Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
-                    emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                    }
+                    if (employee != null && !employee.getId().equals(user.getId())) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), null);
+                    }
                 } else if (newStage.getType() == StageType.LOST) {
-                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), lostReason);
-                } else if ("Доработка".equalsIgnoreCase(newStage.getName()) || "Rework".equalsIgnoreCase(newStage.getName())) {
-                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), null);
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), lostReason);
+                    }
+                    if (employee != null && !employee.getId().equals(user.getId())) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), lostReason);
+                    }
+                } else {
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, newStage.getName(), null);
+                    }
+                    if (employee != null && !employee.getId().equals(user.getId())) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(employee, task, oldStage, newStage.getName(), null);
+                    }
                 }
             }
         }
@@ -702,6 +722,9 @@ public class TaskService {
                 
                 accessService.assertCanUpdateTaskStage(user, task, stage);
                 
+                Stage oldStageObj = task.getStage();
+                String oldStage = oldStageObj != null ? oldStageObj.getName() : "Неизвестно";
+
                 task.setStage(stage);
                 if (stage.getType() == StageType.WON || stage.getType() == StageType.LOST) {
                     task.setClosedAt(java.time.LocalDate.now());
@@ -733,12 +756,29 @@ public class TaskService {
                     );
                 }
 
-                // Add WON/LOST email notifications for batch updates
+                // Send email notifications on batch stage update
                 if (stage.getType() == StageType.WON) {
                     java.util.List<Document> docs = documentRepository.findByTaskIdOrderByCreatedAtDesc(task.getId());
-                    emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskCompletedEmailWithDocuments(task.getClient(), task, docs, storageService);
+                    }
+                    if (task.getAssignedTo() != null && !task.getAssignedTo().getId().equals(user.getId())) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getAssignedTo(), task, oldStage, stage.getName(), null);
+                    }
                 } else if (stage.getType() == StageType.LOST) {
-                    emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, "Неизвестно", stage.getName(), null);
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, stage.getName(), null);
+                    }
+                    if (task.getAssignedTo() != null && !task.getAssignedTo().getId().equals(user.getId())) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getAssignedTo(), task, oldStage, stage.getName(), null);
+                    }
+                } else {
+                    if (task.getClient() != null) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getClient(), task, oldStage, stage.getName(), null);
+                    }
+                    if (task.getAssignedTo() != null && !task.getAssignedTo().getId().equals(user.getId())) {
+                        emailNotificationService.sendTaskStatusUpdatedEmail(task.getAssignedTo(), task, oldStage, stage.getName(), null);
+                    }
                 }
             }
             if (dto.assignedToId() != null) {

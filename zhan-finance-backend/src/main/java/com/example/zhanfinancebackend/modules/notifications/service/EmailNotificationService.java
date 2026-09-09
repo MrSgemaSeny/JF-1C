@@ -163,8 +163,12 @@ public class EmailNotificationService {
         sendHtmlEmail(user.getEmail(), subject, html);
     }
 
+    public void sendTaskStatusUpdatedEmail(User user, Task task, String oldStatus, String newStatus) {
+        sendTaskStatusUpdatedEmail(user, task, oldStatus, newStatus, null);
+    }
+
     public void sendTaskStatusUpdatedEmail(User user, Task task, String oldStatus, String newStatus, String lostReason) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+        if (user == null || user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Обновлен статус задачи: " + task.getTitle();
         
@@ -186,8 +190,8 @@ public class EmailNotificationService {
             "  </td></tr>" +
             "</table>",
             task.getTitle(),
-            oldStatus,
-            newStatus,
+            oldStatus != null ? oldStatus : "Не указан",
+            newStatus != null ? newStatus : "Не указан",
             lostReasonRow
         );
 
@@ -196,7 +200,7 @@ public class EmailNotificationService {
     }
 
     public void sendTaskCompletedEmailWithDocuments(User user, Task task, List<Document> documents, StorageService storageService) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) return;
+        if (user == null || user.getEmail() == null || user.getEmail().isBlank()) return;
 
         String subject = "Ваша задача успешно завершена: " + task.getTitle();
         

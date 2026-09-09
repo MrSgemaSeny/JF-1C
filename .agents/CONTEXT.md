@@ -14,7 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Password Reset Flow (#25)**:
+1. **Task Status Email Notifications Restoration**:
+   - Fixed stage update notification logic in `TaskService.java` (`updateTaskStage` and `batchUpdateTasks`): email notifications via `emailNotificationService.sendTaskStatusUpdatedEmail` are now sent on ANY stage/status change (e.g. in progress, documents gathering, pre-payment, review, rework, etc.), not only on terminal stages.
+   - Enhanced `EmailNotificationService.java` with defensive null-safety and overloaded `sendTaskStatusUpdatedEmail(User, Task, String, String)`. Added integration test coverage in `TaskServiceIntegrationTests.java`.
+2. **Password Reset Flow (#25)**:
    - Implemented zero-enumeration password recovery: `V121__create_password_reset_tokens.sql`, `PasswordResetService.java` with SHA-256 token hashing, 15-minute expiration, and session revocation (`refreshTokenRepository.deleteAllByUser`).
    - Rate limiting via `AuthRateLimitFilter.java` (3 req/15 min per IP for `/forgot-password` and `/reset-password`).
    - Frontend pages `/forgot-password` (`ForgotPasswordPage.tsx`) and `/reset-password` (`ResetPasswordPage.tsx`), plus login page shortcut and Vitest/JUnit coverage.
