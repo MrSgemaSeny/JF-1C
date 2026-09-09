@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZhanFinance — Пульт Бухгалтера (Рабочее место сотрудника)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              green: '#00562D',
+              dark: '#00381C',
+              accent: '#0D7A42',
+              light: '#EAF5EE',
+              beige: '#F8F9FA',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+    .kanban-col {
+      min-width: 290px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased text-slate-900 bg-slate-50">
+
+  <!-- Top Global Header -->
+  <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-4 lg:gap-8">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-brand-green flex items-center justify-center text-white font-bold shadow-md shadow-emerald-950/20">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v12m-8-6h16" />
+          </svg>
+        </div>
+        <div class="hidden sm:block">
+          <div class="text-base font-extrabold tracking-tight text-slate-900 leading-tight">ZhanFinance</div>
+          <div class="text-[10px] font-bold text-brand-green uppercase tracking-wider">Пульт Бухгалтера & CRM</div>
+        </div>
+      </div>
+
+      <!-- Global Search Bar -->
+      <div class="relative w-64 md:w-80">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <input id="globalSearch" type="text" placeholder="Поиск по БИН, ИИН, компании или задаче..." class="w-full pl-9 pr-4 py-2 text-xs bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-brand-green focus:outline-none transition">
+      </div>
+    </div>
+
+    <!-- Right Header Controls -->
+    <div class="flex items-center gap-3">
+      <!-- Status Badge -->
+      <div class="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>На рабочем месте (в сети)</span>
+      </div>
+
+      <!-- Fast Action: Create Task -->
+      <button onclick="openModal('employeeNewTaskModal')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-green hover:bg-brand-dark text-white text-xs font-semibold rounded-lg shadow-sm transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span>Новая задача</span>
+      </button>
+
+      <!-- Fast Action: Sync 1C -->
+      <button onclick="sync1C()" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">
+        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        <span>Обновить 1С</span>
+      </button>
+
+      <div class="h-6 w-px bg-slate-200 mx-1"></div>
+
+      <!-- Notifications Bell -->
+      <button class="relative p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+      </button>
+
+      <!-- Employee User Avatar -->
+      <div class="flex items-center gap-3 pl-2">
+        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center border border-emerald-200">
+          АС
+        </div>
+        <div class="hidden xl:block text-left">
+          <div class="text-xs font-bold text-slate-900 leading-tight">Айгерим Султанова</div>
+          <div class="text-[10px] text-slate-500">Ведущий бухгалтер</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Navigation Sidebar -->
+    <aside class="w-60 bg-white border-r border-slate-200 hidden lg:flex flex-col shrink-0">
+      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar text-xs">
+        <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Операции</div>
+
+        <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold bg-brand-green text-white shadow-xs">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+          Сводка & Канбан
+        </a>
+
+        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            Мои клиенты
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold text-[10px]">18</span>
+        </a>
+
+        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            Пул свободных задач
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">4</span>
+        </a>
+
+        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Первичка (OCR)
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">8 новых</span>
+        </a>
+
+        <div class="pt-4 px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Коммуникации</div>
+
+        <a href="#" onclick="openClientChat('Мурат Алиев (ТОО Astana Digital)'); return false;" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            Чат с клиентами
+          </div>
+          <span class="px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-bold text-[10px]">3</span>
+        </a>
+
+        <a href="#" class="flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Календарь КГД
+        </a>
+
+        <div class="pt-4 px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Интеграции</div>
+
+        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            1С:Предприятие
+          </div>
+          <span class="text-[10px] text-emerald-600 font-bold">Online</span>
+        </a>
+
+        <a href="#" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Kaspi Pay Feeder
+          </div>
+          <span class="text-[10px] text-slate-400">12 мин</span>
+        </a>
+      </nav>
+
+      <!-- KPI Summary in Sidebar Bottom -->
+      <div class="p-3 border-t border-slate-200 bg-slate-50/70">
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Норматив выработки (Сентябрь)</div>
+        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-1">
+          <div class="bg-brand-green h-2 rounded-full" style="width: 82%"></div>
+        </div>
+        <div class="flex justify-between text-[11px] text-slate-600">
+          <span>82 / 100 закрыто</span>
+          <span class="font-bold text-brand-green">82% SLA</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto custom-scrollbar">
+
+      <!-- Subheader: Operational Stats -->
+      <div class="p-4 sm:p-6 bg-white border-b border-slate-200">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-bold text-slate-900">Оперативный пульт специалиста</h1>
+            <p class="text-xs text-slate-500 mt-0.5">В вашем портфеле 18 компаний (12 ТОО, 6 ИП) • 2 задачи требуют срочного закрытия до конца дня</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- View toggles: Kanban vs List -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-lg">
+              <button onclick="switchView('kanban')" id="btnKanban" class="px-3 py-1 text-xs font-bold rounded bg-white text-slate-900 shadow-xs flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                Канбан
+              </button>
+              <button onclick="switchView('clients')" id="btnClients" class="px-3 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                </svg>
+                Таблица клиентов
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Cards Row -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-4">
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Мои клиенты</div>
+            <div class="text-xl font-extrabold text-slate-900 mt-1">18</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">12 ТОО / 6 ИП</div>
+          </div>
+
+          <div class="p-3 bg-white border border-slate-200 rounded-xl border-l-4 border-l-blue-500 shadow-xs">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Задач в работе</div>
+            <div class="text-xl font-extrabold text-slate-900 mt-1">14</div>
+            <div class="text-[11px] text-blue-600 font-medium mt-0.5">2 горящих срока</div>
+          </div>
+
+          <div class="p-3 bg-white border border-slate-200 rounded-xl border-l-4 border-l-amber-500 shadow-xs">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">На согласовании</div>
+            <div class="text-xl font-extrabold text-slate-900 mt-1">5</div>
+            <div class="text-[11px] text-amber-600 font-medium mt-0.5">Ожидают ЭЦП</div>
+          </div>
+
+          <div class="p-3 bg-white border border-slate-200 rounded-xl border-l-4 border-l-purple-500 shadow-xs">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Первичка (OCR)</div>
+            <div class="text-xl font-extrabold text-slate-900 mt-1">8</div>
+            <div class="text-[11px] text-purple-600 font-medium mt-0.5">На разнесение</div>
+          </div>
+
+          <div class="p-3 bg-white border border-slate-200 rounded-xl border-l-4 border-l-emerald-500 shadow-xs">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Сдано в КГД</div>
+            <div class="text-xl font-extrabold text-slate-900 mt-1">18</div>
+            <div class="text-[11px] text-emerald-600 font-medium mt-0.5">Квитанции получены</div>
+          </div>
+
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Дедлайн ЭСФ</div>
+            <div class="text-xl font-extrabold text-slate-900 mt-1">15 сент.</div>
+            <div class="text-[11px] text-red-600 font-bold mt-0.5">Осталось 6 дней</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: KANBAN BOARD -->
+      <div id="kanbanContainer" class="p-4 sm:p-6 flex-1 overflow-x-auto custom-scrollbar">
+        <div class="flex items-start gap-4 h-full">
+
+          <!-- Column 1: Новые заявки (Inbox) -->
+          <div class="kanban-col bg-slate-100/80 rounded-2xl p-3 flex flex-col shrink-0 border border-slate-200">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                <span class="text-xs font-bold text-slate-800">Новые заявки</span>
+              </div>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-white text-slate-700 shadow-xs">3</span>
+            </div>
+
+            <div class="space-y-3 flex-1 overflow-y-auto">
+              <!-- Task Card 1 -->
+              <div onclick="openTaskDetails(855, 'Справка о наличии счетов для тендера Самрук-Казына', 'ТОО «Astana Digital Solutions»', 'Новый запрос', 'Обычный')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">ТОО Astana Digital</span>
+                  <span class="text-[10px] text-slate-400">09:40</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Справка о счетах и задолженности для тендера
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Клиент запросил выгрузку из Кабинета НП с синей печатью.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-855</span>
+                  <button onclick="event.stopPropagation(); moveToStage('in_progress', 855)" class="text-brand-green font-bold hover:underline">Взять в работу &rarr;</button>
+                </div>
+              </div>
+
+              <!-- Task Card 2 -->
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">ИП Смагулов</span>
+                  <span class="text-[10px] text-red-600 font-bold">Срочно</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Уведомление камерального контроля КГД
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Расхождение по доходам Каспи и декларации 910 за 2025 г.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-850</span>
+                  <button class="text-brand-green font-bold hover:underline">Взять &rarr;</button>
+                </div>
+              </div>
+
+              <!-- Task Card 3 -->
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">ТОО Nomad Trade</span>
+                  <span class="text-[10px] text-slate-400">Вчера</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Регистрация нового филиала в г. Шымкент
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Подготовка формы уведомления и согласование с УГД.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-842</span>
+                  <button class="text-brand-green font-bold hover:underline">Взять &rarr;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Первичка & Проводки 1С (In Progress) -->
+          <div class="kanban-col bg-slate-100/80 rounded-2xl p-3 flex flex-col shrink-0 border border-slate-200">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                <span class="text-xs font-bold text-slate-800">В работе / Проводки 1С</span>
+              </div>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-white text-slate-700 shadow-xs">4</span>
+            </div>
+
+            <div class="space-y-3 flex-1 overflow-y-auto">
+              <!-- Task Card 4 -->
+              <div onclick="openTaskDetails(852, 'Выписка ЭСФ и АВР для ТОО Astana Oil Logistics', 'ТОО «Astana Digital Solutions»', 'В работе', 'Высокий')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition border-l-4 border-l-blue-500">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700">ТОО Astana Digital</span>
+                  <span class="text-[10px] text-amber-600 font-bold">2 дня до дедлайна</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Выписка ЭСФ и АВР по договору № 41 (3 400 000 ₸)
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Сверка номенклатуры и источника происхождения товара в 1С.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-852</span>
+                  <button onclick="event.stopPropagation(); moveToStage('review', 852)" class="text-amber-600 font-bold hover:underline">На согласование &rarr;</button>
+                </div>
+              </div>
+
+              <!-- Task Card 5 -->
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">ИП Kuanysh Coffee</span>
+                  <span class="text-[10px] text-slate-400">1С 8.3</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Разнесение банковских выписок Kaspi Pay за август
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">142 транзакции по эквайрингу и QR-платежам.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-847</span>
+                  <button class="text-amber-600 font-bold hover:underline">На согласование &rarr;</button>
+                </div>
+              </div>
+
+              <!-- Task Card 6 -->
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">ТОО Almaty Retail</span>
+                  <span class="text-[10px] text-purple-600 font-medium">Зарплата</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Расчет заработной платы и табеля за август (14 сотр.)
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Расчет ОПВ, СО, ОСМС, ВОСМС и удержаний по ИПН.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-845</span>
+                  <button class="text-amber-600 font-bold hover:underline">На согласование &rarr;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3: На согласовании у клиента / Тимлида -->
+          <div class="kanban-col bg-slate-100/80 rounded-2xl p-3 flex flex-col shrink-0 border border-slate-200">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span class="text-xs font-bold text-slate-800">На согласовании</span>
+              </div>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-white text-slate-700 shadow-xs">4</span>
+            </div>
+
+            <div class="space-y-3 flex-1 overflow-y-auto">
+              <!-- Task Card 7 -->
+              <div onclick="openTaskDetails(849, 'Сдача полугодовой формы 910.00', 'ТОО «Astana Digital Solutions»', 'На согласовании', 'Высокий')" class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition border-l-4 border-l-amber-500">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700">ТОО Astana Digital</span>
+                  <span class="text-[10px] text-amber-700 font-bold">Ожидает ЭЦП клиента</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Сдача налоговой формы 910.00 за II полугодие
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Доход: 14.25 млн ₸, налог к уплате: 406 125 ₸.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-849</span>
+                  <button onclick="event.stopPropagation(); sendClientReminder('ТОО Astana Digital')" class="text-brand-green font-bold hover:underline">Напомнить в чат &rarr;</button>
+                </div>
+              </div>
+
+              <!-- Task Card 8 -->
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">ТОО KazStroyMontazh</span>
+                  <span class="text-[10px] text-amber-700 font-semibold">Проверка Тимлидом</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Форма 300.00 (Декларация по НДС за 2 квартал)
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Сверка реестра 300.07 и 300.08 с сервером ИС ЭСФ.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-838</span>
+                  <span class="text-slate-500 font-medium">Контроль</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 4: Завершено / Сдано в КГД -->
+          <div class="kanban-col bg-slate-100/80 rounded-2xl p-3 flex flex-col shrink-0 border border-slate-200">
+            <div class="flex items-center justify-between mb-3 px-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="text-xs font-bold text-slate-800">Сдано в КГД / Закрыто</span>
+              </div>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-white text-slate-700 shadow-xs">18</span>
+            </div>
+
+            <div class="space-y-3 flex-1 overflow-y-auto">
+              <!-- Task Card 9 -->
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition opacity-90">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700">ИП Ермеков</span>
+                  <span class="text-[10px] text-emerald-600 font-bold">Квитанция КГД</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Форма 910.00 за II полугодие (Сдано)
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Регистрационный номер: 2026-910-09817294. Статус: Разнесена.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-831</span>
+                  <span class="text-emerald-700 font-bold">Архив</span>
+                </div>
+              </div>
+
+              <!-- Task Card 10 -->
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:shadow-md cursor-pointer transition opacity-90">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">ТОО Astana Digital</span>
+                  <span class="text-[10px] text-emerald-600 font-bold">ЭСФ в ИС ЭСФ</span>
+                </div>
+                <div class="text-xs font-bold text-slate-900 leading-snug">
+                  Выписка 4 ЭСФ по поставке серверного оборудования
+                </div>
+                <div class="text-[11px] text-slate-500 mt-1">Успешно доставлены покупателю ТОО Kaspi Cloud.</div>
+                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>#TSK-829</span>
+                  <span class="text-emerald-700 font-bold">Архив</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- VIEW 2: CLIENTS PORTFOLIO TABLE (Hidden by default, switched via button) -->
+      <div id="clientsContainer" class="p-4 sm:p-6 flex-1 hidden overflow-y-auto custom-scrollbar">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+            <div>
+              <h2 class="text-sm font-bold text-slate-900">Портфель закрепленных компаний</h2>
+              <p class="text-xs text-slate-500">Мониторинг налогового режима, статуса 1С и готовности отчетности</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-600">Фильтр режима:</span>
+              <select class="text-xs border border-slate-200 rounded-lg p-1.5 bg-white outline-none">
+                <option>Все режимы (18)</option>
+                <option>СНР Упрощенка (11)</option>
+                <option>Общеустановленный + НДС (4)</option>
+                <option>Розничный налог (3)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="text-slate-400 uppercase font-semibold border-b border-slate-100 text-[10px] tracking-wider bg-slate-50/50">
+                  <th class="py-3 px-4">Компания & БИН/ИИН</th>
+                  <th class="py-3 px-4">Налоговый режим</th>
+                  <th class="py-3 px-4">Статус 1С & Банк</th>
+                  <th class="py-3 px-4">Дедлайн отчета</th>
+                  <th class="py-3 px-4">Задач в работе</th>
+                  <th class="py-3 px-4 text-right">Действия</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tr class="hover:bg-slate-50">
+                  <td class="py-3 px-4">
+                    <div class="font-bold text-slate-900">ТОО «Astana Digital Solutions»</div>
+                    <div class="text-[11px] text-slate-500">БИН: 220940039182 • Директор: М. Алиев</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">СНР Упрощенка</span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-1.5 text-emerald-600 font-semibold">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      1С: Синхронизировано
+                    </div>
+                    <div class="text-[10px] text-slate-400">Kaspi + Halyk активны</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-semibold text-slate-900">15.11 (Форма 910)</div>
+                    <span class="text-[10px] text-blue-600">Черновик готов</span>
+                  </td>
+                  <td class="py-3 px-4 font-bold text-slate-900">3 задачи</td>
+                  <td class="py-3 px-4 text-right space-x-2">
+                    <button onclick="openClientChat('Мурат Алиев (ТОО Astana Digital)')" class="text-brand-green font-semibold hover:underline">Чат</button>
+                    <button onclick="switchView('kanban')" class="text-slate-600 hover:text-slate-900 font-medium">Задачи</button>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-slate-50">
+                  <td class="py-3 px-4">
+                    <div class="font-bold text-slate-900">ИП «Смагулов А.Е.»</div>
+                    <div class="text-[11px] text-slate-500">ИИН: 881205301490 • Торговля автозапчастями</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">Розничный налог 4%</span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-1.5 text-amber-600 font-semibold">
+                      <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                      Первичка не загружена
+                    </div>
+                    <div class="text-[10px] text-slate-400">Нет выписки за 2 дня</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-semibold text-red-600">15.09 (ЭСФ)</div>
+                    <span class="text-[10px] text-red-500">Осталось 6 дней</span>
+                  </td>
+                  <td class="py-3 px-4 font-bold text-slate-900">1 задача</td>
+                  <td class="py-3 px-4 text-right space-x-2">
+                    <button onclick="openClientChat('ИП Смагулов А.Е.')" class="text-brand-green font-semibold hover:underline">Чат</button>
+                    <button class="text-slate-600 hover:text-slate-900 font-medium">Задачи</button>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-slate-50">
+                  <td class="py-3 px-4">
+                    <div class="font-bold text-slate-900">ТОО «Nomad Trade Logistics»</div>
+                    <div class="text-[11px] text-slate-500">БИН: 190440012948 • Грузоперевозки</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">Общеустановленный + НДС</span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-1.5 text-emerald-600 font-semibold">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      1С: Синхронизировано
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-semibold text-slate-900">15.11 (Форма 300)</div>
+                    <span class="text-[10px] text-emerald-600">Без расхождений</span>
+                  </td>
+                  <td class="py-3 px-4 font-bold text-slate-900">2 задачи</td>
+                  <td class="py-3 px-4 text-right space-x-2">
+                    <button class="text-brand-green font-semibold hover:underline">Чат</button>
+                    <button class="text-slate-600 hover:text-slate-900 font-medium">Задачи</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal: Employee New Task -->
+  <div id="employeeNewTaskModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900">Создать задачу по клиенту</h3>
+        <button onclick="closeModal('employeeNewTaskModal')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Клиент</label>
+          <select class="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white outline-none">
+            <option>ТОО «Astana Digital Solutions» (БИН 220940039182)</option>
+            <option>ИП «Смагулов А.Е.» (ИИН 881205301490)</option>
+            <option>ТОО «Nomad Trade Logistics» (БИН 190440012948)</option>
+            <option>ИП «Kuanysh Coffee» (ИИН 950314350112)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Название задачи</label>
+          <input type="text" placeholder="Например: Сверка выписок 1С и выписка ЭСФ" class="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Крайний срок (Дедлайн)</label>
+            <input type="date" value="2026-09-15" class="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Приоритет</label>
+            <select class="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white outline-none">
+              <option>Обычный</option>
+              <option>Высокий (Дедлайн КГД)</option>
+              <option>Критический (Блокировка счета)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Описание и инструкции для 1С</label>
+          <textarea rows="3" placeholder="Укажите проводки, счета учета (1210, 3310), договор..." class="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white outline-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button onclick="closeModal('employeeNewTaskModal')" class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50">
+          Отмена
+        </button>
+        <button onclick="createTaskSuccess()" class="px-4 py-2 bg-brand-green hover:bg-brand-dark text-white rounded-lg text-xs font-semibold shadow-sm">
+          Создать и привязать к 1С
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Task Details & Operations Drawer -->
+  <div id="taskDetailsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <span id="modalTaskNum" class="text-[11px] font-bold text-slate-400">#TSK-849</span>
+          <h3 id="modalTaskTitle" class="text-base font-bold text-slate-900 mt-0.5">Сдача налоговой формы 910.00</h3>
+        </div>
+        <button onclick="closeModal('taskDetailsModal')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-2 gap-3">
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Клиент:</span>
+            <span id="modalTaskClient" class="font-bold text-slate-900">ТОО «Astana Digital Solutions»</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[10px] uppercase font-bold">Текущий этап:</span>
+            <span id="modalTaskStage" class="font-bold text-brand-green">На согласовании</span>
+          </div>
+        </div>
+
+        <div>
+          <span class="font-semibold text-slate-700 block mb-1">Связанные документы в 1С:Бухгалтерия:</span>
+          <div class="space-y-1.5">
+            <div class="p-2 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+              <span class="font-medium text-slate-800">Регламентированный отчет Форма 910.00 (ред. 2026)</span>
+              <span class="text-emerald-700 font-bold">Заполнен</span>
+            </div>
+            <div class="p-2 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+              <span class="font-medium text-slate-800">Оборотно-сальдовая ведомость по сч. 1210, 3310</span>
+              <span class="text-emerald-700 font-bold">Сверено</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <span class="font-semibold text-slate-700 block mb-1">Внутренний комментарий бухгалтера / тимлида:</span>
+          <textarea rows="2" class="w-full border border-slate-200 rounded-lg p-2 bg-slate-50 outline-none" placeholder="Добавить рабочую заметку..."></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <button onclick="sendClientReminder('ТОО Astana Digital')" class="text-brand-green font-bold text-xs hover:underline flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+          Написать клиенту в чат
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="closeModal('taskDetailsModal')" class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50">
+            Закрыть
+          </button>
+          <button onclick="closeTaskDone()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm">
+            Отметить сданным в КГД
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Popup -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs font-semibold">
+      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      </svg>
+      <span id="toastMessage">Операция выполнена</span>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      }
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    }
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const msg = document.getElementById('toastMessage');
+      if (toast && msg) {
+        msg.textContent = message;
+        toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+        }, 3500);
+      }
+    }
+    function switchView(view) {
+      const kanban = document.getElementById('kanbanContainer');
+      const clients = document.getElementById('clientsContainer');
+      const btnK = document.getElementById('btnKanban');
+      const btnC = document.getElementById('btnClients');
+
+      if (view === 'kanban') {
+        kanban.classList.remove('hidden');
+        clients.classList.add('hidden');
+        btnK.className = 'px-3 py-1 text-xs font-bold rounded bg-white text-slate-900 shadow-xs flex items-center gap-1.5';
+        btnC.className = 'px-3 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
+      } else {
+        kanban.classList.add('hidden');
+        clients.classList.remove('hidden');
+        btnC.className = 'px-3 py-1 text-xs font-bold rounded bg-white text-slate-900 shadow-xs flex items-center gap-1.5';
+        btnK.className = 'px-3 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
+      }
+    }
+    function sync1C() {
+      showToast('Синхронизация 1С:Предприятие 8.3 завершена. Импортировано 18 новых проводок');
+    }
+    function createTaskSuccess() {
+      closeModal('employeeNewTaskModal');
+      showToast('Задача создана и поставлена в спринт бухгалтерии');
+    }
+    function openTaskDetails(id, title, client, stage, priority) {
+      document.getElementById('modalTaskNum').textContent = '#TSK-' + id;
+      document.getElementById('modalTaskTitle').textContent = title;
+      document.getElementById('modalTaskClient').textContent = client;
+      document.getElementById('modalTaskStage').textContent = stage;
+      openModal('taskDetailsModal');
+    }
+    function moveToStage(stage, id) {
+      showToast('Задача #TSK-' + id + ' перемещена на следующий этап воронки CRM');
+    }
+    function sendClientReminder(client) {
+      closeModal('taskDetailsModal');
+      showToast('Клиенту (' + client + ') отправлено push-уведомление в чат с просьбой подписать ЭЦП');
+    }
+    function closeTaskDone() {
+      closeModal('taskDetailsModal');
+      showToast('Задача успешно закрыта. Регистрационный номер КГД зафиксирован в 1С');
+    }
+    function openClientChat(client) {
+      showToast('Открыт защищенный диалог с клиентом: ' + client);
+    }
+  </script>
+</body>
+</html>

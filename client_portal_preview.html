@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZhanFinance — Кабинет Клиента (ТОО / ИП)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              green: '#00562D',
+              dark: '#003B1F',
+              accent: '#0D7A42',
+              light: '#EAF5EE',
+              beige: '#F8F9FA',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased text-slate-900 bg-slate-50">
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-brand-dark text-emerald-100 text-xs font-medium px-4 py-2 border-b border-emerald-900/50">
+    <div class="max-w-7xl mx-auto w-full flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-800 text-emerald-200 uppercase tracking-wider">КГД МФ РК</span>
+        <span class="truncate">Срок сдачи налоговой отчетности (Форма 910.00) — до 15 ноября. Расчет сформирован и ожидает утверждения.</span>
+      </div>
+      <div class="hidden md:flex items-center gap-4 text-emerald-200/80">
+        <span>Статус ИС ЭСФ: <strong class="text-emerald-300 font-medium">Штатно</strong></span>
+        <span>•</span>
+        <span>NCALayer: <strong class="text-emerald-300 font-medium">Подключен (13579)</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col shrink-0">
+      <!-- Brand Logo Area -->
+      <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
+        <div class="w-10 h-10 rounded-xl bg-brand-green flex items-center justify-center text-white font-bold shadow-md shadow-emerald-950/20">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v12m-8-6h16" />
+          </svg>
+        </div>
+        <div>
+          <div class="text-base font-extrabold tracking-tight text-slate-900 leading-tight">ZhanFinance</div>
+          <div class="text-[11px] font-semibold text-brand-green uppercase tracking-wider">Кабинет Клиента</div>
+        </div>
+      </div>
+
+      <!-- Company Selector Dropdown -->
+      <div class="p-4 border-b border-slate-100">
+        <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-xl">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Текущая компания</span>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">СНР Упрощенка</span>
+          </div>
+          <div class="text-xs font-bold text-slate-900 truncate">ТОО «Astana Digital Solutions»</div>
+          <div class="text-[11px] text-slate-500 flex items-center justify-between mt-1">
+            <span>БИН: 220940039182</span>
+            <span class="text-emerald-600 font-semibold text-[10px]">НДС: Нет</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold bg-brand-green text-white shadow-sm">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+          Рабочий стол
+        </a>
+
+        <a href="#" class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+            </svg>
+            Заявки и задачи
+          </div>
+          <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full bg-amber-100 text-amber-800">3</span>
+        </a>
+
+        <a href="#" class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Документооборот (ЭДО)
+          </div>
+          <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800">2 на подпись</span>
+        </a>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Налоговый календарь
+        </a>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          Счета и оплата
+        </a>
+
+        <a href="#" onclick="openChatDrawer(); return false;" class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            Чат с бухгалтером
+          </div>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </a>
+
+        <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+          Каталог услуг JF
+        </a>
+      </nav>
+
+      <!-- Assigned Accountant Card -->
+      <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Ваш персональный бухгалтер</div>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 font-bold text-sm flex items-center justify-center border border-emerald-200">
+              АС
+            </div>
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-bold text-slate-900 truncate">Айгерим Султанова</div>
+            <div class="text-[11px] text-slate-500">В сети • Пн-Пт 9-18</div>
+          </div>
+        </div>
+        <button onclick="openChatDrawer()" class="mt-3 w-full py-1.5 px-3 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition flex items-center justify-center gap-2">
+          <svg class="w-3.5 h-3.5 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+          Написать сообщение
+        </button>
+      </div>
+
+      <!-- User footer -->
+      <div class="p-4 border-t border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">
+            МА
+          </div>
+          <div class="text-xs font-semibold text-slate-800 truncate">Мурат Алиев</div>
+        </div>
+        <button title="Выход" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto custom-scrollbar">
+      <!-- Top Header Navigation -->
+      <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-20">
+        <div class="flex items-center gap-4">
+          <div>
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">Сводка по ТОО «Astana Digital Solutions»</h1>
+            <p class="text-xs text-slate-500">Данные синхронизированы с 1С:Предприятие 8.3 сегодня в 11:15</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Create Request Button -->
+          <button onclick="openModal('newRequestModal')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-brand-green hover:bg-brand-dark text-white text-xs font-semibold transition shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Запрос бухгалтеру</span>
+          </button>
+
+          <!-- Upload Receipt / Primary Docs -->
+          <button onclick="openModal('uploadModal')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-brand-green border border-emerald-200 text-xs font-semibold transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            <span>Загрузить первичку</span>
+          </button>
+
+          <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
+
+          <!-- Notifications Bell -->
+          <button class="relative p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="p-4 sm:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+        <!-- Critical Attention Alert: Action required for E-Sign -->
+        <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <div class="p-2 bg-amber-100 rounded-lg text-amber-800 shrink-0 mt-0.5 sm:mt-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-amber-900">Требуется ваше подписание ЭЦП (2 документа)</div>
+              <div class="text-xs text-amber-700 mt-0.5">
+                Акт выполненных работ № 104 от ТОО «CloudKZ» и Согласование налогового расчета 910.00 за II полугодие готовы к отправке в КГД.
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <button onclick="showToast('Запуск NCALayer для подписания...')" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+              Подписать через NCALayer
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards (4 Grid) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Tax Status -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Форма 910.00</span>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">На согласовании</span>
+            </div>
+            <div class="text-2xl font-bold text-slate-900 leading-none">Готов расчет</div>
+            <div class="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
+              <span class="text-brand-green font-medium">Срок: до 15 ноября</span>
+              <span>• Без пени</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Taxes to pay -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Налоги за август</span>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">До 25 сент.</span>
+            </div>
+            <div class="text-2xl font-bold text-slate-900 leading-none">148 500 ₸</div>
+            <div class="text-xs text-slate-500 mt-2 flex items-center justify-between">
+              <span>ИПН, ОПВ, СО, ВОСМС</span>
+              <a href="#" class="text-brand-green hover:underline font-semibold text-[11px]">Реквизиты</a>
+            </div>
+          </div>
+
+          <!-- Card 3: Invoices & Revenue -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Оборот за август</span>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-slate-100 text-slate-700">1С Синхр.</span>
+            </div>
+            <div class="text-2xl font-bold text-slate-900 leading-none">4 850 000 ₸</div>
+            <div class="text-xs text-slate-500 mt-2">
+              Выписано 6 ЭСФ • Порог НДС: 18% из 20 000 МРП
+            </div>
+          </div>
+
+          <!-- Card 4: Active Requests -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Заявки в работе</span>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-800">3 активно</span>
+            </div>
+            <div class="text-2xl font-bold text-slate-900 leading-none">100% в SLA</div>
+            <div class="text-xs text-slate-500 mt-2">
+              Среднее время ответа: 14 минут
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Core Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          <!-- Left Column (2 Cols): Tasks & Electronic Documents -->
+          <div class="lg:col-span-2 space-y-6">
+
+            <!-- Active Requests / Tasks Widget -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div>
+                  <h2 class="text-base font-bold text-slate-900">Задачи и поручения бухгалтеру</h2>
+                  <p class="text-xs text-slate-500">Отслеживание статусов выполнения в реальном времени</p>
+                </div>
+                <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg">
+                  <button class="px-2.5 py-1 text-xs font-bold rounded bg-white text-slate-900 shadow-xs">Все (3)</button>
+                  <button class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900">В работе (2)</button>
+                  <button class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900">Требуют внимания (1)</button>
+                </div>
+              </div>
+
+              <!-- Tasks List -->
+              <div class="divide-y divide-slate-100 mt-2">
+                <!-- Task 1 -->
+                <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/70 px-2 rounded-xl transition">
+                  <div class="space-y-1.5 max-w-md">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-100 text-amber-800 border border-amber-200 uppercase">На проверке клиентом</span>
+                      <span class="text-xs text-slate-400">#TSK-849</span>
+                    </div>
+                    <div class="text-sm font-bold text-slate-900 hover:text-brand-green cursor-pointer">
+                      Сдача полугодовой налоговой формы 910.00 (упрощенная декларация)
+                    </div>
+                    <div class="text-xs text-slate-500 flex items-center gap-2">
+                      <span>Исполнитель: Айгерим Султанова</span>
+                      <span>•</span>
+                      <span>Дедлайн: 15.11.2026</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="openModal('taskReviewModal')" class="px-3 py-1.5 bg-brand-green hover:bg-brand-dark text-white text-xs font-semibold rounded-lg transition shadow-sm">
+                      Проверить расчет
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Task 2 -->
+                <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/70 px-2 rounded-xl transition">
+                  <div class="space-y-1.5 max-w-md">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-blue-100 text-blue-800 border border-blue-200 uppercase">В работе у бухгалтера</span>
+                      <span class="text-xs text-slate-400">#TSK-852</span>
+                    </div>
+                    <div class="text-sm font-bold text-slate-900 hover:text-brand-green cursor-pointer">
+                      Выписка ЭСФ и АВР для ТОО «Astana Oil Logistics» по договору № 41
+                    </div>
+                    <div class="text-xs text-slate-500 flex items-center gap-2">
+                      <span>Сумма: 3 400 000 ₸</span>
+                      <span>•</span>
+                      <span>Осталось: 2 дня по регламенту ЭСФ</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">Формируется в 1С</span>
+                  </div>
+                </div>
+
+                <!-- Task 3 -->
+                <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/70 px-2 rounded-xl transition">
+                  <div class="space-y-1.5 max-w-md">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-slate-100 text-slate-700 border border-slate-200 uppercase">Новый запрос</span>
+                      <span class="text-xs text-slate-400">#TSK-855</span>
+                    </div>
+                    <div class="text-sm font-bold text-slate-900 hover:text-brand-green cursor-pointer">
+                      Справка о наличии банковских счетов и расчетной задолженности для тендера Самрук-Казына
+                    </div>
+                    <div class="text-xs text-slate-500">
+                      Создано вами сегодня в 09:40 • В очереди на исполнение
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg transition">
+                      Детали
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Electronic Document Management (ЭДО) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div>
+                  <h2 class="text-base font-bold text-slate-900">Последние документы и акты</h2>
+                  <p class="text-xs text-slate-500">Электронный архив с автоматической проверкой ЭЦП</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="text-xs font-semibold text-brand-green hover:underline flex items-center gap-1">
+                    <span>Перейти в архив документов</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Documents Table -->
+              <div class="overflow-x-auto mt-3">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="text-slate-400 uppercase font-semibold border-b border-slate-100 text-[10px] tracking-wider">
+                      <th class="py-2.5">Документ</th>
+                      <th class="py-2.5">Контрагент</th>
+                      <th class="py-2.5">Сумма</th>
+                      <th class="py-2.5">Дата</th>
+                      <th class="py-2.5">Статус ЭЦП</th>
+                      <th class="py-2.5 text-right">Действие</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 text-slate-700">
+                    <tr class="hover:bg-slate-50">
+                      <td class="py-3 font-semibold text-slate-900 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                        </svg>
+                        Акт вып. работ № 104
+                      </td>
+                      <td class="py-3">ТОО «CloudKZ»</td>
+                      <td class="py-3 font-medium">350 000 ₸</td>
+                      <td class="py-3 text-slate-500">06.09.2026</td>
+                      <td class="py-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Ожидает подписи</span>
+                      </td>
+                      <td class="py-3 text-right">
+                        <button onclick="showToast('Документ скачан')" class="text-brand-green font-semibold hover:underline mr-2">Скачать</button>
+                        <button onclick="showToast('Подписано через NCALayer')" class="text-amber-700 font-bold hover:underline">Подписать</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                      <td class="py-3 font-semibold text-slate-900 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                        </svg>
+                        ЭСФ № 2026-0819
+                      </td>
+                      <td class="py-3">АО «Казахтелеком»</td>
+                      <td class="py-3 font-medium">78 400 ₸</td>
+                      <td class="py-3 text-slate-500">02.09.2026</td>
+                      <td class="py-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Проведено в 1С</span>
+                      </td>
+                      <td class="py-3 text-right">
+                        <button onclick="showToast('Документ скачан')" class="text-brand-green font-semibold hover:underline">Скачать PDF</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                      <td class="py-3 font-semibold text-slate-900 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                        </svg>
+                        Акт сверки расчетов
+                      </td>
+                      <td class="py-3">ТОО «Алматы Логистик»</td>
+                      <td class="py-3 font-medium">1 200 000 ₸</td>
+                      <td class="py-3 text-slate-500">28.08.2026</td>
+                      <td class="py-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Подписан ЭЦП</span>
+                      </td>
+                      <td class="py-3 text-right">
+                        <button onclick="showToast('Документ скачан')" class="text-brand-green font-semibold hover:underline">Скачать PDF</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column (1 Col): Tax Calendar, Bank Feeds, Chat -->
+          <div class="space-y-6">
+
+            <!-- Kazakhstan Tax & Deadlines Calendar -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold text-slate-900">Налоговый календарь РК</h3>
+                <span class="text-xs font-semibold text-brand-green">Сентябрь 2026</span>
+              </div>
+
+              <div class="space-y-3">
+                <div class="p-3 rounded-xl bg-slate-50 border-l-4 border-l-amber-500 border border-slate-200">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">15 сентября</span>
+                    <span class="text-[10px] font-bold uppercase text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">Через 6 дней</span>
+                  </div>
+                  <div class="text-xs font-semibold text-slate-800 mt-1">Выписка ЭСФ за август</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">Срок 15 календарных дней со дня совершения оборота по реализации.</div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 border-l-4 border-l-red-500 border border-slate-200">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">25 сентября</span>
+                    <span class="text-[10px] font-bold uppercase text-red-700 bg-red-100 px-1.5 py-0.5 rounded">Обязательно</span>
+                  </div>
+                  <div class="text-xs font-semibold text-slate-800 mt-1">Оплата налогов с фонда оплаты труда</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">ОПВ, СО, ОСМС, ВОСМС и ИПН у источника выплаты за август. Сумма: 148 500 ₸.</div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 border-l-4 border-l-blue-500 border border-slate-200">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">15 ноября</span>
+                    <span class="text-[10px] font-bold uppercase text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">Полугодие</span>
+                  </div>
+                  <div class="text-xs font-semibold text-slate-800 mt-1">Сдача Формы 910.00</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">Упрощенная декларация за 2 полугодие. Черновик уже сформирован.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bank Integration & 1C Feeder -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold text-slate-900">Интеграция с банками</h3>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700">API подключено</span>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-red-600 text-white font-bold text-xs flex items-center justify-center">
+                      K
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-900">Kaspi Pay (Бизнес)</div>
+                      <div class="text-[11px] text-slate-500">Синхронизировано 10 мин. назад</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs font-bold text-slate-900">3 420 500 ₸</div>
+                    <span class="text-[10px] text-emerald-600 font-semibold">Выписки загружены</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-700 text-white font-bold text-xs flex items-center justify-center">
+                      H
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-900">Halyk Bank (Текущий счет)</div>
+                      <div class="text-[11px] text-slate-500">Выписки за вчера</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs font-bold text-slate-900">8 190 000 ₸</div>
+                    <span class="text-[10px] text-slate-500 font-semibold">Активен</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Accountant Feedback Box -->
+            <div class="bg-gradient-to-br from-brand-green to-brand-dark text-white rounded-2xl p-6 shadow-md shadow-emerald-950/20">
+              <h3 class="text-sm font-bold mb-1">Нужна срочная консультация?</h3>
+              <p class="text-xs text-emerald-100/90 mb-4 leading-relaxed">
+                Главный бухгалтер готов проконсультировать по оптимизации налогов, проверке контрагента или камеральному контролю.
+              </p>
+              <div class="flex items-center gap-2">
+                <button onclick="openChatDrawer()" class="flex-1 py-2 px-3 bg-white text-brand-green font-bold text-xs rounded-lg hover:bg-emerald-50 transition text-center">
+                  Открыть чат
+                </button>
+                <button onclick="showToast('Запрос звонка отправлен')" class="py-2 px-3 bg-emerald-800/80 hover:bg-emerald-800 text-white font-semibold text-xs rounded-lg transition">
+                  Заказать звонок
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: New Task / Request -->
+  <div id="newRequestModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900">Новый запрос бухгалтеру</h3>
+        <button onclick="closeModal('newRequestModal')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Тип запроса</label>
+          <select class="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-green outline-none">
+            <option>Выписать ЭСФ и Акт выполненных работ (АВР)</option>
+            <option>Расчет заработной платы / отпускных / больничного</option>
+            <option>Справка о наличии счетов / акт сверки</option>
+            <option>Налоговая консультация / камеральный контроль</option>
+            <option>Регистрация / перерегистрация / смена ОКЭД</option>
+            <option>Другой вопрос</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Описание задачи</label>
+          <textarea rows="3" placeholder="Укажите БИН контрагента, сумму договора, детали услуги..." class="w-full border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-green outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Прикрепить файлы (договор, скан, чек)</label>
+          <div class="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center hover:bg-slate-50 cursor-pointer">
+            <svg class="w-6 h-6 text-slate-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <span class="text-slate-600 font-medium">Перетащите файлы сюда или выберите на диске</span>
+            <div class="text-[10px] text-slate-400 mt-1">PDF, Excel, JPG, PNG до 25 МБ</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <input type="checkbox" id="urgentCheck" class="rounded text-brand-green focus:ring-brand-green">
+          <label for="urgentCheck" class="text-slate-600">Срочная задача (приоритет в очереди)</label>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button onclick="closeModal('newRequestModal')" class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50">
+          Отмена
+        </button>
+        <button onclick="submitRequest()" class="px-4 py-2 bg-brand-green hover:bg-brand-dark text-white rounded-lg text-xs font-semibold shadow-sm">
+          Отправить в работу
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Upload Primary Documents -->
+  <div id="uploadModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900">Загрузка первичных документов</h3>
+        <button onclick="closeModal('uploadModal')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500">
+        Загрузите накладные, чеки, квитанции об оплате или выписки. Наш OCR-модуль автоматически распознает реквизиты и передаст в 1С.
+      </p>
+
+      <div class="border-2 border-dashed border-emerald-200 bg-emerald-50/40 rounded-xl p-6 text-center hover:bg-emerald-50 cursor-pointer transition">
+        <svg class="w-10 h-10 text-brand-green mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <div class="text-xs font-bold text-slate-800">Перетащите файлы счетов или накладных</div>
+        <div class="text-[11px] text-slate-500 mt-1">Поддерживаются PDF, XLS, CSV, ZIP, JPG</div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeModal('uploadModal')" class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50">
+          Закрыть
+        </button>
+        <button onclick="simulateUpload()" class="px-4 py-2 bg-brand-green text-white rounded-lg text-xs font-semibold shadow-sm">
+          Загрузить и обработать
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Task 910 Review & E-Sign -->
+  <div id="taskReviewModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Проверка Формы 910.00</h3>
+          <span class="text-xs text-slate-500">Упрощенная декларация за 2 полугодие 2026 г.</span>
+        </div>
+        <button onclick="closeModal('taskReviewModal')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex justify-between">
+            <span class="text-slate-500">Доход за полугодие по выпискам:</span>
+            <span class="font-bold text-slate-900">14 250 000 ₸</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Ставка налога (3%):</span>
+            <span class="font-bold text-slate-900">427 500 ₸</span>
+          </div>
+          <div class="flex justify-between text-brand-green font-semibold">
+            <span>Корректировка за сотрудников (ст. 687 НК РК):</span>
+            <span>- 21 375 ₸</span>
+          </div>
+          <div class="border-t border-slate-200 pt-2 flex justify-between font-bold text-sm text-slate-900">
+            <span>Итого КПН/ИПН к уплате:</span>
+            <span class="text-brand-green">406 125 ₸</span>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-slate-500 leading-relaxed">
+          Расчет проверен ведущим бухгалтером Айгерим Султановой. Нажмите "Утвердить и подписать ЭЦП" для отправки в Кабинет Налогоплательщика (СОНО / КГД РК).
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button onclick="closeModal('taskReviewModal')" class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50">
+          Вернуть на доработку
+        </button>
+        <button onclick="signForm910()" class="px-4 py-2 bg-brand-green hover:bg-brand-dark text-white rounded-lg text-xs font-semibold shadow-sm">
+          Утвердить и подписать ЭЦП
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Drawer -->
+  <div id="chatDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-white shadow-2xl border-l border-slate-200 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">АС</div>
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-slate-900">Айгерим Султанова</div>
+          <div class="text-[10px] text-emerald-600 font-semibold">Ваш ведущий бухгалтер • Онлайн</div>
+        </div>
+      </div>
+      <button onclick="closeChatDrawer()" class="text-slate-400 hover:text-slate-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Chat Messages Body -->
+    <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs custom-scrollbar">
+      <div class="text-center text-[10px] text-slate-400 font-semibold uppercase">Сегодня</div>
+      <div class="flex items-start gap-2.5">
+        <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center justify-center shrink-0">АС</div>
+        <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-slate-800">
+          Добрый день, Мурат! Сверила выписку из Kaspi Pay за прошлую неделю. Все 14 платежей разнесены по счетам. Пожалуйста, подпишите акт по ТОО CloudKZ.
+          <div class="text-[10px] text-slate-400 mt-1 text-right">10:14</div>
+        </div>
+      </div>
+      <div class="flex items-start justify-end gap-2.5">
+        <div class="bg-brand-green text-white p-3 rounded-2xl rounded-tr-none max-w-[80%]">
+          Здравствуйте, Айгерим! Да, сейчас проверю через NCALayer и подпишу. Спасибо за оперативность!
+          <div class="text-[10px] text-emerald-200 mt-1 text-right">10:20</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input Area -->
+    <div class="p-3 border-t border-slate-200 bg-white">
+      <div class="flex items-center gap-2">
+        <input id="chatInput" type="text" placeholder="Напишите бухгалтеру..." class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-brand-green" onkeydown="if(event.key==='Enter') sendChatMessage()">
+        <button onclick="sendChatMessage()" class="p-2 bg-brand-green hover:bg-brand-dark text-white rounded-lg transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Popup -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs font-semibold">
+      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      </svg>
+      <span id="toastMessage">Операция выполнена</span>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      }
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    }
+    function openChatDrawer() {
+      const el = document.getElementById('chatDrawer');
+      if (el) el.classList.remove('translate-x-full');
+    }
+    function closeChatDrawer() {
+      const el = document.getElementById('chatDrawer');
+      if (el) el.classList.add('translate-x-full');
+    }
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const msg = document.getElementById('toastMessage');
+      if (toast && msg) {
+        msg.textContent = message;
+        toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+        }, 3500);
+      }
+    }
+    function submitRequest() {
+      closeModal('newRequestModal');
+      showToast('Запрос успешно отправлен вашему бухгалтеру (SLA 30 мин)');
+    }
+    function simulateUpload() {
+      closeModal('uploadModal');
+      showToast('Файлы загружены. OCR распознавание в процессе (1С)');
+    }
+    function signForm910() {
+      closeModal('taskReviewModal');
+      showToast('Форма 910.00 успешно подписана ЭЦП и отправлена в КГД РК');
+    }
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const container = document.getElementById('chatMessages');
+      if (!input || !container || !input.value.trim()) return;
+
+      const userText = input.value.trim();
+      input.value = '';
+
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'flex items-start justify-end gap-2.5';
+      msgDiv.innerHTML = `
+        <div class="bg-brand-green text-white p-3 rounded-2xl rounded-tr-none max-w-[80%]">
+          ${userText}
+          <div class="text-[10px] text-emerald-200 mt-1 text-right">Только что</div>
+        </div>
+      `;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+
+      setTimeout(() => {
+        const replyDiv = document.createElement('div');
+        replyDiv.className = 'flex items-start gap-2.5';
+        replyDiv.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] flex items-center justify-center shrink-0">АС</div>
+          <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none max-w-[80%] text-slate-800">
+            Приняла в работу! Проверю реквизиты и отпишусь в течение 15 минут.
+            <div class="text-[10px] text-slate-400 mt-1 text-right">Только что</div>
+          </div>
+        `;
+        container.appendChild(replyDiv);
+        container.scrollTop = container.scrollHeight;
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
