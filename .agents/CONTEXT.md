@@ -8,7 +8,8 @@
 
 ## Infrastructure State
 - **Backend (Fly.io)**: Fly.io deploy paused (status 403 overdue invoice on fly.io/dashboard/orka-best/billing). CI/CD build & test pipeline passes 100%. PostgreSQL connected. Secrets in Fly Secrets.
-- **Frontend (GitHub Pages)**: CI/CD configured and active (`ci.yml` deploy-pages). GitHub Pages enabled via API (`build_type: workflow`). Live at https://mrsgemaseny.github.io/JF-1C/. Release v1.0.0 published.
+- **Frontend (GitHub Pages)**: CI/CD configured and active (`ci.yml` deploy-pages). Live at https://mrsgemaseny.github.io/JF-1C/. Release v1.0.0 published.
+- **Storage (Cloudflare R2)**: Cloudflare R2 Object Storage provisioned for Epic-15 (Bucket `jf1c-documents`, credentials and endpoint configured strictly via `.env` / Fly Secrets, private access, $0 egress).
 - **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP), secure Password Reset (#25) fully working.
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
