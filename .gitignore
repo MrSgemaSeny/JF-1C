@@ -50,7 +50,9 @@ fly_logs*
 prod_logs*
 
 # Obsidian
-markdowns_obsidian/
+markdowns_obsidian/*
+!markdowns_obsidian/future/
+
 
 # Test caches
 tests/e2e/.auth-cache.json
