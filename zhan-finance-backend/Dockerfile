@@ -26,8 +26,12 @@ WORKDIR /app
 # Copy the built jar from the builder stage
 COPY --from=builder /app/build/libs/*.jar app.jar
 
+# Set recommended JVM memory parameters for container runtime
+ENV JAVA_TOOL_OPTIONS="-XX:MaxMetaspaceSize=256m -XX:MetaspaceSize=96m -Xmx384m -Xms256m"
+
 # Expose the application port
 EXPOSE 8080
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
