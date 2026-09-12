@@ -14,7 +14,12 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Task Status Email Notifications Restoration**:
+1. **Brand Font Integration (a_Simpler Bold)**:
+   - Integrated corporate font `a_Simpler Bold.ttf` into frontend assets (`src/shared/assets/fonts/a_Simpler_Bold.ttf`).
+   - Configured `@font-face` and mapped `--font-logo: "a_Simpler", sans-serif` in `src/index.css`.
+   - Removed unused Google Font Russo One from `index.html`.
+   - Applied `font-logo` to branding text next to avatar/logo across `Header.tsx`, `LoginPage.tsx`, `RegisterPage.tsx`, `ForgotPasswordPage.tsx`, `ResetPasswordPage.tsx`, `CompleteProfilePage.tsx`, and `DashboardSidebar.tsx`.
+2. **Task Status Email Notifications Restoration**:
    - Fixed stage update notification logic in `TaskService.java` (`updateTaskStage` and `batchUpdateTasks`): email notifications via `emailNotificationService.sendTaskStatusUpdatedEmail` are now sent on ANY stage/status change (e.g. in progress, documents gathering, pre-payment, review, rework, etc.), not only on terminal stages.
    - Enhanced `EmailNotificationService.java` with defensive null-safety and overloaded `sendTaskStatusUpdatedEmail(User, Task, String, String)`. Added integration test coverage in `TaskServiceIntegrationTests.java`.
 2. **Password Reset Flow (#25)**:

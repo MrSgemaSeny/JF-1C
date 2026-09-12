@@ -46,7 +46,7 @@ export function CompleteProfilePage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <img src={LogoImage} alt="Zhan Finance Logo" className="w-10 h-10 rounded-xl object-contain" />
-          <span className="font-black text-xl uppercase tracking-wide text-brand-green">Zhan Finance</span>
+          <span className="font-logo font-bold text-xl uppercase tracking-wider text-brand-green">Zhan Finance</span>
         </div>
 
         <div className="flex items-center gap-2 mb-2">

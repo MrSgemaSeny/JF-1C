@@ -58,3 +58,6 @@ markdowns_obsidian/*
 
 # Test caches
 tests/e2e/.auth-cache.json
+
+# Office temporary files
+~$*

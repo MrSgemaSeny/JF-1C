@@ -104,7 +104,7 @@ export function DashboardSidebar({
           <Link to="/" className="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0" onClick={() => { if (window.innerWidth < 1024) onMobileClose(); }}>
             <img src={LogoImage} alt="Zhan Finance Logo" className="w-8 h-8 rounded shrink-0 object-contain" />
             {!isDesktopCollapsed && (
-              <span className="text-base font-bold text-gray-900 tracking-tight whitespace-nowrap truncate transition-opacity">
+              <span className="font-logo text-base font-bold text-gray-900 tracking-tight whitespace-nowrap truncate transition-opacity">
                 Zhan Finance
               </span>
             )}
