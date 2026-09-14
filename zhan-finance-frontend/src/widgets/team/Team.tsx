@@ -80,26 +80,26 @@ export function Team() {
                   </div>
                 )}
 
-                {/* Default State: Solid stable bottom panel (no gradient) */}
-                <div className="absolute inset-x-0 bottom-0 p-4 bg-brand-green/90 backdrop-blur-sm border-t border-brand-green/20 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
-                  <p className="text-sm sm:text-base font-black uppercase tracking-tight text-brand-beige leading-tight mb-0.5">
+                {/* Default State: Sleek floating frosted-glass bottom panel */}
+                <div className="absolute inset-x-3 bottom-3 p-3.5 rounded-2xl bg-neutral-900/65 backdrop-blur-md border border-white/10 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none text-left shadow-lg">
+                  <p className="font-logo text-base uppercase tracking-wider text-white leading-tight mb-0.5">
                     {t(member.nameKey)}
                   </p>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-brand-beige/75">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-brand-beige/85">
                     {t(member.roleKey)}
                   </p>
                 </div>
 
                 {/* Hover State: Blurred photo underneath with semi-transparent backdrop */}
-                <div className="absolute inset-0 bg-black/45 backdrop-blur-sm p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-white">
-                  <p className="font-black uppercase text-base mb-1 text-white tracking-wider leading-tight">
+                <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-md p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-white">
+                  <p className="font-logo text-lg uppercase tracking-wider text-white mb-1 leading-tight">
                     {t(member.nameKey)}
                   </p>
-                  <p className="text-xs font-bold uppercase tracking-widest text-brand-beige mb-3 pb-2 border-b border-brand-beige/25 w-3/4">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-brand-beige/90 mb-3 pb-2 border-b border-white/15 w-3/4">
                     {t(member.roleKey)}
                   </p>
                   {member.bioKey && (
-                    <p className="text-xs leading-relaxed text-white/95 font-medium">
+                    <p className="text-xs leading-relaxed text-white/90 font-normal">
                       {t(member.bioKey)}
                     </p>
                   )}

@@ -14,10 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Team Member Cards Redesign (Solid Bottom Bar, Murat Photo & Blurred Hover)**:
-   - Implemented clean solid bottom panel (`bg-brand-green/90 text-brand-beige`) with zero gradient banding for stable readability.
-   - Connected photo `ryo_sticker_02_confident.jpg` (`murat.jpg`) for IT specialist Murat Orynbasar in `team.ts`.
-   - Built smooth hover effect: photo blurs dynamically (`group-hover:blur-md group-hover:scale-105`) under a translucent overlay (`bg-black/45 backdrop-blur-sm`) with centered bio details.
+1. **Team Member Cards Redesign (Frosted Dark Glass, Orynbasar Avatar & Blurred Hover)**:
+   - Implemented floating frosted-glass bottom panel (`bg-neutral-900/65 backdrop-blur-md border border-white/10`) with `font-logo` (`a_Simpler`) typography for team cards.
+   - Connected photo `ryo_sticker_02_confident.jpg` (`orynbasar.jpg`) for IT specialist Orynbasar (Мурат Орынбасар) in `team.ts`.
+   - Built smooth hover effect: photo dynamically blurs (`group-hover:blur-md group-hover:scale-105`) under a sleek frosted dark glass backdrop (`bg-neutral-900/60 backdrop-blur-md`) displaying specialist bio.
    - Verified 100% test pass (19 test files, 74 tests).
 2. **Removal of Eyebrow Mini-Badges Across Landing Pages**:
    - Completely removed redundant pill badges with dots and uppercase eyebrow tags from landing and about sections: `OutsourceIncluded.tsx` («Комплексный сервис»), `HomeAbout.tsx` («О компании»), `AboutHero.tsx`, `AboutIdeology.tsx` («Наша идеология»), `AboutProcess.tsx` («Инженерный подход»), `AboutGuarantees.tsx` («Ответственность»), and converted leader badge in `Team.tsx` to clean typography.
