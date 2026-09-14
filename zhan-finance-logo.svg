@@ -1,4 +1,4 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 180" width="100%" height="100%">
   <defs>
     <style>
       @font-face {
@@ -10,26 +10,28 @@
       .logo-zhan {
         font-family: 'a_Simpler', sans-serif;
         font-weight: 900;
-        font-size: 150px;
+        font-size: 135px;
         fill: #0D5E36;
         text-anchor: start;
       }
       .logo-finance {
         font-family: 'a_Simpler', sans-serif;
         font-weight: 900;
-        font-size: 72px;
+        font-size: 80px;
+        letter-spacing: 5px;
         fill: #1E2420;
         text-anchor: start;
       }
       .logo-line {
         stroke: #0D5E36;
-        stroke-width: 7;
+        stroke-width: 6;
         stroke-linecap: square;
       }
       .logo-sub {
         font-family: 'a_Simpler', sans-serif;
         font-weight: 900;
-        font-size: 34px;
+        font-size: 27px;
+        letter-spacing: 2px;
         fill: #1E2420;
         text-anchor: start;
       }
@@ -37,14 +39,14 @@
   </defs>
 
   <!-- ЖАН -->
-  <text x="25" y="152" class="logo-zhan" textLength="420" lengthAdjust="spacingAndGlyphs">ЖАН</text>
+  <text x="30" y="145" class="logo-zhan">ЖАН</text>
 
   <!-- FINANCE -->
-  <text x="470" y="80" class="logo-finance" textLength="490" lengthAdjust="spacingAndGlyphs">FINANCE</text>
+  <text x="440" y="96" class="logo-finance">FINANCE</text>
 
   <!-- Разделительная линия -->
-  <line x1="470" y1="98" x2="960" y2="98" class="logo-line" />
+  <line x1="440" y1="110" x2="930" y2="110" class="logo-line" />
 
   <!-- БУХГАЛТЕРЛІК КОМПАНИЯ -->
-  <text x="470" y="150" class="logo-sub" textLength="490" lengthAdjust="spacingAndGlyphs">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+  <text x="440" y="145" class="logo-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
 </svg>
