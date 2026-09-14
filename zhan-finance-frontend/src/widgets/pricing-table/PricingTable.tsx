@@ -24,7 +24,7 @@ export function PricingTable() {
                 <h4 className="text-xl font-black uppercase tracking-tight">{t(plan.titleKey)}</h4>
                 {plan.highlighted && (
                   <span className="text-[10px] font-black uppercase tracking-wider bg-brand-green text-brand-beige px-2.5 py-0.5 rounded-full">
-                    Хит
+                    {t('pricing_hit', { defaultValue: 'Хит' })}
                   </span>
                 )}
               </div>
@@ -49,7 +49,7 @@ export function PricingTable() {
                   : 'bg-brand-green/5 text-brand-green hover:bg-brand-green hover:text-brand-beige border border-brand-green/15'
               }`}
             >
-              Выбрать тариф
+              {t('pricing_choose_plan', { defaultValue: 'Выбрать тариф' })}
             </button>
           </motion.div>
         ))}

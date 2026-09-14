@@ -14,7 +14,12 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Comprehensive Mobile Responsiveness & Adaptive UI**:
+1. **Authentic 4-Language i18n Across Landing & About Pages (`ru`, `kk`, `en`, `zh`)**:
+   - Implemented authentic translation coverage for all 3 public pages (`/` Home, `/services` Services, `/about` About).
+   - Localized `publicNav`, `footer`, `hero`, `homeAbout`, `homeServices`, `homeAdvantages`, `outsource_included`, `trust`, `pricing`, `reviews`, `team`, `offices`, `faq`, `why`, `howWeWork`, `servicesCatalog`, and all `about.*` sections.
+   - Enforced team naming rules: Cyrillic/Kazakh in Russian & Kazakh, Latin transcription in English & Chinese ("Zharilkaganov Amankeldi Nakmadinovich", "Murat Orynbasar", etc.) with localized roles/bios.
+   - Verified 100% test pass (19 test files, 74 tests) and production build.
+2. **Comprehensive Mobile Responsiveness & Adaptive UI**:
    - Tuned typography scaling, touch targets, and flexible layouts across all public landing and about pages (`Header`, `Hero`, `HomeAbout`, `OutsourceIncluded`, `HomeServices`, `ServicesCatalog`, `Team`, `Reviews`, `Offices`, `Footer`, `AboutHero`, `AboutStats`, `AboutIdeology`, `AboutProcess`, `AboutGuarantees`).
    - Fixed text wrapping and heading sizes (`text-3xl sm:text-5xl ... break-words`) to prevent horizontal overflow on small 320px–390px screens.
    - Updated mobile menu contact shortcuts with official WhatsApp number `+7 (775) 058-40-21`.

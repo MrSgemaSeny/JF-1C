@@ -34,7 +34,7 @@ export function FaqContact({ id = 'faq', className = 'bg-brand-beige py-16 sm:py
           <div className="pt-5 border-t border-brand-green/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-brand-green/60 mb-0.5">
-                Остались ещё вопросы?
+                {t('faq_still_questions', { defaultValue: 'Остались ещё вопросы?' })}
               </p>
               <p className="text-xs font-semibold text-brand-green/80">
                 <a href="mailto:support@zhanfinance.kz" className="hover:underline">support@zhanfinance.kz</a>
@@ -49,7 +49,7 @@ export function FaqContact({ id = 'faq', className = 'bg-brand-beige py-16 sm:py
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-green text-brand-beige text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brand-green/90 transition-all shadow-sm"
             >
               <MessageCircle className="w-4 h-4" />
-              Написать в WhatsApp
+              {t('faq_write_whatsapp', { defaultValue: 'Написать в WhatsApp' })}
             </a>
           </div>
         </div>

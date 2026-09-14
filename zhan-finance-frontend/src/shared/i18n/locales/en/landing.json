@@ -8,10 +8,32 @@
     { "q": "What happens during a tax audit or SRC notification?", "a": "We handle all communications with tax authorities: analyzing the notice, preparing official responses, and defending your business interests." }
   ],
   "faq_title": "Frequently Asked Questions",
+  "faq_still_questions": "Still have questions?",
+  "faq_write_whatsapp": "Message on WhatsApp",
+  "outsource_included": {
+    "title1": "What is included",
+    "title2": "in outsourced accounting",
+    "subtitle": "A full range of regular bookkeeping and tax compliance services for your business without hidden fees:",
+    "items": [
+      "Processing primary documents (acts, waybills, invoices)",
+      "Filing all tax and statistical forms (910.00, 200.00, 300.00, 100.00)",
+      "HR management: employment contracts, orders, timesheets, payroll and vacation calculations",
+      "Issuance, acceptance, and strict control of ESF, SNT, and Virtual Warehouse",
+      "Daily monitoring of the tax account at the State Revenue Committee and debt control",
+      "Protecting company interests during desk audits and tax inspections"
+    ],
+    "cta_text": "Need a custom calculation for your turnover and operations?",
+    "cta_btn": "Get Consultation"
+  },
   "trust_title1": "Your business",
   "trust_title2": "is securely protected",
   "trust_desc": "We take full financial responsibility for the results of our work. Our clients do not pay fines for accounting errors.",
   "stats_about_title": "In figures and facts",
+  "pricing_hit": "Popular",
+  "pricing_choose_plan": "Choose Plan",
+  "pricing_section_title1": "Transparent Pricing",
+  "pricing_section_title2": "no hidden fees",
+  "pricing_section_desc": "Choose a suitable plan for your business scale or get an individual calculation.",
   "pricing": [
     {
       "title": "Start",

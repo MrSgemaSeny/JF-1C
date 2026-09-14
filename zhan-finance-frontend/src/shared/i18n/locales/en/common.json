@@ -73,7 +73,19 @@
     "successMessage": "Your request for «{{title}}» has been accepted! We will contact you shortly.",
     "errorMessage": "Error sending request. Please try again later.",
     "more": "Learn more",
-    "modalTitle": "Request Accepted!"
+    "modalTitle": "Request Accepted!",
+    "col1_title": "One-Time Services",
+    "col1_desc": "Tax reporting, payroll calculation, accounting recovery, and counterparty verification",
+    "col2_title": "Outsource Accounting",
+    "col2_desc": "Full control, 100% financial liability under SLA, and ongoing support",
+    "subscription_badge": "Subscription",
+    "sla_service_title": "Full Control & Liability",
+    "sla_service_desc": "100% financial liability under SLA. If there are fines due to our fault, we pay them.",
+    "sla_features": [
+      "Financial guarantee under SLA",
+      "24/7 monitoring of State Revenue Committee accounts",
+      "Defense during cameral tax audits"
+    ]
   },
   "homeAdvantages": {
     "title": "Why choose <br/><1>ЖАН FINANCE</1>",

@@ -12,8 +12,10 @@ import { Team } from '@/widgets/team/Team';
 import { Offices } from '@/widgets/offices/Offices';
 import { FaqContact } from '@/widgets/faq-contact';
 import { Footer } from '@/widgets/footer/Footer';
+import { useTranslation } from 'react-i18next';
 
 export function HomePage() {
+  const { t } = useTranslation('landing');
   return (
     <>
       <Header />
@@ -27,11 +29,11 @@ export function HomePage() {
           <Container>
             <div className="max-w-3xl mb-16">
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6">
-                Прозрачная стоимость <br />
-                <span className="text-brand-green/40">без скрытых платежей</span>
+                {t('pricing_section_title1', { defaultValue: 'Прозрачная стоимость' })} <br />
+                <span className="text-brand-green/40">{t('pricing_section_title2', { defaultValue: 'без скрытых платежей' })}</span>
               </h2>
               <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
-                Выберите подходящий тариф под масштаб вашего бизнеса или получите индивидуальный расчет.
+                {t('pricing_section_desc', { defaultValue: 'Выберите подходящий тариф под масштаб вашего бизнеса или получите индивидуальный расчет.' })}
               </p>
             </div>
             <PricingTable />

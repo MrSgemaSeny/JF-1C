@@ -46,16 +46,17 @@ export function ServicesCatalog() {
           const oneTimeList = (services ?? []).filter(isOneTime);
           const outsourceList = (services ?? []).filter((s) => !isOneTime(s));
 
+          // Дополняем аутсорс блоком про полный контроль и SLA, если в базе только базовые записи
           const fullOutsourceList: ServiceDto[] = [
             ...outsourceList,
             {
               id: 99,
-              title: 'Полный контроль и ответственность',
-              description: '100% финансовая ответственность по договору SLA. Штрафы по нашей вине компенсируем мы.',
-              price: 'По подписке',
+              title: t('homeServices.sla_service_title', { defaultValue: 'Полный контроль и ответственность' }),
+              description: t('homeServices.sla_service_desc', { defaultValue: '100% финансовая ответственность по договору SLA. Штрафы по нашей вине компенсируем мы.' }),
+              price: t('homeServices.subscription_badge', { defaultValue: 'По подписке' }),
               imageUrl: null,
               isHighlighted: true,
-              features: [
+              features: (t('homeServices.sla_features', { returnObjects: true }) as string[]) || [
                 'Финансовая гарантия по SLA',
                 'Контроль лицевых счетов в КГД 24/7',
                 'Защита при камеральном контроле',
@@ -97,7 +98,7 @@ export function ServicesCatalog() {
                 </span>
                 {isOutsourceCol && (
                   <span className="text-xs font-black text-brand-green bg-brand-green/10 px-3 py-1 rounded-full">
-                    По подписке
+                    {t('homeServices.subscription_badge', { defaultValue: 'По подписке' })}
                   </span>
                 )}
               </div>
@@ -113,8 +114,12 @@ export function ServicesCatalog() {
                     1
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Разовые услуги</h3>
-                    <p className="text-xs text-brand-green/70 font-medium">Сдача отчетности, расчет зарплаты, восстановление учета и проверка контрагентов</p>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">
+                      {t('homeServices.col1_title', { defaultValue: 'Разовые услуги' })}
+                    </h3>
+                    <p className="text-xs text-brand-green/70 font-medium">
+                      {t('homeServices.col1_desc', { defaultValue: 'Сдача отчетности, расчет зарплаты, восстановление учета и проверка контрагентов' })}
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-6">
@@ -129,8 +134,12 @@ export function ServicesCatalog() {
                     2
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Аутсорс-бухгалтерия</h3>
-                    <p className="text-xs text-brand-green/70 font-medium">Полный контроль, 100% ответственность по SLA и регулярное ведение</p>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">
+                      {t('homeServices.col2_title', { defaultValue: 'Аутсорс-бухгалтерия' })}
+                    </h3>
+                    <p className="text-xs text-brand-green/70 font-medium">
+                      {t('homeServices.col2_desc', { defaultValue: 'Полный контроль, 100% ответственность по SLA и регулярное ведение' })}
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-6">
