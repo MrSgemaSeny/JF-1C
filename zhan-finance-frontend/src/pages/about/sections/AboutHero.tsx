@@ -1,6 +1,5 @@
 import { Container } from '@/shared/ui/Container';
 import { motion } from 'framer-motion';
-import { BookOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function AboutHero() {
@@ -15,11 +14,7 @@ export function AboutHero() {
           transition={{ duration: 0.6 }}
           className="max-w-5xl"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-brand-beige/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.24em] text-brand-beige/80">
-            <BookOpen className="h-4 w-4" />
-            {t('about.hero.badge', { defaultValue: 'О компании' })}
-          </div>
-          <h1 className="mt-6 text-5xl md:text-7xl font-black uppercase leading-[0.95] tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-black uppercase leading-[0.95] tracking-tight">
             {t('about.hero.title', { defaultValue: 'Машинная точность' })}
             <span className="block text-brand-beige/75">{t('about.hero.subtitle', { defaultValue: 'и финансовая инженерия' })}</span>
           </h1>

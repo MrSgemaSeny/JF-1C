@@ -14,7 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Repository Cleanup, Scratch Archiving & Modern .gitignore**:
+1. **Removal of Eyebrow Mini-Badges Across Landing Pages**:
+   - Completely removed redundant pill badges with dots and uppercase eyebrow tags from landing and about sections: `OutsourceIncluded.tsx` («Комплексный сервис»), `HomeAbout.tsx` («О компании»), `AboutHero.tsx`, `AboutIdeology.tsx` («Наша идеология»), `AboutProcess.tsx` («Инженерный подход»), `AboutGuarantees.tsx` («Ответственность»), and converted leader badge in `Team.tsx` to clean typography.
+   - Verified 100% test pass (19 test files, 74 tests).
+2. **Repository Cleanup, Scratch Archiving & Modern .gitignore**:
    - Cleaned root and subdirectories from 30+ legacy scratch files, debug logs (`test_output.txt`, `report.json`, `logs.txt`, `fly_logs.txt`), preview HTMLs, one-off migration scripts, and redundant root markdown audits.
    - Preserved and packed all legacy assets and audits into `archive/cleaned_legacy_and_scratch_backup_2026_09_14.zip`.
    - Moved future architecture roadmaps into structured directory `docs/future/`.

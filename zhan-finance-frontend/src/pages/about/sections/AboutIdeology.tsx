@@ -1,4 +1,3 @@
-import { Target } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
 import { useTranslation } from 'react-i18next';
 
@@ -7,10 +6,6 @@ export function AboutIdeology() {
   return (
     <Section className="bg-brand-beige text-brand-green border-t border-brand-green/10">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-2 text-brand-green/60 font-bold tracking-widest uppercase text-sm mb-3">
-          <Target className="h-4 w-4" />
-          {t('about.ideology.badge', { defaultValue: 'Наша идеология' })}
-        </div>
         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-5">
           {t('about.ideology.title', { defaultValue: 'Бизнес должен зарабатывать, а не обслуживать налоги' })}
         </h2>

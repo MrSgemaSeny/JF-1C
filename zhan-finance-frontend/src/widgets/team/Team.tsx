@@ -38,9 +38,9 @@ export function Team() {
             )}
           </div>
           <div className="text-center md:text-left">
-            <span className="inline-block text-[11px] font-black uppercase tracking-widest text-brand-green bg-brand-green/[0.06] border border-brand-green/40 rounded-full px-4 py-1.5 mb-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-brand-green/70 mb-2">
               {t(teamLeader.roleKey)}
-            </span>
+            </p>
             <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-brand-green leading-[1.15] mb-4">
               {t(teamLeader.nameKey)}
             </h3>

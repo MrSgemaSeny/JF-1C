@@ -53,11 +53,6 @@ export function HomeAbout() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center gap-2 text-brand-green/60 font-bold tracking-widest uppercase text-sm mb-6">
-              <span className="w-2 h-2 rounded-full bg-brand-green" />
-              {t('homeAbout.badge')}
-            </div>
-
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">
               <Trans i18nKey="homeAbout.title" ns="common" components={{ br: <br />, 1: <span className="italic font-light" /> }} />
             </h2>

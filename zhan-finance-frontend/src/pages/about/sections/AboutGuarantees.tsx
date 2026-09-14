@@ -1,4 +1,3 @@
-import { ShieldCheck } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
 import { useTranslation } from 'react-i18next';
 
@@ -7,10 +6,6 @@ export function AboutGuarantees() {
   return (
     <Section className="bg-brand-green text-brand-beige border-t border-brand-green/10">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-2 text-brand-beige/70 font-bold tracking-widest uppercase text-sm mb-3">
-          <ShieldCheck className="h-4 w-4" />
-          {t('about.guarantees.badge', { defaultValue: 'Ответственность' })}
-        </div>
         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight leading-[1.1] mb-5">
           {t('about.guarantees.title', { defaultValue: 'Гарантии, закрепленные юридически' })}
         </h2>

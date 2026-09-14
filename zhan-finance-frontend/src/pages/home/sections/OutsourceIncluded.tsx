@@ -1,4 +1,4 @@
-﻿import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 
@@ -16,10 +16,6 @@ export function OutsourceIncluded() {
     <Section className="bg-brand-green text-brand-beige py-24 sm:py-32 relative overflow-hidden">
       <Container className="relative z-10">
         <div className="max-w-3xl mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-brand-beige/20 text-xs font-bold uppercase tracking-widest text-brand-beige mb-6">
-            <span className="w-2 h-2 rounded-full bg-brand-beige" />
-            Комплексный сервис
-          </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-white mb-6">
             Что входит <br />
             <span className="text-brand-beige/50">в аутсорс-бухгалтерию</span>
