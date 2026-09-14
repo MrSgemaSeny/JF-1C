@@ -146,15 +146,17 @@ export function Header() {
                 <LanguageSwitcher />
               </div>
             </nav>
-            <div className="mt-8 p-6 bg-brand-green text-brand-beige rounded-3xl">
-              <p className="text-sm font-bold uppercase tracking-widest opacity-70 mb-4">{t('publicNav.getStarted')}</p>
-              <a href="tel:+77000000000" className="block text-2xl font-black mb-6 hover:opacity-80">+7 700 000 00 00</a>
+            <div className="mt-6 p-6 bg-brand-green text-brand-beige rounded-3xl">
+              <p className="text-xs font-bold uppercase tracking-widest opacity-70 mb-3">{t('publicNav.getStarted')}</p>
+              <a href="https://wa.me/77750584021" target="_blank" rel="noopener noreferrer" className="block text-xl sm:text-2xl font-black mb-5 hover:opacity-80">
+                +7 (775) 058-40-21
+              </a>
               <button 
                 onClick={() => {
                   setIsMobileMenuOpen(false);
-                  setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                  setTimeout(() => (document.getElementById('contact') || document.getElementById('footer'))?.scrollIntoView({ behavior: 'smooth' }), 100);
                 }}
-                className="flex items-center justify-center gap-2 w-full py-4 bg-brand-beige text-brand-green rounded-xl font-bold uppercase"
+                className="flex items-center justify-center gap-2 w-full py-3.5 bg-brand-beige text-brand-green rounded-xl font-bold uppercase text-sm tracking-wider shadow-md hover:bg-white transition-colors"
               >
                 {t('publicNav.contact')}
               </button>

@@ -14,7 +14,12 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Team Member Cards Redesign (Soft Green Frosted Glass, Inter Font, Orynbasar Avatar & Blurred Hover)**:
+1. **Comprehensive Mobile Responsiveness & Adaptive UI**:
+   - Tuned typography scaling, touch targets, and flexible layouts across all public landing and about pages (`Header`, `Hero`, `HomeAbout`, `OutsourceIncluded`, `HomeServices`, `ServicesCatalog`, `Team`, `Reviews`, `Offices`, `Footer`, `AboutHero`, `AboutStats`, `AboutIdeology`, `AboutProcess`, `AboutGuarantees`).
+   - Fixed text wrapping and heading sizes (`text-3xl sm:text-5xl ... break-words`) to prevent horizontal overflow on small 320px–390px screens.
+   - Updated mobile menu contact shortcuts with official WhatsApp number `+7 (775) 058-40-21`.
+   - Verified 100% test pass (19 test files, 74 tests) and clean production build.
+2. **Team Member Cards Redesign (Soft Green Frosted Glass, Inter Font, Orynbasar Avatar & Blurred Hover)**:
    - Replaced dark/harsh styling with floating soft green frosted-glass bottom panel (`bg-brand-green/80 backdrop-blur-md border border-white/15`) and clean `Inter` font-sans typography.
    - Connected photo `ryo_sticker_02_confident.jpg` (`orynbasar.jpg`) for IT specialist Orynbasar (Мурат Орынбасар) in `team.ts`.
    - Built smooth hover effect: photo dynamically blurs (`group-hover:blur-md group-hover:scale-105`) under soft green backdrop (`bg-brand-green/85 backdrop-blur-md`) displaying specialist bio.

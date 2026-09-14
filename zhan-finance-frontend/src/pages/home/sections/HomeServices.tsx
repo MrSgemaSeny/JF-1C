@@ -17,14 +17,14 @@ export function HomeServices() {
   const [selectedService, setSelectedService] = useState<ServiceDto | null>(null);
 
   return (
-    <Section className="bg-white py-32 relative">
+    <Section className="bg-white py-16 sm:py-24 lg:py-32 relative">
       <Container>
-        <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 sm:gap-8 mb-10 sm:mb-16">
           <div className="max-w-2xl">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-4 sm:mb-6 break-words">
               <Trans i18nKey="homeServices.title" ns="common" components={{ br: <br />, 1: <span className="text-brand-green/40" /> }} />
             </h2>
-            <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
+            <p className="text-base sm:text-xl text-brand-green/80 font-medium leading-relaxed">
               {t('homeServices.subtitle')}
             </p>
           </div>

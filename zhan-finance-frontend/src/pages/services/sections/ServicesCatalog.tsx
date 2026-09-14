@@ -15,12 +15,12 @@ export function ServicesCatalog() {
 
   return (
     <>
-      <Section id="services-list" className="bg-white py-24 sm:py-32 relative">
-        <div className="max-w-2xl mb-16">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6">
+      <Section id="services-list" className="bg-white py-16 sm:py-24 lg:py-32 relative">
+        <div className="max-w-2xl mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-4 sm:mb-6 break-words">
             <Trans i18nKey="homeServices.title" ns="common" components={{ br: <br />, 1: <span className="text-brand-green/40" /> }} />
           </h2>
-          <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
+          <p className="text-base sm:text-xl text-brand-green/80 font-medium leading-relaxed">
             {t('homeServices.subtitle', { defaultValue: 'От разовых консультаций до полного аутсорсинга бухгалтерии и кадров. Мы подберем идеальный формат работы.' })}
           </p>
         </div>

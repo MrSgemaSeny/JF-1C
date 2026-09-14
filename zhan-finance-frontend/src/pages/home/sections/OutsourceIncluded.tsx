@@ -13,19 +13,19 @@ const includedItems = [
 
 export function OutsourceIncluded() {
   return (
-    <Section className="bg-brand-green text-brand-beige py-24 sm:py-32 relative overflow-hidden">
+    <Section className="bg-brand-green text-brand-beige py-16 sm:py-24 lg:py-32 relative overflow-hidden">
       <Container className="relative z-10">
-        <div className="max-w-3xl mb-12 sm:mb-16">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-white mb-6">
+        <div className="max-w-3xl mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-white mb-4 sm:mb-6">
             Что входит <br />
             <span className="text-brand-beige/50">в аутсорс-бухгалтерию</span>
           </h2>
-          <p className="text-lg sm:text-xl text-brand-beige/80 font-medium leading-relaxed">
+          <p className="text-base sm:text-xl text-brand-beige/80 font-medium leading-relaxed">
             Полный спектр регулярных работ для ведения финансового и налогового учета вашего бизнеса без скрытых доплат:
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {includedItems.map((item, index) => (
             <div
               key={index}

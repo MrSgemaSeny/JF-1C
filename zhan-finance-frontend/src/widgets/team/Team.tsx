@@ -11,8 +11,8 @@ export function Team() {
     <Section className="bg-brand-beige py-16 lg:py-24 overflow-hidden">
       <Container className="max-w-[1200px]">
         {/* Heading */}
-        <div className="text-center mb-14">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.05] tracking-tight text-brand-green">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.05] tracking-tight text-brand-green break-words">
             {t('team_title', { defaultValue: 'Команда' })} <br />
             <span className="text-brand-green/40">{t('team_subtitle', { defaultValue: 'экспертов' })}</span>
           </h2>
@@ -24,9 +24,9 @@ export function Team() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="flex flex-col md:flex-row items-center gap-8 md:gap-12 p-8 md:p-11 rounded-[28px] bg-brand-green/[0.08] border border-brand-green/20 mb-14 shadow-sm"
+          className="flex flex-col md:flex-row items-center gap-6 sm:gap-8 md:gap-12 p-6 sm:p-8 md:p-11 rounded-[24px] sm:rounded-[28px] bg-brand-green/[0.08] border border-brand-green/20 mb-10 sm:mb-14 shadow-sm"
         >
-          <div className="shrink-0 w-52 h-64 md:w-56 md:h-72 rounded-[20px] overflow-hidden bg-brand-green/10 border border-brand-green/20 relative shadow-inner">
+          <div className="shrink-0 w-44 h-56 sm:w-52 sm:h-64 md:w-56 md:h-72 rounded-[18px] sm:rounded-[20px] overflow-hidden bg-brand-green/10 border border-brand-green/20 relative shadow-inner">
             {teamLeader.photo ? (
               <img src={teamLeader.photo} alt={t(teamLeader.nameKey)} className="w-full h-full object-cover" />
             ) : (
@@ -53,7 +53,7 @@ export function Team() {
         </motion.div>
 
         {/* --- СЕТКА СПЕЦИАЛИСТОВ (4x2) --- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {teamSpecialists.map((member, index) => (
             <motion.div
               key={index}

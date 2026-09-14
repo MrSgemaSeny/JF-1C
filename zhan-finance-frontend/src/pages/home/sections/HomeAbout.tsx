@@ -44,16 +44,16 @@ export function HomeAbout() {
   const { t } = useTranslation('common');
   return (
     <Section className="overflow-hidden min-h-screen flex items-center bg-white relative py-16 lg:py-0">
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center relative z-10 w-full">
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-24 items-center relative z-10 w-full">
 
-        <div className="space-y-8 order-2 lg:order-1">
+        <div className="space-y-6 sm:space-y-8 order-2 lg:order-1">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green break-words">
               <Trans i18nKey="homeAbout.title" ns="common" components={{ br: <br />, 1: <span className="italic font-light" /> }} />
             </h2>
           </motion.div>
@@ -63,22 +63,22 @@ export function HomeAbout() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="space-y-8 max-w-xl"
+            className="space-y-6 sm:space-y-8 max-w-xl"
           >
-            <p className="text-xl text-brand-green/80 leading-relaxed font-medium">
+            <p className="text-base sm:text-xl text-brand-green/80 leading-relaxed font-medium">
               {t('homeAbout.description')}
             </p>
 
             <Link
               to={ROUTES.ABOUT}
-              className="inline-block px-8 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all hover:-translate-y-1 shadow-lg shadow-brand-green/20"
+              className="inline-block px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all hover:-translate-y-1 shadow-lg shadow-brand-green/20 text-sm sm:text-base"
             >
               {t('homeAbout.link')}
             </Link>
           </motion.div>
         </div>
 
-        <div className="relative h-[400px] sm:h-[500px] lg:h-[700px] w-full flex items-center justify-center order-1 lg:order-2 scale-[0.65] sm:scale-90 lg:scale-100 origin-center">
+        <div className="relative h-[320px] sm:h-[480px] lg:h-[700px] w-full flex items-center justify-center order-1 lg:order-2 scale-[0.58] sm:scale-80 md:scale-95 lg:scale-100 origin-center">
           {polaroids.map((p, i) => (
             <motion.div
               key={p.id}

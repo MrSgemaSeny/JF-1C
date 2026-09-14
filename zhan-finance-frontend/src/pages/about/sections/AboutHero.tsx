@@ -14,11 +14,11 @@ export function AboutHero() {
           transition={{ duration: 0.6 }}
           className="max-w-5xl"
         >
-          <h1 className="text-5xl md:text-7xl font-black uppercase leading-[0.95] tracking-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase leading-[0.95] tracking-tight break-words">
             {t('about.hero.title', { defaultValue: 'Машинная точность' })}
             <span className="block text-brand-beige/75">{t('about.hero.subtitle', { defaultValue: 'и финансовая инженерия' })}</span>
           </h1>
-          <p className="mt-10 max-w-4xl text-lg md:text-2xl leading-relaxed text-brand-beige/85">
+          <p className="mt-6 sm:mt-10 max-w-4xl text-base sm:text-lg md:text-2xl leading-relaxed text-brand-beige/85">
             {t('about.hero.description', { defaultValue: 'Бухгалтерия давно перестала быть просто перекладыванием бумажек и вводом накладных. Сегодня это сложная инженерная система, от правильной архитектуры которой зависит выживаемость бизнеса, его способность привлекать инвестиции и проходить налоговые проверки.' })}
           </p>
         </motion.div>

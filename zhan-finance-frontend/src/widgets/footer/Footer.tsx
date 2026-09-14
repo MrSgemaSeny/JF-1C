@@ -12,15 +12,15 @@ interface FooterProps {
 export function Footer({ id = 'contact' }: FooterProps) {
   const { t } = useTranslation('common');
   return (
-    <footer id={id} className="bg-brand-green pt-24 pb-12 text-brand-beige rounded-t-[40px] mt-[-40px] relative z-20">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 mb-20">
-          <div className="space-y-12">
+    <footer id={id} className="bg-brand-green pt-16 sm:pt-24 pb-10 sm:pb-12 text-brand-beige rounded-t-[32px] sm:rounded-t-[40px] mt-[-32px] sm:mt-[-40px] relative z-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 mb-14 sm:mb-20">
+          <div className="space-y-8 sm:space-y-12">
             <div>
-              <div className="mb-6">
-                <BrandLogo variant="inverted" className="h-10 md:h-12 w-auto" />
+              <div className="mb-4 sm:mb-6">
+                <BrandLogo variant="inverted" className="h-8 sm:h-10 md:h-12 w-auto" />
               </div>
-              <h2 className="text-4xl md:text-5xl font-black uppercase leading-[1.1] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-[1.1] tracking-tight break-words">
                 {t('footer.slogan1')}
                 <br />
                 {t('footer.slogan2')}

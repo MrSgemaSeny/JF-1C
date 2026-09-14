@@ -8,7 +8,7 @@ export function AboutStats() {
   return (
     <Section className="bg-white text-brand-green border-t border-brand-green/10">
       <div className="max-w-6xl mx-auto space-y-8">
-        <h2 className="text-4xl font-black uppercase tracking-tight mb-4">{t('stats_about_title', { defaultValue: 'В цифрах и фактах' })}</h2>
+        <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-4 break-words">{t('stats_about_title', { defaultValue: 'В цифрах и фактах' })}</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {aboutStats.map((stat, index) => {
             const Icon = stat.icon;
