@@ -14,7 +14,11 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Brand Font Integration (a_Simpler Bold)**:
+1. **Branding Redesign (Pure Typography ЖАН FINANCE & Inter Font)**:
+   - Redesigned header logo to pure typography `ЖАН FINANCE` (font-logo `a_Simpler`), removing legacy raster `logo.png` from `Header.tsx`.
+   - Connected Google Font `Inter` (weights 400-900) in `index.html` with preconnect, configured `--font-sans: "Inter", system-ui, sans-serif` in `src/index.css` `@theme`.
+   - Updated document `<title>` to `ЖАН Finance` and synchronized brand display across `i18n` locales (`ru`, `kk`, `en`).
+2. **Brand Font Integration (a_Simpler Bold)**:
    - Integrated corporate font `a_Simpler Bold.ttf` into frontend assets (`src/shared/assets/fonts/a_Simpler_Bold.ttf`).
    - Configured `@font-face` and mapped `--font-logo: "a_Simpler", sans-serif` in `src/index.css`.
    - Removed unused Google Font Russo One from `index.html`.
