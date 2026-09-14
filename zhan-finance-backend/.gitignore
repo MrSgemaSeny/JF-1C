@@ -1,46 +1,22 @@
+# Backend build & runtime ignores
 HELP.md
-.gradle
+.gradle/
 build/
+bin/
+out/
+*.class
+*.log
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Application Uploads ###
-/uploads/
+# Uploads & Runtime Data
+uploads/
+data/
+storage/
 
 # Environment Variables
 .env
+.env.*
+!.env.example
 
-# H2 Database
-/data/

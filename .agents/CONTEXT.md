@@ -14,7 +14,13 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Vector BrandLogo Integration (Full Authentic Branding)**:
+1. **Repository Cleanup, Scratch Archiving & Modern .gitignore**:
+   - Cleaned root and subdirectories from 30+ legacy scratch files, debug logs (`test_output.txt`, `report.json`, `logs.txt`, `fly_logs.txt`), preview HTMLs, one-off migration scripts, and redundant root markdown audits.
+   - Preserved and packed all legacy assets and audits into `archive/cleaned_legacy_and_scratch_backup_2026_09_14.zip`.
+   - Moved future architecture roadmaps into structured directory `docs/future/`.
+   - Configured clean, modular, and comprehensive `.gitignore` rules across root, backend, and frontend (ignoring OS junk, IDE configs, environment secrets, build artifacts, test caches, coverage, diagnostic logs, and temporary archives).
+   - Verified 100% test pass on both frontend (74/74 Vitest) and backend (Gradle test suite).
+2. **Vector BrandLogo Integration (Full Authentic Branding)**:
    - Built reusable vector SVG component `BrandLogo.tsx` (`src/shared/ui/BrandLogo.tsx`) with pixel-perfect geometry, `a_Simpler` bold font, exact color schemes (default, inverted, landing), and zero distortion.
    - Replaced plain-text typography branding across all public and authenticated pages: `Header.tsx`, `Footer.tsx`, `LoginPage.tsx`, `RegisterPage.tsx`, `ForgotPasswordPage.tsx`, `ResetPasswordPage.tsx`, `CompleteProfilePage.tsx`, `TermsPage.tsx`, `PrivacyPolicyPage.tsx`, `RefundPolicyPage.tsx`, `CookiePolicyPage.tsx`, `DashboardSidebar.tsx`, and `DashboardLayout.tsx`.
    - Verified 100% test pass (19 test files, 74 tests).

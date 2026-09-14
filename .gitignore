@@ -1,41 +1,10 @@
-# IntelliJ IDEA
-.idea/
-*.iws
-*.iml
-*.ipr
-out/
+# ==========================================
+# JF-1C Monorepo .gitignore
+# ==========================================
 
-# Node / React (Frontend)
-node_modules/
-dist/
-build/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.env
-.env.*
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.eslintcache
-.vite/
-
-# Spring Boot / Gradle (Backend)
-.gradle/
-zhan-finance-backend/build/
-zhan-finance-backend/out/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
-*.class
-*.log
-
-# Uploads and temporary files
-uploads/
-zhan-finance-backend/uploads/
-
-# OS generated files
+# ------------------------------------------
+# Operating System Junk
+# ------------------------------------------
 .DS_Store
 .DS_Store?
 ._*
@@ -43,21 +12,121 @@ zhan-finance-backend/uploads/
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# Archives and Logs
-*.zip
+# ------------------------------------------
+# IDEs & Editors
+# ------------------------------------------
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.sublime-workspace
+*.sublime-project
+*.sw?
+*~
+
+# ------------------------------------------
+# Environment Variables & Secrets
+# ------------------------------------------
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# ------------------------------------------
+# Node.js & Frontend (React / Vite / TypeScript)
+# ------------------------------------------
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+dist-ssr/
+**/dist-ssr/
+.vite/
+**/.vite/
+.eslintcache
+**/.eslintcache/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------------------------
+# Java & Gradle Backend (Spring Boot)
+# ------------------------------------------
+.gradle/
+**/.gradle/
+build/
+**/build/
+bin/
+**/bin/
+*.class
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ------------------------------------------
+# Database & File Uploads / Local Storage
+# ------------------------------------------
+uploads/
+**/uploads/
+data/
+**/data/
+storage/
+**/storage/
+
+# ------------------------------------------
+# Logs & Test Reports / Diagnostics
+# ------------------------------------------
+*.log
+**/*.log
 *logs*.txt
-test-*.json
+**/*logs*.txt
+test_output.txt
+**/test_output.txt
+report.json
+**/report.json
 fly_logs*
 prod_logs*
+coverage/
+**/coverage/
+.nyc_output/
+playwright-report/
+test-results/
 
-# Obsidian
-markdowns_obsidian/*
-!markdowns_obsidian/future/
-
-
-# Test caches
+# ------------------------------------------
+# Test Caches & Auth Tokens
+# ------------------------------------------
 tests/e2e/.auth-cache.json
+**/.auth-cache.json
 
-# Office temporary files
+# ------------------------------------------
+# Archives & Temporary Office Files
+# ------------------------------------------
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+!archive/**/*.zip
 ~$*
+*.tmp
+*.bak
+
