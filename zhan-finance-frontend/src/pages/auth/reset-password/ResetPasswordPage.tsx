@@ -5,8 +5,11 @@ import { ROUTES } from '@/shared/config/routes';
 import { resetPassword } from '@/features/auth/authApi';
 import { Input } from '@/shared/ui/Input/Input';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export function ResetPasswordPage() {
+  const { t } = useTranslation('auth');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
@@ -26,17 +29,17 @@ export function ResetPasswordPage() {
     setServerError(null);
 
     if (!token) {
-      setServerError('Отсутствует токен сброса пароля. Запросите новую ссылку.');
+      setServerError(t('resetPassword.tokenInvalidText'));
       return;
     }
 
     if (newPassword.length < 8) {
-      setPasswordError('Пароль должен содержать не менее 8 символов');
+      setPasswordError(t('resetPassword.passwordLengthError'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setConfirmError('Пароли не совпадают');
+      setConfirmError(t('resetPassword.passwordMismatch'));
       return;
     }
 
@@ -45,7 +48,7 @@ export function ResetPasswordPage() {
       await resetPassword({ token, newPassword });
       setIsSuccess(true);
     } catch (err: any) {
-      setServerError(err?.message || 'Не удалось сбросить пароль. Возможно, срок действия ссылки истек.');
+      setServerError(err?.message || t('errors.UNKNOWN'));
     } finally {
       setIsSubmitting(false);
     }
@@ -53,22 +56,28 @@ export function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
+      <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-16 sm:py-24">
         <div className="w-full max-w-md bg-white rounded-3xl border border-brand-green/10 shadow-xl p-8 sm:p-10 text-center space-y-6">
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none" aria-label={t('login.toHome')}>
+              <BrandLogo className="h-9 sm:h-10 w-auto group-hover:opacity-85 transition-opacity" />
+            </Link>
+            <LanguageSwitcher />
+          </div>
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto">
             <AlertCircle className="w-8 h-8" />
           </div>
           <div>
-            <h1 className="text-2xl font-black uppercase text-brand-green mb-2">Недействительная ссылка</h1>
+            <h1 className="text-2xl font-black uppercase text-brand-green mb-2">{t('resetPassword.tokenInvalidTitle')}</h1>
             <p className="text-brand-green/70 text-sm leading-relaxed">
-              В ссылке отсутствует токен сброса пароля или ссылка повреждена. Запросите новую ссылку для сброса.
+              {t('resetPassword.tokenInvalidText')}
             </p>
           </div>
           <Link
             to={ROUTES.FORGOT_PASSWORD}
-            className="inline-flex items-center justify-center w-full py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all"
+            className="inline-flex items-center justify-center w-full py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15"
           >
-            Запросить новую ссылку
+            {t('resetPassword.requestNewLink')}
           </Link>
         </div>
       </div>
@@ -76,11 +85,14 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
+    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-16 sm:py-24">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
-        <Link to={ROUTES.HOME} className="flex items-center mb-8 group focus:outline-none">
-          <BrandLogo className="h-10 w-auto group-hover:opacity-85 transition-opacity" />
-        </Link>
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none" aria-label={t('login.toHome')}>
+            <BrandLogo className="h-9 sm:h-10 w-auto group-hover:opacity-85 transition-opacity" />
+          </Link>
+          <LanguageSwitcher />
+        </div>
 
         {isSuccess ? (
           <div className="text-center space-y-6">
@@ -88,33 +100,33 @@ export function ResetPasswordPage() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-2xl font-black uppercase text-brand-green mb-2">Пароль изменен</h1>
+              <h1 className="text-2xl font-black uppercase text-brand-green mb-2">{t('resetPassword.successTitle')}</h1>
               <p className="text-brand-green/80 text-sm leading-relaxed">
-                Ваш пароль успешно обновлен. Все активные сессии завершены для вашей безопасности. Войдите с новым паролем.
+                {t('resetPassword.successText')}
               </p>
             </div>
             <button
               type="button"
               onClick={() => navigate(ROUTES.LOGIN)}
-              className="inline-flex items-center justify-center w-full py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all"
+              className="inline-flex items-center justify-center w-full py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15"
             >
-              Войти в аккаунт
+              {t('resetPassword.backToLogin')}
             </button>
           </div>
         ) : (
           <>
             <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">
-              Новый пароль
+              {t('resetPassword.title')}
             </h1>
-            <p className="text-brand-green/70 mb-8 text-sm">
-              Придумайте надежный пароль (минимум 8 символов).
+            <p className="text-brand-green/70 mb-8 text-sm leading-relaxed">
+              {t('resetPassword.subtitle')}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
                 id="new-password"
                 type="password"
-                label="Новый пароль"
+                label={t('resetPassword.newPasswordLabel')}
                 required
                 autoComplete="new-password"
                 value={newPassword}
@@ -122,13 +134,14 @@ export function ResetPasswordPage() {
                 disabled={isSubmitting}
                 error={passwordError || undefined}
                 icon={<Lock className="w-5 h-5" />}
-                placeholder="Минимум 8 символов"
+                placeholder={t('resetPassword.newPasswordPlaceholder')}
+                hint={t('resetPassword.passwordHint')}
               />
 
               <Input
                 id="confirm-password"
                 type="password"
-                label="Подтверждение пароля"
+                label={t('resetPassword.confirmPasswordLabel')}
                 required
                 autoComplete="new-password"
                 value={confirmPassword}
@@ -136,7 +149,7 @@ export function ResetPasswordPage() {
                 disabled={isSubmitting}
                 error={confirmError || undefined}
                 icon={<Lock className="w-5 h-5" />}
-                placeholder="Повторите пароль"
+                placeholder={t('resetPassword.confirmPasswordPlaceholder')}
               />
 
               {serverError && (
@@ -148,9 +161,9 @@ export function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
               >
-                {isSubmitting ? 'Сохранение...' : 'Сохранить новый пароль'}
+                {isSubmitting ? t('resetPassword.submitting') : t('resetPassword.submitBtn')}
                 {!isSubmitting && <ArrowRight className="w-4 h-4" />}
               </button>
             </form>

@@ -30,17 +30,19 @@ import modalsKK from './locales/kk/modals.json';
 
 import commonZH from './locales/zh/common.json';
 import landingZH from './locales/zh/landing.json';
+import authZH from './locales/zh/auth.json';
 
 i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .init({
+    lng: (typeof window !== 'undefined' && localStorage.getItem('jf1c_lang')) || 'ru',
     fallbackLng: 'ru',
     defaultNS: 'common',
     ns: ['common', 'auth', 'crm', 'zod', 'landing', 'tasks', 'modals'],
     interpolation: { escapeValue: false },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
       caches: ['localStorage'],
       lookupLocalStorage: 'jf1c_lang',
     },
@@ -74,7 +76,7 @@ i18n
       },
       zh: {
         common: commonZH,
-        auth: authEN,
+        auth: authZH,
         crm: crmEN,
         landing: landingZH,
         tasks: tasksEN,

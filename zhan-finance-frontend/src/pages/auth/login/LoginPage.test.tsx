@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, screen, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { LoginPage } from './LoginPage';
@@ -25,8 +25,8 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // Deprecated
-    removeListener: vi.fn(), // Deprecated
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
@@ -57,16 +57,16 @@ describe('LoginPage Component', () => {
   it('renders login form elements', async () => {
     renderWithProviders(<LoginPage />);
     await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/auth\.login\.passwordLabel/i)).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /auth\.login\.loginBtn/i })[0]).toBeInTheDocument();
+    expect(screen.getByLabelText(/login\.emailLabel/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/login\.passwordLabel/i)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /login\.loginBtn/i })[0]).toBeInTheDocument();
   });
 
   it('shows validation errors when submitting empty form', async () => {
     renderWithProviders(<LoginPage />);
     await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
     
-    const submitButton = screen.getAllByRole('button', { name: /auth\.login\.loginBtn/i })[0];
+    const submitButton = screen.getAllByRole('button', { name: /login\.loginBtn/i })[0];
     
     fireEvent.click(submitButton);
 

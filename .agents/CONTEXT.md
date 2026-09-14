@@ -13,8 +13,13 @@
 - **Auth**: JWT Bearer tokens, refresh token rotation, 2FA (TOTP), secure Password Reset (#25) fully working.
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
-## Recently Completed
-1. **SolutionPicker Removal & Purge of Audit / Legal References across All 4 Locales (`ru`, `kk`, `en`, `zh`)**:
+1. **Auth Pages Single-Step Registration, i18n & Language Switcher Parity**:
+   - Fixed language chaos across auth flow by locking default locale to Russian (`ru`) and adding inline `<LanguageSwitcher />` in card headers on `LoginPage`, `RegisterPage`, `ForgotPasswordPage`, `ResetPasswordPage`, and `CompleteProfilePage`.
+   - Unified `auth.json` translation keys across all 4 locales (`ru`, `kk`, `en`, `zh`).
+   - Simplified B2B registration to a single unified step (`fullName`, `phone`, `email`, `password`, `companyName`).
+   - Standardized primary buttons across all auth views with matching `py-4 rounded-2xl` bold uppercase styling and shadow.
+   - Verified 100% test pass (18 test files, 72 tests) and clean production build.
+2. **SolutionPicker Removal & Purge of Audit / Legal References across All 4 Locales (`ru`, `kk`, `en`, `zh`)**:
    - Completely deleted `src/features/solution-picker/` directory (`SolutionPicker.tsx`, `questions.ts`, `SolutionPicker.test.tsx`). Hero CTA points cleanly to `#contact`.
    - Purged all occurrences of "Аудит" and "Юридическая проверка / защита" across all tariff cards, services catalog, team bios, process workflows, and dictionaries in both frontend and backend seeders.
    - Updated Service 6 to "Tax verification of counterparties via State Revenue registers" and Tariff 4 to "1C express database analysis and tax optimization".

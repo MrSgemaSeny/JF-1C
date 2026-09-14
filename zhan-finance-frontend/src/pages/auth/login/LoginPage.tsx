@@ -12,11 +12,12 @@ import { toast } from '@/shared/ui/Toast/ToastContext';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher/LanguageSwitcher';
 
-const emailSchema = z.string().email("Некорректный адрес электронной почты");
+const emailSchema = z.string().email();
 
 export function LoginPage() {
-  const { t } = useTranslation(['common', 'auth']);
+  const { t } = useTranslation('auth');
   const { login, completeAuth, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -55,12 +56,12 @@ export function LoginPage() {
         return;
       }
       if (result.isPendingApproval) {
-        setPendingMessage(t('auth.login.pendingApproval', { defaultValue: 'Ваш аккаунт находится на модерации.' }));
+        setPendingMessage(t('login.pendingApproval'));
       } else if (result.isNewUser) {
-        toast.success(t('auth.login.registerSuccess'));
+        toast.success(t('login.registerSuccess'));
         navigate(ROUTES.COMPLETE_PROFILE);
       } else {
-        toast.success(t('auth.login.loginSuccess'));
+        toast.success(t('login.loginSuccess'));
         const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
         navigate(returnUrl, { replace: true });
       }
@@ -70,7 +71,7 @@ export function LoginPage() {
       if (isPending) {
         setPendingMessage(msg);
       } else {
-        toast.error(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.googleError') : msg }));
+        toast.error(t(`errors.${msg}`, { defaultValue: t('login.googleAuthError') }));
       }
     } finally {
       submittingRef.current = false;
@@ -80,7 +81,7 @@ export function LoginPage() {
 
   const handleTotpSuccess = (response: AuthResponse) => {
     completeAuth(response);
-    toast.success(t('auth.login.loginSuccess'));
+    toast.success(t('login.loginSuccess'));
     const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
     navigate(returnUrl, { replace: true });
   };
@@ -91,22 +92,22 @@ export function LoginPage() {
     setGlobalError(null);
     setValidationErrors({});
     
-    const emailResult = emailSchema.safeParse(email);
+    const emailResult = emailSchema.safeParse(email.trim());
     if (!emailResult.success) {
-      setValidationErrors({ email: emailResult.error.errors[0].message });
+      setValidationErrors({ email: t('errors.BAD_REQUEST', { defaultValue: 'Email error' }) });
       return;
     }
 
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const res = await login(email, password);
+      const res = await login(email.trim(), password);
       if (res && res.requires2FA && res.preAuthToken) {
         setPreAuthToken(res.preAuthToken);
         setStep('TOTP');
         return;
       }
-      toast.success(t('auth.login.loginSuccess'));
+      toast.success(t('login.loginSuccess'));
       const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
       navigate(returnUrl, { replace: true });
     } catch (err) {
@@ -119,7 +120,7 @@ export function LoginPage() {
         if (isPending) {
           setPendingMessage(msg);
         } else {
-          setGlobalError(t(`auth:errors.${msg}`, { defaultValue: msg === 'UNKNOWN' ? t('auth.login.loginError') : msg }));
+          setGlobalError(t(`errors.${msg}`, { defaultValue: t('errors.UNKNOWN') }));
         }
       }
     } finally {
@@ -135,15 +136,15 @@ export function LoginPage() {
           <div className="mx-auto w-16 h-16 bg-brand-green/10 rounded-full flex items-center justify-center mb-6">
             <Clock className="w-8 h-8 text-brand-green" />
           </div>
-          <h2 className="text-2xl font-black uppercase text-brand-green mb-4">Статус аккаунта</h2>
+          <h2 className="text-2xl font-black uppercase text-brand-green mb-4">{t('login.statusTitle')}</h2>
           <p className="text-brand-green/70 mb-8 leading-relaxed font-medium">
-            {pendingMessage.includes('отклонена') ? 'К сожалению, ваша заявка на регистрацию отклонена.' : 'Ваша заявка в работе. Ожидайте подтверждения от администратора.'}
+            {pendingMessage.includes('отклонена') ? t('login.statusRejected') : t('login.statusPending')}
           </p>
           <Link
             to={ROUTES.HOME}
-            className="inline-flex items-center justify-center w-full py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all"
+            className="inline-flex items-center justify-center w-full py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15"
           >
-            На главную
+            {t('login.toHome')}
           </Link>
         </div>
       </div>
@@ -151,11 +152,14 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
+    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-16 sm:py-24">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
-        <Link to={ROUTES.HOME} className="flex items-center mb-8 group focus:outline-none">
-          <BrandLogo className="h-10 w-auto group-hover:opacity-85 transition-opacity" />
-        </Link>
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none" aria-label={t('login.toHome')}>
+            <BrandLogo className="h-9 sm:h-10 w-auto group-hover:opacity-85 transition-opacity" />
+          </Link>
+          <LanguageSwitcher />
+        </div>
 
         {step === 'TOTP' ? (
           <TotpVerifyForm
@@ -168,14 +172,14 @@ export function LoginPage() {
           />
         ) : (
           <>
-            <h1 className="text-3xl font-black uppercase text-brand-green mb-2">{t('auth.login.title')}</h1>
-            <p className="text-brand-green/70 mb-8">{t('auth.login.subtitle')}</p>
+            <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">{t('login.title')}</h1>
+            <p className="text-brand-green/70 text-sm mb-8 leading-relaxed">{t('login.subtitle')}</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
                 id="email"
                 type="email"
-                label="Email"
+                label={t('login.emailLabel')}
                 required
                 autoComplete="email"
                 value={email}
@@ -183,13 +187,13 @@ export function LoginPage() {
                 disabled={isSubmitting}
                 error={validationErrors.email}
                 icon={<Mail className="w-5 h-5" />}
-                placeholder="example@gmail.com"
+                placeholder={t('login.emailPlaceholder')}
               />
 
               <Input
                 id="password"
                 type="password"
-                label={t('auth.login.passwordLabel')}
+                label={t('login.passwordLabel')}
                 required
                 autoComplete="current-password"
                 value={password}
@@ -197,7 +201,7 @@ export function LoginPage() {
                 disabled={isSubmitting}
                 error={validationErrors.password}
                 icon={<Lock className="w-5 h-5" />}
-                placeholder="••••••••"
+                placeholder={t('login.passwordPlaceholder')}
               />
 
               <div className="flex justify-end -mt-2 mb-2">
@@ -205,7 +209,7 @@ export function LoginPage() {
                   to={ROUTES.FORGOT_PASSWORD}
                   className="text-xs font-semibold text-brand-green/75 hover:text-brand-green hover:underline transition-colors"
                 >
-                  Забыли пароль?
+                  {t('login.forgotPassword')}
                 </Link>
               </div>
 
@@ -218,9 +222,9 @@ export function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base"
               >
-                {isSubmitting ? t('auth.login.loggingIn') : t('auth.login.loginBtn')}
+                {isSubmitting ? t('login.loggingIn') : t('login.loginBtn')}
                 {!isSubmitting && <ArrowRight className="w-4 h-4" />}
               </button>
             </form>
@@ -231,23 +235,23 @@ export function LoginPage() {
                   <div className="w-full border-t border-brand-green/20"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-brand-green/50">{t('auth.login.or')}</span>
+                  <span className="px-2 bg-white text-brand-green/50 font-medium">{t('login.or')}</span>
                 </div>
               </div>
               <div className="mt-6 flex justify-center">
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
-                  onError={() => toast.error(t('auth.login.googleAuthError'))}
+                  onError={() => toast.error(t('login.googleAuthError'))}
                   use_fedcm_for_prompt={false}
                   itp_support={true}
                 />
               </div>
             </div>
 
-            <p className="text-center text-sm text-brand-green/70 mt-6">
-              {t('auth.login.noAccount')}{' '}
+            <p className="text-center text-sm text-brand-green/70 mt-6 font-medium">
+              {t('login.noAccount')}{' '}
               <Link to={`${ROUTES.REGISTER}${searchParams.get('from') ? `?from=${encodeURIComponent(searchParams.get('from')!)}` : ''}`} className="font-bold text-brand-green hover:underline">
-                {t('auth.login.registerLink')}
+                {t('login.registerLink')}
               </Link>
             </p>
           </>

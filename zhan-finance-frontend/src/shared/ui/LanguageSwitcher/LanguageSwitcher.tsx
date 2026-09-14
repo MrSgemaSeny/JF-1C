@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { apiRequest } from '@/shared/api/http';
-import { useAuth } from '@/features/auth/AuthContext';
+import { useOptionalAuth } from '@/features/auth/AuthContext';
 
 const LANGUAGES = [
   { code: 'ru', label: 'RU' },
@@ -9,12 +9,14 @@ const LANGUAGES = [
   { code: 'zh', label: '中文' },
 ] as const;
 
-export const LanguageSwitcher = () => {
+export const LanguageSwitcher = ({ className = '' }: { className?: string }) => {
   const { i18n } = useTranslation();
-  const { user } = useAuth();
+  const auth = useOptionalAuth();
+  const user = auth?.user;
 
   const handleLanguageChange = async (code: string) => {
-    i18n.changeLanguage(code);
+    localStorage.setItem('jf1c_lang', code);
+    await i18n.changeLanguage(code);
     
     if (user) {
       try {
@@ -28,21 +30,27 @@ export const LanguageSwitcher = () => {
     }
   };
 
+  const currentLang = i18n.language || 'ru';
+
   return (
-    <div className="flex items-center bg-brand-green/5 border border-brand-green/10 rounded-full p-1 shadow-sm">
-      {LANGUAGES.map(({ code, label }) => (
-        <button
-          key={code}
-          onClick={() => handleLanguageChange(code)}
-          className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all ${
-            i18n.language === code 
-              ? 'bg-brand-green text-brand-beige shadow-md' 
-              : 'text-brand-green/70 hover:text-brand-green hover:bg-brand-green/10'
-          }`}
-        >
-          {label}
-        </button>
-      ))}
+    <div className={`flex items-center bg-brand-green/5 border border-brand-green/10 rounded-full p-1 shadow-sm ${className}`}>
+      {LANGUAGES.map(({ code, label }) => {
+        const isActive = currentLang === code || currentLang.startsWith(`${code}-`);
+        return (
+          <button
+            key={code}
+            type="button"
+            onClick={() => handleLanguageChange(code)}
+            className={`text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all ${
+              isActive 
+                ? 'bg-brand-green text-brand-beige shadow-md' 
+                : 'text-brand-green/70 hover:text-brand-green hover:bg-brand-green/10'
+            }`}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 };

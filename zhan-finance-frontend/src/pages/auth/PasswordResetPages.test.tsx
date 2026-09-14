@@ -31,9 +31,9 @@ describe('Password Reset Flow (#25)', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText(/Восстановление пароля/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Отправить ссылку/i })).toBeInTheDocument();
+      expect(screen.getByText(/forgotPassword\.title/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/forgotPassword\.emailLabel/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /forgotPassword\.submitBtn/i })).toBeInTheDocument();
     });
 
     it('submits valid email and shows anti-enumeration confirmation', async () => {
@@ -47,18 +47,18 @@ describe('Password Reset Flow (#25)', () => {
         </MemoryRouter>
       );
 
-      fireEvent.change(screen.getByLabelText(/Email/i), {
+      fireEvent.change(screen.getByLabelText(/forgotPassword\.emailLabel/i), {
         target: { value: 'user@example.com' },
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Отправить ссылку/i }));
+      fireEvent.click(screen.getByRole('button', { name: /forgotPassword\.submitBtn/i }));
 
       await waitFor(() => {
         expect(authApi.forgotPassword).toHaveBeenCalledWith('user@example.com');
       });
 
-      expect(await screen.findByText(/Проверьте почту/i)).toBeInTheDocument();
-      expect(screen.getByText(/Если указанный адрес зарегистрирован/i)).toBeInTheDocument();
+      expect(await screen.findByText(/forgotPassword\.successTitle/i)).toBeInTheDocument();
+      expect(screen.getByText(/forgotPassword\.successText/i)).toBeInTheDocument();
     });
   });
 
@@ -72,8 +72,8 @@ describe('Password Reset Flow (#25)', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText(/Недействительная ссылка/i)).toBeInTheDocument();
-      expect(screen.getByText(/В ссылке отсутствует токен сброса пароля/i)).toBeInTheDocument();
+      expect(screen.getByText(/resetPassword\.tokenInvalidTitle/i)).toBeInTheDocument();
+      expect(screen.getByText(/resetPassword\.tokenInvalidText/i)).toBeInTheDocument();
     });
 
     it('allows resetting password when token is present', async () => {
@@ -89,16 +89,16 @@ describe('Password Reset Flow (#25)', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByRole('heading', { name: /Новый пароль/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /resetPassword\.title/i })).toBeInTheDocument();
 
-      fireEvent.change(screen.getByLabelText(/^Новый пароль/i), {
+      fireEvent.change(screen.getByLabelText(/^resetPassword\.newPasswordLabel/i), {
         target: { value: 'NewStrongPassword123' },
       });
-      fireEvent.change(screen.getByLabelText(/Подтверждение пароля/i), {
+      fireEvent.change(screen.getByLabelText(/resetPassword\.confirmPasswordLabel/i), {
         target: { value: 'NewStrongPassword123' },
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Сохранить новый пароль/i }));
+      fireEvent.click(screen.getByRole('button', { name: /resetPassword\.submitBtn/i }));
 
       await waitFor(() => {
         expect(authApi.resetPassword).toHaveBeenCalledWith({
@@ -107,8 +107,8 @@ describe('Password Reset Flow (#25)', () => {
         });
       });
 
-      expect(await screen.findByText(/Пароль изменен/i)).toBeInTheDocument();
-      expect(screen.getByText(/Все активные сессии завершены/i)).toBeInTheDocument();
+      expect(await screen.findByText(/resetPassword\.successTitle/i)).toBeInTheDocument();
+      expect(screen.getByText(/resetPassword\.successText/i)).toBeInTheDocument();
     });
   });
 });

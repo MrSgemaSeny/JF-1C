@@ -6,10 +6,13 @@ import { forgotPassword } from '@/features/auth/authApi';
 import { Input } from '@/shared/ui/Input/Input';
 import { z } from 'zod';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
-const emailSchema = z.string().email('Введите корректный адрес электронной почты');
+const emailSchema = z.string().email();
 
 export function ForgotPasswordPage() {
+  const { t } = useTranslation('auth');
   const [email, setEmail] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +26,7 @@ export function ForgotPasswordPage() {
 
     const parseResult = emailSchema.safeParse(email.trim());
     if (!parseResult.success) {
-      setValidationError(parseResult.error.errors[0].message);
+      setValidationError(t('forgotPassword.emailError'));
       return;
     }
 
@@ -32,18 +35,21 @@ export function ForgotPasswordPage() {
       await forgotPassword(email.trim());
       setIsSubmitted(true);
     } catch (err: any) {
-      setServerError(err?.message || 'Произошла ошибка при отправке запроса. Повторите попытку позже.');
+      setServerError(err?.message || t('errors.UNKNOWN'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
+    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-16 sm:py-24">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
-        <Link to={ROUTES.HOME} className="flex items-center mb-8 group focus:outline-none">
-          <BrandLogo className="h-10 w-auto group-hover:opacity-85 transition-opacity" />
-        </Link>
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none" aria-label={t('login.toHome')}>
+            <BrandLogo className="h-9 sm:h-10 w-auto group-hover:opacity-85 transition-opacity" />
+          </Link>
+          <LanguageSwitcher />
+        </div>
 
         {isSubmitted ? (
           <div className="text-center space-y-6">
@@ -51,32 +57,32 @@ export function ForgotPasswordPage() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-2xl font-black uppercase text-brand-green mb-2">Проверьте почту</h1>
+              <h1 className="text-2xl font-black uppercase text-brand-green mb-2">{t('forgotPassword.successTitle')}</h1>
               <p className="text-brand-green/80 text-sm leading-relaxed">
-                Если указанный адрес зарегистрирован в системе, мы отправили на него ссылку для восстановления пароля. Ссылка действительна в течение 15 минут.
+                {t('forgotPassword.successText')}
               </p>
             </div>
             <Link
               to={ROUTES.LOGIN}
-              className="inline-flex items-center justify-center w-full py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all"
+              className="inline-flex items-center justify-center w-full py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15"
             >
-              Вернуться ко входу
+              {t('forgotPassword.backToLogin')}
             </Link>
           </div>
         ) : (
           <>
             <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">
-              Восстановление пароля
+              {t('forgotPassword.title')}
             </h1>
-            <p className="text-brand-green/70 mb-8 text-sm">
-              Введите email вашей учетной записи, и мы отправим ссылку для сброса пароля.
+            <p className="text-brand-green/70 mb-8 text-sm leading-relaxed">
+              {t('forgotPassword.subtitle')}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
                 id="reset-email"
                 type="email"
-                label="Email"
+                label={t('forgotPassword.emailLabel')}
                 required
                 autoComplete="email"
                 value={email}
@@ -84,7 +90,7 @@ export function ForgotPasswordPage() {
                 disabled={isSubmitting}
                 error={validationError || undefined}
                 icon={<Mail className="w-5 h-5" />}
-                placeholder="example@gmail.com"
+                placeholder={t('forgotPassword.emailPlaceholder')}
               />
 
               {serverError && (
@@ -96,9 +102,9 @@ export function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 py-3.5 bg-brand-green text-brand-beige rounded-xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
               >
-                {isSubmitting ? 'Отправка ссылки...' : 'Отправить ссылку'}
+                {isSubmitting ? t('forgotPassword.submitting') : t('forgotPassword.submitBtn')}
                 {!isSubmitting && <ArrowRight className="w-4 h-4" />}
               </button>
             </form>
@@ -109,7 +115,7 @@ export function ForgotPasswordPage() {
                 className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-green hover:underline"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Вернуться к форме входа
+                {t('forgotPassword.backToLogin')}
               </Link>
             </div>
           </>
