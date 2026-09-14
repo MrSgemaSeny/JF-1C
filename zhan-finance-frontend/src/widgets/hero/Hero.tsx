@@ -29,7 +29,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
             >
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[80px] font-black uppercase leading-[0.95] tracking-tight text-brand-green break-words">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-[68px] font-black uppercase leading-[1.05] tracking-tight text-brand-green break-normal">
                 {t('hero.title1')} <br />
                 {t('hero.title2')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-green/60">{t('hero.titleHighlight')}</span>
               </h1>
