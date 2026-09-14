@@ -10,7 +10,7 @@ import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import LogoImage from '@/shared/assets/icons/logo.png';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 
 const emailSchema = z.string().email("Некорректный адрес электронной почты");
 
@@ -191,12 +191,8 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
-        <Link to={ROUTES.HOME} className="flex items-center gap-3 mb-8 group">
-          <img src={LogoImage} alt="ЖАН FINANCE" className="w-10 h-10 rounded-xl object-contain shadow-sm group-hover:scale-105 transition-transform" />
-          <div className="flex flex-col">
-            <span className="font-logo text-2xl leading-none uppercase tracking-wider text-brand-green">ЖАН</span>
-            <span className="font-logo text-[10px] leading-tight tracking-[0.22em] uppercase text-gray-900">FINANCE</span>
-          </div>
+        <Link to={ROUTES.HOME} className="flex items-center mb-8 group focus:outline-none">
+          <BrandLogo className="h-10 w-auto group-hover:opacity-85 transition-opacity" />
         </Link>
 
         {step === 'CREDENTIALS' && (

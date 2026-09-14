@@ -6,7 +6,7 @@ import { ApiError } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
 import { updateMyProfile } from '@/entities/user/api/userApi';
 import { useTranslation } from 'react-i18next';
-import LogoImage from '@/shared/assets/icons/logo.png';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 
 export function CompleteProfilePage() {
   const { t } = useTranslation(['common']);
@@ -44,12 +44,8 @@ export function CompleteProfilePage() {
     <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <img src={LogoImage} alt="ЖАН FINANCE" className="w-10 h-10 rounded-xl object-contain shadow-sm" />
-          <div className="flex flex-col">
-            <span className="font-logo text-2xl leading-none uppercase tracking-wider text-brand-green">ЖАН</span>
-            <span className="font-logo text-[10px] leading-tight tracking-[0.22em] uppercase text-gray-900">FINANCE</span>
-          </div>
+        <div className="flex items-center mb-8">
+          <BrandLogo className="h-10 w-auto" />
         </div>
 
         <div className="flex items-center gap-2 mb-2">

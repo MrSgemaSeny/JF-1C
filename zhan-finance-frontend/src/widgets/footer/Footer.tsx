@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, User, Briefcase, Send } from "lucide-react";
 import { ContactForm } from "@/features/contact-form/ContactForm";
 import { ROUTES } from "@/shared/config/routes";
 import { useTranslation } from "react-i18next";
+import { BrandLogo } from "@/shared/ui/BrandLogo";
 
 interface FooterProps {
   id?: string;
@@ -16,13 +17,8 @@ export function Footer({ id = 'contact' }: FooterProps) {
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 mb-20">
           <div className="space-y-12">
             <div>
-              <div className="flex items-center gap-1.5 mb-6">
-                <span className="font-logo text-3xl leading-none tracking-widest text-brand-beige">
-                  ЖАН
-                </span>
-                <span className="font-logo text-xs leading-tight tracking-[0.25em] uppercase text-brand-beige/80 self-end mb-0.5">
-                  FINANCE
-                </span>
+              <div className="mb-6">
+                <BrandLogo variant="inverted" className="h-10 md:h-12 w-auto" />
               </div>
               <h2 className="text-4xl md:text-5xl font-black uppercase leading-[1.1] tracking-tight">
                 {t('footer.slogan1')}

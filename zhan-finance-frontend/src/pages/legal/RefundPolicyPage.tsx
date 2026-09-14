@@ -1,6 +1,7 @@
 import { RefreshCw, Clock, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 
 export function RefundPolicyPage() {
   return (
@@ -15,9 +16,7 @@ export function RefundPolicyPage() {
             <ArrowLeft className="w-4 h-4" />
             На главную
           </Link>
-          <div className="font-logo font-bold text-brand-green text-lg tracking-wider">
-            ЖАН FINANCE
-          </div>
+          <BrandLogo className="h-7 w-auto" />
         </div>
 
         {/* Header Banner */}

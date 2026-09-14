@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ErrorBoundary } from '@/shared/ui/ErrorBoundary';
 import { DashboardSidebar } from './DashboardSidebar';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 import { Menu } from 'lucide-react';
 import { GlobalSearch } from '@/widgets/search/GlobalSearch';
 import { NotificationBell } from './NotificationBell';
@@ -155,15 +156,9 @@ export function DashboardLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile Topbar */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-brand-green flex items-center justify-center shrink-0">
-              <span className="text-white text-xs font-bold leading-none">ZF</span>
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="font-logo text-base leading-none uppercase tracking-wider text-brand-green truncate">ЖАН</span>
-              <span className="font-logo text-[8px] leading-tight tracking-[0.22em] uppercase text-gray-900 truncate">FINANCE</span>
-            </div>
-          </div>
+          <Link to="/" className="flex items-center">
+            <BrandLogo className="h-7 w-auto" />
+          </Link>
           <div className="flex items-center gap-3">
             <HeaderProfile />
             <button 

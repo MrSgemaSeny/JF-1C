@@ -6,6 +6,7 @@ import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 
 export function Header() {
   const { t } = useTranslation('common');
@@ -47,13 +48,8 @@ export function Header() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link to={ROUTES.HOME} className="flex items-center gap-1.5 group relative z-50">
-            <span className="font-logo text-2xl leading-none tracking-widest text-brand-green group-hover:opacity-80 transition-opacity">
-              ЖАН
-            </span>
-            <span className="font-logo text-[11px] leading-tight tracking-[0.25em] uppercase text-brand-green/70 self-end mb-0.5">
-              FINANCE
-            </span>
+          <Link to={ROUTES.HOME} className="flex items-center group relative z-50 focus:outline-none" aria-label="На главную">
+            <BrandLogo className="h-8 md:h-9 w-auto group-hover:opacity-85 transition-opacity" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">

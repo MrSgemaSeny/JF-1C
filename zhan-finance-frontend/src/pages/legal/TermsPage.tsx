@@ -1,6 +1,7 @@
 import { FileText, AlertTriangle, Scale, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
+import { BrandLogo } from '@/shared/ui/BrandLogo';
 
 export function TermsPage() {
   return (
@@ -15,9 +16,7 @@ export function TermsPage() {
             <ArrowLeft className="w-4 h-4" />
             На главную
           </Link>
-          <div className="font-logo font-bold text-brand-green text-lg tracking-wider">
-            ЖАН FINANCE
-          </div>
+          <BrandLogo className="h-7 w-auto" />
         </div>
 
         {/* Header Banner */}

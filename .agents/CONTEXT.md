@@ -14,7 +14,11 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Footer Navigation & Legal Info Alignment**:
+1. **Vector BrandLogo Integration (Full Authentic Branding)**:
+   - Built reusable vector SVG component `BrandLogo.tsx` (`src/shared/ui/BrandLogo.tsx`) with pixel-perfect geometry, `a_Simpler` bold font, exact color schemes (default, inverted, landing), and zero distortion.
+   - Replaced plain-text typography branding across all public and authenticated pages: `Header.tsx`, `Footer.tsx`, `LoginPage.tsx`, `RegisterPage.tsx`, `ForgotPasswordPage.tsx`, `ResetPasswordPage.tsx`, `CompleteProfilePage.tsx`, `TermsPage.tsx`, `PrivacyPolicyPage.tsx`, `RefundPolicyPage.tsx`, `CookiePolicyPage.tsx`, `DashboardSidebar.tsx`, and `DashboardLayout.tsx`.
+   - Verified 100% test pass (19 test files, 74 tests).
+2. **Footer Navigation & Legal Info Alignment**:
    - Added `Войти` (`publicNav.login` / `ROUTES.LOGIN`) as the 4th item in the Footer navigation list under `НАВИГАЦИЯ`.
    - Moved the `ТОО «ЖАН FINANCE»` block down, aligning it horizontally on the same level as the round action/social buttons (`кружки`).
 2. **Home Restructure & Green Outsource Included Section**:
