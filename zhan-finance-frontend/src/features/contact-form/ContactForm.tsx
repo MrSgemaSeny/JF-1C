@@ -132,17 +132,17 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
                 {t('contactForm.buttons.submitting', { defaultValue: 'Отправляем...' })}
               </>
             ) : (
-              t('contactForm.buttons.submit', { defaultValue: 'Отправить заявку на консультацию' })
+              t('contactForm.buttons.submit', { defaultValue: 'Отправить заявку' })
             )}
           </button>
           <p className="text-xs text-brand-green/70 text-center mt-3 leading-relaxed">
-            Нажимая кнопку, вы соглашаетесь с{' '}
+            {t('contactForm.agreement.prefix', { defaultValue: 'Нажимая кнопку, вы соглашаетесь с' })}{' '}
             <Link to={ROUTES.PRIVACY_POLICY} className="underline font-semibold hover:text-brand-green">
-              Политикой конфиденциальности
+              {t('contactForm.agreement.privacy', { defaultValue: 'Политикой конфиденциальности' })}
             </Link>{' '}
-            и{' '}
+            {t('contactForm.agreement.and', { defaultValue: 'и' })}{' '}
             <Link to={ROUTES.TERMS} className="underline font-semibold hover:text-brand-green">
-              Пользовательским соглашением
+              {t('contactForm.agreement.terms', { defaultValue: 'Пользовательским соглашением' })}
             </Link>
           </p>
         </form>

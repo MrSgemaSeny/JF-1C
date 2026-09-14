@@ -934,6 +934,12 @@
       "title": "Thank you!",
       "text": "We will contact you shortly to discuss the details."
     },
+    "whatsapp": {
+      "readyTitle": "Request Formed!",
+      "readyText": "To complete submission, proceed to WhatsApp or scan the QR code from your mobile device.",
+      "scanQr": "Scan with phone camera",
+      "openBtn": "Open WhatsApp"
+    },
     "fields": {
       "name": {
         "label": "Your Name",
@@ -942,14 +948,24 @@
       "phone": {
         "label": "Phone"
       },
+      "email": {
+        "label": "Email (optional)",
+        "placeholder": "name@example.com"
+      },
       "message": {
         "label": "Brief description of the task",
         "placeholder": "Tell us how we can help you..."
       }
     },
     "buttons": {
-      "submit": "Send Request",
-      "submitting": "Sending..."
+      "submit": "Submit Request",
+      "submitting": "Submitting..."
+    },
+    "agreement": {
+      "prefix": "By clicking the button, you agree to the",
+      "privacy": "Privacy Policy",
+      "and": "and",
+      "terms": "Terms of Service"
     },
     "error": {
       "default": "Failed to send request"
