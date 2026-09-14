@@ -1,7 +1,7 @@
 import { Header } from '@/widgets/header/Header';
 import { Hero } from '@/widgets/hero/Hero';
 import { HomeAbout } from './sections/HomeAbout';
-import { WhyOutsource } from './sections/WhyOutsource';
+import { HomeServices } from './sections/HomeServices';
 import { HomeAdvantages } from './sections/HomeAdvantages';
 import { Trust } from '@/widgets/trust/Trust';
 import { PricingTable } from '@/widgets/pricing-table/PricingTable';
@@ -20,7 +20,7 @@ export function HomePage() {
       <main>
         <Hero />
         <HomeAbout />
-        <WhyOutsource />
+        <HomeServices />
         <HomeAdvantages />
         <Trust />
         <Section className="bg-brand-green py-32 text-brand-beige">

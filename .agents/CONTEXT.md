@@ -14,7 +14,11 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Legal Pages Standalone Layout (Header & Footer Removal)**:
+1. **Streamlining Landing Flow & Services Integration (Removed Redundant Outsource Block)**:
+   - Completely removed the redundant 4-card block («Надежная бухгалтерия без штатных рисков» + 4 cards) from the landing page.
+   - Seamlessly integrated «Что входит в аутсорс-бухгалтерию» (6 ключевых процессов + кнопка «Получить консультацию») directly into `HomeServices.tsx`.
+   - Updated `HomePage.tsx` flow: `Hero` -> `HomeAbout` («О компании») -> `HomeServices` («Решения для вашего бизнеса» + «Что входит в аутсорс-бухгалтерию») -> `HomeAdvantages` («Наши преимущества») -> `Trust` -> `PricingTable` -> `Reviews` -> `Team` -> `Offices` -> `FaqContact` -> `Footer`.
+2. **Legal Pages Standalone Layout (Header & Footer Removal)**:
    - Completely removed global `<Header />` and `<Footer />` components from all legal document pages: `/privacy-policy` (`PrivacyPolicyPage.tsx`), `/terms` (`TermsPage.tsx`), `/refund-policy` (`RefundPolicyPage.tsx`), and `/cookie-policy` (`CookiePolicyPage.tsx`).
    - Replaced with a standalone document top bar (`← На главную` button + typography logo `ЖАН FINANCE` in `font-logo`) and a clean text copyright footer (`ТОО «ЖАН FINANCE» • БИН 240140023819 • Все права защищены`).
 2. **Landing & Services Parity (ServicesCatalog Parity, Pricing Heading, 2-Column Services, 4 Tariffs, Informational ServiceModal)**:

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
@@ -10,6 +10,15 @@ import { fetchHighlightedServices } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
 import { useTranslation, Trans } from 'react-i18next';
+
+const includedItems = [
+  'Обработка первичных документов (акты, накладные, счета-фактуры)',
+  'Сдача всех налоговых и статистических форм (910.00, 200.00, 300.00, 100.00)',
+  'Кадровый учет: трудовые договоры, приказы, табели, расчет зарплаты и отпускных',
+  'Выписка, прием и строгий контроль ЭСФ, СНТ и Виртуального склада',
+  'Ежедневный мониторинг лицевого счета в КГД и контроль налоговой задолженности',
+  'Защита интересов компании при камеральном контроле и налоговых проверках',
+];
 
 export function HomeServices() {
   const { t } = useTranslation('common');
@@ -155,6 +164,44 @@ export function HomeServices() {
             </div>
           );
         })()}
+
+        {/* What is included in Outsource */}
+        <div className="mt-16 bg-brand-beige text-brand-green rounded-[36px] p-8 sm:p-12 lg:p-16 border border-brand-green/10 shadow-xl">
+          <div className="max-w-3xl mb-10">
+            <h3 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-4">
+              Что входит в аутсорс-бухгалтерию
+            </h3>
+            <p className="text-lg text-brand-green/80 font-medium leading-relaxed">
+              Полный спектр регулярных работ для ведения финансового и налогового учета вашего бизнеса без скрытых доплат:
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {includedItems.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl p-6 border border-brand-green/10 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow"
+              >
+                <CheckCircle2 className="w-6 h-6 text-brand-green shrink-0 mt-0.5" />
+                <p className="text-sm font-bold text-brand-green/90 leading-relaxed">
+                  {item}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-brand-green/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <p className="text-sm font-bold uppercase tracking-wider text-brand-green/70 text-center sm:text-left">
+              Нужен расчет под ваш оборот и количество операций?
+            </p>
+            <button
+              onClick={() => (document.getElementById('contact') || document.getElementById('footer'))?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-8 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all text-sm whitespace-nowrap shadow-lg shadow-brand-green/20 hover:-translate-y-0.5"
+            >
+              Получить консультацию
+            </button>
+          </div>
+        </div>
 
         <div className="mt-12 text-center md:hidden">
           <Link
