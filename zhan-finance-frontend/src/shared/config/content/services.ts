@@ -43,7 +43,7 @@ export const servicesList: Service[] = [
     priceKey: 'landing:services.list.0.price',
     featuresKeys: [],
     bulletsKeys: ['landing:services.list.0.b0', 'landing:services.list.0.b1', 'landing:services.list.0.b2'],
-    link: '/services#solution',
+    link: '/services#contact',
     image: '',
   },
   {
@@ -53,7 +53,7 @@ export const servicesList: Service[] = [
     priceKey: 'landing:services.list.1.price',
     featuresKeys: [],
     bulletsKeys: ['landing:services.list.1.b0', 'landing:services.list.1.b1', 'landing:services.list.1.b2'],
-    link: '/services#solution',
+    link: '/services#contact',
     image: '',
   },
   {
@@ -63,7 +63,7 @@ export const servicesList: Service[] = [
     priceKey: 'landing:services.list.2.price',
     featuresKeys: [],
     bulletsKeys: ['landing:services.list.2.b0', 'landing:services.list.2.b1', 'landing:services.list.2.b2'],
-    link: '/services#solution',
+    link: '/services#contact',
     image: '',
   },
   {
@@ -73,7 +73,7 @@ export const servicesList: Service[] = [
     priceKey: 'landing:services.list.3.price',
     featuresKeys: [],
     bulletsKeys: ['landing:services.list.3.b0', 'landing:services.list.3.b1', 'landing:services.list.3.b2'],
-    link: '/services#solution',
+    link: '/services#contact',
     image: '',
   },
   {
@@ -83,7 +83,7 @@ export const servicesList: Service[] = [
     priceKey: 'landing:services.list.4.price',
     featuresKeys: [],
     bulletsKeys: ['landing:services.list.4.b0', 'landing:services.list.4.b1', 'landing:services.list.4.b2'],
-    link: '/services#solution',
+    link: '/services#contact',
     image: '',
   },
   {
@@ -93,7 +93,7 @@ export const servicesList: Service[] = [
     priceKey: 'landing:services.list.5.price',
     featuresKeys: [],
     bulletsKeys: ['landing:services.list.5.b0', 'landing:services.list.5.b1', 'landing:services.list.5.b2'],
-    link: '/services#solution',
+    link: '/services#contact',
     image: '',
   },
 ];

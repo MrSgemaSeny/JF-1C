@@ -203,10 +203,10 @@ JF-1C/
 │   │   ├── app/                    # Корневые провайдеры, маршрутизация, глобальные стили
 │   │   ├── pages/                  # Страницы по ролям (Admin, Employee, Client, Advisor, Public)
 │   │   ├── widgets/                # UI-блоки (TaskKanbanBoard, Sidebar, Header)
-│   │   ├── features/               # Бизнес-функционал (AuthForm, SolutionPicker, ContactForm)
+│   │   ├── features/               # Бизнес-функционал (AuthForm, ContactForm)
 │   │   ├── entities/               # Доменные модели (Task, User, Document, Invoice)
 │   │   └── shared/                 # Переиспользуемый UI, клиент API http.ts
-│   └── src/**/*.test.ts(x)         # 74 Vitest + React Testing Library тестов
+│   └── src/**/*.test.ts(x)         # 72 Vitest + React Testing Library тестов
 ├── tests/                          # Сквозные верификационные и E2E сьюты
 │   ├── e2e/                        # 9 сценариев полного цикла (CRM, LMS, Chat, Billing, IDOR, UI)
 │   ├── artillery/                  # Сценарии нагрузочного тестирования и бенчмарки
