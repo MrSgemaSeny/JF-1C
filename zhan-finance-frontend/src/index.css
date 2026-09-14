@@ -9,6 +9,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'a_Simpler';
+  src: url('./shared/assets/fonts/a_Simpler_Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'a_Simpler';
+  src: url('./shared/assets/fonts/a_Simpler_Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-brand-green: #00562D;
   --color-brand-beige: #F5F5DC;

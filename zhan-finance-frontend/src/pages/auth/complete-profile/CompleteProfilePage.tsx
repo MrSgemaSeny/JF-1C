@@ -45,8 +45,11 @@ export function CompleteProfilePage() {
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <img src={LogoImage} alt="Zhan Finance Logo" className="w-10 h-10 rounded-xl object-contain" />
-          <span className="font-logo font-bold text-xl uppercase tracking-wider text-brand-green">Zhan Finance</span>
+          <img src={LogoImage} alt="ЖАН FINANCE" className="w-10 h-10 rounded-xl object-contain shadow-sm" />
+          <div className="flex flex-col">
+            <span className="font-logo text-2xl leading-none uppercase tracking-wider text-brand-green">ЖАН</span>
+            <span className="font-logo text-[10px] leading-tight tracking-[0.22em] uppercase text-gray-900">FINANCE</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 mb-2">

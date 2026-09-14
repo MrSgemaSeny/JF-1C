@@ -50,12 +50,12 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to={ROUTES.HOME} className="flex items-center gap-3 group relative z-50">
             <img src={LogoImage} alt="Zhan Finance Logo" className="w-10 h-10 rounded-xl object-contain shadow-lg group-hover:scale-105 transition-transform" />
-            <div className="flex flex-col mt-1">
-              <span className="font-logo text-xl leading-none uppercase tracking-widest text-brand-green transition-colors">
-                Zhan
+            <div className="flex flex-col mt-0.5">
+              <span className="font-logo text-2xl leading-none uppercase tracking-wider text-brand-green transition-colors">
+                ЖАН
               </span>
-              <span className="font-logo text-[10px] leading-tight tracking-[0.2em] uppercase text-brand-green/80 transition-colors">
-                Finance
+              <span className="font-logo text-[10px] leading-tight tracking-[0.22em] uppercase text-gray-900 transition-colors">
+                FINANCE
               </span>
             </div>
           </Link>

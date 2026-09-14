@@ -102,11 +102,12 @@ export function DashboardSidebar({
         {/* Logo area */}
         <div className="flex items-center justify-between px-4 lg:px-6 py-4 border-b border-gray-100 min-h-[64px]">
           <Link to="/" className="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0" onClick={() => { if (window.innerWidth < 1024) onMobileClose(); }}>
-            <img src={LogoImage} alt="Zhan Finance Logo" className="w-8 h-8 rounded shrink-0 object-contain" />
+            <img src={LogoImage} alt="ЖАН FINANCE" className="w-8 h-8 rounded shrink-0 object-contain" />
             {!isDesktopCollapsed && (
-              <span className="font-logo text-base font-bold text-gray-900 tracking-tight whitespace-nowrap truncate transition-opacity">
-                Zhan Finance
-              </span>
+              <div className="flex flex-col min-w-0 transition-opacity">
+                <span className="font-logo text-lg leading-none uppercase tracking-wider text-brand-green truncate">ЖАН</span>
+                <span className="font-logo text-[9px] leading-tight tracking-[0.22em] uppercase text-gray-900 truncate">FINANCE</span>
+              </div>
             )}
           </Link>
           

@@ -159,7 +159,10 @@ export function DashboardLayout() {
             <div className="w-8 h-8 rounded-lg bg-brand-green flex items-center justify-center shrink-0">
               <span className="text-white text-xs font-bold leading-none">ZF</span>
             </div>
-            <span className="font-logo font-bold text-gray-900 truncate">Zhan Finance</span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-logo text-base leading-none uppercase tracking-wider text-brand-green truncate">ЖАН</span>
+              <span className="font-logo text-[8px] leading-tight tracking-[0.22em] uppercase text-gray-900 truncate">FINANCE</span>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <HeaderProfile />
