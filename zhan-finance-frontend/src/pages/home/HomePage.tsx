@@ -23,14 +23,14 @@ export function HomePage() {
         <HomeServices />
         <HomeAdvantages />
         <Trust />
-        <Section className="bg-brand-green py-32 text-brand-beige">
+        <Section className="bg-brand-beige py-32 text-brand-green">
           <Container>
             <div className="max-w-3xl mb-16">
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-white mb-6">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6">
                 Прозрачная стоимость <br />
-                <span className="text-brand-beige/50">без скрытых платежей</span>
+                <span className="text-brand-green/40">без скрытых платежей</span>
               </h2>
-              <p className="text-xl text-brand-beige/80 font-medium leading-relaxed">
+              <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
                 Выберите подходящий тариф под масштаб вашего бизнеса или получите индивидуальный расчет.
               </p>
             </div>

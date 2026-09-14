@@ -108,8 +108,8 @@ export function ServicesCatalog() {
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
               {/* Column 1: One-time services */}
               <div className="space-y-6">
-                <div className="flex items-center gap-3 p-5 bg-brand-beige rounded-2xl border border-brand-green/10">
-                  <div className="w-9 h-9 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm">
+                <div className="flex items-center gap-4 p-6 bg-brand-beige/20 rounded-[32px] border border-brand-green/10 shadow-sm">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm shrink-0">
                     1
                   </div>
                   <div>
@@ -124,8 +124,8 @@ export function ServicesCatalog() {
 
               {/* Column 2: Outsource accounting */}
               <div className="space-y-6">
-                <div className="flex items-center gap-3 p-5 bg-brand-beige rounded-2xl border border-brand-green/10">
-                  <div className="w-9 h-9 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm">
+                <div className="flex items-center gap-4 p-6 bg-brand-beige/20 rounded-[32px] border border-brand-green/10 shadow-sm">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm shrink-0">
                     2
                   </div>
                   <div>

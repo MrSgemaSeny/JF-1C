@@ -14,7 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Streamlining Landing Flow & Services Integration (Removed Redundant Outsource Block)**:
+1. **Pricing Background & Services Header Unification**:
+   - Switched the pricing/tariffs section background from dark green to beige (`bg-brand-beige` with `text-brand-green` typography) on both `HomePage.tsx` and `ServicesPage.tsx`.
+   - Unified column headers in `HomeServices.tsx` and `ServicesCatalog.tsx`: changed background to `bg-brand-beige/20 border border-brand-green/10 rounded-[32px]`, identical to the service cards beneath.
+2. **Streamlining Landing Flow & Services Integration (Removed Redundant Outsource Block)**:
    - Completely removed the redundant 4-card block («Надежная бухгалтерия без штатных рисков» + 4 cards) from the landing page.
    - Seamlessly integrated «Что входит в аутсорс-бухгалтерию» (6 ключевых процессов + кнопка «Получить консультацию») directly into `HomeServices.tsx`.
    - Updated `HomePage.tsx` flow: `Hero` -> `HomeAbout` («О компании») -> `HomeServices` («Решения для вашего бизнеса» + «Что входит в аутсорс-бухгалтерию») -> `HomeAdvantages` («Наши преимущества») -> `Trust` -> `PricingTable` -> `Reviews` -> `Team` -> `Offices` -> `FaqContact` -> `Footer`.
