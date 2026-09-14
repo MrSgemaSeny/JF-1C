@@ -1,1627 +1,1641 @@
 {
-    "save":  "保存",
-    "cancel":  "取消",
-    "delete":  "删除",
-    "edit":  "编辑",
-    "search":  {
-                   "placeholder":  "Поиск по задачам, клиентам, курсам...",
-                   "categories":  {
-                                      "tasks":  "Задачи",
-                                      "courses":  "Курсы",
-                                      "lessons":  "Уроки",
-                                      "users":  "Пользователи"
-                                  },
-                   "status":  {
-                                  "published":  "Опубликован",
-                                  "draft":  "Черновик"
-                              },
-                   "noResults":  "Ничего не найдено",
-                   "lessonType":  "Тип:"
-               },
-    "datePicker":  {
-                       "selectDate":  "Выберите дату",
-                       "clear":  "Очистить"
-                   },
-    "loading":  "加载中...",
-    "success":  "操作成功",
-    "error":  "错误",
-    "connectionFailed":  "无法连接至服务器，请检查网络连接。",
-    "sessionExpired":  "登录会话已过期，请重新登录。",
-    "accessDenied":  "您没有执行该操作的权限。",
-    "publicNav":  {
-                      "home":  "首页",
-                      "services":  "服务项目",
-                      "about":  "关于我们",
-                      "profile":  "个人中心",
-                      "login":  "登录系统",
-                      "contact":  "联系我们",
-                      "getStarted":  "立即开始",
-                      "whatsapp":  "WhatsApp 在线咨询"
-                  },
-    "footer":  {
-                   "slogan1":  "精准数字核算，",
-                   "slogan2":  "保障企业稳健未来。",
-                   "navigation":  "网站导航",
-                   "contacts":  "联系方式",
-                   "address":  "哈萨克斯坦 奇姆肯特市 拜特列科夫街 79a",
-                   "discussTask":  "讨论您的财务需求？",
-                   "allRightsReserved":  "保留所有权利。",
-                   "privacy":  "隐私政策",
-                   "terms":  "服务协议",
-                   "refund":  "退款政策",
-                   "cookies":  "Cookie 政策"
-               },
-    "hero":  {
-                 "circleText":  "财务记账 • 税务申报 • 财务咨询 • 会计外包 •",
-                 "title1":  "重构您的",
-                 "title2":  "企业",
-                 "titleHighlight":  "财务体系",
-                 "subtitle":  "我们将财务核算从单纯的成本支出转化为精准的利润增长与风险管理工具。",
-                 "cta":  "测算服务费用"
-             },
-    "homeAbout":  {
-                      "badge":  "关于我们",
-                      "title":  "选择 <1>安心保障</1> — <br/>全心专注拓展 <br/>您的商业版图",
-                      "description":  "我们亲自应对各项审计与核查，深入测试税务架构，周全把控记账细节 — 助您心无旁骛地发展壮大企业。",
-                      "link":  "了解更多关于我们"
-                  },
-    "homeServices":  {
-                         "title":  "专为 <br/><1>您的企业定制</1> 的解决方案",
-                         "subtitle":  "从单次专业咨询到全流程财务与人事外包，我们为您量身定制最适配的合作模式。",
-                         "allServices":  "全部服务",
-                         "orderPrefix":  "预约服务：",
-                         "successMessage":  "您对“{{title}}”的申请已收到！我们将尽快与您取得联系。",
-                         "errorMessage":  "提交申请时出错，请稍后重试。",
-                         "more":  "了解更多",
-                         "modalTitle":  "申请已受理！",
-                         "col1_title":  "单项财务服务",
-                         "col1_desc":  "税务申报、薪资核算、账务梳理重构与合作方资信背景审查",
-                         "col2_title":  "全托管财务外包",
-                         "col2_desc":  "全面财务管控、SLA 协议 100% 赔付责任与持续专业财税护航",
-                         "subscription_badge":  "按月订阅",
-                         "sla_service_title":  "全方位掌控与责任担保",
-                         "sla_service_desc":  "依照 SLA 服务协议承担 100% 财务赔偿责任。凡因我方责任导致的罚款，均由我方全额承担。",
-                         "sla_features":  [
-                                              "SLA 协议法律与财务双重保障",
-                                              "国家收入委员会 (SRC) 个人账户 24/7 全天候监控",
-                                              "税务非现场稽查全程专业答辩与权益维护"
-                                          ]
-                     },
-    "homeAdvantages":  {
-                           "title":  "为什么选择 <br/><1>ЖАН FINANCE</1>",
-                           "subtitle":  "我们不仅按期递交报表，更为企业构建透明合规的财务体系，护航业务稳健前行。",
-                           "cards":  [
-                                         {
-                                             "title":  "恪守责任",
-                                             "text":  "依照 SLA 协议承担全部财务赔偿责任。凡属我方失误导致的罚款，由我方全额支付。"
-                                         },
-                                         {
-                                             "title":  "高度自动化",
-                                             "text":  "实现 1C 与银行系统、CRM 的无缝集成。最少人工录入，确保数据极致精准。"
-                                         },
-                                         {
-                                             "title":  "24/7 实时掌控",
-                                             "text":  "随时查看清晰透明的财务报表，让您实时掌握企业资金与经营动向。"
-                                         },
-                                         {
-                                             "title":  "合规税务优化",
-                                             "text":  "依托最新司法与税务判例，在法律框架内依法合规优化企业税负."
-                                         }
-                                     ]
-                       },
-    "nav":  {
-                "overview":  "Обзор",
-                "courses":  "Курсы",
-                "learners":  "Ученики",
-                "chat":  "Чат",
-                "employees":  "Сотрудники",
-                "clients":  "Клиенты",
-                "tasks":  "Список задач",
-                "taskPool":  "Пул задач",
-                "archiveDone":  "Архив (Выполненные)",
-                "archiveCancelled":  "Архив (Отмененные)",
-                "invoices":  "Счета",
-                "subscriptions":  "Подписки",
-                "auditLogs":  "Аудит",
-                "settings":  "Настройки",
-                "notifications":  "Уведомления",
-                "calendar":  "Календарь",
-                "documents":  "Документы",
-                "services":  "Услуги",
-                "templates":  "Шаблоны",
-                "leads":  "Лиды"
-            },
-    "clientDashboard":  {
-                            "welcome":  "Добро пожаловать, {{name}}!",
-                            "subtitle":  "Это ваш личный кабинет. Здесь вы можете оставлять заявки на услуги и отслеживать процесс их выполнения.",
-                            "inProgress":  "В работе",
-                            "needsAttention":  "Требуют внимания",
-                            "completed":  "Завершено",
-                            "createRequest":  "Создать новую заявку",
-                            "activeRequests":  "Активные заявки",
-                            "history":  "История",
-                            "noActiveRequests":  "У вас пока нет активных заявок.",
-                            "noHistoryRequests":  "У вас пока нет истории заявок.",
-                            "status":  {
-                                           "NEW":  "В очереди",
-                                           "IN_PROGRESS":  "В работе",
-                                           "ON_REVIEW":  "Ждет подтверждения",
-                                           "DONE":  "Завершено",
-                                           "CANCELLED":  "Отменено"
-                                       }
-                        },
-    "calendarWidget":  {
-                           "title":  "Календарь",
-                           "currentMonth":  "Текущий месяц",
-                           "openFull":  "Открыть полный календарь",
-                           "eventsOn":  "События на",
-                           "noEvents":  "На этот день нет запланированных событий",
-                           "addEvent":  "Добавить событие",
-                           "eventTitle":  "Название события",
-                           "eventTitlePlaceholder":  "Напр. Оплата ИПН",
-                           "time":  "Время",
-                           "color":  "Цвет метки",
-                           "description":  "Описание",
-                           "descriptionPlaceholder":  "Дополнительное описание (опционально)...",
-                           "save":  "Сохранить",
-                           "saving":  "Сохранение...",
-                           "systemTask":  "Задача в системе",
-                           "colors":  {
-                                          "BLUE":  "Синий",
-                                          "RED":  "Красный (Дедлайн)",
-                                          "GREEN":  "Зеленый",
-                                          "YELLOW":  "Желтый",
-                                          "PURPLE":  "Фиолетовый"
-                                      }
-                       },
-    "sidebar":  {
-                    "logout":  "Выйти",
-                    "roles":  {
-                                  "ADMIN":  "Админ",
-                                  "EMPLOYEE":  "Сотрудник",
-                                  "CLIENT":  "Клиент",
-                                  "LEARNER":  "Ученик",
-                                  "CURATOR":  "Куратор 1С"
-                              }
-                },
-    "calendarPage":  {
-                         "title":  "Налоговый календарь",
-                         "subtitle":  "Отслеживайте дедлайны и планируйте задачи",
-                         "months":  [
-                                        "Январь",
-                                        "Февраль",
-                                        "Март",
-                                        "Апрель",
-                                        "Май",
-                                        "Июнь",
-                                        "Июль",
-                                        "Август",
-                                        "Сентябрь",
-                                        "Октябрь",
-                                        "Ноябрь",
-                                        "Декабрь"
-                                    ],
-                         "daysShort":  [
-                                           "Пн",
-                                           "Вт",
-                                           "Ср",
-                                           "Чт",
-                                           "Пт",
-                                           "Сб",
-                                           "Вс"
-                                       ]
-                     },
-    "notifications":  {
-                          "title":  "Уведомления",
-                          "unreadSubtitle_zero":  "У вас нет непрочитанных сообщений.",
-                          "unreadSubtitle_one":  "У вас {{count}} непрочитанное сообщение.",
-                          "unreadSubtitle_few":  "У вас {{count}} непрочитанных сообщения.",
-                          "unreadSubtitle_many":  "У вас {{count}} непрочитанных сообщений.",
-                          "unreadSubtitle_other":  "У вас {{count}} непрочитанных сообщений.",
-                          "markAllAsRead":  "Прочитать все",
-                          "emptyTitle":  "Пока нет уведомлений",
-                          "emptySubtitle":  "Когда появится обновление по вашим документам или задачам, оно появится здесь.",
-                          "confirm":  "Ок",
-                          "open":  "Открыть"
-                      },
-    "clientChat":  {
-                       "sidebarTitle":  "Поддержка",
-                       "placeholderTitle":  "Поддержка ЖАН FINANCE",
-                       "placeholderSubtitle":  "Выберите диалог, чтобы начать общение",
-                       "inputPlaceholder":  "Введите сообщение...",
-                       "deleteConfirm":  "Удалить это сообщение?",
-                       "roles":  {
-                                     "ADMIN":  "АДМИН",
-                                     "EMPLOYEE":  "БУХГАЛТЕР",
-                                     "CLIENT":  "КЛИЕНТ"
-                                 },
-                       "noMessages":  "Нет сообщений. Напишите первое сообщение!"
-                   },
-    "documents":  {
-                      "title":  "Документы",
-                      "subtitle":  "Централизованное управление вашими документами, актами и договорами",
-                      "searchPlaceholder":  "Поиск по названию файла...",
-                      "viewMode":  {
-                                       "table":  "Таблица",
-                                       "grid":  "Сетка"
-                                   },
-                      "metrics":  {
-                                      "total":  "Всего документов",
-                                      "pending":  "Ожидают подписи",
-                                      "confirmed":  "Подписано"
-                                  },
-                      "folders":  {
-                                      "all":  "Все документы",
-                                      "acts":  "Акты ВР",
-                                      "reports":  "Отчеты",
-                                      "contracts":  "Договоры",
-                                      "other":  "Разное"
-                                  },
-                      "upload":  {
-                                     "dragOrClick":  "Перетащите файл или нажмите для загрузки",
-                                     "uploading":  "Загрузка документа...",
-                                     "formats":  "PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ",
-                                     "selectFile":  "Загрузить файл"
-                                 },
-                      "table":  {
-                                    "file":  "Название файла",
-                                    "type":  "Тип",
-                                    "signature":  "Статус подписи",
-                                    "size":  "Размер",
-                                    "actions":  "Действия"
-                                },
-                      "uploaderFilter":  {
-                                             "all":  "Все источники",
-                                             "company":  "От компании (на подпись)",
-                                             "client":  "Загружено вами"
-                                         },
-                      "status":  {
-                                     "signed":  "Подписано",
-                                     "confirm":  "Подтвердить",
-                                     "confirming":  "Подтверждаем...",
-                                     "clientUploaded":  "Загружено вами"
-                                 },
-                      "actions":  {
-                                      "download":  "Скачать",
-                                      "delete":  "Удалить",
-                                      "downloadZip":  "Скачать выбранные ({{count}}) в ZIP",
-                                      "formingZip":  "Формируем ZIP...",
-                                      "deselect":  "Снять выделение"
-                                  },
-                      "empty":  {
-                                    "title":  "Документы не найдены",
-                                    "description":  "Загрузите первый файл или измените параметры поиска"
-                                },
-                      "notifications":  {
-                                            "confirmDelete":  "Вы уверены, что хотите удалить этот документ?",
-                                            "deleteSuccess":  "Документ успешно удален",
-                                            "deleteError":  "Не удалось удалить документ",
-                                            "downloadError":  "Ошибка при скачивании документа",
-                                            "confirmSuccess":  "Документ успешно подтвержден и подписан",
-                                            "confirmError":  "Ошибка при подтверждении документа",
-                                            "zipError":  "Ошибка при формировании ZIP-архива"
-                                        }
-                  },
-    "settings":  {
-                     "title":  "Настройки профиля",
-                     "subtitle":  "Управляйте вашими личными данными и настройками безопасности",
-                     "basicInfo":  "Основная информация",
-                     "basicInfoDesc":  "Отредактируйте свои личные данные",
-                     "fullName":  "Полное Имя",
-                     "emailReadonly":  "Email (Только чтение)",
-                     "phone":  "Телефон",
-                     "companyName":  "Название компании",
-                     "saveChanges":  "Сохранить изменения",
-                     "changePassword":  "Изменить пароль",
-                     "changePasswordDesc":  "Обновите пароль для вашей учетной записи",
-                     "googlePasswordDesc":  "Вход через Google. Пароль не используется.",
-                     "googleSync":  "Вход через Google. Аватарка синхронизирована.",
-                     "currentPassword":  "Текущий пароль",
-                     "newPassword":  "Новый пароль",
-                     "confirmPassword":  "Подтвердите пароль",
-                     "errors":  {
-                                    "loadProfile":  "Ошибка при загрузке профиля",
-                                    "saveProfile":  "Не удалось сохранить профиль",
-                                    "passwordMismatch":  "Новые пароли не совпадают",
-                                    "passwordLength":  "Пароль должен содержать минимум 8 символов",
-                                    "savePassword":  "Не удалось изменить пароль",
-                                    "fileTooLarge":  "Файл слишком большой. Максимум 2MB.",
-                                    "uploadAvatar":  "Ошибка загрузки фото",
-                                    "loadUserData":  "Не удалось загрузить данные пользователя"
-                                },
-                     "success":  {
-                                     "profile":  "Профиль успешно обновлен",
-                                     "password":  "Пароль успешно изменен"
-                                 },
-                     "securityTitle":  "Безопасность",
-                     "updatePasswordBtn":  "Обновить пароль",
-                     "saving":  "Сохранение...",
-                     "googleNoPassword":  "Вы вошли через Google, поэтому смена пароля здесь недоступна. Управляйте безопасностью в аккаунте Google."
-                 },
-    "adminDashboard":  {
-                           "title":  "Обзор",
-                           "subtitle":  "Общая статистика системы",
-                           "loadError":  "Не удалось загрузить данные",
-                           "totalClients":  "Клиентов",
-                           "totalEmployees":  "Сотрудников",
-                           "totalTasks":  "Всего задач",
-                           "doneTasks":  "Выполнено",
-                           "newRequests":  "Новые заявки (сегодня)",
-                           "wonTasks":  "Завершено (Успешно)",
-                           "financialAnalytics":  "Финансовая аналитика",
-                           "earned":  "Заработано (Успешно)",
-                           "expectedRevenue":  "Ожидаемая выручка (В работе)",
-                           "conversion":  "Конверсия и эффективность",
-                           "winRate":  "Успешность (Win Rate)",
-                           "avgCloseTime":  "Среднее время закрытия",
-                           "days":  "дн.",
-                           "lostReasons":  "Причины отмены задач",
-                           "noLostTasks":  "Нет отмененных задач",
-                           "noTasks":  "Нет задач",
-                           "workload":  "Рабочая нагрузка сотрудников",
-                           "workloadDesc":  "Количество активных, просроченных и выполненных задач",
-                           "employee":  "Сотрудник",
-                           "inProgress":  "В работе",
-                           "overdue":  "Просрочено",
-                           "completed":  "Выполнено",
-                           "noEmployees":  "Нет данных о сотрудниках",
-                           "tasksByStatus":  "Задачи по статусам",
-                           "productivity":  "Продуктивность сотрудников",
-                           "status":  {
-                                          "NEW":  "Новые",
-                                          "IN_PROGRESS":  "В процессе",
-                                          "ON_REVIEW":  "На проверке",
-                                          "DONE":  "Готово",
-                                          "CANCELLED":  "Отменено"
-                                      }
-                       },
-    "adminTemplates":  {
-                           "title":  "Шаблоны документов",
-                           "subtitle":  "Управляйте документами и формами для автоматической генерации. Загружайте файлы .docx с тегами для автозаполнения клиентскими и проектными данными.",
-                           "uploadNew":  "Загрузить новый",
-                           "templateName":  "Название шаблона",
-                           "templateNamePlaceholder":  "Например: Договор оказания услуг",
-                           "description":  "Описание",
-                           "descriptionPlaceholder":  "Краткое описание шаблона",
-                           "docxFile":  "Файл (.docx)",
-                           "filePrompt":  "Нажмите или перетащите файл",
-                           "uploading":  "Загрузка...",
-                           "saveTemplate":  "Сохранить шаблон",
-                           "availableTemplates":  "Доступные шаблоны",
-                           "pcs":  "шт",
-                           "loadingTemplates":  "Загрузка шаблонов...",
-                           "noTemplates":  "Нет загруженных шаблонов",
-                           "noTemplatesDesc":  "Загрузите свой первый .docx шаблон с тегами в форме слева.",
-                           "cheatSheetTitle":  "Шпаргалка по тегам",
-                           "cheatSheetDesc":  "Вставляйте эти переменные прямо в текст .docx файла. При генерации они заменятся на реальные значения.",
-                           "clientData":  "Данные клиента",
-                           "taskData":  "Данные задачи",
-                           "systemValues":  "Системные значения"
-                       },
-    "adminCourses":  {
-                         "title":  "Управление курсами",
-                         "createCourse":  "Создать курс",
-                         "name":  "Название",
-                         "status":  "Статус",
-                         "actions":  "Действия",
-                         "published":  "Опубликован",
-                         "draft":  "Черновик",
-                         "edit":  "Редактировать",
-                         "empty":  "Курсов пока нет. Создайте первый курс!"
-                     },
-    "adminLearners":  {
-                          "title":  "Обучающиеся (Learners)",
-                          "addLearner":  "Добавить ученика",
-                          "fullName":  "ФИО",
-                          "email":  "Email",
-                          "empty":  "Обучающихся пока нет. Создайте первого!",
-                          "createError":  "Ошибка создания обучающегося",
-                          "newLearnerModalTitle":  "Новый ученик",
-                          "password":  "Пароль",
-                          "passwordHint":  "Минимум 8 символов, должна быть 1 буква и 1 цифра.",
-                          "cancel":  "Отмена",
-                          "create":  "Создать"
-                      },
-    "employeeChat":  {
-                         "title":  "Чаты",
-                         "search":  "Поиск...",
-                         "noContacts":  "Нет контактов",
-                         "client":  "Клиент",
-                         "colleague":  "Коллега",
-                         "backToContacts":  "Назад к контактам",
-                         "noMessages":  "Нет сообщений",
-                         "writeFirst":  "Напишите первое сообщение!",
-                         "deleteMessage":  "Удалить сообщение",
-                         "messageDeleted":  "Пользователь удалил сообщение",
-                         "placeholder":  "Введите сообщение...",
-                         "selectChat":  "Выберите чат",
-                         "selectChatDesc":  "Выберите коллегу или клиента для общения"
-                     },
-    "adminClients":  {
-                         "title":  "Клиенты",
-                         "statsError":  "Не удалось загрузить статистику клиентов. Количество задач может быть 0.",
-                         "name":  "Имя",
-                         "company":  "Компания",
-                         "email":  "Email",
-                         "assignedEmployee":  "Назначенный сотрудник",
-                         "tasks":  "Задачи",
-                         "selectEmployee":  "Выберите сотрудника",
-                         "loadError":  "Ошибка загрузки данных",
-                         "assignError":  "Не удалось назначить сотрудника"
-                     },
-    "adminTasks":  {
-                       "title":  "Список задач",
-                       "exportCSV":  "Экспорт CSV",
-                       "newTaskBtn":  "Новая задача",
-                       "newTask":  "Новая задача",
-                       "firstStep":  "Первый шаг",
-                       "updateError":  "Не удалось обновить задачи",
-                       "exportError":  "Не удалось экспортировать задачи"
-                   },
-    "taskPool":  {
-                     "title":  "Пул задач",
-                     "empty":  "Пул задач пуст",
-                     "emptyDescription":  "Сейчас нет неназначенных задач. Все задачи находятся в работе.",
-                     "description":  {
-                                         "employee":  "Свободные задачи, ожидающие назначения. Вы можете взять любую задачу в работу.",
-                                         "admin":  "Список всех активных задач. Здесь вы видите всё, можете назначить или переназначить исполнителя."
-                                     },
-                     "columns":  {
-                                     "title":  "Задача",
-                                     "client":  "Клиент",
-                                     "assignee":  "Исполнитель",
-                                     "status":  "Статус",
-                                     "created":  "Создана",
-                                     "actions":  "Действия"
-                                 },
-                     "actions":  {
-                                     "take":  "Взять в работу",
-                                     "assign":  "Назначить",
-                                     "assigning":  "Назначение..."
-                                 },
-                     "noEmployees":  "Нет доступных сотрудников",
-                     "unassigned":  "Не назначен",
-                     "no":  "Нет",
-                     "noClient":  "Не указан",
-                     "noStage":  "Нет стадии"
-                 },
-    "stages":  {
-                   "Новый":  "Новый",
-                   "Сбор документов":  "Сбор документов",
-                   "Предоплата":  "Предоплата",
-                   "В работе":  "В работе",
-                   "Счет выставлен":  "Счет выставлен",
-                   "Доработка":  "Доработка",
-                   "На проверке":  "На проверке",
-                   "Успешно завершено":  "Успешно завершено",
-                   "Отменен":  "Отменен"
-               },
-    "adminArchive":  {
-                         "cancelledTitle":  "Архив: Отмененные задачи",
-                         "doneTitle":  "Архив: Выполненные задачи",
-                         "noCancelled":  "Нет отмененных задач",
-                         "noDone":  "Нет выполненных задач",
-                         "updateError":  "Не удалось обновить задачи"
-                     },
-    "adminAuditLog":  {
-                          "title":  "Аудит системы",
-                          "subtitle":  "История активности системы",
-                          "noLogs":  "Логи не найдены",
-                          "action":  "Действие",
-                          "entity":  "Сущность",
-                          "entityId":  "ID сущности",
-                          "userId":  "ID пользователя",
-                          "time":  "Время",
-                          "details":  "Детали"
-                      },
-    "adminEmployees":  {
-                           "title":  "Сотрудники",
-                           "subtitle":  "Управление доступом персонала",
-                           "active":  "Активные",
-                           "pending":  "Заявки",
-                           "employee":  "Сотрудник",
-                           "email":  "Email",
-                           "registrationDate":  "Дата регистрации",
-                           "actions":  "Действия",
-                           "approve":  "Одобрить",
-                           "isActive":  "Активен",
-                           "noActive":  "Нет активных сотрудников",
-                           "noPending":  "Нет новых заявок",
-                           "approveConfirm":  "Одобрить этого сотрудника? Он получит доступ в систему.",
-                           "approveError":  "Ошибка при одобрении сотрудника"
-                       },
-    "adminCourseEdit":  {
-                            "courseUpdated":  "Курс обновлен",
-                            "courseSaveError":  "Ошибка при сохранении курса",
-                            "lessonCreateError":  "Ошибка создания урока.",
-                            "lessonDeleteConfirm":  "Удалить этот урок?",
-                            "lessonDeleteError":  "Ошибка при удалении урока",
-                            "backToList":  "Назад к списку",
-                            "editTitle":  "Редактирование курса",
-                            "createTitle":  "Создание курса",
-                            "save":  "Сохранить",
-                            "courseNameLabel":  "Название курса",
-                            "courseNamePlaceholder":  "Например: Основы бухгалтерского учета",
-                            "descriptionLabel":  "Описание",
-                            "descriptionPlaceholder":  "Краткое описание курса...",
-                            "publishLabel":  "Опубликовать курс (будет виден ученикам)",
-                            "lessonsTitle":  "Уроки курса",
-                            "addLessonBtn":  "Добавить урок",
-                            "textLesson":  "Текстовый урок",
-                            "editLesson":  "Редактировать",
-                            "deleteLessonTitle":  "Удалить урок",
-                            "noLessons":  "Нет уроков в этом курсе",
-                            "newLessonTitle":  "Новый урок",
-                            "lessonNameLabel":  "Название урока",
-                            "lessonNamePlaceholder":  "Введение в...",
-                            "cancel":  "Отмена",
-                            "creating":  "Создание...",
-                            "createLesson":  "Создать урок"
-                        },
-    "adminLessonEdit":  {
-                            "saveSuccess":  "Урок успешно сохранен!",
-                            "saveError":  "Ошибка при сохранении урока.",
-                            "backToCourse":  "Назад к курсу",
-                            "lessonNamePlaceholder":  "Название урока",
-                            "saving":  "Сохранение...",
-                            "save":  "Сохранить",
-                            "mainTextLabel":  "Основной текст урока",
-                            "mainTextPlaceholder":  "Напишите здесь содержимое урока...",
-                            "fileLabel":  "Файл / Видео урока",
-                            "currentFile":  "Текущий файл:",
-                            "downloadOpen":  "Скачать / Открыть",
-                            "uploadText":  "Нажмите, чтобы загрузить видео или файл",
-                            "uploadSubtext":  "Это заменит текущий файл, если он есть",
-                            "size":  "Размер:"
-                        },
-    "adminInvoices":  {
-                          "title":  "Счета",
-                          "subtitle":  "Управление счетами клиентов",
-                          "createBtn":  "Создать счет",
-                          "noInvoices":  "Счета не найдены",
-                          "invoiceTitle":  "Название",
-                          "clientId":  "ID клиента",
-                          "amount":  "Сумма",
-                          "status":  "Статус",
-                          "dueDate":  "Срок оплаты"
-                      },
-    "adminSubscriptions":  {
-                               "title":  "Подписки",
-                               "subtitle":  "Управление подписками клиентов",
-                               "createBtn":  "Создать подписку",
-                               "noSubscriptions":  "Подписки не найдены",
-                               "planName":  "Название тарифа",
-                               "monthlyPrice":  "Цена за месяц",
-                               "status":  "Статус",
-                               "startsAt":  "Начало",
-                               "endsAt":  "Конец"
-                           },
-    "employeeClients":  {
-                            "title":  "Мои клиенты",
-                            "name":  "Имя",
-                            "email":  "Email",
-                            "actions":  "Действия",
-                            "chat":  "Чат"
-                        },
-    "employeeOverview":  {
-                             "title":  "Моя рабочая панель",
-                             "subtitle":  "Сводка о вашей работе",
-                             "loadError":  "Не удалось получить данные",
-                             "statClients":  "Мои клиенты",
-                             "statTasks":  "Всего задач",
-                             "statActive":  "Активных",
-                             "statReview":  "На проверке",
-                             "statDone":  "Завершено",
-                             "taskStats":  "Статистика задач",
-                             "status":  {
-                                            "NEW":  "Новая",
-                                            "IN_PROGRESS":  "В процессе",
-                                            "ON_REVIEW":  "На проверке",
-                                            "DONE":  "Выполнено",
-                                            "CANCELLED":  "Отменена"
-                                        },
-                             "statInProgress":  "В работе",
-                             "statOnReview":  "На проверке",
-                             "urgentTasks":  "Горящие задачи",
-                             "plannedTasks":  "План в работе",
-                             "allTasks":  "Все задачи",
-                             "noPlannedTasks":  "Нет запланированных задач на ближайшее время",
-                             "recentHistory":  "Недавно завершенные",
-                             "notifications":  "Уведомления",
-                             "noNewNotifications":  "Нет новых уведомлений"
-                         },
-    "employeeTasks":  {
-                          "title":  "Мои задачи",
-                          "exportCsv":  "Экспорт CSV",
-                          "updateError":  "Не удалось обновить задачи",
-                          "exportError":  "Не удалось экспортировать задачи"
-                      },
-    "employeeDocuments":  {
-                              "title":  "Документы клиентов",
-                              "subtitle":  "Управление документами всех ваших клиентов",
-                              "loadError":  "Не удалось загрузить данные",
-                              "selectClientError":  "Пожалуйста, выберите клиента перед загрузкой",
-                              "uploadError":  "Не удалось загрузить документ",
-                              "downloadError":  "Не удалось скачать документ",
-                              "deleteConfirm":  "Вы уверены, что хотите удалить этот документ?",
-                              "deleteError":  "Не удалось удалить документ",
-                              "uploadLabel":  "Загрузить для клиента",
-                              "selectClientOption":  "Выберите клиента",
-                              "selectClientFirst":  "Сначала выберите клиента",
-                              "dropHere":  "Бросьте файл сюда",
-                              "clickOrDrag":  "Нажмите или перетащите файл для загрузки",
-                              "uploading":  "Загрузка...",
-                              "supports":  "Поддерживаются файлы PDF, Word, Excel, XML и CSV до 20 МБ.",
-                              "recentTitle":  "Последние документы",
-                              "docName":  "Название",
-                              "docClient":  "Клиент",
-                              "docType":  "Тип",
-                              "docSize":  "Размер",
-                              "docDate":  "Дата",
-                              "docActions":  "Действия",
-                              "noDocs":  "Документы не найдены",
-                              "noDocsSubtext":  "Загрузите документы, чтобы поделиться ими с клиентами",
-                              "unknownClient":  "Неизвестный клиент"
-                          },
-    "clientServices":  {
-                           "title":  "Услуги",
-                           "subtitle":  "Каталог услуг и история ваших запросов",
-                           "loadError":  "Не удалось загрузить данные об услугах",
-                           "requestSuccess":  "Ваш запрос на услугу принят!",
-                           "availableServices":  "Доступные услуги",
-                           "onDemand":  "По запросу",
-                           "requestBtn":  "Запросить",
-                           "requestError":  "Ошибка при отправке запроса. Попробуйте позже."
-                       },
-    "learnerCourses":  {
-                           "title":  "Мои курсы",
-                           "subtitle":  "Выберите курс, чтобы начать обучение",
-                           "noCourses":  "Курсов пока нет",
-                           "noCoursesSubtext":  "Как только появятся материалы — они отобразятся здесь",
-                           "startCourse":  "Начать курс"
-                       },
-    "learnerCourseDetail":  {
-                                "videoLesson":  "Видеоурок",
-                                "presentation":  "Презентация",
-                                "document":  "Документ",
-                                "lessonCount1":  "урок",
-                                "lessonCount2":  "урока",
-                                "noLessons":  "Уроки ещё не добавлены",
-                                "allCourses":  "Все курсы",
-                                "loadError":  "Не удалось загрузить курс. Попробуйте обновить страницу.",
-                                "lessonsCountLabel":  "Уроков",
-                                "statusLabel":  "Статус",
-                                "available":  "Доступен",
-                                "courseProgram":  "Программа курса",
-                                "lessonsCountText":  "уроков",
-                                "noLessonsTitle":  "Уроки пока не добавлены",
-                                "noLessonsSubtext":  "Автор курса ещё работает над материалами",
-                                "progress":  "Прогресс",
-                                "congrats":  "Поздравляем!",
-                                "completedMsg":  "Вы успешно завершили этот курс и освоили все материалы.",
-                                "student":  "Студент"
-                            },
-    "learnerLesson":  {
-                          "notFound":  "Урок не найден",
-                          "backToCourse":  "Вернуться к курсу",
-                          "lessonLabel":  "Урок",
-                          "of":  "из",
-                          "textLabel":  "Текст",
-                          "downloadFile":  "Скачать файл",
-                          "attachedFile":  "Прикрепленный файл",
-                          "clickToDownload":  "Кликните, чтобы скачать файл",
-                          "noContent":  "Содержимое отсутствует",
-                          "previous":  "Предыдущий",
-                          "next":  "Следующий",
-                          "additionalMaterial":  "Дополнительный материал",
-                          "attachedDoc":  "Прикрепленный документ",
-                          "downloadOpen":  "Скачать / Открыть",
-                          "passed":  "Пройдено",
-                          "completeAndNext":  "Завершить урок и перейти к следующему",
-                          "finishCurrentFirst":  "Сначала завершите текущий урок"
-                      },
-    "auth":  {
-                 "login":  {
-                               "pendingApproval":  "Ваш аккаунт ожидает подтверждения администратора.",
-                               "registerSuccess":  "Успешная регистрация!",
-                               "loginSuccess":  "Успешный вход!",
-                               "googleError":  "Не удалось войти через Google.",
-                               "loginError":  "Не удалось войти. Попробуйте снова.",
-                               "title":  "Вход",
-                               "subtitle":  "Войдите, чтобы открыть личный кабинет.",
-                               "passwordLabel":  "Пароль",
-                               "loggingIn":  "Входим...",
-                               "loginBtn":  "Войти",
-                               "or":  "или",
-                               "googleAuthError":  "Ошибка авторизации Google",
-                               "noAccount":  "Нет аккаунта?",
-                               "registerLink":  "Зарегистрироваться"
-                           },
-                 "register":  {
-                                  "pendingApproval":  "Заявка на регистрацию отправлена! Администратор проверит ваши данные.",
-                                  "success":  "Успешная регистрация!",
-                                  "loginSuccess":  "Успешный вход!",
-                                  "googleError":  "Не удалось зарегистрироваться через Google.",
-                                  "passwordLengthError":  "Пароль должен содержать минимум 8 символов",
-                                  "passwordFormatError":  "Пароль должен содержать хотя бы одну букву и одну цифру",
-                                  "registerError":  "Не удалось зарегистрироваться. Попробуйте снова.",
-                                  "submittedTitle":  "Заявка отправлена",
-                                  "homeLink":  "На главную",
-                                  "title":  "Регистрация",
-                                  "subtitle":  "Создайте аккаунт, чтобы открыть личный кабинет.",
-                                  "nameLabel":  "Имя",
-                                  "namePlaceholder":  "Имя Фамилия",
-                                  "phoneLabel":  "Телефон",
-                                  "companyLabel":  "Название компании",
-                                  "passwordLabel":  "Пароль",
-                                  "passwordHint":  "Минимум 8 символов, хотя бы одна буква и одна цифра",
-                                  "registering":  "Отправка...",
-                                  "registerBtn":  "Зарегистрироваться",
-                                  "hasAccount":  "Уже есть аккаунт?",
-                                  "loginLink":  "Войти"
-                              },
-                 "completeProfile":  {
-                                         "saveError":  "Не удалось сохранить данные.",
-                                         "title":  "Добро пожаловать!",
-                                         "subtitle":  "Аккаунт создан через Google. Дополните профиль — это займёт 30 секунд. Всё это необязательно.",
-                                         "phoneLabel":  "Телефон",
-                                         "phonePlaceholder":  "+7 (777) 000-00-00",
-                                         "companyLabel":  "Название ИП / ТОО (можно оставить пустым)",
-                                         "companyPlaceholder":  "Например: ИП Иванов, ТОО Пример",
-                                         "saving":  "Сохраняем...",
-                                         "saveBtn":  "Сохранить и продолжить",
-                                         "skip":  "Пропустить →"
-                                     }
-             },
-    "profile":  {
-                    "title":  "Личный кабинет",
-                    "logout":  "Выйти",
-                    "language":  "Язык",
-                    "support":  "Поддержка",
-                    "notifications":  "Уведомления",
-                    "myTasks":  "Мои задачи",
-                    "roles":  {
-                                  "ADMIN":  "Администратор",
-                                  "EMPLOYEE":  "Сотрудник",
-                                  "CLIENT":  "Клиент",
-                                  "LEARNER":  "Ученик",
-                                  "CURATOR":  "Куратор 1С"
-                              },
-                    "soon":  "Здесь скоро появятся ваши счета и документы."
-                },
-    "about":  {
-                  "hero":  {
-                               "badge":  "关于我们",
-                               "title":  "精工品质",
-                               "subtitle":  "与金融工程体系",
-                               "description":  "财务会计早已不再是单纯的纸质单据整理与凭证录入。如今它是一套精密的工程系统，其底层架构的科学性直接关系到企业的生存发展、融资能力以及应对税务稽查的抗风险韧性。"
-                           },
-                  "stats":  {
-                                "title":  "数据与事实",
-                                "items":  [
-                                              {
-                                                  "value":  "12+",
-                                                  "label":  "年深耕财税市场",
-                                                  "description":  "在哈萨克斯坦不断演进的法律法规环境中沉淀十余年持续实操经验。"
-                                              },
-                                              {
-                                                  "value":  "350+",
-                                                  "label":  "家稳定服务客户",
-                                                  "description":  "覆盖 IT、建筑、跨境物流、实体制造及电子商务等行业的中小企业。"
-                                              },
-                                              {
-                                                  "value":  "20亿 ₸",
-                                                  "label":  "为客户合规节省资金",
-                                                  "description":  "通过合法税务优化、增值税退税、多缴税金核查及防范税务罚款实现。"
-                                              },
-                                              {
-                                                  "value":  "100%",
-                                                  "label":  "财务赔付履约保证",
-                                                  "description":  "服务责任由法律效力的 SLA 协议明确约定，我方承担因失误导致的罚款与滞纳金。"
-                                              }
-                                          ]
-                            },
-                  "ideology":  {
-                                   "badge":  "核心理念",
-                                   "title":  "企业应当聚焦盈利，而非深陷税务杂务",
-                                   "p1":  "许多企业初次接触我们时，其财务状况往往处于长期混乱状态：电子发票（ESF）遗漏丢失、因少缴100坚戈滞纳金被冻结账户、商品品类重名导致成本核算失准，以及企业所得税（CIT）的大额多缴。",
-                                   "p2":  "专职驻场会计往往缺乏双重质检机制与现代科技支撑。单兵作战难以兼通外贸进出口、复杂生产结算、外汇管制合规以及数字化 IT 集成等多维领域。",
-                                   "p3":  "我们的方案是专业化分工协作：初级单据由数据录入员高效准确处理；薪酬由专属核算专员精准计算（杜绝假期折算差错）；税务筹划由资深方法论专家制定；整体流程由高级财务架构师全程把控。您只需支付一名驻场员工的成本，即可获得一整个专业财税团队的护航。",
-                                   "p4":  "我们将财务数据视为企业核心战略资产（主数据管理 MDM）。推行严格的品类编码与基础数据入库规范，杜绝账套数据污染。全业务流程标准化归档、权责明晰。团队内部人员轮岗交接对客户完全透明无缝。"
-                               },
-                  "process":  {
-                                  "badge":  "工程化方法",
-                                  "title":  "我们如何重构您的财务体系",
-                                  "items":  [
-                                                {
-                                                    "title":  "深度审计与逆向工程",
-                                                    "text":  "我们不仅是简单接管账套，更开展深度技术审计：校验 1C 数据完整性，排查单据链条断点，分析税收与会计登记簿，全面挖掘潜在税务风险、挂账余额与异常凭证。"
-                                                },
-                                                {
-                                                    "title":  "数据清洗与规范化",
-                                                    "text":  "如同代码重构，我们重塑企业财务架构。补齐缺失单据，核对账户余额，清洗重复往来单位，建立数据清晰、每一坚戈均有据可依的标准账套。"
-                                                },
-                                                {
-                                                    "title":  "业务流程自动化",
-                                                    "text":  "实现 1C 与各大网银、CRM 系统、电子发票系统及虚拟仓库的深度对接。配置对账单自动下载、数据解析与单据自动流转，杜绝人工录入失误，大幅缩短处理周期。"
-                                                },
-                                                {
-                                                    "title":  "持续监控与服务履约 (SLA)",
-                                                    "text":  "全面转入标准化规范运维阶段。专属专家团队常态化跟进，提供清晰透明的财务报表，实时呈现当期税负、申报进度与资金收支计划，所有操作严格遵照内部规程执行。"
-                                                }
-                                            ]
-                              },
-                  "guarantees":  {
-                                     "badge":  "责任保障",
-                                     "title":  "具备法律约束力的双重担保",
-                                     "p1":  "我们依据 IFRS 国际财务报告准则，通过附带明确经济赔偿责任的服务合同保障客户财务安全与记账质量。",
-                                     "items":  [
-                                                   {
-                                                       "title":  "资金安全保障：",
-                                                       "text":  "凡因我方失误导致的罚款与滞纳金，全额予以经济赔偿。"
-                                                   },
-                                                   {
-                                                       "title":  "保密协议 (NDA)：",
-                                                       "text":  "严格履行商业秘密保护义务。采用端到端加密通信与高安全性云端服务器。"
-                                                   },
-                                                   {
-                                                       "title":  "业务持续性：",
-                                                       "text":  "杜绝员工请假、休假或突然离职带来的业务中断，财税服务 365 天稳定运行。"
-                                                   },
-                                                   {
-                                                       "title":  "费用公开透明：",
-                                                       "text":  "费用仅依据实际业务量与核算复杂度制定，绝无任何隐形收费。"
-                                                   }
-                                               ]
-                                 }
-              },
-    "services":  {
-                     "hero":  {
-                                  "title":  "我们的专业服务",
-                                  "description":  "全流程业务核算、精准税务申报、资金统筹监控 — 一站式满足企业财税需求。",
-                                  "action":  "浏览全部服务"
-                              },
-                     "catalog":  {
-                                     "orderTaskPrefix":  "预约服务：",
-                                     "success":  "您对“{{title}}”的申请已成功提交！",
-                                     "error":  "提交申请时出错，请稍后重试。",
-                                     "details":  "查看详情"
-                                 },
-                     "howWeWork":  {
-                                       "title":  "服务作业流程",
-                                       "items":  [
-                                                     {
-                                                         "title":  "15分钟极速紧急报表",
-                                                         "text":  "关键应急数据即时生成，协助管理层快速做出经营决策。"
-                                                     },
-                                                     {
-                                                         "title":  "平均 1–3 个工作日交付",
-                                                         "text":  "绝大部分业务在 3 个工作日内高效办结，同时严保输出质量。"
-                                                     },
-                                                     {
-                                                         "title":  "服务受理时间 09:00–16:00",
-                                                         "text":  "标准化规范作息，让您清晰掌握进度确认节点。"
-                                                     },
-                                                     {
-                                                         "title":  "申报前全流程质检验收",
-                                                         "text":  "所有财务与税务报表递交监管部门前，均经内部专家严格质检。"
-                                                     },
-                                                     {
-                                                         "title":  "专属客户经理实时在线",
-                                                         "text":  "配备一对一专属顾问全程跟进，随时解答各类财税疑问。"
-                                                     },
-                                                     {
-                                                         "title":  "交付后免费深度财税咨询",
-                                                         "text":  "免费解读最终报表数据并提供前瞻性财务管理建议。"
-                                                     }
-                                                 ]
-                                   },
-                     "why":  {
-                                 "title":  "为什么需要专业财税外包与订阅服务？",
-                                 "description":  "专业财税管理助您彻底摆脱繁琐事务，有效规避税务处罚风险，让您全力聚焦于核心业务拓展。",
-                                 "items":  [
-                                               {
-                                                   "title":  "省心无忧管控",
-                                                   "text":  "所有财务指标统一规范归集，杜绝单据遗失与账目差错风险。"
-                                               },
-                                               {
-                                                   "title":  "大幅节约时间",
-                                                   "text":  "我们负责日常记账与报表编制，您直接依据精准数据做出商业决策。"
-                                               },
-                                               {
-                                                   "title":  "合规履约保障",
-                                                   "text":  "订阅模式确保所有税务申报、报表交付与专业咨询如期按计划推进。"
-                                               }
-                                           ]
-                             },
-                     "faq":  {
-                                 "title":  "常见问题解答",
-                                 "contactTitle":  "准备好开启财税合作了吗？",
-                                 "items":  [
-                                               {
-                                                   "q":  "如何开始与我们合作？",
-                                                   "a":  "您可以在网站提交申请或直接联系我们 — 我们将为您量身定制财税服务方案与明确报价。"
-                                               },
-                                               {
-                                                   "q":  "需要提供哪些基础资料？",
-                                                   "a":  "视具体服务而定：通常需要公司服务合同、银行流水对账单、业务往来合同及原始凭证。"
-                                               },
-                                               {
-                                                   "q":  "是否支持全远程线上对接？",
-                                                   "a":  "完全支持 — 绝大部分业务流程均可通过安全加密通道全流程远程高效办理。"
-                                               }
-                                           ]
-                             }
-                 },
-    "ui":  {
-               "empty":  {
-                             "defaultLabel":  "Нет данных"
-                         },
-               "errorBoundary":  {
-                                     "title":  "Что-то пошло не так",
-                                     "unknown":  "Неизвестная ошибка",
-                                     "chunkError":  "Версия приложения была обновлена. Пожалуйста, обновите страницу для продолжения работы.",
-                                     "reload":  "Обновить страницу"
-                                 },
-               "successModal":  {
-                                    "title":  "Успешно!",
-                                    "button":  "Отлично"
-                                }
-           },
-    "contactForm":  {
-                        "title":  "联系我们",
-                        "success":  {
-                                        "title":  "感谢您的提交！",
-                                        "text":  "我们将尽快与您取得联系，深入沟通合作细节。"
-                                    },
-                        "whatsapp":  {
-                                         "readyTitle":  "咨询申请已生成！",
-                                         "readyText":  "请点击下方按钮跳转至 WhatsApp 或使用手机相机扫描二维码完成发送。",
-                                         "scanQr":  "请使用手机相机扫码",
-                                         "openBtn":  "在 WhatsApp 中打开"
-                                     },
-                        "fields":  {
-                                       "name":  {
-                                                    "label":  "您的姓名",
-                                                    "placeholder":  "姓名"
-                                                },
-                                       "phone":  {
-                                                     "label":  "联系电话"
-                                                 },
-                                       "email":  {
-                                                     "label":  "电子邮箱（选填）",
-                                                     "placeholder":  "name@example.com"
-                                                 },
-                                       "message":  {
-                                                       "label":  "需求简要说明",
-                                                       "placeholder":  "请简要描述您的企业财税需求或问题..."
-                                                   }
-                                   },
-                        "buttons":  {
-                                        "submit":  "提交咨询申请",
-                                        "submitting":  "正在提交..."
-                                    },
-                        "agreement":  {
-                                          "prefix":  "点击即代表您已阅读并同意",
-                                          "privacy":  "隐私政策",
-                                          "and":  "与",
-                                          "terms":  "服务协议"
-                                      },
-                        "error":  {
-                                      "default":  "提交申请失败，请稍后重试"
-                                  }
-                    },
-    "trust":  {
-                  "title1":  "让您的企业",
-                  "title2":  "获得全面财务保障",
-                  "description":  "我们对工作成果承担全部财务责任。我们的客户无需因会计核算错误承担罚款。",
-                  "stats":  {
-                                "0":  {
-                                          "value":  "12+",
-                                          "label":  "年深耕市场"
-                                      },
-                                "1":  {
-                                          "value":  "350+",
-                                          "label":  "家合作企业"
-                                      },
-                                "2":  {
-                                          "value":  "20亿 ₸",
-                                          "label":  "为客户节省"
-                                      },
-                                "3":  {
-                                          "value":  "100%",
-                                          "label":  "履约担保"
-                                      }
-                            }
-              },
-    "reviews":  {
-                    "1":  {
-                              "text":  "我们将全部财务核算外包给 ЖАН FINANCE。一年来从未发生任何罚款，税负合规优化了 20%，非常省心。",
-                              "name":  "企业客户",
-                              "company":  "某有限责任公司 (LLP)"
-                          },
-                    "2":  {
-                              "text":  "非常认可他们的专业度。专属顾问始终在线，响应迅速、解答切中要害。人事与薪资核算再也不用操心了。",
-                              "name":  "企业客户",
-                              "company":  "连锁零售企业"
-                          },
-                    "3":  {
-                              "text":  "通过他们代办了个体工商户注册，随后直接委托记账。一站式搞定所有财税流程，完全无需自己研究纳税人系统。",
-                              "name":  "企业客户",
-                              "company":  "个体工商户 (IE)"
-                          },
-                    "title1":  "客户眼中的",
-                    "title2":  "ЖАН FINANCE",
-                    "description":  "听听将财税托付给我们的真实企业怎么说。"
-                },
-    "team":  {
-                 "title1":  "专业团队",
-                 "title2":  "ЖАН FINANCE",
-                 "members":  {
-                                 "0_0":  {
-                                             "name":  "Zharilkaganov Amankeldi Nakmadinovich",
-                                             "role":  "创始人 / 首席执行官"
-                                         },
-                                 "1_0":  {
-                                             "name":  "Kozhamberdieva Alma",
-                                             "role":  "总会计师"
-                                         },
-                                 "1_1":  {
-                                             "name":  "Murat Orynbasar",
-                                             "role":  "IT 与数字化架构师"
-                                         },
-                                 "2_0":  {
-                                             "name":  "Specialist",
-                                             "role":  "税务核算专家"
-                                         },
-                                 "2_1":  {
-                                             "name":  "Specialist",
-                                             "role":  "跨境进出口财税专员"
-                                         },
-                                 "2_2":  {
-                                             "name":  "Specialist",
-                                             "role":  "薪酬与福利核算师"
-                                         },
-                                 "2_3":  {
-                                             "name":  "Specialist",
-                                             "role":  "人事档案合规主管"
-                                         },
-                                 "2_4":  {
-                                             "name":  "Specialist",
-                                             "role":  "单据处理操作专员"
-                                         },
-                                 "2_5":  {
-                                             "name":  "Specialist",
-                                             "role":  "初级财税专员"
-                                         }
-                             }
-             },
-    "offices":  {
-                    "title1":  "我们的",
-                    "title2":  "分支机构",
-                    "shymkent_title":  "奇姆肯特办事处",
-                    "almaty_title":  "阿拉木图办事处"
-                },
-    "service":  {
-                    "1":  {
-                              "title":  "全流程代理记账",
-                              "description":  "全套业务核算、编制法定财务报表、企业资金全流程监控。",
-                              "features":  {
-                                               "0":  "全套业务核算",
-                                               "1":  "编制法定财务报表",
-                                               "2":  "企业资金全流程监控"
-                                           }
-                          },
-                    "2":  {
-                              "title":  "纳税申报与涉税筹划",
-                              "description":  "按期准确编制并向税务局递交所有法定纳税申报表。",
-                              "features":  {
-                                               "0":  "申报表编制与递交",
-                                               "1":  "财税政策咨询",
-                                               "2":  "税务机关对接与答辩"
-                                           }
-                          },
-                    "3":  {
-                              "title":  "人事合规与薪酬核算",
-                              "description":  "规范员工档案与考勤管理，精准计算薪资、带薪年假及病假津贴。",
-                              "features":  {
-                                               "0":  "人事合规档案",
-                                               "1":  "薪资精准核算",
-                                               "2":  "考勤与假期管理"
-                                           }
-                          },
-                    "4":  {
-                              "title":  "历史错账乱账梳理重构",
-                              "description":  "全面整理凭证单据，纠正历史记账差错并合规重新申报。",
-                              "features":  {
-                                               "0":  "往期财务深度体检",
-                                               "1":  "缺失单据补齐重构",
-                                               "2":  "逾期报表更正重报"
-                                           }
-                          },
-                    "5":  {
-                              "title":  "原始凭证录入与审核",
-                              "description":  "高效处理完工结算单、发票、对账单并录入内部财务系统。",
-                              "features":  {
-                                               "0":  "单据发票合规审核",
-                                               "1":  "原始凭证系统录入",
-                                               "2":  "往来客户账目核对"
-                                           }
-                          },
-                    "6":  {
-                              "title":  "交易对手方资信审查",
-                              "description":  "签约前对合作伙伴与客户进行法律与财税资信尽职调查。",
-                              "features":  {
-                                               "0":  "合作方背景调查",
-                                               "1":  "财税合规风险评估",
-                                               "2":  "商业合作风险建议"
-                                           }
-                          },
-                    "99":  {
-                              "title":  "全面管控与合规责任",
-                              "description":  "依据SLA服务协议承担100%财务与法律责任。因我方过错产生的罚款与滞纳金全额赔付。",
-                              "features":  {
-                                               "0":  "SLA协议全额财务担保",
-                                               "1":  "国家税务机关账户24/7实时监控",
-                                               "2":  "税务案头稽查专项抗辩"
-                                           }
-                          },
-                    "s1":  {
-                               "title":  "全流程代理记账",
-                               "description":  "全套业务核算、编制法定财务报表、企业资金全流程监控。",
-                               "features":  {
-                                                "0":  "全套业务核算",
-                                                "1":  "编制法定财务报表",
-                                                "2":  "企业资金全流程监控"
-                                            }
-                           },
-                    "s2":  {
-                               "title":  "纳税申报与涉税筹划",
-                               "description":  "按期准确编制并向税务局递交所有法定纳税申报表。",
-                               "features":  {
-                                                "0":  "申报表编制与递交",
-                                                "1":  "财税政策咨询",
-                                                "2":  "税务机关对接与答辩"
-                                            }
-                           },
-                    "s3":  {
-                               "title":  "人事合规与薪酬核算",
-                               "description":  "规范员工档案与考勤管理，精准计算薪资、带薪年假及病假津贴。",
-                               "features":  {
-                                                "0":  "人事合规档案",
-                                                "1":  "薪资精准核算",
-                                                "2":  "考勤与假期管理"
-                                            }
-                           },
-                    "s4":  {
-                               "title":  "历史错账乱账梳理重构",
-                               "description":  "全面整理凭证单据，纠正历史记账差错并合规重新申报。",
-                               "features":  {
-                                                "0":  "往期财务深度体检",
-                                                "1":  "缺失单据补齐重构",
-                                                "2":  "逾期报表更正重报"
-                                            }
-                           },
-                    "s5":  {
-                               "title":  "原始凭证录入与审核",
-                               "description":  "高效处理完工结算单、发票、对账单并录入内部财务系统。",
-                               "features":  {
-                                                "0":  "单据发票合规审核",
-                                                "1":  "原始凭证系统录入",
-                                                "2":  "往来客户账目核对"
-                                            }
-                           },
-                    "s6":  {
-                               "title":  "交易对手方资信审查",
-                               "description":  "签约前对合作伙伴与客户进行法律与财税资信尽职调查。",
-                               "features":  {
-                                                "0":  "合作方背景调查",
-                                                "1":  "财税合规风险评估",
-                                                "2":  "商业合作风险建议"
-                                            }
-                           }
-                },
-    "quiz":  {
-                 "title":  "Поможем подобрать решение под ваш бизнес",
-                 "subtitle":  "Ответьте на 5 вопросов — в конце появится форма для отправки.",
-                 "success":  "Спасибо! Мы свяжемся с вами в ближайшее время.",
-                 "questions":  {
-                                   "form":  {
-                                                "q":  "Какая у вас форма бизнеса?",
-                                                "options":  {
-                                                                "ИП":  "ИП",
-                                                                "ТОО":  "ТОО",
-                                                                "Другое":  "Другое"
-                                                            }
-                                            },
-                                   "turnover":  {
-                                                    "q":  "Примерный годовой оборот (диапазон)?",
-                                                    "options":  {
-                                                                    "1-3 млн":  "1-3 млн",
-                                                                    "4-10 млн":  "4-10 млн",
-                                                                    "10+ млн":  "10+ млн"
-                                                                }
-                                                },
-                                   "employees":  {
-                                                     "q":  "Кол-во сотрудников?",
-                                                     "options":  {
-                                                                     "1–10":  "1–10",
-                                                                     "11–50":  "11–50",
-                                                                     "50+":  "50+"
-                                                                 }
-                                                 },
-                                   "needs":  {
-                                                 "q":  "Что для вас важнее прямо сейчас?",
-                                                 "options":  {
-                                                                 "Бухгалтерия":  "Бухгалтерия",
-                                                                 "Налоги":  "Налоги",
-                                                                 "Кадры":  "Кадры",
-                                                                 "申报报表":  "申报报表"
-                                                             }
-                                             },
-                                   "timeline":  {
-                                                    "q":  "Срок внедрения решения?",
-                                                    "options":  {
-                                                                    "В течение дня":  "В течение дня",
-                                                                    "1-3 дня":  "1-3 дня",
-                                                                    "Более 3 дней":  "Более 3 дней"
-                                                                }
-                                                }
-                               },
-                 "resultsHeader":  "Результаты опроса:\n",
-                 "questionResult":  "Вопрос:",
-                 "answerResult":  "Ответ:",
-                 "prev":  "Назад",
-                 "next":  "Далее",
-                 "nextToForm":  "Далее к форме",
-                 "question":  "Вопрос",
-                 "of":  "из",
-                 "leaveContacts":  "Оставьте контакты",
-                 "name":  "Имя",
-                 "phoneOrEmail":  "Телефон или e-mail",
-                 "submit":  "Отправить",
-                 "restart":  "Пройти заново",
-                 "promoTitle":  "Хотите удобнее управлять своими задачами?",
-                 "promoText":  "Зарегистрируйтесь на платформе, чтобы отслеживать статус заявок, обмениваться документами в безопасном чате и всегда быть на связи с личным бухгалтером.",
-                 "promoLogin":  "Войти / Зарегистрироваться",
-                 "registerPromoShort":  "Зарегистрируйтесь, чтобы получить больше возможностей!",
-                 "attachFiles":  "Прикрепить файлы (необязательно)",
-                 "dropFiles":  "Перетащите файлы сюда или нажмите для выбора",
-                 "filesAttached":  "*Пользователь прикрепил файлы (ожидают загрузки после регистрации)*"
-             },
-    "serviceModal":  {
-                         "validation":  {
-                                            "fillContacts":  "请填写您的姓名和联系电话"
-                                        },
-                         "service":  "服务项目",
-                         "close":  "关闭",
-                         "about":  "服务详情",
-                         "includes":  "费用包含内容：",
-                         "consult":  "获取专业咨询",
-                         "orderForm":  {
-                                           "title":  "提交咨询申请",
-                                           "descriptionLoggedIn":  "请描述您的业务需求，或点击“提交申请”，我们的财务专家将与您取得联系。",
-                                           "descriptionGuest":  "请在下方填写联系方式，以便我们与您沟通业务细节。",
-                                           "name":  "您的称呼 *",
-                                           "phone":  "联系电话 *",
-                                           "commentPlaceholder":  "例如：需要个体工商户/合伙企业的代理记账服务...",
-                                           "comment":  "补充说明",
-                                           "date":  "期望回电时间（选填）",
-                                           "submitting":  "正在提交...",
-                                           "submit":  "提交申请",
-                                           "authRequired":  "提交申请前需要先登录系统。"
-                                       },
-                         "allServices":  "全部服务"
-                     },
-    "admin":  {
-                  "leads":  {
-                                "quizFields":  {
-                                                   "form":  "Форма бизнеса",
-                                                   "turnover":  "Оборот",
-                                                   "employees":  "Сотрудники",
-                                                   "needs":  "Что требуется",
-                                                   "timeline":  "Сроки"
-                                               },
-                                "title":  "Входящие заявки",
-                                "subtitle":  "Обработка новых заявок с сайта и квизов",
-                                "noMessage":  "Нет сообщения",
-                                "quizResults":  "Результаты квиза:",
-                                "noLeads":  "Нет новых заявок",
-                                "loadError":  "Ошибка загрузки лидов. Пожалуйста, попробуйте позже.",
-                                "table":  {
-                                              "date":  "Дата",
-                                              "client":  "Клиент",
-                                              "message":  "Сообщение / Результат",
-                                              "status":  "Статус"
-                                          },
-                                "status":  {
-                                               "NEW":  "Новая",
-                                               "IN_PROGRESS":  "В работе",
-                                               "DONE":  "Успешно",
-                                               "CANCELED":  "Отказ"
-                                           }
-                            }
-              },
-    "serviceNames":  {
-                         "Бухгалтерское сопровождение":  "Бухгалтерское сопровождение",
-                         "Сдача налоговой отчетности":  "Сдача налоговой отчетности",
-                         "Кадровый учет и расчет зарплаты":  "Кадровый учет и расчет зарплаты",
-                         "Восстановление бухгалтерского учета":  "Восстановление бухгалтерского учета",
-                         "Обработка первичной документации":  "Обработка первичной документации",
-                         "Проверка и анализ контрагентов":  "Проверка и анализ контрагентов"
-                     },
-    "serviceDescriptions":  {
-                                "Полный учёт операций, составление отчётности, контроль финансов.":  "Полный учёт операций, составление отчётности, контроль финансов.",
-                                "Своевременная подготовка и сдача всех обязательных форм в налоговую.":  "Своевременная подготовка и сдача всех обязательных форм в налоговую.",
-                                "Ведение кадровых документов, табелей, расчет отпускных и больничных.":  "Ведение кадровых документов, табелей, расчет отпускных и больничных.",
-                                "Приведём в порядок документы, исправим ошибки и пересдадим отчётность.":  "Приведём в порядок документы, исправим ошибки и пересдадим отчётность.",
-                                "Работа с актами, накладными, счетами и внутренней бухгалтерией.":  "Работа с актами, накладными, счетами и внутренней бухгалтерией.",
-                                "Юридическая проверка надежности партнеров и клиентов до сделки.":  "Юридическая проверка надежности партнеров и клиентов до сделки."
-                            },
-    "serviceFeatures":  {
-                            "Полный учет операций":  "Полный учет операций",
-                            "Составление отчетности":  "Составление отчетности",
-                            "Контроль финансов":  "Контроль финансов",
-                            "Подготовка и сдача отчетности":  "Подготовка и сдача отчетности",
-                            "Консультации по налогам":  "Консультации по налогам",
-                            "Работа с налоговыми органами":  "Работа с налоговыми органами",
-                            "Расчет заработной платы":  "Расчет заработной платы",
-                            "Кадровое делопроизводство":  "Кадровое делопроизводство",
-                            "Отчетность по сотрудникам":  "Отчетность по сотрудникам",
-                            "Аудит текущей базы":  "Аудит текущей базы",
-                            "Восстановление документов":  "Восстановление документов",
-                            "Пересдача отчетности":  "Пересдача отчетности",
-                            "Ввод актов и накладных":  "Ввод актов и накладных",
-                            "Сверка с контрагентами":  "Сверка с контрагентами",
-                            "Контроль задолженности":  "Контроль задолженности",
-                            "Анализ налоговых рисков":  "Анализ налоговых рисков",
-                            "Проверка по реестрам":  "Проверка по реестрам",
-                            "Выдача заключения":  "Выдача заключения"
-                        },
-    "weeklySummary":  {
-                          "title":  "Итоги недели и текущий статус",
-                          "subtitle":  "Автоматическая сводка показателей с ежедневным обновлением",
-                          "currentWeek":  "Текущая неделя",
-                          "completed":  "Завершено",
-                          "inProgress":  "В процессе",
-                          "deadlines":  "Дедлайны",
-                          "documents":  "Документы",
-                          "revenue":  "Выручка по закрытым задачам"
-                      },
-    "reviews_title1":  "Что говорят",
-    "reviews_title2":  "клиенты",
-    "reviews_desc":  "Реальные истории компаний, которые доверили нам свою бухгалтерию.",
-    "kanban":  {
-                   "allStages":  "Все стадии",
-                   "sort":  {
-                                "newest":  "Новые первыми",
-                                "oldest":  "Старые первыми",
-                                "deadline_asc":  "Дедлайн ↑",
-                                "deadline_desc":  "Дедлайн ↓"
-                            },
-                   "unsavedChanges":  "У вас есть несохраненные изменения! Вы уверены, что хотите уйти?",
-                   "deleteConfirm":  "Удалить эту задачу навсегда?",
-                   "deleteError":  "Ошибка при удалении задачи",
-                   "reset":  "Сбросить",
-                   "of":  "из",
-                   "tasks":  "задач",
-                   "noFilteredTasks":  "Нет задач по выбранным фильтрам",
-                   "resetFilters":  "Сбросить фильтры"
-               },
-    "adminTasks.updateError":  "Ошибка обновления задач",
-    "adminTasks.exportError":  "Ошибка экспорта",
-    "adminTasks.title":  "Задачи",
-    "adminTasks.exportCSV":  "Экспорт CSV",
-    "adminTasks.newTaskBtn":  "+ Новая задача",
-    "adminTemplates.title":  "Шаблоны документов",
-    "adminTemplates.subtitle":  "Управляйте документами и формами для автоматической генерации. Загружайте файлы .docx с тегами для автозаполнения клиентскими и проектными данными.",
-    "adminTemplates.uploadNew":  "Загрузить новый",
-    "adminTemplates.templateName":  "Название шаблона",
-    "adminTemplates.templateNamePlaceholder":  "Например: Договор оказания услуг",
-    "adminTemplates.description":  "Описание",
-    "adminTemplates.descriptionPlaceholder":  "Краткое описание шаблона",
-    "adminTemplates.docxFile":  "Файл (.docx)",
-    "adminTemplates.filePrompt":  "Нажмите или перетащите файл",
-    "adminTemplates.uploading":  "Загрузка...",
-    "adminTemplates.saveTemplate":  "Сохранить шаблон",
-    "adminTemplates.cheatSheetTitle":  "Шпаргалка по тегам",
-    "adminTemplates.cheatSheetDesc":  "Вставляйте эти переменные прямо в текст .docx файла. При генерации они заменятся на реальные значения.",
-    "adminTemplates.clientData":  "Данные клиента",
-    "adminTemplates.taskData":  "Данные задачи",
-    "adminTemplates.systemValues":  "Системные значения",
-    "adminTemplates.availableTemplates":  "Доступные шаблоны",
-    "adminTemplates.pcs":  "шт",
-    "adminTemplates.loadingTemplates":  "Загрузка шаблонов...",
-    "adminTemplates.noTemplates":  "Нет загруженных шаблонов",
-    "adminTemplates.noTemplatesDesc":  "Загрузите первый .docx шаблон, чтобы сотрудники могли быстро генерировать документы.",
-    "sidebar.roles.ADMIN":  "Admin",
-    "sidebar.roles.EMPLOYEE":  "Employee",
-    "details.taskNotFound":  "Задача не найдена",
-    "details.goBack":  "Вернуться назад",
-    "more":  "Ещё",
-    "clientDashboard.welcomeNew":  "Добро пожаловать в ЖАН FINANCE, {{name}}!",
-    "clientDashboard.welcomeDesc":  "Мы помогаем вашему бизнесу расти, берем на себя бухгалтерию, налоги и финансы. Создайте свою первую заявку прямо сейчас, и наша команда приступит к работе.",
-    "clientDashboard.createFirstRequest":  "Заказать услугу",
-    "clientDashboard.howItWorks":  "Как работает процесс?",
-    "clientDashboard.step1Title":  "1. Оставьте заявку",
-    "clientDashboard.step1Desc":  "Опишите задачу или выберите нужную услугу в личном кабинете.",
-    "clientDashboard.step2Title":  "2. Мы берем в работу",
-    "clientDashboard.step2Desc":  "Наш специалист изучит запрос и оперативно приступит к выполнению.",
-    "clientDashboard.step3Title":  "3. Готовый результат",
-    "clientDashboard.step3Desc":  "Вы получаете уведомление и готовые документы, когда задача выполнена.",
-    "clientDashboard.securityGuarantee":  "Конфиденциальность и безопасность",
-    "clientDashboard.securityDesc":  "Ваши данные под надежной защитой на каждом этапе работы.",
-    "common.start":  "Начать",
-    "employeeOverview.statClients":  "Мои клиенты",
-    "employeeOverview.statTasks":  "Всего задач",
-    "employeeOverview.statInProgress":  "В работе",
-    "employeeOverview.statOnReview":  "На проверке",
-    "employeeOverview.statDone":  "Завершено",
-    "employeeOverview.statAvgTime":  "Среднее время (дн)",
-    "employeeOverview.title":  "Обзор",
-    "employeeOverview.subtitle":  "Ваш рабочий пульт",
-    "employeeOverview.urgentTasks":  "Горящие задачи",
-    "employeeOverview.plannedTasks":  "План в работе",
-    "employeeOverview.allTasks":  "Все задачи",
-    "employeeOverview.noPlannedTasks":  "Нет запланированных задач на ближайшее время",
-    "employeeOverview.recentHistory":  "Недавно завершенные",
-    "employeeOverview.notifications":  "Уведомления",
-    "employeeOverview.noNewNotifications":  "Нет новых уведомлений",
-    "calendarWidget.eventsOn":  "События на",
-    "calendarWidget.noEvents":  "На этот день нет запланированных событий",
-    "calendarWidget.systemTask":  "Задача в системе",
-    "actions.delete":  "Удалить",
-    "calendarWidget.addEvent":  "Добавить событие",
-    "calendarWidget.eventTitle":  "Название события",
-    "calendarWidget.eventTitlePlaceholder":  "Название события (напр. Оплата ИПН)",
-    "calendarWidget.time":  "Время",
-    "calendarWidget.color":  "Цвет метки",
-    "calendarWidget.description":  "Описание",
-    "calendarWidget.descriptionPlaceholder":  "Описание (необязательно)",
-    "calendarWidget.save":  "Сохранить",
-    "calendarWidget.saving":  "Сохранение...",
-    "taskPool.error.assign":  "Не удалось назначить задачу",
-    "taskPool.error.load":  "Ошибка загрузки пула задач",
-    "taskPool.actions.retry":  "Повторить",
-    "taskPool.columns.assignee":  "Исполнитель",
-    "taskPool.noClient":  "Не указан",
-    "taskPool.unassigned":  "Не назначен",
-    "locale":  "ru-RU",
-    "taskPool.no":  "Нет",
-    "contactForm.title":  "Связаться с нами",
-    "contactForm.success.title":  "Спасибо!",
-    "contactForm.success.text":  "Мы скоро свяжемся с вами для обсуждения деталей.",
-    "contactForm.fields.name.label":  "Ваше имя",
-    "contactForm.fields.name.placeholder":  "Имя Фамилия",
-    "contactForm.fields.phone.label":  "Телефон",
-    "contactForm.fields.email.label":  "Email (необязательно)",
-    "contactForm.fields.email.placeholder":  "name@example.com",
-    "contactForm.fields.message.label":  "描述",
-    "contactForm.fields.message.placeholder":  "Расскажите, чем мы можем вам помочь...",
-    "contactForm.buttons.submitting":  "Отправляем...",
-    "contactForm.buttons.submit":  "Отправить заявку",
-    "contactForm.error.default":  "Не удалось отправить заявку",
-    "serviceModal.validation.fillContacts":  "Пожалуйста, заполните имя и телефон",
-    "serviceModal.service":  "Услуга",
-    "serviceModal.close":  "Закрыть",
-    "serviceModal.about":  "О сервисе",
-    "serviceModal.includes":  "Что входит в стоимость:",
-    "serviceModal.orderForm.title":  "描述",
-    "serviceModal.orderForm.descriptionLoggedIn":  "Опишите задачу или нажмите «Оставить заявку», и наш специалист свяжется с вами.",
-    "serviceModal.orderForm.descriptionGuest":  "Заполните форму ниже, чтобы мы могли связаться с вами и обсудить детали.",
-    "serviceModal.orderForm.namePlaceholder":  "Иван Иванов",
-    "serviceModal.orderForm.name":  "Как к вам обращаться? *",
-    "serviceModal.orderForm.phone":  "Номер телефона *",
-    "serviceModal.orderForm.commentPlaceholder":  "Например: нужно ведение ИП на УСН...",
-    "serviceModal.orderForm.comment":  "Дополнительный комментарий",
-    "serviceModal.orderForm.date":  "Желаемая дата звонка (необязательно)",
-    "serviceModal.files.label":  "Прикрепить файлы",
-    "serviceModal.files.maxReached":  "Максимум файлов",
-    "serviceModal.files.attach":  "Выбрать файлы",
-    "serviceModal.files.hint":  "PDF, XLSX, DOCX, JPG, PNG. До 10 МБ, макс. 5 файлов.",
-    "serviceModal.orderForm.submitting":  "Отправляем...",
-    "serviceModal.orderForm.submit":  "Оставить заявку",
-    "serviceModal.orderForm.authRequired":  "Для отправки заявки потребуется авторизация.",
-    "serviceModal.allServices":  "Все услуги",
-    "quiz.resultsHeader":  "Результаты опроса:\\n",
-    "quiz.questionResult":  "Вопрос:",
-    "quiz.answerResult":  "Ответ:",
-    "quiz.filesAttachedAmount":  "*Прикреплено файлов: {{count}}*",
-    "quiz.title":  "Поможем подобрать решение под ваш бизнес",
-    "quiz.subtitle":  "Ответьте на 5 вопросов — в конце появится форма для отправки.",
-    "quiz.success":  "Спасибо! Мы свяжемся с вами в ближайшее время.",
-    "quiz.promoTitle":  "Хотите удобнее управлять своими задачами?",
-    "quiz.promoText":  "Зарегистрируйтесь на платформе, чтобы отслеживать статус заявок, обмениваться документами в безопасном чате и всегда быть на связи с личным бухгалтером.",
-    "quiz.promoLogin":  "Войти / Зарегистрироваться",
-    "quiz.restart":  "Пройти заново",
-    "quiz.prev":  "Назад",
-    "quiz.nextToForm":  "Далее к форме",
-    "quiz.next":  "Далее",
-    "quiz.question":  "Вопрос",
-    "quiz.of":  "из",
-    "quiz.registerPromoShort":  "Зарегистрируйтесь, чтобы получить больше возможностей!",
-    "quiz.leaveContacts":  "Оставьте контакты",
-    "quiz.attachFiles":  "Прикрепить файлы (необязательно)",
-    "quiz.dropFiles":  "Перетащите файлы сюда или нажмите для выбора",
-    "quiz.name":  "Имя",
-    "quiz.phone":  "Телефон",
-    "quiz.email":  "Email (необязательно)",
-    "quiz.submitting":  "Отправка...",
-    "quiz.submit":  "Отправить",
-    "weeklySummary.title":  "Итоги недели и текущий статус",
-    "weeklySummary.subtitle":  "Автоматическая сводка показателей с ежедневным обновлением",
-    "weeklySummary.currentWeek":  "Текущая неделя",
-    "weeklySummary.completed":  "Завершено",
-    "weeklySummary.inProgress":  "В процессе",
-    "weeklySummary.deadlines":  "Дедлайны",
-    "weeklySummary.documents":  "Документы",
-    "weeklySummary.revenue":  "Выручка по закрытым задачам",
-    "notifications.markAllAsRead":  "Прочитать все",
-    "notifications.confirm":  "Отметить прочитанным",
-    "offices.title1":  "Наши",
-    "offices.title2":  "Офисы",
-    "offices.shymkent_title":  "Офис в г. Шымкент",
-    "offices.almaty_title":  "Офис в г. Алматы",
-    "search.noResults":  "Ничего не найдено",
-    "search.categories.tasks":  "Задачи",
-    "search.categories.courses":  "Курсы",
-    "search.status.published":  "Опубликован",
-    "search.status.draft":  "Черновик",
-    "search.categories.lessons":  "Уроки",
-    "search.lessonType":  "Тип:",
-    "search.categories.users":  "Пользователи",
-    "kanban.allStages":  "Все стадии",
-    "kanban.sort.newest":  "Новые первыми",
-    "kanban.sort.oldest":  "Старые первыми",
-    "kanban.sort.deadline_asc":  "Дедлайн ↑",
-    "kanban.sort.deadline_desc":  "Дедлайн ↓",
-    "kanban.unsavedChanges":  "У вас есть несохраненные изменения! Вы уверены, что хотите уйти?",
-    "kanban.deleteConfirm":  "Удалить эту задачу навсегда?",
-    "kanban.deleteError":  "Ошибка при удалении задачи",
-    "kanban.reset":  "Сбросить",
-    "kanban.of":  "из",
-    "kanban.tasks":  "задач",
-    "kanban.noFilteredTasks":  "Нет задач по выбранным фильтрам",
-    "kanban.resetFilters":  "Сбросить фильтры",
-    "errors.taskNotFound":  "Task not found",
-    "kanban.noPipelines":  "Воронки не настроены",
-    "kanban.currency":  "тенге",
-    "kanban.rejectedTooltip":  "Сотрудник отказался от задачи",
-    "kanban.rejected":  "Отказ",
-    "kanban.call":  "Позвонить:",
-    "kanban.phoneNotSpecified":  "Телефон не указан",
-    "kanban.emailAction":  "Написать:",
-    "kanban.emailNotSpecified":  "Email не указан",
-    "kanban.chatWith":  "Чат с",
-    "kanban.clientNotSpecified":  "Клиент не указан",
-    "kanban.noClient":  "Без клиента",
-    "kanban.addDeal":  "+ Дело",
-    "taskCreate.error":  "Ошибка при создании задачи",
-    "taskCreate.title":  "Новая заявка",
-    "taskCreate.subject":  "Суть обращения",
-    "taskCreate.subjectPlaceholder":  "Например: Справка о доходах, Бухгалтерское сопровождение...",
-    "taskCreate.details":  "Детали (необязательно)",
-    "taskCreate.detailsPlaceholder":  "Опишите задачу подробнее...",
-    "taskCreate.deadline":  "Желаемый срок (Дедлайн)",
-    "taskCreate.linkedServices":  "Связанные услуги",
-    "taskCreate.subtasks":  "Подзадачи (чек-лист)",
-    "taskCreate.addSubtaskPlaceholder":  "Добавить пункт чек-листа...",
-    "taskCreate.attachments":  "Вложения",
-    "taskCreate.attachFiles":  "Прикрепить файлы",
-    "taskCreate.cancel":  "Отмена",
-    "taskCreate.submitting":  "Создание...",
-    "taskCreate.submit":  "Создать заявку",
-    "team_title":  "Команда",
-    "team_subtitle":  "экспертов",
-    "trust_title1":  "Ваш бизнес",
-    "trust_title2":  "под надежной защитой",
-    "trust_desc":  "Мы берем на себя полную финансовую ответственность за результаты нашей работы. Наши клиенты не платят штрафы за ошибки в учете.",
-    "courseCertificate":  {
-                              "download":  "Скачать сертификат",
-                              "certificate":  "СЕРТИФИКАТ",
-                              "subtitle":  "об успешном окончании курса",
-                              "confirms":  "Настоящий сертификат подтверждает, что",
-                              "completed":  "успешно завершил(а) обучение по программе",
-                              "issueDate":  "Дата выдачи"
-                          }
+  "save": "保存",
+  "cancel": "取消",
+  "delete": "删除",
+  "edit": "编辑",
+  "search": {
+    "placeholder": "Поиск по задачам, клиентам, курсам...",
+    "categories": {
+      "tasks": "Задачи",
+      "courses": "Курсы",
+      "lessons": "Уроки",
+      "users": "Пользователи"
+    },
+    "status": {
+      "published": "Опубликован",
+      "draft": "Черновик"
+    },
+    "noResults": "Ничего не найдено",
+    "lessonType": "Тип:"
+  },
+  "datePicker": {
+    "selectDate": "Выберите дату",
+    "clear": "Очистить"
+  },
+  "loading": "加载中...",
+  "success": "操作成功",
+  "error": "错误",
+  "connectionFailed": "无法连接至服务器，请检查网络连接。",
+  "sessionExpired": "登录会话已过期，请重新登录。",
+  "accessDenied": "您没有执行该操作的权限。",
+  "publicNav": {
+    "home": "首页",
+    "services": "服务项目",
+    "about": "关于我们",
+    "profile": "个人中心",
+    "login": "登录系统",
+    "contact": "联系我们",
+    "getStarted": "立即开始",
+    "whatsapp": "WhatsApp 在线咨询"
+  },
+  "footer": {
+    "slogan1": "精准数字核算，",
+    "slogan2": "保障企业稳健未来。",
+    "navigation": "网站导航",
+    "contacts": "联系方式",
+    "address": "哈萨克斯坦 奇姆肯特市 拜特列科夫街 79a",
+    "discussTask": "讨论您的财务需求？",
+    "allRightsReserved": "保留所有权利。",
+    "privacy": "隐私政策",
+    "terms": "服务协议",
+    "refund": "退款政策",
+    "cookies": "Cookie 政策"
+  },
+  "hero": {
+    "circleText": "财务记账 • 税务申报 • 财务咨询 • 会计外包 •",
+    "title1": "重构您的",
+    "title2": "企业",
+    "titleHighlight": "财务体系",
+    "subtitle": "我们将财务核算从单纯的成本支出转化为精准的利润增长与风险管理工具。",
+    "cta": "测算服务费用"
+  },
+  "homeAbout": {
+    "badge": "关于我们",
+    "title": "选择 <1>安心保障</1> — <br/>全心专注拓展 <br/>您的商业版图",
+    "description": "我们亲自应对各项审计与核查，深入测试税务架构，周全把控记账细节 — 助您心无旁骛地发展壮大企业。",
+    "link": "了解更多关于我们"
+  },
+  "homeServices": {
+    "title": "专为 <br/><1>您的企业定制</1> 的解决方案",
+    "subtitle": "从单次专业咨询到全流程财务与人事外包，我们为您量身定制最适配的合作模式。",
+    "allServices": "全部服务",
+    "orderPrefix": "预约服务：",
+    "successMessage": "您对“{{title}}”的申请已收到！我们将尽快与您取得联系。",
+    "errorMessage": "提交申请时出错，请稍后重试。",
+    "more": "了解更多",
+    "modalTitle": "申请已受理！",
+    "col1_title": "单项财务服务",
+    "col1_desc": "税务申报、薪资核算、账务梳理重构与合作方资信背景审查",
+    "col2_title": "全托管财务外包",
+    "col2_desc": "全面财务管控、SLA 协议 100% 赔付责任与持续专业财税护航",
+    "subscription_badge": "按月订阅",
+    "sla_service_title": "全方位掌控与责任担保",
+    "sla_service_desc": "依照 SLA 服务协议承担 100% 财务赔偿责任。凡因我方责任导致的罚款，均由我方全额承担。",
+    "sla_features": [
+      "SLA 协议法律与财务双重保障",
+      "国家收入委员会 (SRC) 个人账户 24/7 全天候监控",
+      "税务非现场稽查全程专业答辩与权益维护"
+    ]
+  },
+  "homeAdvantages": {
+    "title": "为什么选择 <br/><1>ЖАН FINANCE</1>",
+    "subtitle": "我们不仅按期递交报表，更为企业构建透明合规的财务体系，护航业务稳健前行。",
+    "cards": [
+      {
+        "title": "恪守责任",
+        "text": "依照 SLA 协议承担全部财务赔偿责任。凡属我方失误导致的罚款，由我方全额支付。"
+      },
+      {
+        "title": "高度自动化",
+        "text": "实现 1C 与银行系统、CRM 的无缝集成。最少人工录入，确保数据极致精准。"
+      },
+      {
+        "title": "24/7 实时掌控",
+        "text": "随时查看清晰透明的财务报表，让您实时掌握企业资金与经营动向。"
+      },
+      {
+        "title": "合规税务优化",
+        "text": "依托最新司法与税务判例，在法律框架内依法合规优化企业税负."
+      }
+    ]
+  },
+  "nav": {
+    "overview": "总览大盘",
+    "courses": "培训课程",
+    "learners": "学员管理",
+    "chat": "在线沟通",
+    "employees": "员工团队",
+    "clients": "客户档案",
+    "tasks": "任务列表",
+    "taskPool": "任务公共池",
+    "archiveDone": "已归档（已完成）",
+    "archiveCancelled": "已归档（已取消）",
+    "invoices": "账单发票",
+    "subscriptions": "订阅管理",
+    "auditLogs": "审计日志",
+    "settings": "系统设置",
+    "notifications": "消息通知",
+    "calendar": "工作日历",
+    "documents": "文档中心",
+    "services": "服务目录",
+    "templates": "合同模板",
+    "leads": "线索商机"
+  },
+  "clientDashboard": {
+    "welcome": "Добро пожаловать, {{name}}!",
+    "subtitle": "Это ваш личный кабинет. Здесь вы можете оставлять заявки на услуги и отслеживать процесс их выполнения.",
+    "inProgress": "В работе",
+    "needsAttention": "Требуют внимания",
+    "completed": "Завершено",
+    "createRequest": "Создать новую заявку",
+    "activeRequests": "Активные заявки",
+    "history": "История",
+    "noActiveRequests": "У вас пока нет активных заявок.",
+    "noHistoryRequests": "У вас пока нет истории заявок.",
+    "status": {
+      "NEW": "В очереди",
+      "IN_PROGRESS": "В работе",
+      "ON_REVIEW": "Ждет подтверждения",
+      "DONE": "Завершено",
+      "CANCELLED": "Отменено"
+    }
+  },
+  "calendarWidget": {
+    "title": "Календарь",
+    "currentMonth": "Текущий месяц",
+    "openFull": "Открыть полный календарь",
+    "eventsOn": "События на",
+    "noEvents": "На этот день нет запланированных событий",
+    "addEvent": "Добавить событие",
+    "eventTitle": "Название события",
+    "eventTitlePlaceholder": "Напр. Оплата ИПН",
+    "time": "Время",
+    "color": "Цвет метки",
+    "description": "Описание",
+    "descriptionPlaceholder": "Дополнительное описание (опционально)...",
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "systemTask": "Задача в системе",
+    "colors": {
+      "BLUE": "Синий",
+      "RED": "Красный (Дедлайн)",
+      "GREEN": "Зеленый",
+      "YELLOW": "Желтый",
+      "PURPLE": "Фиолетовый"
+    }
+  },
+  "sidebar": {
+    "logout": "Выйти",
+    "roles": {
+      "ADMIN": "Админ",
+      "EMPLOYEE": "Сотрудник",
+      "CLIENT": "Клиент",
+      "LEARNER": "Ученик",
+      "CURATOR": "Куратор 1С"
+    }
+  },
+  "calendarPage": {
+    "title": "Налоговый календарь",
+    "subtitle": "Отслеживайте дедлайны и планируйте задачи",
+    "months": [
+      "Январь",
+      "Февраль",
+      "Март",
+      "Апрель",
+      "Май",
+      "Июнь",
+      "Июль",
+      "Август",
+      "Сентябрь",
+      "Октябрь",
+      "Ноябрь",
+      "Декабрь"
+    ],
+    "daysShort": [
+      "Пн",
+      "Вт",
+      "Ср",
+      "Чт",
+      "Пт",
+      "Сб",
+      "Вс"
+    ]
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "unreadSubtitle_zero": "У вас нет непрочитанных сообщений.",
+    "unreadSubtitle_one": "У вас {{count}} непрочитанное сообщение.",
+    "unreadSubtitle_few": "У вас {{count}} непрочитанных сообщения.",
+    "unreadSubtitle_many": "У вас {{count}} непрочитанных сообщений.",
+    "unreadSubtitle_other": "У вас {{count}} непрочитанных сообщений.",
+    "markAllAsRead": "Прочитать все",
+    "emptyTitle": "Пока нет уведомлений",
+    "emptySubtitle": "Когда появится обновление по вашим документам или задачам, оно появится здесь.",
+    "confirm": "Ок",
+    "open": "Открыть"
+  },
+  "clientChat": {
+    "sidebarTitle": "Поддержка",
+    "placeholderTitle": "Поддержка ЖАН FINANCE",
+    "placeholderSubtitle": "Выберите диалог, чтобы начать общение",
+    "inputPlaceholder": "Введите сообщение...",
+    "deleteConfirm": "Удалить это сообщение?",
+    "roles": {
+      "ADMIN": "АДМИН",
+      "EMPLOYEE": "БУХГАЛТЕР",
+      "CLIENT": "КЛИЕНТ"
+    },
+    "noMessages": "Нет сообщений. Напишите первое сообщение!"
+  },
+  "documents": {
+    "title": "Документы",
+    "subtitle": "Централизованное управление вашими документами, актами и договорами",
+    "searchPlaceholder": "Поиск по названию файла...",
+    "viewMode": {
+      "table": "Таблица",
+      "grid": "Сетка"
+    },
+    "metrics": {
+      "total": "Всего документов",
+      "pending": "Ожидают подписи",
+      "confirmed": "Подписано"
+    },
+    "folders": {
+      "all": "Все документы",
+      "acts": "Акты ВР",
+      "reports": "Отчеты",
+      "contracts": "Договоры",
+      "other": "Разное"
+    },
+    "upload": {
+      "dragOrClick": "Перетащите файл или нажмите для загрузки",
+      "uploading": "Загрузка документа...",
+      "formats": "PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ",
+      "selectFile": "Загрузить файл"
+    },
+    "table": {
+      "file": "Название файла",
+      "type": "Тип",
+      "signature": "Статус подписи",
+      "size": "Размер",
+      "actions": "Действия"
+    },
+    "uploaderFilter": {
+      "all": "Все источники",
+      "company": "От компании (на подпись)",
+      "client": "Загружено вами"
+    },
+    "status": {
+      "signed": "Подписано",
+      "confirm": "Подтвердить",
+      "confirming": "Подтверждаем...",
+      "clientUploaded": "Загружено вами"
+    },
+    "actions": {
+      "download": "Скачать",
+      "delete": "Удалить",
+      "downloadZip": "Скачать выбранные ({{count}}) в ZIP",
+      "formingZip": "Формируем ZIP...",
+      "deselect": "Снять выделение"
+    },
+    "empty": {
+      "title": "Документы не найдены",
+      "description": "Загрузите первый файл или измените параметры поиска"
+    },
+    "notifications": {
+      "confirmDelete": "Вы уверены, что хотите удалить этот документ?",
+      "deleteSuccess": "Документ успешно удален",
+      "deleteError": "Не удалось удалить документ",
+      "downloadError": "Ошибка при скачивании документа",
+      "confirmSuccess": "Документ успешно подтвержден и подписан",
+      "confirmError": "Ошибка при подтверждении документа",
+      "zipError": "Ошибка при формировании ZIP-архива"
+    }
+  },
+  "settings": {
+    "title": "Настройки профиля",
+    "subtitle": "Управляйте вашими личными данными и настройками безопасности",
+    "basicInfo": "Основная информация",
+    "basicInfoDesc": "Отредактируйте свои личные данные",
+    "fullName": "Полное Имя",
+    "emailReadonly": "Email (Только чтение)",
+    "phone": "Телефон",
+    "companyName": "Название компании",
+    "saveChanges": "Сохранить изменения",
+    "changePassword": "Изменить пароль",
+    "changePasswordDesc": "Обновите пароль для вашей учетной записи",
+    "googlePasswordDesc": "Вход через Google. Пароль не используется.",
+    "googleSync": "Вход через Google. Аватарка синхронизирована.",
+    "currentPassword": "Текущий пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "errors": {
+      "loadProfile": "Ошибка при загрузке профиля",
+      "saveProfile": "Не удалось сохранить профиль",
+      "passwordMismatch": "Новые пароли не совпадают",
+      "passwordLength": "Пароль должен содержать минимум 8 символов",
+      "savePassword": "Не удалось изменить пароль",
+      "fileTooLarge": "Файл слишком большой. Максимум 2MB.",
+      "uploadAvatar": "Ошибка загрузки фото",
+      "loadUserData": "Не удалось загрузить данные пользователя"
+    },
+    "success": {
+      "profile": "Профиль успешно обновлен",
+      "password": "Пароль успешно изменен"
+    },
+    "securityTitle": "Безопасность",
+    "updatePasswordBtn": "Обновить пароль",
+    "saving": "Сохранение...",
+    "googleNoPassword": "Вы вошли через Google, поэтому смена пароля здесь недоступна. Управляйте безопасностью в аккаунте Google."
+  },
+  "adminDashboard": {
+    "title": "Обзор",
+    "subtitle": "Общая статистика системы",
+    "loadError": "Не удалось загрузить данные",
+    "totalClients": "Клиентов",
+    "totalEmployees": "Сотрудников",
+    "totalTasks": "Всего задач",
+    "doneTasks": "Выполнено",
+    "newRequests": "Новые заявки (сегодня)",
+    "wonTasks": "Завершено (Успешно)",
+    "financialAnalytics": "Финансовая аналитика",
+    "earned": "Заработано (Успешно)",
+    "expectedRevenue": "Ожидаемая выручка (В работе)",
+    "conversion": "Конверсия и эффективность",
+    "winRate": "Успешность (Win Rate)",
+    "avgCloseTime": "Среднее время закрытия",
+    "days": "дн.",
+    "lostReasons": "Причины отмены задач",
+    "noLostTasks": "Нет отмененных задач",
+    "noTasks": "Нет задач",
+    "workload": "Рабочая нагрузка сотрудников",
+    "workloadDesc": "Количество активных, просроченных и выполненных задач",
+    "employee": "Сотрудник",
+    "inProgress": "В работе",
+    "overdue": "Просрочено",
+    "completed": "Выполнено",
+    "noEmployees": "Нет данных о сотрудниках",
+    "tasksByStatus": "Задачи по статусам",
+    "productivity": "Продуктивность сотрудников",
+    "status": {
+      "NEW": "Новые",
+      "IN_PROGRESS": "В процессе",
+      "ON_REVIEW": "На проверке",
+      "DONE": "Готово",
+      "CANCELLED": "Отменено"
+    }
+  },
+  "adminTemplates": {
+    "title": "Шаблоны документов",
+    "subtitle": "Управляйте документами и формами для автоматической генерации. Загружайте файлы .docx с тегами для автозаполнения клиентскими и проектными данными.",
+    "uploadNew": "Загрузить новый",
+    "templateName": "Название шаблона",
+    "templateNamePlaceholder": "Например: Договор оказания услуг",
+    "description": "Описание",
+    "descriptionPlaceholder": "Краткое описание шаблона",
+    "docxFile": "Файл (.docx)",
+    "filePrompt": "Нажмите или перетащите файл",
+    "uploading": "Загрузка...",
+    "saveTemplate": "Сохранить шаблон",
+    "availableTemplates": "Доступные шаблоны",
+    "pcs": "шт",
+    "loadingTemplates": "Загрузка шаблонов...",
+    "noTemplates": "Нет загруженных шаблонов",
+    "noTemplatesDesc": "Загрузите свой первый .docx шаблон с тегами в форме слева.",
+    "cheatSheetTitle": "Шпаргалка по тегам",
+    "cheatSheetDesc": "Вставляйте эти переменные прямо в текст .docx файла. При генерации они заменятся на реальные значения.",
+    "clientData": "Данные клиента",
+    "taskData": "Данные задачи",
+    "systemValues": "Системные значения"
+  },
+  "adminCourses": {
+    "title": "Управление курсами",
+    "createCourse": "Создать курс",
+    "name": "Название",
+    "status": "Статус",
+    "actions": "Действия",
+    "published": "Опубликован",
+    "draft": "Черновик",
+    "edit": "Редактировать",
+    "empty": "Курсов пока нет. Создайте первый курс!"
+  },
+  "adminLearners": {
+    "title": "Обучающиеся (Learners)",
+    "addLearner": "Добавить ученика",
+    "fullName": "ФИО",
+    "email": "Email",
+    "empty": "Обучающихся пока нет. Создайте первого!",
+    "createError": "Ошибка создания обучающегося",
+    "newLearnerModalTitle": "Новый ученик",
+    "password": "Пароль",
+    "passwordHint": "Минимум 8 символов, должна быть 1 буква и 1 цифра.",
+    "cancel": "Отмена",
+    "create": "Создать"
+  },
+  "employeeChat": {
+    "title": "Чаты",
+    "search": "Поиск...",
+    "noContacts": "Нет контактов",
+    "client": "Клиент",
+    "colleague": "Коллега",
+    "backToContacts": "Назад к контактам",
+    "noMessages": "Нет сообщений",
+    "writeFirst": "Напишите первое сообщение!",
+    "deleteMessage": "Удалить сообщение",
+    "messageDeleted": "Пользователь удалил сообщение",
+    "placeholder": "Введите сообщение...",
+    "selectChat": "Выберите чат",
+    "selectChatDesc": "Выберите коллегу или клиента для общения"
+  },
+  "adminClients": {
+    "title": "Клиенты",
+    "statsError": "Не удалось загрузить статистику клиентов. Количество задач может быть 0.",
+    "name": "Имя",
+    "company": "Компания",
+    "email": "Email",
+    "assignedEmployee": "Назначенный сотрудник",
+    "tasks": "Задачи",
+    "selectEmployee": "Выберите сотрудника",
+    "loadError": "Ошибка загрузки данных",
+    "assignError": "Не удалось назначить сотрудника"
+  },
+  "adminTasks": {
+    "title": "Список задач",
+    "exportCSV": "Экспорт CSV",
+    "newTaskBtn": "Новая задача",
+    "newTask": "Новая задача",
+    "firstStep": "Первый шаг",
+    "updateError": "Не удалось обновить задачи",
+    "exportError": "Не удалось экспортировать задачи"
+  },
+  "taskPool": {
+    "title": "Пул задач",
+    "empty": "Пул задач пуст",
+    "emptyDescription": "Сейчас нет неназначенных задач. Все задачи находятся в работе.",
+    "description": {
+      "employee": "Свободные задачи, ожидающие назначения. Вы можете взять любую задачу в работу.",
+      "admin": "Список всех активных задач. Здесь вы видите всё, можете назначить или переназначить исполнителя."
+    },
+    "columns": {
+      "title": "Задача",
+      "client": "Клиент",
+      "assignee": "Исполнитель",
+      "status": "Статус",
+      "created": "Создана",
+      "actions": "Действия"
+    },
+    "actions": {
+      "take": "Взять в работу",
+      "assign": "Назначить",
+      "assigning": "Назначение..."
+    },
+    "noEmployees": "Нет доступных сотрудников",
+    "unassigned": "Не назначен",
+    "no": "Нет",
+    "noClient": "Не указан",
+    "noStage": "Нет стадии"
+  },
+  "stages": {
+    "Новый": "Новый",
+    "Сбор документов": "Сбор документов",
+    "Предоплата": "Предоплата",
+    "В работе": "В работе",
+    "Счет выставлен": "Счет выставлен",
+    "Доработка": "Доработка",
+    "На проверке": "На проверке",
+    "Успешно завершено": "Успешно завершено",
+    "Отменен": "Отменен"
+  },
+  "adminArchive": {
+    "cancelledTitle": "Архив: Отмененные задачи",
+    "doneTitle": "Архив: Выполненные задачи",
+    "noCancelled": "Нет отмененных задач",
+    "noDone": "Нет выполненных задач",
+    "updateError": "Не удалось обновить задачи"
+  },
+  "adminAuditLog": {
+    "title": "Аудит системы",
+    "subtitle": "История активности системы",
+    "noLogs": "Логи не найдены",
+    "action": "Действие",
+    "entity": "Сущность",
+    "entityId": "ID сущности",
+    "userId": "ID пользователя",
+    "time": "Время",
+    "details": "Детали"
+  },
+  "adminEmployees": {
+    "title": "Сотрудники",
+    "subtitle": "Управление доступом персонала",
+    "active": "Активные",
+    "pending": "Заявки",
+    "employee": "Сотрудник",
+    "email": "Email",
+    "registrationDate": "Дата регистрации",
+    "actions": "Действия",
+    "approve": "Одобрить",
+    "isActive": "Активен",
+    "noActive": "Нет активных сотрудников",
+    "noPending": "Нет новых заявок",
+    "approveConfirm": "Одобрить этого сотрудника? Он получит доступ в систему.",
+    "approveError": "Ошибка при одобрении сотрудника"
+  },
+  "adminCourseEdit": {
+    "courseUpdated": "Курс обновлен",
+    "courseSaveError": "Ошибка при сохранении курса",
+    "lessonCreateError": "Ошибка создания урока.",
+    "lessonDeleteConfirm": "Удалить этот урок?",
+    "lessonDeleteError": "Ошибка при удалении урока",
+    "backToList": "Назад к списку",
+    "editTitle": "Редактирование курса",
+    "createTitle": "Создание курса",
+    "save": "Сохранить",
+    "courseNameLabel": "Название курса",
+    "courseNamePlaceholder": "Например: Основы бухгалтерского учета",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Краткое описание курса...",
+    "publishLabel": "Опубликовать курс (будет виден ученикам)",
+    "lessonsTitle": "Уроки курса",
+    "addLessonBtn": "Добавить урок",
+    "textLesson": "Текстовый урок",
+    "editLesson": "Редактировать",
+    "deleteLessonTitle": "Удалить урок",
+    "noLessons": "Нет уроков в этом курсе",
+    "newLessonTitle": "Новый урок",
+    "lessonNameLabel": "Название урока",
+    "lessonNamePlaceholder": "Введение в...",
+    "cancel": "Отмена",
+    "creating": "Создание...",
+    "createLesson": "Создать урок"
+  },
+  "adminLessonEdit": {
+    "saveSuccess": "Урок успешно сохранен!",
+    "saveError": "Ошибка при сохранении урока.",
+    "backToCourse": "Назад к курсу",
+    "lessonNamePlaceholder": "Название урока",
+    "saving": "Сохранение...",
+    "save": "Сохранить",
+    "mainTextLabel": "Основной текст урока",
+    "mainTextPlaceholder": "Напишите здесь содержимое урока...",
+    "fileLabel": "Файл / Видео урока",
+    "currentFile": "Текущий файл:",
+    "downloadOpen": "Скачать / Открыть",
+    "uploadText": "Нажмите, чтобы загрузить видео или файл",
+    "uploadSubtext": "Это заменит текущий файл, если он есть",
+    "size": "Размер:"
+  },
+  "adminInvoices": {
+    "title": "Счета",
+    "subtitle": "Управление счетами клиентов",
+    "createBtn": "Создать счет",
+    "noInvoices": "Счета не найдены",
+    "invoiceTitle": "Название",
+    "clientId": "ID клиента",
+    "amount": "Сумма",
+    "status": "Статус",
+    "dueDate": "Срок оплаты"
+  },
+  "adminSubscriptions": {
+    "title": "Подписки",
+    "subtitle": "Управление подписками клиентов",
+    "createBtn": "Создать подписку",
+    "noSubscriptions": "Подписки не найдены",
+    "planName": "Название тарифа",
+    "monthlyPrice": "Цена за месяц",
+    "status": "Статус",
+    "startsAt": "Начало",
+    "endsAt": "Конец"
+  },
+  "employeeClients": {
+    "title": "Мои клиенты",
+    "name": "Имя",
+    "email": "Email",
+    "actions": "Действия",
+    "chat": "Чат"
+  },
+  "employeeOverview": {
+    "title": "Моя рабочая панель",
+    "subtitle": "Сводка о вашей работе",
+    "loadError": "Не удалось получить данные",
+    "statClients": "Мои клиенты",
+    "statTasks": "Всего задач",
+    "statActive": "Активных",
+    "statReview": "На проверке",
+    "statDone": "Завершено",
+    "taskStats": "Статистика задач",
+    "status": {
+      "NEW": "Новая",
+      "IN_PROGRESS": "В процессе",
+      "ON_REVIEW": "На проверке",
+      "DONE": "Выполнено",
+      "CANCELLED": "Отменена"
+    },
+    "statInProgress": "В работе",
+    "statOnReview": "На проверке",
+    "urgentTasks": "Горящие задачи",
+    "plannedTasks": "План в работе",
+    "allTasks": "Все задачи",
+    "noPlannedTasks": "Нет запланированных задач на ближайшее время",
+    "recentHistory": "Недавно завершенные",
+    "notifications": "Уведомления",
+    "noNewNotifications": "Нет новых уведомлений"
+  },
+  "employeeTasks": {
+    "title": "Мои задачи",
+    "exportCsv": "Экспорт CSV",
+    "updateError": "Не удалось обновить задачи",
+    "exportError": "Не удалось экспортировать задачи"
+  },
+  "employeeDocuments": {
+    "title": "Документы клиентов",
+    "subtitle": "Управление документами всех ваших клиентов",
+    "loadError": "Не удалось загрузить данные",
+    "selectClientError": "Пожалуйста, выберите клиента перед загрузкой",
+    "uploadError": "Не удалось загрузить документ",
+    "downloadError": "Не удалось скачать документ",
+    "deleteConfirm": "Вы уверены, что хотите удалить этот документ?",
+    "deleteError": "Не удалось удалить документ",
+    "uploadLabel": "Загрузить для клиента",
+    "selectClientOption": "Выберите клиента",
+    "selectClientFirst": "Сначала выберите клиента",
+    "dropHere": "Бросьте файл сюда",
+    "clickOrDrag": "Нажмите или перетащите файл для загрузки",
+    "uploading": "Загрузка...",
+    "supports": "Поддерживаются файлы PDF, Word, Excel, XML и CSV до 20 МБ.",
+    "recentTitle": "Последние документы",
+    "docName": "Название",
+    "docClient": "Клиент",
+    "docType": "Тип",
+    "docSize": "Размер",
+    "docDate": "Дата",
+    "docActions": "Действия",
+    "noDocs": "Документы не найдены",
+    "noDocsSubtext": "Загрузите документы, чтобы поделиться ими с клиентами",
+    "unknownClient": "Неизвестный клиент"
+  },
+  "clientServices": {
+    "title": "Услуги",
+    "subtitle": "Каталог услуг и история ваших запросов",
+    "loadError": "Не удалось загрузить данные об услугах",
+    "requestSuccess": "Ваш запрос на услугу принят!",
+    "availableServices": "Доступные услуги",
+    "onDemand": "По запросу",
+    "requestBtn": "Запросить",
+    "requestError": "Ошибка при отправке запроса. Попробуйте позже."
+  },
+  "learnerCourses": {
+    "title": "Мои курсы",
+    "subtitle": "Выберите курс, чтобы начать обучение",
+    "noCourses": "Курсов пока нет",
+    "noCoursesSubtext": "Как только появятся материалы — они отобразятся здесь",
+    "startCourse": "Начать курс"
+  },
+  "learnerCourseDetail": {
+    "videoLesson": "Видеоурок",
+    "presentation": "Презентация",
+    "document": "Документ",
+    "lessonCount1": "урок",
+    "lessonCount2": "урока",
+    "noLessons": "Уроки ещё не добавлены",
+    "allCourses": "Все курсы",
+    "loadError": "Не удалось загрузить курс. Попробуйте обновить страницу.",
+    "lessonsCountLabel": "Уроков",
+    "statusLabel": "Статус",
+    "available": "Доступен",
+    "courseProgram": "Программа курса",
+    "lessonsCountText": "уроков",
+    "noLessonsTitle": "Уроки пока не добавлены",
+    "noLessonsSubtext": "Автор курса ещё работает над материалами",
+    "progress": "Прогресс",
+    "congrats": "Поздравляем!",
+    "completedMsg": "Вы успешно завершили этот курс и освоили все материалы.",
+    "student": "Студент"
+  },
+  "learnerLesson": {
+    "notFound": "Урок не найден",
+    "backToCourse": "Вернуться к курсу",
+    "lessonLabel": "Урок",
+    "of": "из",
+    "textLabel": "Текст",
+    "downloadFile": "Скачать файл",
+    "attachedFile": "Прикрепленный файл",
+    "clickToDownload": "Кликните, чтобы скачать файл",
+    "noContent": "Содержимое отсутствует",
+    "previous": "Предыдущий",
+    "next": "Следующий",
+    "additionalMaterial": "Дополнительный материал",
+    "attachedDoc": "Прикрепленный документ",
+    "downloadOpen": "Скачать / Открыть",
+    "passed": "Пройдено",
+    "completeAndNext": "Завершить урок и перейти к следующему",
+    "finishCurrentFirst": "Сначала завершите текущий урок"
+  },
+  "auth": {
+    "login": {
+      "pendingApproval": "Ваш аккаунт ожидает подтверждения администратора.",
+      "registerSuccess": "Успешная регистрация!",
+      "loginSuccess": "Успешный вход!",
+      "googleError": "Не удалось войти через Google.",
+      "loginError": "Не удалось войти. Попробуйте снова.",
+      "title": "Вход",
+      "subtitle": "Войдите, чтобы открыть личный кабинет.",
+      "passwordLabel": "Пароль",
+      "loggingIn": "Входим...",
+      "loginBtn": "Войти",
+      "or": "или",
+      "googleAuthError": "Ошибка авторизации Google",
+      "noAccount": "Нет аккаунта?",
+      "registerLink": "Зарегистрироваться"
+    },
+    "register": {
+      "pendingApproval": "Заявка на регистрацию отправлена! Администратор проверит ваши данные.",
+      "success": "Успешная регистрация!",
+      "loginSuccess": "Успешный вход!",
+      "googleError": "Не удалось зарегистрироваться через Google.",
+      "passwordLengthError": "Пароль должен содержать минимум 8 символов",
+      "passwordFormatError": "Пароль должен содержать хотя бы одну букву и одну цифру",
+      "registerError": "Не удалось зарегистрироваться. Попробуйте снова.",
+      "submittedTitle": "Заявка отправлена",
+      "homeLink": "На главную",
+      "title": "Регистрация",
+      "subtitle": "Создайте аккаунт, чтобы открыть личный кабинет.",
+      "nameLabel": "Имя",
+      "namePlaceholder": "Имя Фамилия",
+      "phoneLabel": "Телефон",
+      "companyLabel": "Название компании",
+      "passwordLabel": "Пароль",
+      "passwordHint": "Минимум 8 символов, хотя бы одна буква и одна цифра",
+      "registering": "Отправка...",
+      "registerBtn": "Зарегистрироваться",
+      "hasAccount": "Уже есть аккаунт?",
+      "loginLink": "Войти"
+    },
+    "completeProfile": {
+      "saveError": "Не удалось сохранить данные.",
+      "title": "Добро пожаловать!",
+      "subtitle": "Аккаунт создан через Google. Дополните профиль — это займёт 30 секунд. Всё это необязательно.",
+      "phoneLabel": "Телефон",
+      "phonePlaceholder": "+7 (777) 000-00-00",
+      "companyLabel": "Название ИП / ТОО (можно оставить пустым)",
+      "companyPlaceholder": "Например: ИП Иванов, ТОО Пример",
+      "saving": "Сохраняем...",
+      "saveBtn": "Сохранить и продолжить",
+      "skip": "Пропустить →"
+    }
+  },
+  "profile": {
+    "title": "Личный кабинет",
+    "logout": "Выйти",
+    "language": "Язык",
+    "support": "Поддержка",
+    "notifications": "Уведомления",
+    "myTasks": "Мои задачи",
+    "roles": {
+      "ADMIN": "Администратор",
+      "EMPLOYEE": "Сотрудник",
+      "CLIENT": "Клиент",
+      "LEARNER": "Ученик",
+      "CURATOR": "Куратор 1С"
+    },
+    "soon": "Здесь скоро появятся ваши счета и документы."
+  },
+  "about": {
+    "hero": {
+      "badge": "关于我们",
+      "title": "精工品质",
+      "subtitle": "与金融工程体系",
+      "description": "财务会计早已不再是单纯的纸质单据整理与凭证录入。如今它是一套精密的工程系统，其底层架构的科学性直接关系到企业的生存发展、融资能力以及应对税务稽查的抗风险韧性。"
+    },
+    "stats": {
+      "title": "数据与事实",
+      "items": [
+        {
+          "value": "12+",
+          "label": "年深耕财税市场",
+          "description": "在哈萨克斯坦不断演进的法律法规环境中沉淀十余年持续实操经验。"
+        },
+        {
+          "value": "350+",
+          "label": "家稳定服务客户",
+          "description": "覆盖 IT、建筑、跨境物流、实体制造及电子商务等行业的中小企业。"
+        },
+        {
+          "value": "20亿 ₸",
+          "label": "为客户合规节省资金",
+          "description": "通过合法税务优化、增值税退税、多缴税金核查及防范税务罚款实现。"
+        },
+        {
+          "value": "100%",
+          "label": "财务赔付履约保证",
+          "description": "服务责任由法律效力的 SLA 协议明确约定，我方承担因失误导致的罚款与滞纳金。"
+        }
+      ]
+    },
+    "ideology": {
+      "badge": "核心理念",
+      "title": "企业应当聚焦盈利，而非深陷税务杂务",
+      "p1": "许多企业初次接触我们时，其财务状况往往处于长期混乱状态：电子发票（ESF）遗漏丢失、因少缴100坚戈滞纳金被冻结账户、商品品类重名导致成本核算失准，以及企业所得税（CIT）的大额多缴。",
+      "p2": "专职驻场会计往往缺乏双重质检机制与现代科技支撑。单兵作战难以兼通外贸进出口、复杂生产结算、外汇管制合规以及数字化 IT 集成等多维领域。",
+      "p3": "我们的方案是专业化分工协作：初级单据由数据录入员高效准确处理；薪酬由专属核算专员精准计算（杜绝假期折算差错）；税务筹划由资深方法论专家制定；整体流程由高级财务架构师全程把控。您只需支付一名驻场员工的成本，即可获得一整个专业财税团队的护航。",
+      "p4": "我们将财务数据视为企业核心战略资产（主数据管理 MDM）。推行严格的品类编码与基础数据入库规范，杜绝账套数据污染。全业务流程标准化归档、权责明晰。团队内部人员轮岗交接对客户完全透明无缝。"
+    },
+    "process": {
+      "badge": "工程化方法",
+      "title": "我们如何重构您的财务体系",
+      "items": [
+        {
+          "title": "深度审计与逆向工程",
+          "text": "我们不仅是简单接管账套，更开展深度技术审计：校验 1C 数据完整性，排查单据链条断点，分析税收与会计登记簿，全面挖掘潜在税务风险、挂账余额与异常凭证。"
+        },
+        {
+          "title": "数据清洗与规范化",
+          "text": "如同代码重构，我们重塑企业财务架构。补齐缺失单据，核对账户余额，清洗重复往来单位，建立数据清晰、每一坚戈均有据可依的标准账套。"
+        },
+        {
+          "title": "业务流程自动化",
+          "text": "实现 1C 与各大网银、CRM 系统、电子发票系统及虚拟仓库的深度对接。配置对账单自动下载、数据解析与单据自动流转，杜绝人工录入失误，大幅缩短处理周期。"
+        },
+        {
+          "title": "持续监控与服务履约 (SLA)",
+          "text": "全面转入标准化规范运维阶段。专属专家团队常态化跟进，提供清晰透明的财务报表，实时呈现当期税负、申报进度与资金收支计划，所有操作严格遵照内部规程执行。"
+        }
+      ]
+    },
+    "guarantees": {
+      "badge": "责任保障",
+      "title": "具备法律约束力的双重担保",
+      "p1": "我们依据 IFRS 国际财务报告准则，通过附带明确经济赔偿责任的服务合同保障客户财务安全与记账质量。",
+      "items": [
+        {
+          "title": "资金安全保障：",
+          "text": "凡因我方失误导致的罚款与滞纳金，全额予以经济赔偿。"
+        },
+        {
+          "title": "保密协议 (NDA)：",
+          "text": "严格履行商业秘密保护义务。采用端到端加密通信与高安全性云端服务器。"
+        },
+        {
+          "title": "业务持续性：",
+          "text": "杜绝员工请假、休假或突然离职带来的业务中断，财税服务 365 天稳定运行。"
+        },
+        {
+          "title": "费用公开透明：",
+          "text": "费用仅依据实际业务量与核算复杂度制定，绝无任何隐形收费。"
+        }
+      ]
+    }
+  },
+  "services": {
+    "hero": {
+      "title": "我们的专业服务",
+      "description": "全流程业务核算、精准税务申报、资金统筹监控 — 一站式满足企业财税需求。",
+      "action": "浏览全部服务"
+    },
+    "catalog": {
+      "orderTaskPrefix": "预约服务：",
+      "success": "您对“{{title}}”的申请已成功提交！",
+      "error": "提交申请时出错，请稍后重试。",
+      "details": "查看详情"
+    },
+    "howWeWork": {
+      "title": "服务作业流程",
+      "items": [
+        {
+          "title": "15分钟极速紧急报表",
+          "text": "关键应急数据即时生成，协助管理层快速做出经营决策。"
+        },
+        {
+          "title": "平均 1–3 个工作日交付",
+          "text": "绝大部分业务在 3 个工作日内高效办结，同时严保输出质量。"
+        },
+        {
+          "title": "服务受理时间 09:00–16:00",
+          "text": "标准化规范作息，让您清晰掌握进度确认节点。"
+        },
+        {
+          "title": "申报前全流程质检验收",
+          "text": "所有财务与税务报表递交监管部门前，均经内部专家严格质检。"
+        },
+        {
+          "title": "专属客户经理实时在线",
+          "text": "配备一对一专属顾问全程跟进，随时解答各类财税疑问。"
+        },
+        {
+          "title": "交付后免费深度财税咨询",
+          "text": "免费解读最终报表数据并提供前瞻性财务管理建议。"
+        }
+      ]
+    },
+    "why": {
+      "title": "为什么需要专业财税外包与订阅服务？",
+      "description": "专业财税管理助您彻底摆脱繁琐事务，有效规避税务处罚风险，让您全力聚焦于核心业务拓展。",
+      "items": [
+        {
+          "title": "省心无忧管控",
+          "text": "所有财务指标统一规范归集，杜绝单据遗失与账目差错风险。"
+        },
+        {
+          "title": "大幅节约时间",
+          "text": "我们负责日常记账与报表编制，您直接依据精准数据做出商业决策。"
+        },
+        {
+          "title": "合规履约保障",
+          "text": "订阅模式确保所有税务申报、报表交付与专业咨询如期按计划推进。"
+        }
+      ]
+    },
+    "faq": {
+      "title": "常见问题解答",
+      "contactTitle": "准备好开启财税合作了吗？",
+      "items": [
+        {
+          "q": "如何开始与我们合作？",
+          "a": "您可以在网站提交申请或直接联系我们 — 我们将为您量身定制财税服务方案与明确报价。"
+        },
+        {
+          "q": "需要提供哪些基础资料？",
+          "a": "视具体服务而定：通常需要公司服务合同、银行流水对账单、业务往来合同及原始凭证。"
+        },
+        {
+          "q": "是否支持全远程线上对接？",
+          "a": "完全支持 — 绝大部分业务流程均可通过安全加密通道全流程远程高效办理。"
+        }
+      ]
+    }
+  },
+  "ui": {
+    "empty": {
+      "defaultLabel": "Нет данных"
+    },
+    "errorBoundary": {
+      "title": "Что-то пошло не так",
+      "unknown": "Неизвестная ошибка",
+      "chunkError": "Версия приложения была обновлена. Пожалуйста, обновите страницу для продолжения работы.",
+      "reload": "Обновить страницу"
+    },
+    "successModal": {
+      "title": "Успешно!",
+      "button": "Отлично"
+    }
+  },
+  "contactForm": {
+    "title": "联系我们",
+    "success": {
+      "title": "感谢您的提交！",
+      "text": "我们将尽快与您取得联系，深入沟通合作细节。"
+    },
+    "whatsapp": {
+      "readyTitle": "咨询申请已生成！",
+      "readyText": "请点击下方按钮跳转至 WhatsApp 或使用手机相机扫描二维码完成发送。",
+      "scanQr": "请使用手机相机扫码",
+      "openBtn": "在 WhatsApp 中打开"
+    },
+    "fields": {
+      "name": {
+        "label": "您的姓名",
+        "placeholder": "姓名"
+      },
+      "phone": {
+        "label": "联系电话"
+      },
+      "email": {
+        "label": "电子邮箱（选填）",
+        "placeholder": "name@example.com"
+      },
+      "message": {
+        "label": "需求简要说明",
+        "placeholder": "请简要描述您的企业财税需求或问题..."
+      }
+    },
+    "buttons": {
+      "submit": "提交咨询申请",
+      "submitting": "正在提交..."
+    },
+    "agreement": {
+      "prefix": "点击即代表您已阅读并同意",
+      "privacy": "隐私政策",
+      "and": "与",
+      "terms": "服务协议"
+    },
+    "error": {
+      "default": "提交申请失败，请稍后重试"
+    }
+  },
+  "trust": {
+    "title1": "让您的企业",
+    "title2": "获得全面财务保障",
+    "description": "我们对工作成果承担全部财务责任。我们的客户无需因会计核算错误承担罚款。",
+    "stats": {
+      "0": {
+        "value": "12+",
+        "label": "年深耕市场"
+      },
+      "1": {
+        "value": "350+",
+        "label": "家合作企业"
+      },
+      "2": {
+        "value": "20亿 ₸",
+        "label": "为客户节省"
+      },
+      "3": {
+        "value": "100%",
+        "label": "履约担保"
+      }
+    }
+  },
+  "reviews": {
+    "1": {
+      "text": "我们将全部财务核算外包给 ЖАН FINANCE。一年来从未发生任何罚款，税负合规优化了 20%，非常省心。",
+      "name": "企业客户",
+      "company": "某有限责任公司 (LLP)"
+    },
+    "2": {
+      "text": "非常认可他们的专业度。专属顾问始终在线，响应迅速、解答切中要害。人事与薪资核算再也不用操心了。",
+      "name": "企业客户",
+      "company": "连锁零售企业"
+    },
+    "3": {
+      "text": "通过他们代办了个体工商户注册，随后直接委托记账。一站式搞定所有财税流程，完全无需自己研究纳税人系统。",
+      "name": "企业客户",
+      "company": "个体工商户 (IE)"
+    },
+    "title1": "客户眼中的",
+    "title2": "ЖАН FINANCE",
+    "description": "听听将财税托付给我们的真实企业怎么说。"
+  },
+  "team": {
+    "title1": "专业团队",
+    "title2": "ЖАН FINANCE",
+    "members": {
+      "0_0": {
+        "name": "Zharilkaganov Amankeldi Nakmadinovich",
+        "role": "创始人 / 首席执行官"
+      },
+      "1_0": {
+        "name": "Kozhamberdieva Alma",
+        "role": "总会计师"
+      },
+      "1_1": {
+        "name": "Murat Orynbasar",
+        "role": "IT 与数字化架构师"
+      },
+      "2_0": {
+        "name": "Specialist",
+        "role": "税务核算专家"
+      },
+      "2_1": {
+        "name": "Specialist",
+        "role": "跨境进出口财税专员"
+      },
+      "2_2": {
+        "name": "Specialist",
+        "role": "薪酬与福利核算师"
+      },
+      "2_3": {
+        "name": "Specialist",
+        "role": "人事档案合规主管"
+      },
+      "2_4": {
+        "name": "Specialist",
+        "role": "单据处理操作专员"
+      },
+      "2_5": {
+        "name": "Specialist",
+        "role": "初级财税专员"
+      }
+    }
+  },
+  "offices": {
+    "title1": "我们的",
+    "title2": "分支机构",
+    "shymkent_title": "奇姆肯特办事处",
+    "almaty_title": "阿拉木图办事处"
+  },
+  "service": {
+    "1": {
+      "title": "全流程代理记账",
+      "description": "全套业务核算、编制法定财务报表、企业资金全流程监控。",
+      "features": {
+        "0": "全套业务核算",
+        "1": "编制法定财务报表",
+        "2": "企业资金全流程监控"
+      }
+    },
+    "2": {
+      "title": "纳税申报与涉税筹划",
+      "description": "按期准确编制并向税务局递交所有法定纳税申报表。",
+      "features": {
+        "0": "申报表编制与递交",
+        "1": "财税政策咨询",
+        "2": "税务机关对接与答辩"
+      }
+    },
+    "3": {
+      "title": "人事合规与薪酬核算",
+      "description": "规范员工档案与考勤管理，精准计算薪资、带薪年假及病假津贴。",
+      "features": {
+        "0": "人事合规档案",
+        "1": "薪资精准核算",
+        "2": "考勤与假期管理"
+      }
+    },
+    "4": {
+      "title": "历史错账乱账梳理重构",
+      "description": "全面整理凭证单据，纠正历史记账差错并合规重新申报。",
+      "features": {
+        "0": "往期财务深度体检",
+        "1": "缺失单据补齐重构",
+        "2": "逾期报表更正重报"
+      }
+    },
+    "5": {
+      "title": "原始凭证录入与审核",
+      "description": "高效处理完工结算单、发票、对账单并录入内部财务系统。",
+      "features": {
+        "0": "单据发票合规审核",
+        "1": "原始凭证系统录入",
+        "2": "往来客户账目核对"
+      }
+    },
+    "6": {
+      "title": "交易对手方资信审查",
+      "description": "签约前对合作伙伴与客户进行法律与财税资信尽职调查。",
+      "features": {
+        "0": "合作方背景调查",
+        "1": "财税合规风险评估",
+        "2": "商业合作风险建议"
+      }
+    },
+    "99": {
+      "title": "全面管控与合规责任",
+      "description": "依据SLA服务协议承担100%财务与法律责任。因我方过错产生的罚款与滞纳金全额赔付。",
+      "features": {
+        "0": "SLA协议全额财务担保",
+        "1": "国家税务机关账户24/7实时监控",
+        "2": "税务案头稽查专项抗辩"
+      }
+    },
+    "s1": {
+      "title": "全流程代理记账",
+      "description": "全套业务核算、编制法定财务报表、企业资金全流程监控。",
+      "features": {
+        "0": "全套业务核算",
+        "1": "编制法定财务报表",
+        "2": "企业资金全流程监控"
+      }
+    },
+    "s2": {
+      "title": "纳税申报与涉税筹划",
+      "description": "按期准确编制并向税务局递交所有法定纳税申报表。",
+      "features": {
+        "0": "申报表编制与递交",
+        "1": "财税政策咨询",
+        "2": "税务机关对接与答辩"
+      }
+    },
+    "s3": {
+      "title": "人事合规与薪酬核算",
+      "description": "规范员工档案与考勤管理，精准计算薪资、带薪年假及病假津贴。",
+      "features": {
+        "0": "人事合规档案",
+        "1": "薪资精准核算",
+        "2": "考勤与假期管理"
+      }
+    },
+    "s4": {
+      "title": "历史错账乱账梳理重构",
+      "description": "全面整理凭证单据，纠正历史记账差错并合规重新申报。",
+      "features": {
+        "0": "往期财务深度体检",
+        "1": "缺失单据补齐重构",
+        "2": "逾期报表更正重报"
+      }
+    },
+    "s5": {
+      "title": "原始凭证录入与审核",
+      "description": "高效处理完工结算单、发票、对账单并录入内部财务系统。",
+      "features": {
+        "0": "单据发票合规审核",
+        "1": "原始凭证系统录入",
+        "2": "往来客户账目核对"
+      }
+    },
+    "s6": {
+      "title": "交易对手方资信审查",
+      "description": "签约前对合作伙伴与客户进行法律与财税资信尽职调查。",
+      "features": {
+        "0": "合作方背景调查",
+        "1": "财税合规风险评估",
+        "2": "商业合作风险建议"
+      }
+    }
+  },
+  "quiz": {
+    "title": "为您的企业量身定制最适配的财务方案",
+    "subtitle": "只需回答 5 个简短问题，即可在线提交咨询需求。",
+    "success": "感谢您的提交！我们的资深财税顾问将尽快与您取得联系。",
+    "questions": {
+      "form": {
+        "q": "您的企业组织形式是什么？",
+        "options": {
+          "ИП": "个体工商户 (IE / IP)",
+          "ТОО": "有限责任公司 (LLC / TOO)",
+          "Другое": "其他类型"
+        }
+      },
+      "turnover": {
+        "q": "预计年营业额范围？",
+        "options": {
+          "1-3 млн": "100万 - 300万 坚戈",
+          "4-10 млн": "400万 - 1000万 坚戈",
+          "10+ млн": "1000万 坚戈以上"
+        }
+      },
+      "employees": {
+        "q": "员工人数？",
+        "options": {
+          "1–10": "1–10 人",
+          "11–50": "11–50 人",
+          "50+": "50 人以上"
+        }
+      },
+      "needs": {
+        "q": "您当前最迫切的业务需求是什么？",
+        "options": {
+          "Бухгалтерия": "全套财务与账务核算",
+          "Налоги": "税务申报与合规筹划",
+          "Кадры": "人事薪酬与劳动合同",
+          "Юридическая защита": "法律合规与风险防范"
+        }
+      },
+      "timeline": {
+        "q": "期望接入服务的时间周期？",
+        "options": {
+          "В течение дня": "当天立即接入",
+          "1-3 дня": "1-3 个工作日",
+          "Более 3 дней": "3 个工作日以上"
+        }
+      }
+    },
+    "resultsHeader": "问卷评估结果：\n",
+    "questionResult": "问题：",
+    "answerResult": "回答：",
+    "prev": "上一步",
+    "next": "下一步",
+    "nextToForm": "前往填写联系方式",
+    "question": "问题",
+    "of": "/",
+    "leaveContacts": "请留下您的联系方式",
+    "name": "您的姓名",
+    "phone": "联系电话",
+    "email": "电子邮箱（选填）",
+    "phoneOrEmail": "电话或电子邮箱",
+    "submitting": "正在提交...",
+    "submit": "确认提交",
+    "restart": "重新开始",
+    "promoTitle": "想更高效便捷地管理您的企业财税任务？",
+    "promoText": "立即注册平台，实时追踪申报进度，在安全加密通道中流转财务凭证，随时与您的专属会计师高效沟通。",
+    "promoLogin": "登录 / 免费注册",
+    "registerPromoShort": "立即注册，解锁更多智能化财税管理功能！",
+    "attachFiles": "上传相关业务材料附件（选填）",
+    "dropFiles": "将文件拖拽至此处，或点击浏览本地文件",
+    "maxFilesInfo": "支持 PDF, DOCX, XLSX, JPG 格式，单个不超过 {{size}} MB（最多 {{count}} 个文件）",
+    "filesAttached": "*用户已附加文件（将在注册后同步完成归档）*",
+    "filesAttachedAmount": "*已附带文件数量：{{count}} 个*"
+  },
+  "serviceModal": {
+    "validation": {
+      "fillContacts": "请填写您的姓名和联系电话"
+    },
+    "service": "服务项目",
+    "close": "关闭",
+    "about": "服务详情",
+    "includes": "费用包含内容：",
+    "consult": "获取专业咨询",
+    "orderForm": {
+      "title": "提交咨询申请",
+      "descriptionLoggedIn": "请描述您的业务需求，或点击“提交申请”，我们的财务专家将与您取得联系。",
+      "descriptionGuest": "请在下方填写联系方式，以便我们与您沟通业务细节。",
+      "name": "您的称呼 *",
+      "phone": "联系电话 *",
+      "commentPlaceholder": "例如：需要个体工商户/合伙企业的代理记账服务...",
+      "comment": "补充说明",
+      "date": "期望回电时间（选填）",
+      "submitting": "正在提交...",
+      "submit": "提交申请",
+      "authRequired": "提交申请前需要先登录系统。"
+    },
+    "allServices": "全部服务"
+  },
+  "admin": {
+    "leads": {
+      "quizFields": {
+        "form": "Форма бизнеса",
+        "turnover": "Оборот",
+        "employees": "Сотрудники",
+        "needs": "Что требуется",
+        "timeline": "Сроки"
+      },
+      "title": "Входящие заявки",
+      "subtitle": "Обработка новых заявок с сайта и квизов",
+      "noMessage": "Нет сообщения",
+      "quizResults": "Результаты квиза:",
+      "noLeads": "Нет новых заявок",
+      "loadError": "Ошибка загрузки лидов. Пожалуйста, попробуйте позже.",
+      "table": {
+        "date": "Дата",
+        "client": "Клиент",
+        "message": "Сообщение / Результат",
+        "status": "Статус"
+      },
+      "status": {
+        "NEW": "Новая",
+        "IN_PROGRESS": "В работе",
+        "DONE": "Успешно",
+        "CANCELED": "Отказ"
+      }
+    }
+  },
+  "serviceNames": {
+    "Бухгалтерское сопровождение": "Бухгалтерское сопровождение",
+    "Сдача налоговой отчетности": "Сдача налоговой отчетности",
+    "Кадровый учет и расчет зарплаты": "Кадровый учет и расчет зарплаты",
+    "Восстановление бухгалтерского учета": "Восстановление бухгалтерского учета",
+    "Обработка первичной документации": "Обработка первичной документации",
+    "Проверка и анализ контрагентов": "Проверка и анализ контрагентов"
+  },
+  "serviceDescriptions": {
+    "Полный учёт операций, составление отчётности, контроль финансов.": "Полный учёт операций, составление отчётности, контроль финансов.",
+    "Своевременная подготовка и сдача всех обязательных форм в налоговую.": "Своевременная подготовка и сдача всех обязательных форм в налоговую.",
+    "Ведение кадровых документов, табелей, расчет отпускных и больничных.": "Ведение кадровых документов, табелей, расчет отпускных и больничных.",
+    "Приведём в порядок документы, исправим ошибки и пересдадим отчётность.": "Приведём в порядок документы, исправим ошибки и пересдадим отчётность.",
+    "Работа с актами, накладными, счетами и внутренней бухгалтерией.": "Работа с актами, накладными, счетами и внутренней бухгалтерией.",
+    "Юридическая проверка надежности партнеров и клиентов до сделки.": "Юридическая проверка надежности партнеров и клиентов до сделки."
+  },
+  "serviceFeatures": {
+    "Полный учет операций": "Полный учет операций",
+    "Составление отчетности": "Составление отчетности",
+    "Контроль финансов": "Контроль финансов",
+    "Подготовка и сдача отчетности": "Подготовка и сдача отчетности",
+    "Консультации по налогам": "Консультации по налогам",
+    "Работа с налоговыми органами": "Работа с налоговыми органами",
+    "Расчет заработной платы": "Расчет заработной платы",
+    "Кадровое делопроизводство": "Кадровое делопроизводство",
+    "Отчетность по сотрудникам": "Отчетность по сотрудникам",
+    "Аудит текущей базы": "Аудит текущей базы",
+    "Восстановление документов": "Восстановление документов",
+    "Пересдача отчетности": "Пересдача отчетности",
+    "Ввод актов и накладных": "Ввод актов и накладных",
+    "Сверка с контрагентами": "Сверка с контрагентами",
+    "Контроль задолженности": "Контроль задолженности",
+    "Анализ налоговых рисков": "Анализ налоговых рисков",
+    "Проверка по реестрам": "Проверка по реестрам",
+    "Выдача заключения": "Выдача заключения"
+  },
+  "weeklySummary": {
+    "title": "Итоги недели и текущий статус",
+    "subtitle": "Автоматическая сводка показателей с ежедневным обновлением",
+    "currentWeek": "Текущая неделя",
+    "completed": "Завершено",
+    "inProgress": "В процессе",
+    "deadlines": "Дедлайны",
+    "documents": "Документы",
+    "revenue": "Выручка по закрытым задачам"
+  },
+  "reviews_title1": "Что говорят",
+  "reviews_title2": "клиенты",
+  "reviews_desc": "Реальные истории компаний, которые доверили нам свою бухгалтерию.",
+  "kanban": {
+    "allStages": "Все стадии",
+    "sort": {
+      "newest": "Новые первыми",
+      "oldest": "Старые первыми",
+      "deadline_asc": "Дедлайн ↑",
+      "deadline_desc": "Дедлайн ↓"
+    },
+    "unsavedChanges": "У вас есть несохраненные изменения! Вы уверены, что хотите уйти?",
+    "deleteConfirm": "Удалить эту задачу навсегда?",
+    "deleteError": "Ошибка при удалении задачи",
+    "reset": "Сбросить",
+    "of": "из",
+    "tasks": "задач",
+    "noFilteredTasks": "Нет задач по выбранным фильтрам",
+    "resetFilters": "Сбросить фильтры"
+  },
+  "adminTasks.updateError": "Ошибка обновления задач",
+  "adminTasks.exportError": "Ошибка экспорта",
+  "adminTasks.title": "Задачи",
+  "adminTasks.exportCSV": "Экспорт CSV",
+  "adminTasks.newTaskBtn": "+ Новая задача",
+  "adminTemplates.title": "Шаблоны документов",
+  "adminTemplates.subtitle": "Управляйте документами и формами для автоматической генерации. Загружайте файлы .docx с тегами для автозаполнения клиентскими и проектными данными.",
+  "adminTemplates.uploadNew": "Загрузить новый",
+  "adminTemplates.templateName": "Название шаблона",
+  "adminTemplates.templateNamePlaceholder": "Например: Договор оказания услуг",
+  "adminTemplates.description": "Описание",
+  "adminTemplates.descriptionPlaceholder": "Краткое описание шаблона",
+  "adminTemplates.docxFile": "Файл (.docx)",
+  "adminTemplates.filePrompt": "Нажмите или перетащите файл",
+  "adminTemplates.uploading": "Загрузка...",
+  "adminTemplates.saveTemplate": "Сохранить шаблон",
+  "adminTemplates.cheatSheetTitle": "Шпаргалка по тегам",
+  "adminTemplates.cheatSheetDesc": "Вставляйте эти переменные прямо в текст .docx файла. При генерации они заменятся на реальные значения.",
+  "adminTemplates.clientData": "Данные клиента",
+  "adminTemplates.taskData": "Данные задачи",
+  "adminTemplates.systemValues": "Системные значения",
+  "adminTemplates.availableTemplates": "Доступные шаблоны",
+  "adminTemplates.pcs": "шт",
+  "adminTemplates.loadingTemplates": "Загрузка шаблонов...",
+  "adminTemplates.noTemplates": "Нет загруженных шаблонов",
+  "adminTemplates.noTemplatesDesc": "Загрузите первый .docx шаблон, чтобы сотрудники могли быстро генерировать документы.",
+  "sidebar.roles.ADMIN": "Admin",
+  "sidebar.roles.EMPLOYEE": "Employee",
+  "details.taskNotFound": "Задача не найдена",
+  "details.goBack": "Вернуться назад",
+  "more": "Ещё",
+  "clientDashboard.welcomeNew": "Добро пожаловать в ЖАН FINANCE, {{name}}!",
+  "clientDashboard.welcomeDesc": "Мы помогаем вашему бизнесу расти, берем на себя бухгалтерию, налоги и финансы. Создайте свою первую заявку прямо сейчас, и наша команда приступит к работе.",
+  "clientDashboard.createFirstRequest": "Заказать услугу",
+  "clientDashboard.howItWorks": "Как работает процесс?",
+  "clientDashboard.step1Title": "1. Оставьте заявку",
+  "clientDashboard.step1Desc": "Опишите задачу или выберите нужную услугу в личном кабинете.",
+  "clientDashboard.step2Title": "2. Мы берем в работу",
+  "clientDashboard.step2Desc": "Наш специалист изучит запрос и оперативно приступит к выполнению.",
+  "clientDashboard.step3Title": "3. Готовый результат",
+  "clientDashboard.step3Desc": "Вы получаете уведомление и готовые документы, когда задача выполнена.",
+  "clientDashboard.securityGuarantee": "Конфиденциальность и безопасность",
+  "clientDashboard.securityDesc": "Ваши данные под надежной защитой на каждом этапе работы.",
+  "common.start": "Начать",
+  "employeeOverview.statClients": "Мои клиенты",
+  "employeeOverview.statTasks": "Всего задач",
+  "employeeOverview.statInProgress": "В работе",
+  "employeeOverview.statOnReview": "На проверке",
+  "employeeOverview.statDone": "Завершено",
+  "employeeOverview.statAvgTime": "Среднее время (дн)",
+  "employeeOverview.title": "Обзор",
+  "employeeOverview.subtitle": "Ваш рабочий пульт",
+  "employeeOverview.urgentTasks": "Горящие задачи",
+  "employeeOverview.plannedTasks": "План в работе",
+  "employeeOverview.allTasks": "Все задачи",
+  "employeeOverview.noPlannedTasks": "Нет запланированных задач на ближайшее время",
+  "employeeOverview.recentHistory": "Недавно завершенные",
+  "employeeOverview.notifications": "Уведомления",
+  "employeeOverview.noNewNotifications": "Нет новых уведомлений",
+  "calendarWidget.eventsOn": "События на",
+  "calendarWidget.noEvents": "На этот день нет запланированных событий",
+  "calendarWidget.systemTask": "Задача в системе",
+  "actions.delete": "Удалить",
+  "calendarWidget.addEvent": "Добавить событие",
+  "calendarWidget.eventTitle": "Название события",
+  "calendarWidget.eventTitlePlaceholder": "Название события (напр. Оплата ИПН)",
+  "calendarWidget.time": "Время",
+  "calendarWidget.color": "Цвет метки",
+  "calendarWidget.description": "Описание",
+  "calendarWidget.descriptionPlaceholder": "Описание (необязательно)",
+  "calendarWidget.save": "Сохранить",
+  "calendarWidget.saving": "Сохранение...",
+  "taskPool.error.assign": "Не удалось назначить задачу",
+  "taskPool.error.load": "Ошибка загрузки пула задач",
+  "taskPool.actions.retry": "Повторить",
+  "taskPool.columns.assignee": "Исполнитель",
+  "taskPool.noClient": "Не указан",
+  "taskPool.unassigned": "Не назначен",
+  "locale": "ru-RU",
+  "taskPool.no": "Нет",
+  "contactForm.title": "Связаться с нами",
+  "contactForm.success.title": "Спасибо!",
+  "contactForm.success.text": "Мы скоро свяжемся с вами для обсуждения деталей.",
+  "contactForm.fields.name.label": "Ваше имя",
+  "contactForm.fields.name.placeholder": "Имя Фамилия",
+  "contactForm.fields.phone.label": "Телефон",
+  "contactForm.fields.email.label": "Email (необязательно)",
+  "contactForm.fields.email.placeholder": "name@example.com",
+  "contactForm.fields.message.label": "描述",
+  "contactForm.fields.message.placeholder": "Расскажите, чем мы можем вам помочь...",
+  "contactForm.buttons.submitting": "Отправляем...",
+  "contactForm.buttons.submit": "Отправить заявку",
+  "contactForm.error.default": "Не удалось отправить заявку",
+  "serviceModal.validation.fillContacts": "Пожалуйста, заполните имя и телефон",
+  "serviceModal.service": "Услуга",
+  "serviceModal.close": "Закрыть",
+  "serviceModal.about": "О сервисе",
+  "serviceModal.includes": "Что входит в стоимость:",
+  "serviceModal.orderForm.title": "描述",
+  "serviceModal.orderForm.descriptionLoggedIn": "Опишите задачу или нажмите «Оставить заявку», и наш специалист свяжется с вами.",
+  "serviceModal.orderForm.descriptionGuest": "Заполните форму ниже, чтобы мы могли связаться с вами и обсудить детали.",
+  "serviceModal.orderForm.namePlaceholder": "Иван Иванов",
+  "serviceModal.orderForm.name": "Как к вам обращаться? *",
+  "serviceModal.orderForm.phone": "Номер телефона *",
+  "serviceModal.orderForm.commentPlaceholder": "Например: нужно ведение ИП на УСН...",
+  "serviceModal.orderForm.comment": "Дополнительный комментарий",
+  "serviceModal.orderForm.date": "Желаемая дата звонка (необязательно)",
+  "serviceModal.files.label": "Прикрепить файлы",
+  "serviceModal.files.maxReached": "Максимум файлов",
+  "serviceModal.files.attach": "Выбрать файлы",
+  "serviceModal.files.hint": "PDF, XLSX, DOCX, JPG, PNG. До 10 МБ, макс. 5 файлов.",
+  "serviceModal.orderForm.submitting": "Отправляем...",
+  "serviceModal.orderForm.submit": "Оставить заявку",
+  "serviceModal.orderForm.authRequired": "Для отправки заявки потребуется авторизация.",
+  "serviceModal.allServices": "Все услуги",
+  "quiz.resultsHeader": "Результаты опроса:\\n",
+  "quiz.questionResult": "Вопрос:",
+  "quiz.answerResult": "Ответ:",
+  "quiz.filesAttachedAmount": "*Прикреплено файлов: {{count}}*",
+  "quiz.title": "Поможем подобрать решение под ваш бизнес",
+  "quiz.subtitle": "Ответьте на 5 вопросов — в конце появится форма для отправки.",
+  "quiz.success": "Спасибо! Мы свяжемся с вами в ближайшее время.",
+  "quiz.promoTitle": "Хотите удобнее управлять своими задачами?",
+  "quiz.promoText": "Зарегистрируйтесь на платформе, чтобы отслеживать статус заявок, обмениваться документами в безопасном чате и всегда быть на связи с личным бухгалтером.",
+  "quiz.promoLogin": "Войти / Зарегистрироваться",
+  "quiz.restart": "Пройти заново",
+  "quiz.prev": "Назад",
+  "quiz.nextToForm": "Далее к форме",
+  "quiz.next": "Далее",
+  "quiz.question": "Вопрос",
+  "quiz.of": "из",
+  "quiz.registerPromoShort": "Зарегистрируйтесь, чтобы получить больше возможностей!",
+  "quiz.leaveContacts": "Оставьте контакты",
+  "quiz.attachFiles": "Прикрепить файлы (необязательно)",
+  "quiz.dropFiles": "Перетащите файлы сюда или нажмите для выбора",
+  "quiz.name": "Имя",
+  "quiz.phone": "Телефон",
+  "quiz.email": "Email (необязательно)",
+  "quiz.submitting": "Отправка...",
+  "quiz.submit": "Отправить",
+  "weeklySummary.title": "Итоги недели и текущий статус",
+  "weeklySummary.subtitle": "Автоматическая сводка показателей с ежедневным обновлением",
+  "weeklySummary.currentWeek": "Текущая неделя",
+  "weeklySummary.completed": "Завершено",
+  "weeklySummary.inProgress": "В процессе",
+  "weeklySummary.deadlines": "Дедлайны",
+  "weeklySummary.documents": "Документы",
+  "weeklySummary.revenue": "Выручка по закрытым задачам",
+  "notifications.markAllAsRead": "Прочитать все",
+  "notifications.confirm": "Отметить прочитанным",
+  "offices.title1": "Наши",
+  "offices.title2": "Офисы",
+  "offices.shymkent_title": "Офис в г. Шымкент",
+  "offices.almaty_title": "Офис в г. Алматы",
+  "search.noResults": "Ничего не найдено",
+  "search.categories.tasks": "Задачи",
+  "search.categories.courses": "Курсы",
+  "search.status.published": "Опубликован",
+  "search.status.draft": "Черновик",
+  "search.categories.lessons": "Уроки",
+  "search.lessonType": "Тип:",
+  "search.categories.users": "Пользователи",
+  "kanban.allStages": "Все стадии",
+  "kanban.sort.newest": "Новые первыми",
+  "kanban.sort.oldest": "Старые первыми",
+  "kanban.sort.deadline_asc": "Дедлайн ↑",
+  "kanban.sort.deadline_desc": "Дедлайн ↓",
+  "kanban.unsavedChanges": "У вас есть несохраненные изменения! Вы уверены, что хотите уйти?",
+  "kanban.deleteConfirm": "Удалить эту задачу навсегда?",
+  "kanban.deleteError": "Ошибка при удалении задачи",
+  "kanban.reset": "Сбросить",
+  "kanban.of": "из",
+  "kanban.tasks": "задач",
+  "kanban.noFilteredTasks": "Нет задач по выбранным фильтрам",
+  "kanban.resetFilters": "Сбросить фильтры",
+  "errors.taskNotFound": "Task not found",
+  "kanban.noPipelines": "Воронки не настроены",
+  "kanban.currency": "тенге",
+  "kanban.rejectedTooltip": "Сотрудник отказался от задачи",
+  "kanban.rejected": "Отказ",
+  "kanban.call": "Позвонить:",
+  "kanban.phoneNotSpecified": "Телефон не указан",
+  "kanban.emailAction": "Написать:",
+  "kanban.emailNotSpecified": "Email не указан",
+  "kanban.chatWith": "Чат с",
+  "kanban.clientNotSpecified": "Клиент не указан",
+  "kanban.noClient": "Без клиента",
+  "kanban.addDeal": "+ Дело",
+  "taskCreate.error": "Ошибка при создании задачи",
+  "taskCreate.title": "Новая заявка",
+  "taskCreate.subject": "Суть обращения",
+  "taskCreate.subjectPlaceholder": "Например: Справка о доходах, Бухгалтерское сопровождение...",
+  "taskCreate.details": "Детали (необязательно)",
+  "taskCreate.detailsPlaceholder": "Опишите задачу подробнее...",
+  "taskCreate.deadline": "Желаемый срок (Дедлайн)",
+  "taskCreate.linkedServices": "Связанные услуги",
+  "taskCreate.subtasks": "Подзадачи (чек-лист)",
+  "taskCreate.addSubtaskPlaceholder": "Добавить пункт чек-листа...",
+  "taskCreate.attachments": "Вложения",
+  "taskCreate.attachFiles": "Прикрепить файлы",
+  "taskCreate.cancel": "Отмена",
+  "taskCreate.submitting": "Создание...",
+  "taskCreate.submit": "Создать заявку",
+  "team_title": "Команда",
+  "team_subtitle": "экспертов",
+  "trust_title1": "Ваш бизнес",
+  "trust_title2": "под надежной защитой",
+  "trust_desc": "Мы берем на себя полную финансовую ответственность за результаты нашей работы. Наши клиенты не платят штрафы за ошибки в учете.",
+  "courseCertificate": {
+    "download": "Скачать сертификат",
+    "certificate": "СЕРТИФИКАТ",
+    "subtitle": "об успешном окончании курса",
+    "confirms": "Настоящий сертификат подтверждает, что",
+    "completed": "успешно завершил(а) обучение по программе",
+    "issueDate": "Дата выдачи"
+  },
+  "cookie": {
+    "ariaLabel": "Cookie 使用许可同意",
+    "title": "我们使用 Cookie",
+    "close": "关闭 Cookie 通知",
+    "description": "我们使用保障系统安全与身份认证所必需的技术 Cookie，以及用于保存语言偏好的功能性 Cookie。",
+    "policyLink": "详情请参阅 Cookie 政策",
+    "acceptAll": "全部接受",
+    "essentialOnly": "仅保留必要项"
+  }
 }

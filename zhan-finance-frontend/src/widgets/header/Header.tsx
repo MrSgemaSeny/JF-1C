@@ -48,7 +48,7 @@ export function Header() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link to={ROUTES.HOME} className="flex items-center group relative z-50 focus:outline-none" aria-label="На главную">
+          <Link to={ROUTES.HOME} className="flex items-center group relative z-50 focus:outline-none" aria-label={t('publicNav.home', { defaultValue: 'На главную' })}>
             <BrandLogo className="h-8 md:h-9 w-auto group-hover:opacity-85 transition-opacity" />
           </Link>
 

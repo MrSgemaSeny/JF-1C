@@ -236,33 +236,68 @@
   },
   "documents": {
     "title": "Documents",
-    "subtitle": "Manage your secure documents",
-    "uploadTitle": "Click or drag a file to upload",
-    "uploadSubtitle": "Supports PDF, Word, Excel up to 20MB",
-    "uploading": "Uploading document...",
-    "emptyTitle": "No documents yet",
-    "emptySubtitle": "Upload your first document to get started",
-    "confirmDelete": "Are you sure you want to delete this document?",
-    "downloadTitle": "Download",
-    "deleteTitle": "Delete",
-    "fileType": "Type",
-    "confirmError": "Document signature error",
-    "zipError": "Error downloading ZIP archive",
-    "formingZip": "Forming ZIP...",
-    "downloadSelectedZip": "Download selected ({{count}}) as ZIP",
-    "dragOrClick": "Drag file or click to upload",
-    "formats": "PDF, DOCX, XLSX, PNG, JPG up to 20 MB",
-    "file": "File",
-    "signatureStatus": "Signature status",
-    "size": "Size",
-    "actions": "Actions",
-    "signed": "Signed",
-    "confirming": "Confirming...",
-    "confirm": "Confirm",
-    "downloadFile": "Download document",
-    "delete": "Delete",
-    "emptyCategory": "No documents in this category",
-    "emptyCategoryDesc": "Upload a new file or select another category"
+    "subtitle": "Centralized management of your documents, acts, and contracts",
+    "searchPlaceholder": "Search by file name...",
+    "viewMode": {
+      "table": "Table",
+      "grid": "Grid"
+    },
+    "metrics": {
+      "total": "Total documents",
+      "pending": "Awaiting signature",
+      "confirmed": "Signed"
+    },
+    "folders": {
+      "all": "All documents",
+      "acts": "Acts of Work",
+      "reports": "Reports",
+      "contracts": "Contracts",
+      "other": "Other"
+    },
+    "upload": {
+      "dragOrClick": "Drag and drop file or click to upload",
+      "uploading": "Uploading document...",
+      "formats": "PDF, DOCX, XLSX, PNG, JPG, ZIP up to 20 MB",
+      "selectFile": "Upload file"
+    },
+    "table": {
+      "file": "File name",
+      "type": "Type",
+      "signature": "Signature status",
+      "size": "Size",
+      "actions": "Actions"
+    },
+    "uploaderFilter": {
+      "all": "All sources",
+      "company": "From company (needs signature)",
+      "client": "Uploaded by you"
+    },
+    "status": {
+      "signed": "Signed",
+      "confirm": "Confirm",
+      "confirming": "Confirming...",
+      "clientUploaded": "Uploaded by you"
+    },
+    "actions": {
+      "download": "Download",
+      "delete": "Delete",
+      "downloadZip": "Download selected ({{count}}) as ZIP",
+      "formingZip": "Forming ZIP...",
+      "deselect": "Deselect"
+    },
+    "empty": {
+      "title": "No documents found",
+      "description": "Upload your first file or change your search query"
+    },
+    "notifications": {
+      "confirmDelete": "Are you sure you want to delete this document?",
+      "deleteSuccess": "Document deleted successfully",
+      "deleteError": "Failed to delete document",
+      "downloadError": "Failed to download document",
+      "confirmSuccess": "Document confirmed and signed successfully",
+      "confirmError": "Failed to confirm document",
+      "zipError": "Failed to generate ZIP archive"
+    }
   },
   "settings": {
     "title": "Profile Settings",
@@ -1247,7 +1282,12 @@
     "registerPromoShort": "Register to get more features!",
     "attachFiles": "Attach files (optional)",
     "dropFiles": "Drop files here or click to select",
-    "filesAttached": "*User attached files (waiting for upload after registration)*"
+    "filesAttached": "*User attached files (waiting for upload after registration)*",
+    "phone": "Phone",
+    "email": "Email (optional)",
+    "submitting": "Sending...",
+    "filesAttachedAmount": "*Attached files: {{count}}*",
+    "maxFilesInfo": "PDF, DOCX, XLSX, JPG up to {{size}} MB (max {{count}})"
   },
   "serviceModal": {
     "validation": {
@@ -1400,71 +1440,6 @@
   "adminTemplates.noTemplatesDesc": "Upload your first .docx template so employees can quickly generate documents.",
   "sidebar.roles.ADMIN": "Admin",
   "sidebar.roles.EMPLOYEE": "Employee",
-  "documents": {
-    "title": "Documents",
-    "subtitle": "Centralized management of your documents, acts, and contracts",
-    "searchPlaceholder": "Search by file name...",
-    "viewMode": {
-      "table": "Table",
-      "grid": "Grid"
-    },
-    "metrics": {
-      "total": "Total documents",
-      "pending": "Awaiting signature",
-      "confirmed": "Signed"
-    },
-    "folders": {
-      "all": "All documents",
-      "acts": "Acts of Work",
-      "reports": "Reports",
-      "contracts": "Contracts",
-      "other": "Other"
-    },
-    "upload": {
-      "dragOrClick": "Drag and drop file or click to upload",
-      "uploading": "Uploading document...",
-      "formats": "PDF, DOCX, XLSX, PNG, JPG, ZIP up to 20 MB",
-      "selectFile": "Upload file"
-    },
-    "table": {
-      "file": "File name",
-      "type": "Type",
-      "signature": "Signature status",
-      "size": "Size",
-      "actions": "Actions"
-    },
-    "uploaderFilter": {
-      "all": "All sources",
-      "company": "From company (needs signature)",
-      "client": "Uploaded by you"
-    },
-    "status": {
-      "signed": "Signed",
-      "confirm": "Confirm",
-      "confirming": "Confirming...",
-      "clientUploaded": "Uploaded by you"
-    },
-    "actions": {
-      "download": "Download",
-      "delete": "Delete",
-      "downloadZip": "Download selected ({{count}}) as ZIP",
-      "formingZip": "Forming ZIP...",
-      "deselect": "Deselect"
-    },
-    "empty": {
-      "title": "No documents found",
-      "description": "Upload your first file or change your search query"
-    },
-    "notifications": {
-      "confirmDelete": "Are you sure you want to delete this document?",
-      "deleteSuccess": "Document deleted successfully",
-      "deleteError": "Failed to delete document",
-      "downloadError": "Failed to download document",
-      "confirmSuccess": "Document confirmed and signed successfully",
-      "confirmError": "Failed to confirm document",
-      "zipError": "Failed to generate ZIP archive"
-    }
-  },
   "details.taskNotFound": "Task not found",
   "details.goBack": "Go back",
   "more": "More",
@@ -1652,5 +1627,14 @@
     "confirms": "This certificate confirms that",
     "completed": "has successfully completed the program",
     "issueDate": "Date of issue"
+  },
+  "cookie": {
+    "ariaLabel": "Cookie consent",
+    "title": "We use cookies",
+    "close": "Close cookie notification",
+    "description": "We use essential technical cookies for security and authentication, as well as functional cookies to remember your language preference.",
+    "policyLink": "Learn more in Cookie Policy",
+    "acceptAll": "Accept all",
+    "essentialOnly": "Essential only"
   }
 }

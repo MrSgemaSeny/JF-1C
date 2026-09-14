@@ -239,33 +239,68 @@
   },
   "documents": {
     "title": "Документы",
-    "subtitle": "Управление вашими документами",
-    "uploadTitle": "Нажмите или перетащите файл",
-    "uploadSubtitle": "Поддерживаются PDF, Excel, Word до 20МБ",
-    "uploading": "Загрузка документа...",
-    "emptyTitle": "Пока нет документов",
-    "emptySubtitle": "Загрузите первый документ для начала работы",
-    "confirmDelete": "Вы уверены, что хотите удалить этот документ?",
-    "downloadTitle": "Скачать",
-    "deleteTitle": "Удалить",
-    "fileType": "Тип",
-    "confirmError": "Ошибка подписи документа",
-    "zipError": "Ошибка скачивания ZIP архива",
-    "formingZip": "Формируем ZIP...",
-    "downloadSelectedZip": "Скачать выбранные ({{count}}) в ZIP",
-    "dragOrClick": "Перетащите файл или нажмите для загрузки",
-    "formats": "PDF, DOCX, XLSX, PNG, JPG до 20 МБ",
-    "file": "Файл",
-    "signatureStatus": "Статус подписи",
-    "size": "Размер",
-    "actions": "Действия",
-    "signed": "Подписано",
-    "confirming": "Подтверждаем...",
-    "confirm": "Подтвердить",
-    "downloadFile": "Скачать документ",
-    "delete": "Удалить",
-    "emptyCategory": "Нет документов в этой категории",
-    "emptyCategoryDesc": "Загрузите новый файл или выберите другую категорию"
+    "subtitle": "Централизованное управление вашими документами, актами и договорами",
+    "searchPlaceholder": "Поиск по названию файла...",
+    "viewMode": {
+      "table": "Таблица",
+      "grid": "Сетка"
+    },
+    "metrics": {
+      "total": "Всего документов",
+      "pending": "Ожидают подписи",
+      "confirmed": "Подписано"
+    },
+    "folders": {
+      "all": "Все документы",
+      "acts": "Акты ВР",
+      "reports": "Отчеты",
+      "contracts": "Договоры",
+      "other": "Разное"
+    },
+    "upload": {
+      "dragOrClick": "Перетащите файл или нажмите для загрузки",
+      "uploading": "Загрузка документа...",
+      "formats": "PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ",
+      "selectFile": "Загрузить файл"
+    },
+    "table": {
+      "file": "Название файла",
+      "type": "Тип",
+      "signature": "Статус подписи",
+      "size": "Размер",
+      "actions": "Действия"
+    },
+    "uploaderFilter": {
+      "all": "Все источники",
+      "company": "От компании (на подпись)",
+      "client": "Загружено вами"
+    },
+    "status": {
+      "signed": "Подписано",
+      "confirm": "Подтвердить",
+      "confirming": "Подтверждаем...",
+      "clientUploaded": "Загружено вами"
+    },
+    "actions": {
+      "download": "Скачать",
+      "delete": "Удалить",
+      "downloadZip": "Скачать выбранные ({{count}}) в ZIP",
+      "formingZip": "Формируем ZIP...",
+      "deselect": "Снять выделение"
+    },
+    "empty": {
+      "title": "Документы не найдены",
+      "description": "Загрузите первый файл или измените параметры поиска"
+    },
+    "notifications": {
+      "confirmDelete": "Вы уверены, что хотите удалить этот документ?",
+      "deleteSuccess": "Документ успешно удален",
+      "deleteError": "Не удалось удалить документ",
+      "downloadError": "Ошибка при скачивании документа",
+      "confirmSuccess": "Документ успешно подтвержден и подписан",
+      "confirmError": "Ошибка при подтверждении документа",
+      "zipError": "Ошибка при формировании ZIP-архива"
+    }
   },
   "settings": {
     "title": "Настройки профиля",
@@ -1252,7 +1287,12 @@
     "registerPromoShort": "Зарегистрируйтесь, чтобы получить больше возможностей!",
     "attachFiles": "Прикрепить файлы (необязательно)",
     "dropFiles": "Перетащите файлы сюда или нажмите для выбора",
-    "filesAttached": "*Пользователь прикрепил файлы (ожидают загрузки после регистрации)*"
+    "filesAttached": "*Пользователь прикрепил файлы (ожидают загрузки после регистрации)*",
+    "phone": "Телефон",
+    "email": "Email (необязательно)",
+    "submitting": "Отправка...",
+    "filesAttachedAmount": "*Прикреплено файлов: {{count}}*",
+    "maxFilesInfo": "PDF, DOCX, XLSX, JPG до {{size}} МБ (макс. {{count}})"
   },
   "serviceModal": {
     "validation": {
@@ -1401,71 +1441,6 @@
   "adminTemplates.noTemplatesDesc": "Загрузите первый .docx шаблон, чтобы сотрудники могли быстро генерировать документы.",
   "sidebar.roles.ADMIN": "Admin",
   "sidebar.roles.EMPLOYEE": "Employee",
-  "documents": {
-    "title": "Документы",
-    "subtitle": "Централизованное управление вашими документами, актами и договорами",
-    "searchPlaceholder": "Поиск по названию файла...",
-    "viewMode": {
-      "table": "Таблица",
-      "grid": "Сетка"
-    },
-    "metrics": {
-      "total": "Всего документов",
-      "pending": "Ожидают подписи",
-      "confirmed": "Подписано"
-    },
-    "folders": {
-      "all": "Все документы",
-      "acts": "Акты ВР",
-      "reports": "Отчеты",
-      "contracts": "Договоры",
-      "other": "Разное"
-    },
-    "upload": {
-      "dragOrClick": "Перетащите файл или нажмите для загрузки",
-      "uploading": "Загрузка документа...",
-      "formats": "PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ",
-      "selectFile": "Загрузить файл"
-    },
-    "table": {
-      "file": "Название файла",
-      "type": "Тип",
-      "signature": "Статус подписи",
-      "size": "Размер",
-      "actions": "Действия"
-    },
-    "uploaderFilter": {
-      "all": "Все источники",
-      "company": "От компании (на подпись)",
-      "client": "Загружено вами"
-    },
-    "status": {
-      "signed": "Подписано",
-      "confirm": "Подтвердить",
-      "confirming": "Подтверждаем...",
-      "clientUploaded": "Загружено вами"
-    },
-    "actions": {
-      "download": "Скачать",
-      "delete": "Удалить",
-      "downloadZip": "Скачать выбранные ({{count}}) в ZIP",
-      "formingZip": "Формируем ZIP...",
-      "deselect": "Снять выделение"
-    },
-    "empty": {
-      "title": "Документы не найдены",
-      "description": "Загрузите первый файл или измените параметры поиска"
-    },
-    "notifications": {
-      "confirmDelete": "Вы уверены, что хотите удалить этот документ?",
-      "deleteSuccess": "Документ успешно удален",
-      "deleteError": "Не удалось удалить документ",
-      "downloadError": "Ошибка при скачивании документа",
-      "confirmSuccess": "Документ успешно подтвержден и подписан",
-      "confirmError": "Ошибка при подтверждении документа",
-      "zipError": "Ошибка при формировании ZIP-архива"
-    }
-  },
   "details.taskNotFound": "Задача не найдена",
   "details.goBack": "Вернуться назад",
   "more": "Ещё",
@@ -1653,5 +1628,14 @@
     "confirms": "Настоящий сертификат подтверждает, что",
     "completed": "успешно завершил(а) обучение по программе",
     "issueDate": "Дата выдачи"
+  },
+  "cookie": {
+    "ariaLabel": "Согласие на использование файлов cookie",
+    "title": "Мы используем файлы cookie",
+    "close": "Закрыть уведомление о cookie",
+    "description": "Мы используем обязательные технические cookies для безопасности и авторизации, а также функциональные для сохранения языка.",
+    "policyLink": "Подробнее в Политике cookies",
+    "acceptAll": "Принять всё",
+    "essentialOnly": "Только обязательные"
   }
 }

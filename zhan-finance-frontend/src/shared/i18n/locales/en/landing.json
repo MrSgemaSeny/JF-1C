@@ -1,11 +1,29 @@
 {
   "faq": [
-    { "q": "How to get started?", "a": "Leave a request on the website or call us — we will prepare an implementation plan and cost estimate." },
-    { "q": "What documents are needed?", "a": "Depends on the service: usually a contract, statements, contracts with counterparties, and primary documentation are needed." },
-    { "q": "Can I connect remotely?", "a": "Yes — most processes can be organized remotely using secure channels." },
-    { "q": "What financial liability do you bear?", "a": "We bear 100% financial liability under our SLA contract. Any penalties or fines due to our fault are fully reimbursed." },
-    { "q": "How do we transfer primary documents?", "a": "Via the platform portal, Telegram/WhatsApp, or courier. All documents are digitized and posted to 1C on the same day." },
-    { "q": "What happens during a tax audit or SRC notification?", "a": "We handle all communications with tax authorities: analyzing the notice, preparing official responses, and defending your business interests." }
+    {
+      "q": "How to get started?",
+      "a": "Leave a request on the website or call us — we will prepare an implementation plan and cost estimate."
+    },
+    {
+      "q": "What documents are needed?",
+      "a": "Depends on the service: usually a contract, statements, contracts with counterparties, and primary documentation are needed."
+    },
+    {
+      "q": "Can I connect remotely?",
+      "a": "Yes — most processes can be organized remotely using secure channels."
+    },
+    {
+      "q": "What financial liability do you bear?",
+      "a": "We bear 100% financial liability under our SLA contract. Any penalties or fines due to our fault are fully reimbursed."
+    },
+    {
+      "q": "How do we transfer primary documents?",
+      "a": "Via the platform portal, Telegram/WhatsApp, or courier. All documents are digitized and posted to 1C on the same day."
+    },
+    {
+      "q": "What happens during a tax audit or SRC notification?",
+      "a": "We handle all communications with tax authorities: analyzing the notice, preparing official responses, and defending your business interests."
+    }
   ],
   "faq_title": "Frequently Asked Questions",
   "faq_still_questions": "Still have questions?",
@@ -41,7 +59,7 @@
       "price": "from 30,000 ₸/mo",
       "f0": "Up to 15 primary documents per month",
       "f1": "Submission of tax form 910.00",
-      "f2": "IE tax calculations (OPV, СО, ВОСМС)",
+      "f2": "IE tax calculations (OPV, SO, VOSMS)",
       "f3": "Accountant consultations in chat"
     },
     {
@@ -74,9 +92,18 @@
   ],
   "stats": {
     "trust": [
-      { "value": "12+", "label": "Years in business" },
-      { "value": "350+", "label": "Happy clients" },
-      { "value": "2 bln ₸", "label": "Saved for clients" }
+      {
+        "value": "12+",
+        "label": "Years in business"
+      },
+      {
+        "value": "350+",
+        "label": "Happy clients"
+      },
+      {
+        "value": "2 bln ₸",
+        "label": "Saved for clients"
+      }
     ],
     "about": [
       {

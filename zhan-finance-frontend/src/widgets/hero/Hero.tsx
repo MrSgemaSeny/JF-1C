@@ -52,7 +52,7 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 pt-2 sm:pt-4"
             >
-              <a href="#solution-picker" className="group flex items-center justify-center gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all hover:-translate-y-1 shadow-xl shadow-brand-green/20 text-sm sm:text-base">
+              <a href="#contact" className="group flex items-center justify-center gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all hover:-translate-y-1 shadow-xl shadow-brand-green/20 text-sm sm:text-base">
                 {t('hero.cta')}
                 <ArrowUpRight className="w-5 h-5 group-hover:rotate-45 transition-transform" />
               </a>

@@ -221,7 +221,7 @@ export function SolutionPicker() {
                     {t('quiz.dropFiles', { defaultValue: 'Перетащите файлы сюда или нажмите для выбора' })}
                   </p>
                   <p className="text-xs text-brand-green/50 mt-1">
-                    PDF, DOCX, XLSX, JPG до 10 МБ (макс. {MAX_FILES})
+                    {t('quiz.maxFilesInfo', { count: MAX_FILES, size: MAX_FILE_SIZE_MB, defaultValue: `PDF, DOCX, XLSX, JPG до ${MAX_FILE_SIZE_MB} МБ (макс. ${MAX_FILES})` })}
                   </p>
                 </div>
                 {files.length > 0 && (
