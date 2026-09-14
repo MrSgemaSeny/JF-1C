@@ -16,7 +16,7 @@ export function ServiceModal({
   onClose,
   onConsult,
 }: ServiceModalProps) {
-  const { t } = useTranslation(['modals', 'landing', 'common']);
+  const { t } = useTranslation(['common', 'landing']);
 
   useEscapeKey(onClose);
 
@@ -50,7 +50,7 @@ export function ServiceModal({
                 {t('serviceModal.service', { defaultValue: 'Услуга' })}
               </p>
               <h3 className="text-xl sm:text-2xl font-black text-brand-green tracking-tight leading-tight">
-                {t(`serviceNames.${item.title}`, { defaultValue: item.title })}
+                {t(`service.${item.id}.title`, { defaultValue: item.title })}
               </h3>
             </div>
             <button
@@ -75,7 +75,7 @@ export function ServiceModal({
                 {t('serviceModal.about', { defaultValue: 'О сервисе' })}
               </h4>
               <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
-                {t(`serviceDescriptions.${item.description}`, { defaultValue: item.description })}
+                {t(`service.${item.id}.description`, { defaultValue: item.description })}
               </p>
             </div>
 
@@ -84,11 +84,11 @@ export function ServiceModal({
                 {t('serviceModal.includes', { defaultValue: 'Что входит в стоимость:' })}
               </h5>
               <ul className="space-y-2.5 text-brand-green/85 font-medium">
-                {item.features.map((feature) => (
+                {item.features.map((feature, featureIndex) => (
                   <li key={feature} className="flex items-start gap-2.5 text-sm sm:text-base">
                     <CheckCircle2 className="w-5 h-5 text-brand-green shrink-0 mt-0.5" />
                     <span className="leading-snug">
-                      {t(`serviceFeatures.${feature}`, { defaultValue: feature })}
+                      {t(`service.${item.id}.features.${featureIndex}`, { defaultValue: feature })}
                     </span>
                   </li>
                 ))}
@@ -109,7 +109,7 @@ export function ServiceModal({
                 onClick={handleConsult}
                 className="w-full sm:w-auto px-6 py-3 rounded-xl bg-brand-green text-brand-beige font-bold uppercase tracking-wider text-xs hover:bg-brand-green/90 transition-all text-center shadow-md shadow-brand-green/20"
               >
-                {t('services.hero.action', { defaultValue: 'Получить консультацию' })}
+                {t('serviceModal.consult', { defaultValue: 'Получить консультацию' })}
               </button>
             </div>
           </div>

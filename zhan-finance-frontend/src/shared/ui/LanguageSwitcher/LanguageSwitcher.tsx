@@ -6,7 +6,7 @@ const LANGUAGES = [
   { code: 'ru', label: 'RU' },
   { code: 'kk', label: 'KZ' },
   { code: 'en', label: 'EN' },
-  { code: 'zh', label: 'ZH' },
+  { code: 'zh', label: '中文' },
 ] as const;
 
 export const LanguageSwitcher = () => {

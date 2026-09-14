@@ -1117,6 +1117,15 @@
         "2": "Cooperation recommendations"
       }
     },
+    "99": {
+      "title": "Full Control & Liability",
+      "description": "100% financial liability under SLA contract. Penalties caused by our fault are compensated by us.",
+      "features": {
+        "0": "Financial guarantee under SLA",
+        "1": "24/7 State Revenue personal account monitoring",
+        "2": "Desk audit tax defense"
+      }
+    },
     "s1": {
       "title": "Accounting Support",
       "description": "Full transaction accounting, reporting, financial control.",
@@ -1248,6 +1257,7 @@
     "close": "Close",
     "about": "About the service",
     "includes": "What is included:",
+    "consult": "Get Consultation",
     "orderForm": {
       "title": "Leave a request",
       "descriptionLoggedIn": "Describe the task or click \"Leave a request\", and our specialist will contact you.",
