@@ -13,7 +13,6 @@ import { Team } from '@/widgets/team/Team';
 import { Offices } from '@/widgets/offices/Offices';
 import { FaqContact } from '@/widgets/faq-contact';
 import { Footer } from '@/widgets/footer/Footer';
-import { SolutionPicker } from '@/features/solution-picker/SolutionPicker';
 
 export function HomePage() {
   return (
@@ -40,7 +39,6 @@ export function HomePage() {
             <PricingTable />
           </Container>
         </Section>
-        <SolutionPicker />
         <Reviews />
         <Team />
         <Offices />

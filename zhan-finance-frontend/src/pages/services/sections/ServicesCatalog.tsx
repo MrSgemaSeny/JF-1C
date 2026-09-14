@@ -117,14 +117,39 @@ export function ServicesCatalog() {
         ) : (() => {
           const isOneTime = (s: ServiceDto) => {
             const id = Number(s.id);
-            if (id === 2 || id === 4 || id === 6) return true;
+            if (id === 2 || id === 3 || id === 4 || id === 6) return true;
             const title = (s.title || '').toLowerCase();
-            return title.includes('сдача') || title.includes('восстановление') || title.includes('проверка') || title.includes('разов');
+            return (
+              title.includes('сдача') ||
+              title.includes('кадров') ||
+              title.includes('зарплат') ||
+              title.includes('восстановление') ||
+              title.includes('проверка') ||
+              title.includes('разов')
+            );
           };
           const oneTimeList = (services ?? []).filter(isOneTime);
           const outsourceList = (services ?? []).filter((s) => !isOneTime(s));
 
-          const renderCard = (s: ServiceDto, i: number) => (
+          const fullOutsourceList: ServiceDto[] = [
+            ...outsourceList,
+            {
+              id: 99,
+              title: 'Полный контроль и ответственность',
+              description: '100% финансовая ответственность по договору SLA. Штрафы по нашей вине компенсируем мы.',
+              price: 'По подписке',
+              imageUrl: null,
+              isHighlighted: true,
+              features: [
+                'Финансовая гарантия по SLA',
+                'Контроль лицевых счетов в КГД 24/7',
+                'Защита при камеральном контроле',
+              ],
+              createdAt: new Date().toISOString(),
+            },
+          ];
+
+          const renderCard = (s: ServiceDto, i: number, isOutsourceCol: boolean) => (
             <motion.div
               key={s.id}
               initial={{ opacity: 0, y: 8 }}
@@ -145,9 +170,9 @@ export function ServicesCatalog() {
               <div className="w-full">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <h4 className="text-2xl font-black text-brand-green leading-tight">{t(`service.${s.id}.title`, { defaultValue: s.title })}</h4>
-                  {s.price && (
+                  {isOutsourceCol && (
                     <span className="text-xs font-black text-brand-green bg-brand-green/10 px-3 py-1 rounded-full whitespace-nowrap shrink-0">
-                      {s.price}
+                      По подписке
                     </span>
                   )}
                 </div>
@@ -180,11 +205,11 @@ export function ServicesCatalog() {
                   </div>
                   <div>
                     <h3 className="text-xl font-black uppercase tracking-tight text-white">Разовые услуги</h3>
-                    <p className="text-xs text-brand-beige/80 font-medium">Точечные задачи, сдача отчетности и восстановление учета</p>
+                    <p className="text-xs text-brand-beige/80 font-medium">Сдача отчетности, расчет зарплаты, восстановление учета и проверка контрагентов</p>
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {oneTimeList.map((s, i) => renderCard(s, i))}
+                  {oneTimeList.map((s, i) => renderCard(s, i, false))}
                 </div>
               </div>
 
@@ -196,11 +221,11 @@ export function ServicesCatalog() {
                   </div>
                   <div>
                     <h3 className="text-xl font-black uppercase tracking-tight text-white">Аутсорс-бухгалтерия</h3>
-                    <p className="text-xs text-brand-beige/80 font-medium">Комплексное регулярное абонентское обслуживание под ключ</p>
+                    <p className="text-xs text-brand-beige/80 font-medium">Полный контроль, 100% ответственность по SLA и регулярное ведение</p>
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {outsourceList.map((s, i) => renderCard(s, i))}
+                  {fullOutsourceList.map((s, i) => renderCard(s, i, true))}
                 </div>
               </div>
             </div>

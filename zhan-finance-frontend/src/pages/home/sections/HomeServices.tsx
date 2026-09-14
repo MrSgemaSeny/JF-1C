@@ -139,16 +139,44 @@ export function HomeServices() {
             <Loader2 className="w-8 h-8 animate-spin text-brand-green/40" />
           </div>
         ) : (() => {
+          // Столбец 1: Разовые услуги (включая расчет зп, сдачу отчетов, восстановление, проверку контрагентов)
           const isOneTime = (s: ServiceDto) => {
             const id = Number(s.id);
-            if (id === 2 || id === 4 || id === 6) return true;
+            if (id === 2 || id === 3 || id === 4 || id === 6) return true;
             const title = (s.title || '').toLowerCase();
-            return title.includes('сдача') || title.includes('восстановление') || title.includes('проверка') || title.includes('разов');
+            return (
+              title.includes('сдача') ||
+              title.includes('кадров') ||
+              title.includes('зарплат') ||
+              title.includes('восстановление') ||
+              title.includes('проверка') ||
+              title.includes('разов')
+            );
           };
+
           const oneTimeList = (services ?? []).filter(isOneTime);
           const outsourceList = (services ?? []).filter((s) => !isOneTime(s));
 
-          const renderCard = (service: ServiceDto, i: number) => (
+          // Дополняем аутсорс блоком про полный контроль и SLA, если в базе только базовые записи
+          const fullOutsourceList: ServiceDto[] = [
+            ...outsourceList,
+            {
+              id: 99,
+              title: 'Полный контроль и ответственность',
+              description: '100% финансовая ответственность по договору SLA. Штрафы по нашей вине компенсируем мы.',
+              price: 'По подписке',
+              imageUrl: null,
+              isHighlighted: true,
+              features: [
+                'Финансовая гарантия по SLA',
+                'Контроль лицевых счетов в КГД 24/7',
+                'Защита при камеральном контроле',
+              ],
+              createdAt: new Date().toISOString(),
+            },
+          ];
+
+          const renderCard = (service: ServiceDto, i: number, isOutsourceCol: boolean) => (
             <motion.div
               key={service.id}
               initial={{ opacity: 0, y: 20 }}
@@ -183,9 +211,9 @@ export function HomeServices() {
                 <span className="text-brand-green font-black uppercase tracking-wider text-xs inline-flex items-center gap-2 group-hover:gap-3 transition-all">
                   {t('homeServices.more')} <ArrowRight className="w-4 h-4" />
                 </span>
-                {service.price && (
+                {isOutsourceCol && (
                   <span className="text-xs font-black text-brand-green bg-brand-green/10 px-3 py-1 rounded-full">
-                    {service.price}
+                    По подписке
                   </span>
                 )}
               </div>
@@ -202,11 +230,11 @@ export function HomeServices() {
                   </div>
                   <div>
                     <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Разовые услуги</h3>
-                    <p className="text-xs text-brand-green/70 font-medium">Точечные задачи, сдача отчетности и восстановление учета</p>
+                    <p className="text-xs text-brand-green/70 font-medium">Сдача отчетности, расчет зарплаты, восстановление учета и проверка контрагентов</p>
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {oneTimeList.map((service, i) => renderCard(service, i))}
+                  {oneTimeList.map((service, i) => renderCard(service, i, false))}
                 </div>
               </div>
 
@@ -218,11 +246,11 @@ export function HomeServices() {
                   </div>
                   <div>
                     <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Аутсорс-бухгалтерия</h3>
-                    <p className="text-xs text-brand-green/70 font-medium">Комплексное регулярное абонентское обслуживание под ключ</p>
+                    <p className="text-xs text-brand-green/70 font-medium">Полный контроль, 100% ответственность по SLA и регулярное ведение</p>
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {outsourceList.map((service, i) => renderCard(service, i))}
+                  {fullOutsourceList.map((service, i) => renderCard(service, i, true))}
                 </div>
               </div>
             </div>

@@ -19,11 +19,11 @@
       "price": "from 30,000 ₸/mo",
       "f0": "Up to 15 primary documents per month",
       "f1": "Submission of tax form 910.00",
-      "f2": "IE tax calculations (OPV, SO, VOSMS)",
+      "f2": "IE tax calculations (OPV, СО, ВОСМС)",
       "f3": "Accountant consultations in chat"
     },
     {
-      "title": "Business",
+      "title": "Standard",
       "subtitle": "For IE and LLP with up to 5 employees",
       "price": "from 100,000 ₸/mo",
       "f0": "Up to 50 documents per month",
@@ -41,7 +41,7 @@
       "f3": "Cameral control notifications support"
     },
     {
-      "title": "Corporate",
+      "title": "Business",
       "subtitle": "Turnkey comprehensive financial outsourcing",
       "price": "from 400,000 ₸/mo",
       "f0": "Unlimited document workflow",
