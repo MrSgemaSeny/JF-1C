@@ -17,7 +17,7 @@ export function AboutPage() {
         <AboutProcess />
         <AboutGuarantees />
       </main>
-      <Footer />
+      <Footer id="contact" />
     </>
   );
 }

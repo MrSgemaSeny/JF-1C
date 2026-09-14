@@ -14,7 +14,12 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Branding Redesign (Pure Typography ЖАН FINANCE & Inter Font)**:
+1. **Landing Contact & FAQ Block Unification (FaqContact Widget)**:
+   - Promoted `ServicesFaqContact` into a clean shared FSD widget `@/widgets/faq-contact` (`FaqContact.tsx`), preserving backwards compatibility via re-export.
+   - Added `FaqContact` section to `HomePage.tsx` between `<Offices />` and `<Footer />`, resolving missing FAQ and missing task description field on the main page.
+   - Enabled `showMessage={true}` on `<ContactForm />` in `Footer.tsx` so all contact forms consistently provide the "КРАТКОЕ ОПИСАНИЕ ЗАДАЧИ" textarea.
+   - Assigned `id="contact"` to `FaqContact` so header CTA buttons and `#contact` anchor links smoothly scroll to the FAQ & Contact section.
+2. **Branding Redesign (Pure Typography ЖАН FINANCE & Inter Font)**:
    - Redesigned header and footer logos to pure typography `ЖАН FINANCE` (font-logo `a_Simpler`), completely removing legacy raster `logo.png` from `Header.tsx` and `Footer.tsx`.
    - Connected Google Font `Inter` (weights 400-900) in `index.html` with preconnect, configured `--font-sans: "Inter", system-ui, sans-serif` in `src/index.css` `@theme`.
    - Updated document `<title>` to `ЖАН Finance` and synchronized brand display across `i18n` locales (`ru`, `kk`, `en`).

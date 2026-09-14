@@ -1,0 +1,1 @@
+export { FaqContact } from './FaqContact';

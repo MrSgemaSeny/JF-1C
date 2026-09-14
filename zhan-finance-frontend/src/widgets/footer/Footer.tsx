@@ -4,10 +4,14 @@ import { ContactForm } from "@/features/contact-form/ContactForm";
 import { ROUTES } from "@/shared/config/routes";
 import { useTranslation } from "react-i18next";
 
-export function Footer() {
+interface FooterProps {
+  id?: string;
+}
+
+export function Footer({ id = 'footer' }: FooterProps) {
   const { t } = useTranslation('common');
   return (
-    <footer id="contact" className="bg-brand-green pt-24 pb-12 text-brand-beige rounded-t-[40px] mt-[-40px] relative z-20">
+    <footer id={id} className="bg-brand-green pt-24 pb-12 text-brand-beige rounded-t-[40px] mt-[-40px] relative z-20">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 mb-20">
           <div className="space-y-12">
@@ -138,7 +142,7 @@ export function Footer() {
           </div>
 
           <div className="bg-brand-beige text-brand-green p-8 md:p-12 rounded-[32px]">
-            <ContactForm title={t('footer.discussTask')} />
+            <ContactForm title={t('footer.discussTask')} showMessage={true} />
           </div>
         </div>
 
