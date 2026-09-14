@@ -42,7 +42,7 @@ export function PricingTable() {
               </ul>
             </div>
             <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => (document.getElementById('contact') || document.getElementById('footer'))?.scrollIntoView({ behavior: 'smooth' })}
               className={`w-full py-2.5 rounded-xl font-bold uppercase tracking-wider text-xs transition-all ${
                 plan.highlighted
                   ? 'bg-brand-green text-brand-beige hover:bg-brand-green/90 shadow-md'

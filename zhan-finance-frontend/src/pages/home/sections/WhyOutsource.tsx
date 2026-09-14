@@ -110,7 +110,7 @@ export function WhyOutsource() {
               Нужен расчет под ваш оборот и количество операций?
             </p>
             <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => (document.getElementById('contact') || document.getElementById('footer'))?.scrollIntoView({ behavior: 'smooth' })}
               className="px-8 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all text-sm whitespace-nowrap shadow-lg shadow-brand-green/20"
             >
               Получить консультацию

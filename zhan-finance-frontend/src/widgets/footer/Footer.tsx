@@ -8,7 +8,7 @@ interface FooterProps {
   id?: string;
 }
 
-export function Footer({ id = 'footer' }: FooterProps) {
+export function Footer({ id = 'contact' }: FooterProps) {
   const { t } = useTranslation('common');
   return (
     <footer id={id} className="bg-brand-green pt-24 pb-12 text-brand-beige rounded-t-[40px] mt-[-40px] relative z-20">
