@@ -36,7 +36,7 @@ export function Team() {
                   viewport={{ once: true }}
                   className="flex flex-col items-center text-center group w-full"
                 >
-                  <div className={`relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-transform duration-500 group-hover:scale-105 aspect-[3/4] ${
+                  <div className={`relative overflow-hidden rounded-[2rem] bg-brand-green/10 mb-6 transition-all duration-500 group-hover:scale-105 group-hover:shadow-xl aspect-[3/4] ${
                     member.highlight ? 'w-56 md:w-72' : 'w-40 md:w-48'
                   }`}>
                     {member.photo ? (
@@ -46,6 +46,14 @@ export function Team() {
                         <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
+                      </div>
+                    )}
+
+                    {member.bioKey && (
+                      <div className="absolute inset-0 bg-brand-green/95 p-4 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none text-brand-beige">
+                        <p className="font-extrabold uppercase text-xs mb-1 text-white tracking-wider">{t(member.nameKey)}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-brand-beige/70 mb-2">{t(member.roleKey)}</p>
+                        <p className="text-xs leading-relaxed text-brand-beige/90">{t(member.bioKey)}</p>
                       </div>
                     )}
                   </div>

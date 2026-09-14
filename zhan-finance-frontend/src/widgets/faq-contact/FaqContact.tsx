@@ -15,13 +15,28 @@ export function FaqContact({ id = 'contact', className = 'bg-brand-beige pt-28 p
       <div className="grid gap-8 lg:grid-cols-2 items-start">
         <div className="bg-brand-beige rounded-[32px] p-8 shadow-lg border border-brand-green/10">
           <h3 className="text-3xl font-black text-brand-green mb-6">{t('faq_title', { defaultValue: 'Часто задаваемые вопросы' })}</h3>
-          <div className="space-y-4">
+          <div className="space-y-4 mb-6">
             {faqs.map((f, i) => (
               <details key={i} className="rounded-3xl border border-brand-green/10 bg-brand-beige/90 p-5 shadow-sm">
                 <summary className="cursor-pointer font-bold text-brand-green text-lg">{t(f.qKey)}</summary>
                 <p className="mt-3 text-brand-green/70 leading-relaxed">{t(f.aKey)}</p>
               </details>
             ))}
+          </div>
+
+          <div className="p-5 rounded-2xl bg-brand-green/5 border border-brand-green/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase font-extrabold tracking-wider text-brand-green/60">Прямой контакт</p>
+              <p className="text-sm font-bold text-brand-green">support@zhanfinance.kz · info@zhanfinance.kz</p>
+            </div>
+            <a
+              href="https://wa.me/77750584021"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2.5 bg-brand-green text-brand-beige text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brand-green/90 transition-all text-center whitespace-nowrap"
+            >
+              Написать в WhatsApp
+            </a>
           </div>
         </div>
 

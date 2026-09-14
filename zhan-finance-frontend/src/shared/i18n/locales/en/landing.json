@@ -168,15 +168,51 @@
   "team_subtitle": "of experts",
   "team_desc": "Behind every project are real people with years of experience in accounting, taxes, and law.",
   "team": [
-    { "name": "ZHARILKAGANOV AMANKELDI NAKMADINOVICH", "role": "Head of company" },
-    { "name": "Kozhamberdieva Alma", "role": "Chief Accountant" },
-    { "name": "Omarova Liza", "role": "Chief Accountant" },
-    { "name": "Seidulla Asem", "role": "Accountant" },
-    { "name": "Tulepbek Malika", "role": "Accountant" },
-    { "name": "Makhanbet Bagila", "role": "Accountant" },
-    { "name": "Abdiraemova Akerke", "role": "Accountant" },
-    { "name": "Musabaev Dauren", "role": "Accountant" },
-    { "name": "Murat Orynbasar", "role": "IT Specialist" }
+    {
+      "name": "Zharilkaganov Amankeldi Nakmadinovich",
+      "role": "Head of company",
+      "bio": "Founder and head of ZhanFinance. Over 20 years in finance and business in Kazakhstan. Personally oversees the service quality for every client."
+    },
+    {
+      "name": "Kozhamberdieva Alma",
+      "role": "Chief Accountant",
+      "bio": "Manages major corporate clients. Specialization: tax reporting, audit, and 1C."
+    },
+    {
+      "name": "Omarova Liza",
+      "role": "Accountant",
+      "bio": "Experience with trading companies and foreign economic activity. Accounts receivable control and reconciliations."
+    },
+    {
+      "name": "Aliev Ilhamzhan",
+      "role": "Accountant",
+      "bio": "VAT and tax reconciliations. Production and construction enterprises."
+    },
+    {
+      "name": "Rysdauletov Orynbasar",
+      "role": "Accountant",
+      "bio": "Small business and individual entrepreneurs. Working with eGov, Treasury, and IS ESF portals."
+    },
+    {
+      "name": "Tulepbek Malika",
+      "role": "Accountant",
+      "bio": "Payroll accounting and HR workflow. Managing teams of up to 100+ employees."
+    },
+    {
+      "name": "Makhanbet Bagila",
+      "role": "Accountant",
+      "bio": "Construction and commercial leasing. Primary documentation and reconciliation statements."
+    },
+    {
+      "name": "Seidulla Asem",
+      "role": "Accountant",
+      "bio": "Healthcare and education. Grant reporting and NGO accounting."
+    },
+    {
+      "name": "Murat Orynbasar",
+      "role": "IT Specialist",
+      "bio": "Development and technical maintenance of the ZhanFinance platform. Internal process automation."
+    }
   ],
   "process_badge": "Engineering approach",
   "process_title": "How we rebuild accounting",

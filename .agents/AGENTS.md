@@ -46,6 +46,7 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 10. **Tests before pushing**: Never push to branches if there are errors or failing tests.
 11. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
 12. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
+13. **Contact Form & Backend API Status**: The backend API POST `/api/v1/contact-requests` call in `useContactForm.ts` is intentionally commented out in favor of the direct WhatsApp flow (+77750584021 / wa.me). AI agents MUST ALWAYS verify and inform the user about this status before modifying contact form logic.
 ## Current Status
 - Flyway migration chain V1->V108 verified on clean DB [DONE]
 - GitHub Actions DB backups + Telegram notifications [DONE]

@@ -68,6 +68,8 @@ export const ROUTES = {
   CLIENT_CALENDAR: '/client/calendar',
   CLIENT_TASK_DETAILS: '/client/tasks/:id',
   CLIENT_SERVICES: '/client/services',
+  CLIENT_1C_REPORTS: '/client/reports/1c',
+  CLIENT_REPORTS: '/client/reports',
   
   // Learner Routes
   LEARNER_COURSES: '/courses',

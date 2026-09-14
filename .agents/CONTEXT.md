@@ -106,6 +106,7 @@
 
 
 ## Known Issues & Warnings
+- **Contact Form Backend API**: `POST /api/v1/contact-requests` in `useContactForm.ts` is intentionally commented out in favor of the direct WhatsApp flow (`+77750584021` / `wa.me`). Lead creation is handled directly via WhatsApp with QR support.
 - **CF-Connecting-IP**: Trusted before Cloudflare is connected (auto-resolves with Epic-11)
 - **Refresh token race condition**: Known, not critical at current scale
 - **Caffeine cache**: recordStats() not enabled, WARN in logs, no impact

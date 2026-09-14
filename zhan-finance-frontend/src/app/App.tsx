@@ -78,6 +78,7 @@ const ClientTaskDetailsPage = lazy(() => import('@/pages/dashboard/client/Client
 const ClientDocumentsPage = lazy(() => import('@/pages/dashboard/client/ClientDocumentsPage').then(m => ({ default: m.ClientDocumentsPage })));
 const ClientChatPage = lazy(() => import('@/pages/dashboard/client/ClientChatPage').then(m => ({ default: m.ClientChatPage })));
 const ClientServicesPage = lazy(() => import('@/pages/dashboard/client/ClientServicesPage').then(m => ({ default: m.ClientServicesPage })));
+const ClientOneCReportsPage = lazy(() => import('@/pages/dashboard/client/ClientOneCReportsPage').then(m => ({ default: m.ClientOneCReportsPage })));
 const CompleteProfilePage = lazy(() => import('@/pages/auth/complete-profile/CompleteProfilePage').then(m => ({ default: m.CompleteProfilePage })));
 const CalendarPage = lazy(() => import('@/pages/dashboard/shared/calendar/CalendarPage').then(m => ({ default: m.CalendarPage })));
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -220,6 +221,8 @@ export function App() {
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
                 <Route path={ROUTES.CLIENT_CALENDAR} element={<CalendarPage />} />
                 <Route path={ROUTES.CLIENT_SERVICES} element={<ClientServicesPage />} />
+                <Route path={ROUTES.CLIENT_1C_REPORTS} element={<ClientOneCReportsPage />} />
+                <Route path={ROUTES.CLIENT_REPORTS} element={<Navigate to={ROUTES.CLIENT_1C_REPORTS} replace />} />
               </Route>
 
               {/* Learner Routes */}

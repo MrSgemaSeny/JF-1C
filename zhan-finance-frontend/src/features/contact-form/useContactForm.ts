@@ -11,6 +11,7 @@ export function useContactForm() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [waUrl, setWaUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +31,13 @@ export function useContactForm() {
     setError(null);
 
     try {
+      // ============================================================
+      // ПРЕДУПРЕЖДЕНИЕ! НИ В КОЕМ СЛУЧАЕ НЕЛЬЗЯ УБИРАТЬ ЭТОТ БЛОК.
+      // Этот вызов сохраняет лид в БД, уведомляет админов через
+      // NotificationService и отправляет email-подтверждение лиду.
+      // Когда WhatsApp-флоу перестанет быть основным — раскомментировать.
+      // ============================================================
+      /*
       await apiRequest('/api/v1/contact-requests', {
         method: 'POST',
         body: JSON.stringify({
@@ -40,9 +48,22 @@ export function useContactForm() {
           source: 'frontend'
         })
       });
+      */
+
+      const WA_NUMBER = '77750584021';
+      const textLines = [
+        `Имя: ${name}`,
+        `Телефон: ${phone}`,
+        email ? `Email: ${email}` : null,
+        message ? `Задача: ${message}` : null,
+        `Источник: zhanfinance.kz`
+      ].filter(Boolean);
+
+      const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(textLines.join('\n'))}`;
+      setWaUrl(url);
       setSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('contactForm.error.default', { defaultValue: 'Не удалось отправить заявку' }));
+      setError(err instanceof Error ? err.message : t('contactForm.error.default', { defaultValue: 'Не удалось сформировать заявку' }));
     } finally {
       setLoading(false);
     }
@@ -58,6 +79,7 @@ export function useContactForm() {
     message,
     setMessage,
     submitted,
+    waUrl,
     loading,
     error,
     handleSubmit

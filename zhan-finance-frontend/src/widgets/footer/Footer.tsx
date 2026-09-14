@@ -71,6 +71,15 @@ export function Footer({ id = 'footer' }: FooterProps) {
                   <li>
                     <div className="flex flex-col gap-2">
                       <a
+                        href="https://wa.me/77750584021"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 hover:text-white transition-colors font-bold text-brand-beige"
+                      >
+                        <Phone className="w-5 h-5 text-brand-beige" />
+                        WhatsApp: +7 (775) 058-40-21
+                      </a>
+                      <a
                         href="tel:+77759573787"
                         className="flex items-center gap-3 hover:text-white transition-colors"
                       >
@@ -84,23 +93,25 @@ export function Footer({ id = 'footer' }: FooterProps) {
                         <Phone className="w-5 h-5" />
                         +7 (7252) 52-23-09
                       </a>
-                      <a
-                        href="tel:+77753855077"
-                        className="flex items-center gap-3 hover:text-white transition-colors"
-                      >
-                        <Phone className="w-5 h-5" />
-                        +7-775-385-50-77
-                      </a>
                     </div>
                   </li>
                   <li>
-                    <a
-                      href="mailto:zhan.finance@gmail.com"
-                      className="flex items-center gap-3 hover:text-white transition-colors"
-                    >
-                      <Mail className="w-5 h-5" />
-                      zhan.finance@gmail.com
-                    </a>
+                    <div className="flex flex-col gap-1.5">
+                      <a
+                        href="mailto:support@zhanfinance.kz"
+                        className="flex items-center gap-3 hover:text-white transition-colors"
+                      >
+                        <Mail className="w-5 h-5" />
+                        support@zhanfinance.kz
+                      </a>
+                      <a
+                        href="mailto:info@zhanfinance.kz"
+                        className="flex items-center gap-3 hover:text-white transition-colors"
+                      >
+                        <Mail className="w-5 h-5" />
+                        info@zhanfinance.kz
+                      </a>
+                    </div>
                   </li>
                   <li className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 shrink-0 mt-1" />
@@ -111,7 +122,7 @@ export function Footer({ id = 'footer' }: FooterProps) {
                     </span>
                   </li>
                   <li className="pt-3 border-t border-brand-beige/15 text-xs text-brand-beige/80 space-y-1">
-                    <p className="font-bold text-brand-beige">ТОО «ZhanFinance»</p>
+                    <p className="font-bold text-brand-beige">ТОО «ЖАН FINANCE»</p>
                     <p>БИН: 240140023819</p>
                     <p>г. Алматы, пр. Достык, 180</p>
                   </li>
@@ -127,10 +138,12 @@ export function Footer({ id = 'footer' }: FooterProps) {
                 <User className="w-5 h-5" />
               </a>
               <a
-                href="tel:+77759573787"
+                href="https://wa.me/77750584021"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
               >
-                <Briefcase className="w-5 h-5" />
+                <Phone className="w-5 h-5" />
               </a>
               <a
                 href="https://2gis.kz/shymkent/search/zhanfinance/firm/70000001060962340/69.629124%2C42.354754?m=69.629774%2C42.354893%2F16.83"
@@ -147,7 +160,7 @@ export function Footer({ id = 'footer' }: FooterProps) {
         </div>
 
         <div className="pt-8 border-t border-brand-beige/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm font-medium opacity-75">
-          <p>© {new Date().getFullYear()} ТОО «ZhanFinance». {t('footer.allRightsReserved')}</p>
+          <p>© {new Date().getFullYear()} ТОО «ЖАН FINANCE». {t('footer.allRightsReserved')}</p>
           <div className="flex flex-wrap gap-4 md:gap-6 text-xs md:text-sm">
             <Link to={ROUTES.PRIVACY_POLICY} className="hover:text-white transition-colors">
               {t('footer.privacy')}

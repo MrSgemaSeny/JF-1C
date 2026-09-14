@@ -10,6 +10,14 @@ import { BrowserRouter } from 'react-router-dom';
 import * as http from '@/shared/api/http';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+vi.mock('@/features/auth/authApi', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/features/auth/authApi')>();
+  return {
+    ...actual,
+    getMe: vi.fn().mockRejectedValue(new Error('Unauthenticated')),
+  };
+});
+
 vi.mock('@/shared/api/http', () => ({
   apiRequest: vi.fn(),
   configureAuth: vi.fn(),
@@ -37,9 +45,7 @@ describe('ContactForm Component', () => {
     </GoogleOAuthProvider>
   );
 
-  it('submits contact form and shows success message', async () => {
-    const apiRequestMock = vi.mocked(http.apiRequest).mockResolvedValueOnce({});
-    
+  it('submits contact form and shows WhatsApp readiness screen with QR code', async () => {
     renderComponent();
     await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
     
@@ -54,13 +60,11 @@ describe('ContactForm Component', () => {
     const submitButton = screen.getByRole('button', { name: /Отправить заявку/i });
     fireEvent.click(submitButton);
     
-    await waitFor(() => {
-      expect(apiRequestMock).toHaveBeenCalledWith('/api/v1/contact-requests', {
-        method: 'POST',
-        body: expect.stringMatching(/Ivan Ivanov.*Need help with taxes|Need help with taxes.*Ivan Ivanov/s)
-      });
-    });
+    expect(await screen.findByText(/Заявка сформирована!/i)).toBeInTheDocument();
     
-    expect(await screen.findByText(/Спасибо!/i)).toBeInTheDocument();
+    const openWhatsAppBtn = screen.getByRole('link', { name: /Открыть WhatsApp/i });
+    expect(openWhatsAppBtn).toBeInTheDocument();
+    expect(openWhatsAppBtn).toHaveAttribute('href', expect.stringContaining('https://wa.me/77750584021'));
+    expect(openWhatsAppBtn).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('Ivan Ivanov')));
   });
 });

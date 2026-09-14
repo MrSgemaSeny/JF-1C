@@ -28,6 +28,9 @@ import landingKK from './locales/kk/landing.json';
 import tasksKK from './locales/kk/tasks.json';
 import modalsKK from './locales/kk/modals.json';
 
+import commonZH from './locales/zh/common.json';
+import landingZH from './locales/zh/landing.json';
+
 i18n
   .use(initReactI18next)
   .use(LanguageDetector)
@@ -68,6 +71,15 @@ i18n
         tasks: tasksKK,
         modals: modalsKK,
         zod: translationRU
+      },
+      zh: {
+        common: commonZH,
+        auth: authEN,
+        crm: crmEN,
+        landing: landingZH,
+        tasks: tasksEN,
+        modals: modalsEN,
+        zod: translationEN
       },
     },
   });

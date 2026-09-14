@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 import { useContactForm } from './useContactForm';
 
+import { QRCodeSVG } from 'qrcode.react';
+
 interface ContactFormProps {
   title?: string;
   className?: string;
@@ -12,7 +14,7 @@ interface ContactFormProps {
 
 export function ContactForm({ title, className = '', showMessage = false }: ContactFormProps) {
   const { t } = useTranslation('common');
-  const { name, setName, phone, setPhone, email, setEmail, message, setMessage, submitted, loading, error, handleSubmit } = useContactForm();
+  const { name, setName, phone, setPhone, email, setEmail, message, setMessage, submitted, waUrl, loading, error, handleSubmit } = useContactForm();
 
   const displayTitle = title || t('contactForm.title', { defaultValue: 'Связаться с нами' });
 
@@ -38,13 +40,31 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
   return (
     <div className={className}>
       {title !== '' && <h3 className="text-3xl font-black uppercase mb-8">{displayTitle}</h3>}
-      {submitted ? (
-        <div className="flex flex-col items-center justify-center p-8 bg-brand-green/5 rounded-2xl border border-brand-green/10 text-center">
-          <CheckCircle2 className="w-16 h-16 text-brand-green mb-4" />
-          <h4 className="text-2xl font-black text-brand-green mb-2">{t('contactForm.success.title', { defaultValue: 'Спасибо!' })}</h4>
-          <p className="text-brand-green/70 text-lg">
-            {t('contactForm.success.text', { defaultValue: 'Мы скоро свяжемся с вами для обсуждения деталей.' })}
+      {submitted && waUrl ? (
+        <div className="flex flex-col items-center justify-center p-8 bg-brand-green/5 rounded-2xl border border-brand-green/20 text-center">
+          <CheckCircle2 className="w-12 h-12 text-brand-green mb-3" />
+          <h4 className="text-2xl font-black text-brand-green mb-2">
+            {t('contactForm.whatsapp.readyTitle', { defaultValue: 'Заявка сформирована!' })}
+          </h4>
+          <p className="text-brand-green/80 text-sm max-w-md mb-6 leading-relaxed">
+            {t('contactForm.whatsapp.readyText', { defaultValue: 'Для завершения отправки перейдите в WhatsApp или отсканируйте QR-код с мобильного устройства.' })}
           </p>
+          
+          <div className="bg-white p-4 rounded-xl border border-brand-green/15 shadow-sm mb-6 flex flex-col items-center">
+            <QRCodeSVG value={waUrl} size={180} level="M" />
+            <span className="text-xs font-semibold text-brand-green/60 mt-2 uppercase tracking-wider">
+              {t('contactForm.whatsapp.scanQr', { defaultValue: 'Сканируйте камерой телефона' })}
+            </span>
+          </div>
+
+          <a
+            href={waUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-8 py-4 bg-brand-green text-brand-beige rounded-xl text-base font-bold uppercase tracking-wider hover:bg-brand-green/90 hover:text-white transition-all text-center flex items-center justify-center gap-2 shadow-md"
+          >
+            {t('contactForm.whatsapp.openBtn', { defaultValue: 'Открыть WhatsApp' })}
+          </a>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">

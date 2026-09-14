@@ -74,7 +74,7 @@ describe('Legal Pages and Compliance (#3, #4, #7, #10, #15, #16)', () => {
 
     expect(screen.getByRole('heading', { name: /Пользовательское соглашение/i })).toBeInTheDocument();
     expect(screen.getByText(/Разграничение ответственности и налоговый дисклеймер/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/ТОО «ZhanFinance»/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/ТОО «ЖАН FINANCE»/i)[0]).toBeInTheDocument();
   });
 
   it('renders RefundPolicyPage with prorated subscriptions and 14-day review rules', async () => {

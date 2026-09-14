@@ -4,7 +4,9 @@ import { useAuth } from '@/features/auth/AuthContext';
 
 const LANGUAGES = [
   { code: 'ru', label: 'RU' },
+  { code: 'kk', label: 'KZ' },
   { code: 'en', label: 'EN' },
+  { code: 'zh', label: 'ZH' },
 ] as const;
 
 export const LanguageSwitcher = () => {

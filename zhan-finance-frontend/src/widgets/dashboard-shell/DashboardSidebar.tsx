@@ -23,6 +23,7 @@ import {
   RefreshCw,
   History,
   User,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
@@ -32,6 +33,7 @@ import LogoImage from '@/shared/assets/icons/logo.png';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
   'Overview':            <LayoutDashboard size={16} />,
+  '1C Reports':          <FileSpreadsheet size={16} />,
   'Calendar':            <CalendarDays size={16} />,
   'Chat':                <MessageCircle size={16} />,
   'Employees':           <UserCheck size={16} />,
@@ -134,6 +136,7 @@ export function DashboardSidebar({
             let i18nKey = '';
             switch (item.label) {
               case 'Overview': i18nKey = 'nav.overview'; break;
+              case '1C Reports': i18nKey = 'nav.oneCReports'; break;
               case 'Courses': i18nKey = 'nav.courses'; break;
               case 'Learners': i18nKey = 'nav.learners'; break;
               case 'Chat': i18nKey = 'nav.chat'; break;
