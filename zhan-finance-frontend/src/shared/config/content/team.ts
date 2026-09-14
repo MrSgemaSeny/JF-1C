@@ -1,4 +1,4 @@
-import muratPhoto from '@/shared/assets/images/murat.jpg';
+import orynbasarPhoto from '@/shared/assets/images/orynbasar.jpg';
 
 export interface TeamMember {
   nameKey: string;
@@ -24,7 +24,7 @@ export const teamSpecialists: TeamMember[] = [
   { nameKey: 'landing:team.5.name', roleKey: 'landing:team.5.role', bioKey: 'landing:team.5.bio', photo: '' },
   { nameKey: 'landing:team.6.name', roleKey: 'landing:team.6.role', bioKey: 'landing:team.6.bio', photo: '' },
   { nameKey: 'landing:team.7.name', roleKey: 'landing:team.7.role', bioKey: 'landing:team.7.bio', photo: '' },
-  { nameKey: 'landing:team.8.name', roleKey: 'landing:team.8.role', bioKey: 'landing:team.8.bio', photo: muratPhoto },
+  { nameKey: 'landing:team.8.name', roleKey: 'landing:team.8.role', bioKey: 'landing:team.8.bio', photo: orynbasarPhoto },
 ];
 
 export const teamRows: TeamMember[][] = [
