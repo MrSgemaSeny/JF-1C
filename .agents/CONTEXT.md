@@ -14,7 +14,12 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Landing Contact & FAQ Block Unification (FaqContact Widget)**:
+1. **Landing Enhancements (Why Outsource, 2-Column Services, 4 Tariffs, Extended FAQ)**:
+   - Added `WhyOutsource.tsx` section on `HomePage.tsx` highlighting SLA benefits and breakdown of outsource accounting scope.
+   - Updated `HomeServices.tsx` and `ServicesCatalog.tsx` to render two distinct categorized columns: «Разовые услуги» and «Аутсорс-бухгалтерия».
+   - Expanded tariffs to 4 distinct tiers in `PricingTable.tsx` and `pricing-plans.ts` (30k, 100k, 200k, 400k KZT/mo).
+   - Extended FAQ accordion to 6 questions/answers covering SLA liability, primary doc workflow, and tax authority audits.
+2. **Landing Contact & FAQ Block Unification (FaqContact Widget)**:
    - Promoted `ServicesFaqContact` into a clean shared FSD widget `@/widgets/faq-contact` (`FaqContact.tsx`), preserving backwards compatibility via re-export.
    - Added `FaqContact` section to `HomePage.tsx` between `<Offices />` and `<Footer />`, resolving missing FAQ and missing task description field on the main page.
    - Enabled `showMessage={true}` on `<ContactForm />` in `Footer.tsx` so all contact forms consistently provide the "КРАТКОЕ ОПИСАНИЕ ЗАДАЧИ" textarea.

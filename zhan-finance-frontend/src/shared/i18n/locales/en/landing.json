@@ -2,7 +2,10 @@
   "faq": [
     { "q": "How to get started?", "a": "Leave a request on the website or call us — we will prepare an implementation plan and cost estimate." },
     { "q": "What documents are needed?", "a": "Depends on the service: usually a contract, statements, contracts with counterparties, and primary documentation are needed." },
-    { "q": "Can I connect remotely?", "a": "Yes — most processes can be organized remotely using secure channels." }
+    { "q": "Can I connect remotely?", "a": "Yes — most processes can be organized remotely using secure channels." },
+    { "q": "What financial liability do you bear?", "a": "We bear 100% financial liability under our SLA contract. Any penalties or fines due to our fault are fully reimbursed." },
+    { "q": "How do we transfer primary documents?", "a": "Via the platform portal, Telegram/WhatsApp, or courier. All documents are digitized and posted to 1C on the same day." },
+    { "q": "What happens during a tax audit or SRC notification?", "a": "We handle all communications with tax authorities: analyzing the notice, preparing official responses, and defending your business interests." }
   ],
   "faq_title": "Frequently Asked Questions",
   "trust_title1": "Your business",
@@ -12,27 +15,39 @@
   "pricing": [
     {
       "title": "Start",
-      "subtitle": "Basic set for new entrepreneurs",
-      "price": "from 49,000 ₸/mo",
-      "f0": "Accounting",
-      "f1": "Monthly reporting",
-      "f2": "Phone consultations"
+      "subtitle": "For sole proprietors on simplified regime with no staff",
+      "price": "from 30,000 ₸/mo",
+      "f0": "Up to 15 primary documents per month",
+      "f1": "Submission of tax form 910.00",
+      "f2": "IE tax calculations (OPV, SO, VOSMS)",
+      "f3": "Accountant consultations in chat"
     },
     {
       "title": "Business",
-      "subtitle": "Optimal package for small business",
-      "price": "from 149,000 ₸/mo",
-      "f0": "Full accounting support",
-      "f1": "Tax planning",
-      "f2": "Support during audits"
+      "subtitle": "For IE and LLP with up to 5 employees",
+      "price": "from 100,000 ₸/mo",
+      "f0": "Up to 50 documents per month",
+      "f1": "HR records and payroll calculation",
+      "f2": "Issuance and control of ESF and SNT",
+      "f3": "Submission of all tax and statistical reports"
     },
     {
-      "title": "Premium",
-      "subtitle": "Personalized approach and priority support",
-      "price": "Individual",
-      "f0": "Personal manager",
-      "f1": "Legal protection",
-      "f2": "Audit and optimization"
+      "title": "Pro",
+      "subtitle": "For VAT-registered LLP with active operations",
+      "price": "from 200,000 ₸/mo",
+      "f0": "Up to 150 documents per month",
+      "f1": "VAT accounting (forms 300.00, 200.00, 100.00)",
+      "f2": "Virtual Warehouse & foreign trade support",
+      "f3": "Cameral control notifications support"
+    },
+    {
+      "title": "Corporate",
+      "subtitle": "Turnkey comprehensive financial outsourcing",
+      "price": "from 400,000 ₸/mo",
+      "f0": "Unlimited document workflow",
+      "f1": "Tax account monitoring in SRC",
+      "f2": "Counterparty & bank reconciliations",
+      "f3": "Dedicated chief accountant 24/7"
     }
   ],
   "stats": {

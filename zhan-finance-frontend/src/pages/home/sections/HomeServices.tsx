@@ -138,47 +138,96 @@ export function HomeServices() {
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-brand-green/40" />
           </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(services ?? []).map((service, i) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-brand-beige/20 p-8 rounded-[32px] border border-brand-green/5 hover:border-brand-green/20 hover:bg-brand-beige transition-all group flex flex-col cursor-pointer"
-                onClick={() => {
-                  setSelectedService(service);
-                  setRestoredMessage('');
-                  setRestoredDate('');
-                }}
-              >
-                <h3 className="text-2xl font-black uppercase text-brand-green mb-4 leading-tight">
+        ) : (() => {
+          const isOneTime = (s: ServiceDto) => {
+            const id = Number(s.id);
+            if (id === 2 || id === 4 || id === 6) return true;
+            const title = (s.title || '').toLowerCase();
+            return title.includes('сдача') || title.includes('восстановление') || title.includes('проверка') || title.includes('разов');
+          };
+          const oneTimeList = (services ?? []).filter(isOneTime);
+          const outsourceList = (services ?? []).filter((s) => !isOneTime(s));
+
+          const renderCard = (service: ServiceDto, i: number) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              viewport={{ once: true }}
+              className="bg-brand-beige/20 p-8 rounded-[32px] border border-brand-green/10 hover:border-brand-green/30 hover:bg-brand-beige transition-all group flex flex-col cursor-pointer justify-between shadow-sm hover:shadow-md"
+              onClick={() => {
+                setSelectedService(service);
+                setRestoredMessage('');
+                setRestoredDate('');
+              }}
+            >
+              <div>
+                <h3 className="text-2xl font-black uppercase text-brand-green mb-3 leading-tight">
                   {t(`service.${service.id}.title`, { defaultValue: service.title })}
                 </h3>
-                <p className="text-brand-green/70 mb-8 leading-relaxed flex-1">
+                <p className="text-sm text-brand-green/75 mb-6 leading-relaxed">
                   {t(`service.${service.id}.description`, { defaultValue: service.description })}
                 </p>
-                
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-2.5 mb-6">
                   {service.features.map((feature, featureIndex) => (
-                    <li key={feature} className="flex items-start gap-3 text-sm font-bold text-brand-green/80">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-green mt-1.5 opacity-50" />
-                      {t(`service.${service.id}.features.${featureIndex}`, { defaultValue: feature })}
+                    <li key={feature} className="flex items-start gap-2.5 text-xs font-bold text-brand-green/80">
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-green mt-1 shrink-0 opacity-60" />
+                      <span>{t(`service.${service.id}.features.${featureIndex}`, { defaultValue: feature })}</span>
                     </li>
                   ))}
                 </ul>
+              </div>
 
-                <button
-                  className="inline-flex items-center gap-2 text-brand-green font-black uppercase tracking-wider group-hover:gap-4 transition-all"
-                >
+              <div className="pt-4 border-t border-brand-green/10 flex items-center justify-between">
+                <span className="text-brand-green font-black uppercase tracking-wider text-xs inline-flex items-center gap-2 group-hover:gap-3 transition-all">
                   {t('homeServices.more')} <ArrowRight className="w-4 h-4" />
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                </span>
+                {service.price && (
+                  <span className="text-xs font-black text-brand-green bg-brand-green/10 px-3 py-1 rounded-full">
+                    {service.price}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          );
+
+          return (
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+              {/* Column 1: One-time services */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 p-5 bg-brand-beige rounded-2xl border border-brand-green/10">
+                  <div className="w-9 h-9 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm">
+                    1
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Разовые услуги</h3>
+                    <p className="text-xs text-brand-green/70 font-medium">Точечные задачи, сдача отчетности и восстановление учета</p>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  {oneTimeList.map((service, i) => renderCard(service, i))}
+                </div>
+              </div>
+
+              {/* Column 2: Outsource accounting */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 p-5 bg-brand-beige rounded-2xl border border-brand-green/10">
+                  <div className="w-9 h-9 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Аутсорс-бухгалтерия</h3>
+                    <p className="text-xs text-brand-green/70 font-medium">Комплексное регулярное абонентское обслуживание под ключ</p>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  {outsourceList.map((service, i) => renderCard(service, i))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="mt-12 text-center md:hidden">
           <Link
