@@ -61,6 +61,14 @@ export function Footer({ id = 'contact' }: FooterProps) {
                       {t('publicNav.about')}
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      to={ROUTES.LOGIN}
+                      className="hover:text-white transition-colors"
+                    >
+                      {t('publicNav.login')}
+                    </Link>
+                  </li>
                 </ul>
               </div>
               <div className="space-y-4">
@@ -121,36 +129,39 @@ export function Footer({ id = 'contact' }: FooterProps) {
                       ЖАН FINANCE
                     </span>
                   </li>
-                  <li className="pt-3 border-t border-brand-beige/15 text-xs text-brand-beige/80 space-y-1">
-                    <p className="font-bold text-brand-beige">ТОО «ЖАН FINANCE»</p>
-                    <p>БИН: 240140023819</p>
-                    <p>г. Алматы, пр. Достык, 180</p>
-                  </li>
                 </ul>
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <a
-                href="https://t.me/mrsgemaseny"
-                className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
-              >
-                <User className="w-5 h-5" />
-              </a>
-              <a
-                href="https://wa.me/77750584021"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
-              >
-                <Phone className="w-5 h-5" />
-              </a>
-              <a
-                href="https://2gis.kz/shymkent/search/zhanfinance/firm/70000001060962340/69.629124%2C42.354754?m=69.629774%2C42.354893%2F16.83"
-                className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
-              >
-                <Send className="w-5 h-5" />
-              </a>
+            <div className="grid sm:grid-cols-2 gap-8 items-center pt-2">
+              <div className="flex gap-4">
+                <a
+                  href="https://t.me/mrsgemaseny"
+                  className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
+                >
+                  <User className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://wa.me/77750584021"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
+                >
+                  <Phone className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://2gis.kz/shymkent/search/zhanfinance/firm/70000001060962340/69.629124%2C42.354754?m=69.629774%2C42.354893%2F16.83"
+                  className="w-12 h-12 rounded-full border border-brand-beige/20 flex items-center justify-center hover:bg-brand-beige hover:text-brand-green transition-all"
+                >
+                  <Send className="w-5 h-5" />
+                </a>
+              </div>
+
+              <div className="text-xs text-brand-beige/80 space-y-1">
+                <p className="font-bold text-brand-beige">ТОО «ЖАН FINANCE»</p>
+                <p>БИН: 240140023819</p>
+                <p>г. Алматы, пр. Достык, 180</p>
+              </div>
             </div>
           </div>
 

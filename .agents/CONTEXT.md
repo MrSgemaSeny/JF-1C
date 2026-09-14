@@ -14,7 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Home Restructure & Green Outsource Included Section**:
+1. **Footer Navigation & Legal Info Alignment**:
+   - Added `Войти` (`publicNav.login` / `ROUTES.LOGIN`) as the 4th item in the Footer navigation list under `НАВИГАЦИЯ`.
+   - Moved the `ТОО «ЖАН FINANCE»` block down, aligning it horizontally on the same level as the round action/social buttons (`кружки`).
+2. **Home Restructure & Green Outsource Included Section**:
    - Removed services catalog block (`HomeServices`) from `HomePage.tsx`. Services catalog is now located exclusively on `/services` (`ServicesPage.tsx` / `ServicesCatalog.tsx`).
    - Created standalone `OutsourceIncluded.tsx` section on `HomePage.tsx` with dark green background (`bg-brand-green` and `text-brand-beige`), displaying 6 core outsource accounting processes and a direct consultation CTA button.
    - Restored exact vector logo proportions in `zhan-finance-logo.svg` and `logo-preview.html` (`viewBox="0 0 805 180"`, `a_Simpler_Bold` font natural condensed geometry without artificial `spacingAndGlyphs` distortion).
