@@ -37,22 +37,27 @@ export function WhyOutsource() {
   ];
 
   return (
-    <Section className="bg-brand-green text-brand-beige py-32 relative overflow-hidden">
+    <Section className="bg-white text-brand-green py-24 sm:py-32 relative overflow-hidden">
       <Container className="relative z-10">
         {/* Header Block */}
-        <div className="max-w-4xl mb-20">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-white mb-8">
+        <div className="max-w-4xl mb-16 sm:mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-green/5 border border-brand-green/10 text-xs font-bold uppercase tracking-widest text-brand-green mb-6">
+            <span className="w-2 h-2 rounded-full bg-brand-green" />
+            Безупречный учет
+          </div>
+
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-8">
             Надежная бухгалтерия <br />
-            <span className="text-brand-beige/50">без штатных рисков</span>
+            <span className="text-brand-green/40">без штатных рисков</span>
           </h2>
 
-          <p className="text-xl text-brand-beige/90 font-medium leading-relaxed">
+          <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
             Передача бухгалтерии на аутсорсинг в ЖАН FINANCE — это не просто экономия на налогах и зарплате. Это гарантия непрерывной работы, профессиональной защиты при проверках и полной материальной ответственности.
           </p>
         </div>
 
         {/* 4 Cards: Why Outsource */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {benefits.map((b, i) => {
             const Icon = b.icon;
             return (
@@ -62,16 +67,16 @@ export function WhyOutsource() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-white/5 border border-white/10 p-8 rounded-[32px] backdrop-blur-sm hover:bg-white/10 hover:border-white/20 transition-all flex flex-col justify-between"
+                className="bg-brand-beige/40 border border-brand-green/10 p-8 rounded-[32px] hover:bg-brand-beige/70 hover:border-brand-green/25 hover:shadow-lg transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-2xl bg-brand-beige/10 border border-brand-beige/20 flex items-center justify-center text-brand-beige mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-brand-green/10 border border-brand-green/15 flex items-center justify-center text-brand-green mb-6">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-xl font-black uppercase text-white mb-3 leading-snug">
+                  <h3 className="text-xl font-black uppercase text-brand-green mb-3 leading-snug">
                     {b.title}
                   </h3>
-                  <p className="text-sm text-brand-beige/80 leading-relaxed">
+                  <p className="text-sm text-brand-green/75 leading-relaxed">
                     {b.text}
                   </p>
                 </div>
@@ -81,7 +86,7 @@ export function WhyOutsource() {
         </div>
 
         {/* What is included in Outsource */}
-        <div className="bg-brand-beige text-brand-green rounded-[36px] p-8 sm:p-12 lg:p-16 border border-brand-green/10 shadow-2xl">
+        <div className="bg-brand-beige text-brand-green rounded-[36px] p-8 sm:p-12 lg:p-16 border border-brand-green/10 shadow-xl">
           <div className="max-w-3xl mb-10">
             <h3 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-4">
               Что входит в аутсорс-бухгалтерию
@@ -111,7 +116,7 @@ export function WhyOutsource() {
             </p>
             <button
               onClick={() => (document.getElementById('contact') || document.getElementById('footer'))?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all text-sm whitespace-nowrap shadow-lg shadow-brand-green/20"
+              className="px-8 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all text-sm whitespace-nowrap shadow-lg shadow-brand-green/20 hover:-translate-y-0.5"
             >
               Получить консультацию
             </button>

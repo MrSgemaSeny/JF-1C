@@ -14,7 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Landing & Services Parity (ServicesCatalog Parity, Pricing Heading, 2-Column Services, 4 Tariffs, Informational ServiceModal)**:
+1. **Legal Pages Standalone Layout (Header & Footer Removal)**:
+   - Completely removed global `<Header />` and `<Footer />` components from all legal document pages: `/privacy-policy` (`PrivacyPolicyPage.tsx`), `/terms` (`TermsPage.tsx`), `/refund-policy` (`RefundPolicyPage.tsx`), and `/cookie-policy` (`CookiePolicyPage.tsx`).
+   - Replaced with a standalone document top bar (`← На главную` button + typography logo `ЖАН FINANCE` in `font-logo`) and a clean text copyright footer (`ТОО «ЖАН FINANCE» • БИН 240140023819 • Все права защищены`).
+2. **Landing & Services Parity (ServicesCatalog Parity, Pricing Heading, 2-Column Services, 4 Tariffs, Informational ServiceModal)**:
    - Synchronized `ServicesCatalog.tsx` with `HomeServices.tsx`: exact white background, unified `РЕШЕНИЯ ДЛЯ ВАШЕГО БИЗНЕСА` heading with subtitle, identical beige 2-column header badges and card layout.
    - Refactored `ServiceModal.tsx` to be purely informational: displays service title, image, full description («О сервисе») and what is included («Что входит в стоимость»), removed all order forms / textareas from the service modal on landing pages, and added «Получить консультацию» button that scrolls to footer contact form.
    - Set default `id="contact"` on `Footer.tsx` and updated CTA buttons in `WhyOutsource.tsx` («Получить консультацию») and `PricingTable.tsx` («Выбрать тариф») to smoothly scroll directly to the Footer contact form.

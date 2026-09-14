@@ -1,15 +1,27 @@
-import { Header } from '@/widgets/header/Header';
-import { Footer } from '@/widgets/footer/Footer';
-import { Cookie, ShieldCheck, Sliders, ExternalLink } from 'lucide-react';
+import { Cookie, ShieldCheck, Sliders, ExternalLink, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '@/shared/config/routes';
 
 export function CookiePolicyPage() {
   return (
-    <>
-      <Header />
-      <main className="bg-brand-beige min-h-screen pt-28 pb-20">
-        <div className="max-w-5xl mx-auto px-6">
-          {/* Header Banner */}
-          <div className="bg-brand-green text-brand-beige rounded-3xl p-8 md:p-12 mb-10 shadow-lg relative overflow-hidden">
+    <main className="bg-brand-beige min-h-screen py-10">
+      <div className="max-w-5xl mx-auto px-6">
+        {/* Top bar with Navigation */}
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            to={ROUTES.HOME}
+            className="inline-flex items-center gap-2 text-sm font-bold text-brand-green hover:opacity-80 transition-opacity bg-white px-4 py-2 rounded-full border border-brand-green/10 shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            На главную
+          </Link>
+          <div className="font-logo font-bold text-brand-green text-lg tracking-wider">
+            ЖАН FINANCE
+          </div>
+        </div>
+
+        {/* Header Banner */}
+        <div className="bg-brand-green text-brand-beige rounded-3xl p-8 md:p-12 mb-10 shadow-lg relative overflow-hidden">
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 rounded-full border border-brand-beige/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-brand-beige/90 mb-4">
                 <Cookie className="w-4 h-4" />
@@ -174,9 +186,12 @@ export function CookiePolicyPage() {
             </section>
 
           </div>
+
+          {/* Simple Document Footer */}
+          <div className="mt-10 text-center text-xs text-brand-green/60">
+            ТОО «ЖАН FINANCE» • БИН 240140023819 • Все права защищены
+          </div>
         </div>
       </main>
-      <Footer />
-    </>
   );
 }

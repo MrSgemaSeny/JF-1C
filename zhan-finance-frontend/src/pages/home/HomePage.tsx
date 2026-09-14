@@ -1,10 +1,9 @@
 import { Header } from '@/widgets/header/Header';
 import { Hero } from '@/widgets/hero/Hero';
-import { WhyOutsource } from './sections/WhyOutsource';
 import { HomeAbout } from './sections/HomeAbout';
+import { WhyOutsource } from './sections/WhyOutsource';
 import { HomeAdvantages } from './sections/HomeAdvantages';
 import { Trust } from '@/widgets/trust/Trust';
-import { HomeServices } from './sections/HomeServices';
 import { PricingTable } from '@/widgets/pricing-table/PricingTable';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
@@ -20,11 +19,10 @@ export function HomePage() {
       <Header />
       <main>
         <Hero />
-        <WhyOutsource />
         <HomeAbout />
+        <WhyOutsource />
         <HomeAdvantages />
         <Trust />
-        <HomeServices />
         <Section className="bg-brand-green py-32 text-brand-beige">
           <Container>
             <div className="max-w-3xl mb-16">
@@ -48,3 +46,4 @@ export function HomePage() {
     </>
   );
 }
+
