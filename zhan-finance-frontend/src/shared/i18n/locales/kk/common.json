@@ -76,7 +76,7 @@
     "modalTitle": "Заявка принята!"
   },
   "homeAdvantages": {
-    "title": "Почему выбирают <br/><1>Zhan Finance</1>",
+    "title": "Почему выбирают <br/><1>ЖАН FINANCE</1>",
     "subtitle": "Мы не просто сдаем отчеты. Мы выстраиваем прозрачную систему, которая помогает бизнесу расти безопасно.",
     "cards": [
       {
@@ -214,7 +214,7 @@
   },
   "clientChat": {
     "sidebarTitle": "Поддержка",
-    "placeholderTitle": "Поддержка Zhan Finance",
+    "placeholderTitle": "Поддержка ЖАН FINANCE",
     "placeholderSubtitle": "Выберите диалог, чтобы начать общение",
     "inputPlaceholder": "Введите сообщение...",
     "deleteConfirm": "Удалить это сообщение?",
@@ -973,7 +973,7 @@
   },
   "reviews": {
     "1": {
-      "text": "Передали всю бухгалтерию на аутсорс в Zhan Finance. За год ни одного штрафа, налоги оптимизировали на 20%. Идеально.",
+      "text": "Передали всю бухгалтерию на аутсорс в ЖАН FINANCE. За год ни одного штрафа, налоги оптимизировали на 20%. Идеально.",
       "name": "Имя Фамилия",
       "company": "ТОО \"Пример\""
     },
@@ -993,7 +993,7 @@
   },
   "team": {
     "title1": "Команда",
-    "title2": "Zhan Finance",
+    "title2": "ЖАН FINANCE",
     "members": {
       "0_0": {
         "name": "Имя Фамилия",
@@ -1431,7 +1431,7 @@
   "details.taskNotFound": "Задача не найдена",
   "details.goBack": "Вернуться назад",
   "more": "Ещё",
-  "clientDashboard.welcomeNew": "Добро пожаловать в Zhan Finance, {{name}}!",
+  "clientDashboard.welcomeNew": "Добро пожаловать в ЖАН FINANCE, {{name}}!",
   "clientDashboard.welcomeDesc": "Мы помогаем вашему бизнесу расти, берем на себя бухгалтерию, налоги и финансы. Создайте свою первую заявку прямо сейчас, и наша команда приступит к работе.",
   "clientDashboard.createFirstRequest": "Заказать услугу",
   "clientDashboard.howItWorks": "Как работает процесс?",

@@ -6,7 +6,6 @@ import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
-import LogoImage from '@/shared/assets/icons/logo.png';
 
 export function Header() {
   const { t } = useTranslation('common');
@@ -48,16 +47,13 @@ export function Header() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link to={ROUTES.HOME} className="flex items-center gap-3 group relative z-50">
-            <img src={LogoImage} alt="Zhan Finance Logo" className="w-10 h-10 rounded-xl object-contain shadow-lg group-hover:scale-105 transition-transform" />
-            <div className="flex flex-col mt-0.5">
-              <span className="font-logo text-2xl leading-none uppercase tracking-wider text-brand-green transition-colors">
-                ЖАН
-              </span>
-              <span className="font-logo text-[10px] leading-tight tracking-[0.22em] uppercase text-gray-900 transition-colors">
-                FINANCE
-              </span>
-            </div>
+          <Link to={ROUTES.HOME} className="flex items-center gap-1.5 group relative z-50">
+            <span className="font-logo text-2xl leading-none tracking-widest text-brand-green group-hover:opacity-80 transition-opacity">
+              ЖАН
+            </span>
+            <span className="font-logo text-[11px] leading-tight tracking-[0.25em] uppercase text-brand-green/70 self-end mb-0.5">
+              FINANCE
+            </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">

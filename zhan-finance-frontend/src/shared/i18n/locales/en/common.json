@@ -76,7 +76,7 @@
     "modalTitle": "Request Accepted!"
   },
   "homeAdvantages": {
-    "title": "Why choose <br/><1>Zhan Finance</1>",
+    "title": "Why choose <br/><1>ЖАН FINANCE</1>",
     "subtitle": "We don't just submit reports. We build a transparent system that helps businesses grow safely.",
     "cards": [
       {
@@ -211,7 +211,7 @@
   },
   "clientChat": {
     "sidebarTitle": "Support",
-    "placeholderTitle": "Zhan Finance Support",
+    "placeholderTitle": "ЖАН FINANCE Support",
     "placeholderSubtitle": "Select a chat to start messaging",
     "inputPlaceholder": "Type a message...",
     "deleteConfirm": "Delete this message?",
@@ -968,7 +968,7 @@
   },
   "reviews": {
     "1": {
-      "text": "We outsourced all accounting to Zhan Finance. Not a single fine in a year, optimized taxes by 20%. Perfect.",
+      "text": "We outsourced all accounting to ЖАН FINANCE. Not a single fine in a year, optimized taxes by 20%. Perfect.",
       "name": "John Doe",
       "company": "Example LLC"
     },
@@ -988,7 +988,7 @@
   },
   "team": {
     "title1": "Team",
-    "title2": "Zhan Finance",
+    "title2": "ЖАН FINANCE",
     "members": {
       "0_0": {
         "name": "Name Surname",
@@ -1430,7 +1430,7 @@
   "details.taskNotFound": "Task not found",
   "details.goBack": "Go back",
   "more": "More",
-  "clientDashboard.welcomeNew": "Welcome to Zhan Finance, {{name}}!",
+  "clientDashboard.welcomeNew": "Welcome to ЖАН FINANCE, {{name}}!",
   "clientDashboard.welcomeDesc": "We help your business grow, handle accounting, taxes, and finances. Create your first request right now, and our team will get to work.",
   "clientDashboard.createFirstRequest": "Order service",
   "clientDashboard.howItWorks": "How does the process work?",
