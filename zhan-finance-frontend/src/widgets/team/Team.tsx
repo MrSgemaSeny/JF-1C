@@ -70,32 +70,32 @@ export function Team() {
                   <img
                     src={member.photo}
                     alt={t(member.nameKey)}
-                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:opacity-20"
+                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:blur-md"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-brand-green/40 transition-all duration-300 group-hover:scale-105 group-hover:opacity-20">
+                  <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-16 transition-all duration-300 group-hover:scale-105 group-hover:blur-md">
                     <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </div>
                 )}
 
-                {/* Default State: Text on card at bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-[#002613]/90 via-[#002613]/60 to-transparent transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
-                  <p className="text-base font-black uppercase tracking-tight text-white leading-tight mb-1">
+                {/* Default State: Solid stable bottom panel (no gradient) */}
+                <div className="absolute inset-x-0 bottom-0 p-4 bg-brand-green/90 backdrop-blur-sm border-t border-brand-green/20 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none">
+                  <p className="text-sm sm:text-base font-black uppercase tracking-tight text-brand-beige leading-tight mb-0.5">
                     {t(member.nameKey)}
                   </p>
-                  <p className="text-xs font-bold uppercase tracking-wider text-brand-beige/90">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-brand-beige/75">
                     {t(member.roleKey)}
                   </p>
                 </div>
 
-                {/* Hover State: Semi-transparent background with full text */}
-                <div className="absolute inset-0 bg-[#003C1F]/90 backdrop-blur-sm p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-white">
+                {/* Hover State: Blurred photo underneath with semi-transparent backdrop */}
+                <div className="absolute inset-0 bg-black/45 backdrop-blur-sm p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-white">
                   <p className="font-black uppercase text-base mb-1 text-white tracking-wider leading-tight">
                     {t(member.nameKey)}
                   </p>
-                  <p className="text-xs font-bold uppercase tracking-widest text-brand-beige/90 mb-3 pb-2 border-b border-brand-beige/20 w-3/4">
+                  <p className="text-xs font-bold uppercase tracking-widest text-brand-beige mb-3 pb-2 border-b border-brand-beige/25 w-3/4">
                     {t(member.roleKey)}
                   </p>
                   {member.bioKey && (
