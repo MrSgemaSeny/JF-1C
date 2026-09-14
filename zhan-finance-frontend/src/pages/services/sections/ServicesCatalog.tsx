@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
 import { useApiData } from '@/shared/hooks/useApiData';
 import { fetchServices } from '@/entities/service/api/servicesApi';
@@ -14,7 +14,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { ROUTES } from '@/shared/config/routes';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { ApiError, apiRequest } from '@/shared/api/http';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 export function ServicesCatalog() {
   const { t } = useTranslation('common');
@@ -108,11 +108,19 @@ export function ServicesCatalog() {
 
   return (
     <>
-      <Section id="services-list" className="bg-brand-green pt-28 pb-12">
+      <Section id="services-list" className="bg-white py-24 sm:py-32 relative">
+        <div className="max-w-2xl mb-16">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-brand-green mb-6">
+            <Trans i18nKey="homeServices.title" ns="common" components={{ br: <br />, 1: <span className="text-brand-green/40" /> }} />
+          </h2>
+          <p className="text-xl text-brand-green/80 font-medium leading-relaxed">
+            {t('homeServices.subtitle', { defaultValue: 'От разовых консультаций до полного аутсорсинга бухгалтерии и кадров. Мы подберем идеальный формат работы.' })}
+          </p>
+        </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-white/40" />
+            <Loader2 className="w-8 h-8 animate-spin text-brand-green/40" />
           </div>
         ) : (() => {
           const isOneTime = (s: ServiceDto) => {
@@ -149,83 +157,81 @@ export function ServicesCatalog() {
             },
           ];
 
-          const renderCard = (s: ServiceDto, i: number, isOutsourceCol: boolean) => (
+          const renderCard = (service: ServiceDto, i: number, isOutsourceCol: boolean) => (
             <motion.div
-              key={s.id}
-              initial={{ opacity: 0, y: 8 }}
+              key={service.id}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -6, scale: 1.01, boxShadow: '0 24px 48px rgba(0,0,0,0.15)' }}
-              transition={{ duration: 0.25, delay: i * 0.05 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
               viewport={{ once: true }}
-              role="button"
-              tabIndex={0}
+              className="bg-brand-beige/20 p-8 rounded-[32px] border border-brand-green/10 hover:border-brand-green/30 hover:bg-brand-beige transition-all group flex flex-col cursor-pointer justify-between shadow-sm hover:shadow-md"
               onClick={() => {
-                setActive(s);
+                setActive(service);
                 setRestoredMessage('');
                 setRestoredDate('');
               }}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(s); setRestoredMessage(''); setRestoredDate(''); } }}
-              className="flex flex-col bg-white rounded-3xl p-8 items-start shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-green border border-brand-green/10 hover:border-brand-green/40 transition-all justify-between"
             >
-              <div className="w-full">
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <h4 className="text-2xl font-black text-brand-green leading-tight">{t(`service.${s.id}.title`, { defaultValue: s.title })}</h4>
-                  {isOutsourceCol && (
-                    <span className="text-xs font-black text-brand-green bg-brand-green/10 px-3 py-1 rounded-full whitespace-nowrap shrink-0">
-                      По подписке
-                    </span>
-                  )}
-                </div>
-                <p className="text-base text-brand-green/75 mb-4 leading-relaxed">{t(`service.${s.id}.description`, { defaultValue: s.description })}</p>
-                <ul className="text-sm text-brand-green/70 space-y-2 mb-6">
-                  {s.features.map((b, bIndex) => (
-                    <li key={b} className="flex items-start gap-2.5">
-                      <span className="w-1.5 h-1.5 mt-2 rounded-full bg-brand-green shrink-0 opacity-60" />
-                      <span>{t(`service.${s.id}.features.${bIndex}`, { defaultValue: b })}</span>
+              <div>
+                <h3 className="text-2xl font-black uppercase text-brand-green mb-3 leading-tight">
+                  {t(`service.${service.id}.title`, { defaultValue: service.title })}
+                </h3>
+                <p className="text-sm text-brand-green/75 mb-6 leading-relaxed">
+                  {t(`service.${service.id}.description`, { defaultValue: service.description })}
+                </p>
+                <ul className="space-y-2.5 mb-6">
+                  {service.features.map((feature, featureIndex) => (
+                    <li key={feature} className="flex items-start gap-2.5 text-xs font-bold text-brand-green/80">
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand-green mt-1 shrink-0 opacity-60" />
+                      <span>{t(`service.${service.id}.features.${featureIndex}`, { defaultValue: feature })}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); setActive(s); }}
-                className="px-6 py-2.5 bg-brand-green text-brand-beige font-bold uppercase tracking-wider rounded-xl text-xs hover:bg-brand-green/90 transition-all"
-              >
-                {t('services.catalog.details', { defaultValue: 'Подробнее' })}
-              </button>
+
+              <div className="pt-4 border-t border-brand-green/10 flex items-center justify-between">
+                <span className="text-brand-green font-black uppercase tracking-wider text-xs inline-flex items-center gap-2 group-hover:gap-3 transition-all">
+                  {t('homeServices.more', { defaultValue: 'Подробнее' })} <ArrowRight className="w-4 h-4" />
+                </span>
+                {isOutsourceCol && (
+                  <span className="text-xs font-black text-brand-green bg-brand-green/10 px-3 py-1 rounded-full">
+                    По подписке
+                  </span>
+                )}
+              </div>
             </motion.div>
           );
 
           return (
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-              {/* Column 1: One-time */}
+              {/* Column 1: One-time services */}
               <div className="space-y-6">
-                <div className="p-5 rounded-2xl bg-white/10 border border-white/15 text-brand-beige flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-brand-beige text-brand-green flex items-center justify-center font-black text-sm">
+                <div className="flex items-center gap-3 p-5 bg-brand-beige rounded-2xl border border-brand-green/10">
+                  <div className="w-9 h-9 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm">
                     1
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Разовые услуги</h3>
-                    <p className="text-xs text-brand-beige/80 font-medium">Сдача отчетности, расчет зарплаты, восстановление учета и проверка контрагентов</p>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Разовые услуги</h3>
+                    <p className="text-xs text-brand-green/70 font-medium">Сдача отчетности, расчет зарплаты, восстановление учета и проверка контрагентов</p>
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {oneTimeList.map((s, i) => renderCard(s, i, false))}
+                  {oneTimeList.map((service, i) => renderCard(service, i, false))}
                 </div>
               </div>
 
-              {/* Column 2: Outsource */}
+              {/* Column 2: Outsource accounting */}
               <div className="space-y-6">
-                <div className="p-5 rounded-2xl bg-white/10 border border-white/15 text-brand-beige flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-brand-beige text-brand-green flex items-center justify-center font-black text-sm">
+                <div className="flex items-center gap-3 p-5 bg-brand-beige rounded-2xl border border-brand-green/10">
+                  <div className="w-9 h-9 rounded-xl bg-brand-green text-brand-beige flex items-center justify-center font-black text-sm">
                     2
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Аутсорс-бухгалтерия</h3>
-                    <p className="text-xs text-brand-beige/80 font-medium">Полный контроль, 100% ответственность по SLA и регулярное ведение</p>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-brand-green">Аутсорс-бухгалтерия</h3>
+                    <p className="text-xs text-brand-green/70 font-medium">Полный контроль, 100% ответственность по SLA и регулярное ведение</p>
                   </div>
                 </div>
                 <div className="space-y-6">
-                  {fullOutsourceList.map((s, i) => renderCard(s, i, true))}
+                  {fullOutsourceList.map((service, i) => renderCard(service, i, true))}
                 </div>
               </div>
             </div>

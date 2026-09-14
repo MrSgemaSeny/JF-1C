@@ -14,10 +14,9 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Landing & Modal Enhancements (Why Outsource, 2-Column Services, 4 Tariffs, 2-Column FAQ, ServiceModal Cleanup)**:
-   - Added `WhyOutsource.tsx` section on `HomePage.tsx` highlighting SLA benefits and breakdown of outsource accounting scope without badge slop.
-   - Updated `HomeServices.tsx` and `ServicesCatalog.tsx` to render two distinct categorized columns: «Разовые услуги» and «Аутсорс-бухгалтерия» (subscription-based).
-   - Expanded tariffs to 4 distinct tiers in `PricingTable.tsx` and `pricing-plans.ts` (30k, 100k, 200k, 400k KZT/mo, with compact layout and "Бизнес" tier).
+1. **Landing & Services Parity (ServicesCatalog Parity, Pricing Heading, 2-Column Services, 4 Tariffs, ServiceModal Cleanup)**:
+   - Synchronized `ServicesCatalog.tsx` with `HomeServices.tsx`: exact white background, unified `РЕШЕНИЯ ДЛЯ ВАШЕГО БИЗНЕСА` heading with subtitle, identical beige 2-column header badges and card layout.
+   - Added missing «Прозрачная стоимость без скрытых платежей» heading and description to the Pricing section on `ServicesPage.tsx`.
    - Compacted FAQ accordion to 2-column grid (`grid-cols-1 md:grid-cols-2`) with reduced section padding.
    - Cleaned up `ServiceModal.tsx`: removed cluttered date picker and file attachments from the right sidebar, streamlined to Name, Phone, Description («Описание») and Submit button, narrowed modal max-width to 960px.
    - Updated contact form message prefix to `Описание:` (replacing `Задача:`) in `useContactForm.ts` and UI label to `Описание` across locales (`ru`, `kk`, `zh`, `en`).

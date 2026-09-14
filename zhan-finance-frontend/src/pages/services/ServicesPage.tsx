@@ -60,7 +60,16 @@ export function ServicesPage() {
         </Section>
 
         {/* Pricing */}
-        <Section className="bg-brand-green pt-28 pb-12">
+        <Section className="bg-brand-green py-24 sm:py-32 text-brand-beige">
+          <div className="max-w-3xl mb-16">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.1] tracking-tight text-white mb-6">
+              Прозрачная стоимость <br />
+              <span className="text-brand-beige/50">без скрытых платежей</span>
+            </h2>
+            <p className="text-xl text-brand-beige/80 font-medium leading-relaxed">
+              Выберите подходящий тариф под масштаб вашего бизнеса или получите индивидуальный расчет.
+            </p>
+          </div>
           <PricingTable />
         </Section>
 
