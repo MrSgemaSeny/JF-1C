@@ -15,9 +15,10 @@
 
 ## Recently Completed
 1. **Branding Redesign (Pure Typography ЖАН FINANCE & Inter Font)**:
-   - Redesigned header logo to pure typography `ЖАН FINANCE` (font-logo `a_Simpler`), removing legacy raster `logo.png` from `Header.tsx`.
+   - Redesigned header and footer logos to pure typography `ЖАН FINANCE` (font-logo `a_Simpler`), completely removing legacy raster `logo.png` from `Header.tsx` and `Footer.tsx`.
    - Connected Google Font `Inter` (weights 400-900) in `index.html` with preconnect, configured `--font-sans: "Inter", system-ui, sans-serif` in `src/index.css` `@theme`.
    - Updated document `<title>` to `ЖАН Finance` and synchronized brand display across `i18n` locales (`ru`, `kk`, `en`).
+   - Cleaned up emojis in `LoginPage.tsx` (replaced with Lucide `Clock`), achieving strict 0-emoji compliance.
 2. **Brand Font Integration (a_Simpler Bold)**:
    - Integrated corporate font `a_Simpler Bold.ttf` into frontend assets (`src/shared/assets/fonts/a_Simpler_Bold.ttf`).
    - Configured `@font-face` and mapped `--font-logo: "a_Simpler", sans-serif` in `src/index.css`.
