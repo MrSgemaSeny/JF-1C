@@ -1,47 +1,57 @@
 import { Section } from '@/shared/ui/Section';
 import { faqs } from '@/shared/config/content/faq';
-import { ContactForm } from '@/features/contact-form/ContactForm';
 import { useTranslation } from 'react-i18next';
+import { MessageCircle } from 'lucide-react';
 
 interface FaqContactProps {
   id?: string;
   className?: string;
 }
 
-export function FaqContact({ id = 'contact', className = 'bg-brand-beige pt-28 pb-12' }: FaqContactProps) {
+export function FaqContact({ id = 'faq', className = 'bg-brand-beige py-28' }: FaqContactProps) {
   const { t } = useTranslation('landing');
   return (
     <Section id={id} className={className}>
-      <div className="grid gap-8 lg:grid-cols-2 items-start">
-        <div className="bg-brand-beige rounded-[32px] p-8 shadow-lg border border-brand-green/10">
-          <h3 className="text-3xl font-black text-brand-green mb-6">{t('faq_title', { defaultValue: 'Часто задаваемые вопросы' })}</h3>
-          <div className="space-y-4 mb-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-[32px] p-8 sm:p-12 shadow-sm border border-brand-green/10">
+          <h3 className="text-3xl sm:text-4xl font-black text-brand-green mb-8 text-center uppercase tracking-tight">
+            {t('faq_title', { defaultValue: 'Часто задаваемые вопросы' })}
+          </h3>
+          <div className="space-y-4 mb-8">
             {faqs.map((f, i) => (
-              <details key={i} className="rounded-3xl border border-brand-green/10 bg-brand-beige/90 p-5 shadow-sm">
-                <summary className="cursor-pointer font-bold text-brand-green text-lg">{t(f.qKey)}</summary>
-                <p className="mt-3 text-brand-green/70 leading-relaxed">{t(f.aKey)}</p>
+              <details key={i} className="rounded-2xl border border-brand-green/10 bg-brand-beige/30 p-5 shadow-sm group">
+                <summary className="cursor-pointer font-bold text-brand-green text-base sm:text-lg flex items-center justify-between list-none">
+                  <span>{t(f.qKey)}</span>
+                  <span className="text-brand-green/60 text-xl font-black ml-4 group-open:rotate-45 transition-transform">+</span>
+                </summary>
+                <p className="mt-3 text-brand-green/75 leading-relaxed text-sm sm:text-base border-t border-brand-green/10 pt-3">
+                  {t(f.aKey)}
+                </p>
               </details>
             ))}
           </div>
 
-          <div className="p-5 rounded-2xl bg-brand-green/5 border border-brand-green/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="pt-6 border-t border-brand-green/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div>
-              <p className="text-xs uppercase font-extrabold tracking-wider text-brand-green/60">Прямой контакт</p>
-              <p className="text-sm font-bold text-brand-green">support@zhanfinance.kz · info@zhanfinance.kz</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-brand-green/60 mb-1">
+                Остались ещё вопросы?
+              </p>
+              <p className="text-xs font-semibold text-brand-green/80">
+                <a href="mailto:support@zhanfinance.kz" className="hover:underline">support@zhanfinance.kz</a>
+                {' · '}
+                <a href="mailto:info@zhanfinance.kz" className="hover:underline">info@zhanfinance.kz</a>
+              </p>
             </div>
             <a
               href="https://wa.me/77750584021"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2.5 bg-brand-green text-brand-beige text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brand-green/90 transition-all text-center whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-green text-brand-beige text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-brand-green/90 transition-all shadow-sm"
             >
+              <MessageCircle className="w-4 h-4" />
               Написать в WhatsApp
             </a>
           </div>
-        </div>
-
-        <div className="bg-brand-beige rounded-[32px] p-8 shadow-lg border border-brand-green/10">
-          <ContactForm title={t('services.faq.contactTitle', { defaultValue: 'Готовы обсудить задачу?' })} showMessage={true} />
         </div>
       </div>
     </Section>
