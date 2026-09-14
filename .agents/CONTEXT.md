@@ -14,7 +14,11 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Pricing Background & Services Header Unification**:
+1. **Home Restructure & Green Outsource Included Section**:
+   - Removed services catalog block (`HomeServices`) from `HomePage.tsx`. Services catalog is now located exclusively on `/services` (`ServicesPage.tsx` / `ServicesCatalog.tsx`).
+   - Created standalone `OutsourceIncluded.tsx` section on `HomePage.tsx` with dark green background (`bg-brand-green` and `text-brand-beige`), displaying 6 core outsource accounting processes and a direct consultation CTA button.
+   - Restored exact vector logo proportions in `zhan-finance-logo.svg` and `logo-preview.html` (`viewBox="0 0 805 180"`, `a_Simpler_Bold` font natural condensed geometry without artificial `spacingAndGlyphs` distortion).
+2. **Pricing Background & Services Header Unification**:
    - Switched the pricing/tariffs section background from dark green to beige (`bg-brand-beige` with `text-brand-green` typography) on both `HomePage.tsx` and `ServicesPage.tsx`.
    - Unified column headers in `HomeServices.tsx` and `ServicesCatalog.tsx`: changed background to `bg-brand-beige/20 border border-brand-green/10 rounded-[32px]`, identical to the service cards beneath.
 2. **Streamlining Landing Flow & Services Integration (Removed Redundant Outsource Block)**:
