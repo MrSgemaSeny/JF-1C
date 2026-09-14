@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ЖАН FINANCE — SVG Логотип (Превью)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:wght@900&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: "a_Simpler";
+      src: url("zhan-finance-frontend/src/shared/assets/fonts/a_Simpler_Bold.ttf") format("truetype");
+      font-weight: 700 900;
+      font-style: normal;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #EFEFEA;
+      color: #1E2420;
+      padding: 40px 20px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      color: #00562D;
+      margin-bottom: 8px;
+    }
+    header p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,86,45,0.1);
+    }
+    .card h2 {
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #00562D;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card .tag {
+      font-size: 11px;
+      background: rgba(0,86,45,0.08);
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-weight: 700;
+    }
+
+    .preview-box {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      border-radius: 14px;
+    }
+
+    .bg-white-preview { background: #FFFFFF; border: 1px dashed #DDD; }
+    .bg-beige-preview { background: #F5F5DC; border: 1px solid rgba(0,86,45,0.15); }
+    .bg-green-preview { background: #00562D; }
+    .bg-dark-preview  { background: #121614; }
+
+    .svg-wrapper {
+      width: 100%;
+      max-width: 620px;
+      height: auto;
+    }
+
+    .raw-code {
+      margin-top: 16px;
+      background: #1E2420;
+      color: #A3E635;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Векторный SVG логотип (по макету баннера)</h1>
+    <p>Точное воспроизведение вывески: <b>ЖАН</b> (крупно слева) + <b>FINANCE</b> (сверху) + разделительная линия + <b>БУХГАЛТЕРЛІК КОМПАНИЯ</b> (снизу)</p>
+  </header>
+
+  <!-- Вариант 1: На белом фоне (Основной фирменный) -->
+  <div class="card">
+    <h2>1. Фирменный стиль (на белом фоне) <span class="tag">Original Banner Colors</span></h2>
+    <div class="preview-box bg-white-preview">
+      <div class="svg-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 190" width="100%" height="100%">
+          <defs>
+            <style>
+              .v1-zhan { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 154px; fill: #0D5E36; letter-spacing: -2px; }
+              .v1-fin  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 73px; fill: #1E2420; letter-spacing: 1.5px; }
+              .v1-line { stroke: #0D5E36; stroke-width: 7; stroke-linecap: square; }
+              .v1-sub  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 37px; fill: #1E2420; letter-spacing: 0.2px; }
+            </style>
+          </defs>
+          <text x="15" y="146" class="v1-zhan">ЖАН</text>
+          <text x="332" y="78" class="v1-fin">FINANCE</text>
+          <line x1="332" y1="96" x2="702" y2="96" class="v1-line" />
+          <text x="332" y="146" class="v1-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Вариант 2: На фирменном бежевом фоне (Лендинг) -->
+  <div class="card">
+    <h2>2. На фирменном фоне лендинга (#F5F5DC) <span class="tag">Landing Page Beige</span></h2>
+    <div class="preview-box bg-beige-preview">
+      <div class="svg-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 190" width="100%" height="100%">
+          <defs>
+            <style>
+              .v2-zhan { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 154px; fill: #00562D; letter-spacing: -2px; }
+              .v2-fin  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 73px; fill: #004D25; letter-spacing: 1.5px; }
+              .v2-line { stroke: #00562D; stroke-width: 7; stroke-linecap: square; }
+              .v2-sub  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 37px; fill: #004D25; letter-spacing: 0.2px; }
+            </style>
+          </defs>
+          <text x="15" y="146" class="v2-zhan">ЖАН</text>
+          <text x="332" y="78" class="v2-fin">FINANCE</text>
+          <line x1="332" y1="96" x2="702" y2="96" class="v2-line" />
+          <text x="332" y="146" class="v2-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Вариант 3: Инвертированный (для зеленого футера) -->
+  <div class="card">
+    <h2>3. Инвертированный для тёмного / зелёного футера (#00562D) <span class="tag">Footer Inverted</span></h2>
+    <div class="preview-box bg-green-preview">
+      <div class="svg-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 190" width="100%" height="100%">
+          <defs>
+            <style>
+              .v3-zhan { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 154px; fill: #F5F5DC; letter-spacing: -2px; }
+              .v3-fin  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 73px; fill: #FFFFFF; letter-spacing: 1.5px; }
+              .v3-line { stroke: #F5F5DC; stroke-width: 7; stroke-linecap: square; }
+              .v3-sub  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 37px; fill: rgba(245,245,220,0.85); letter-spacing: 0.2px; }
+            </style>
+          </defs>
+          <text x="15" y="146" class="v3-zhan">ЖАН</text>
+          <text x="332" y="78" class="v3-fin">FINANCE</text>
+          <line x1="332" y1="96" x2="702" y2="96" class="v3-line" />
+          <text x="332" y="146" class="v3-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Вариант 4: Компактный для Шапки (Header) -->
+  <div class="card">
+    <h2>4. Компактный для шапки сайта (Высота 36-44px) <span class="tag">Navbar Version</span></h2>
+    <div class="preview-box bg-white-preview" style="gap: 32px; justify-content: flex-start; padding: 24px;">
+      <div style="height: 44px; display: inline-block;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 190" style="height: 44px; width: auto;">
+          <defs>
+            <style>
+              .v4-zhan { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 154px; fill: #0D5E36; letter-spacing: -2px; }
+              .v4-fin  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 73px; fill: #1E2420; letter-spacing: 1.5px; }
+              .v4-line { stroke: #0D5E36; stroke-width: 7; stroke-linecap: square; }
+              .v4-sub  { font-family: 'a_Simpler', 'Montserrat', sans-serif; font-weight: 900; font-size: 37px; fill: #1E2420; letter-spacing: 0.2px; }
+            </style>
+          </defs>
+          <text x="15" y="146" class="v4-zhan">ЖАН</text>
+          <text x="332" y="78" class="v4-fin">FINANCE</text>
+          <line x1="332" y1="96" x2="702" y2="96" class="v4-line" />
+          <text x="332" y="146" class="v4-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+        </svg>
+      </div>
+      <span style="font-size: 13px; color: #666;">Идеально читается даже при высоте 44px в навбаре.</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

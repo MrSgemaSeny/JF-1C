@@ -1,0 +1,45 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 190" width="100%" height="100%">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&amp;family=Inter:wght@900&amp;display=swap');
+      .logo-zhan {
+        font-family: 'a_Simpler', 'Montserrat', 'Arial Black', sans-serif;
+        font-weight: 900;
+        font-size: 154px;
+        fill: #0D5E36;
+        letter-spacing: -2px;
+      }
+      .logo-finance {
+        font-family: 'a_Simpler', 'Montserrat', 'Arial Black', sans-serif;
+        font-weight: 900;
+        font-size: 73px;
+        fill: #1E2420;
+        letter-spacing: 1.5px;
+      }
+      .logo-line {
+        stroke: #0D5E36;
+        stroke-width: 7;
+        stroke-linecap: square;
+      }
+      .logo-sub {
+        font-family: 'a_Simpler', 'Montserrat', 'Arial Black', sans-serif;
+        font-weight: 900;
+        font-size: 37px;
+        fill: #1E2420;
+        letter-spacing: 0.2px;
+      }
+    </style>
+  </defs>
+
+  <!-- ЖАН -->
+  <text x="15" y="146" class="logo-zhan">ЖАН</text>
+
+  <!-- FINANCE -->
+  <text x="332" y="78" class="logo-finance">FINANCE</text>
+
+  <!-- Разделительная линия -->
+  <line x1="332" y1="96" x2="702" y2="96" class="logo-line" />
+
+  <!-- БУХГАЛТЕРЛІК КОМПАНИЯ -->
+  <text x="332" y="146" class="logo-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+</svg>
