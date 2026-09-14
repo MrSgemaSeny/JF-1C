@@ -180,7 +180,8 @@
       "ADMIN": "Admin",
       "EMPLOYEE": "Employee",
       "CLIENT": "Client",
-      "LEARNER": "Learner"
+      "LEARNER": "Learner",
+      "CURATOR": "1C Curator"
     }
   },
   "calendarPage": {
@@ -780,7 +781,9 @@
     "roles": {
       "ADMIN": "Admin",
       "EMPLOYEE": "Employee",
-      "CLIENT": "Client"
+      "CLIENT": "Client",
+      "LEARNER": "Learner",
+      "CURATOR": "1C Curator"
     },
     "soon": "Your invoices and documents will appear here soon."
   },
