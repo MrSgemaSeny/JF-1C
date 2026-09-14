@@ -14,7 +14,12 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Authentic 4-Language i18n Across Landing & About Pages (`ru`, `kk`, `en`, `zh`)**:
+1. **SolutionPicker Removal & Purge of Audit / Legal References across All 4 Locales (`ru`, `kk`, `en`, `zh`)**:
+   - Completely deleted `src/features/solution-picker/` directory (`SolutionPicker.tsx`, `questions.ts`, `SolutionPicker.test.tsx`). Hero CTA points cleanly to `#contact`.
+   - Purged all occurrences of "Аудит" and "Юридическая проверка / защита" across all tariff cards, services catalog, team bios, process workflows, and dictionaries in both frontend and backend seeders.
+   - Updated Service 6 to "Tax verification of counterparties via State Revenue registers" and Tariff 4 to "1C express database analysis and tax optimization".
+   - Verified 100% test pass on both frontend (18 files, 72 tests) and backend (Gradle test suite), and clean Vite build.
+2. **Authentic 4-Language i18n Across Landing & About Pages (`ru`, `kk`, `en`, `zh`)**:
    - Implemented authentic translation coverage for all 3 public pages (`/` Home, `/services` Services, `/about` About).
    - Localized `publicNav`, `footer`, `hero`, `homeAbout`, `homeServices`, `homeAdvantages`, `outsource_included`, `trust`, `pricing`, `reviews`, `team`, `offices`, `faq`, `why`, `howWeWork`, `servicesCatalog`, and all `about.*` sections.
    - Enforced team naming rules: Cyrillic/Kazakh in Russian & Kazakh, Latin transcription in English & Chinese ("Zharilkaganov Amankeldi Nakmadinovich", "Murat Orynbasar", etc.) with localized roles/bios.

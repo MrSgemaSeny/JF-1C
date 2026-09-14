@@ -119,7 +119,7 @@
       {
         "value": "2 bln ₸",
         "label": "saved for clients",
-        "desc": "Through legal tax optimization, VAT refunds, audit of overpayments, and prevention of fines."
+        "desc": "Through legal tax optimization, VAT refunds, overpayment detection, and prevention of fines."
       },
       {
         "value": "100%",
@@ -220,17 +220,17 @@
       },
       {
         "title": "Counterparty Analysis",
-        "desc": "Legal verification of the reliability of partners and clients before the deal.",
+        "desc": "Tax verification of the reliability of partners and clients before the deal.",
         "price": "",
-        "b0": "Counterparty verification",
-        "b1": "Risk analysis",
-        "b2": "Recommendations for cooperation"
+        "b0": "SRC registry verification",
+        "b1": "Tax risk analysis",
+        "b2": "Cooperation recommendations"
       }
     ]
   },
   "team_title": "Team",
   "team_subtitle": "of experts",
-  "team_desc": "Behind every project are real people with years of experience in accounting, taxes, and law.",
+  "team_desc": "Behind every project are real people with years of experience in accounting and taxes.",
   "team": [
     {
       "name": "Zharilkaganov Amankeldi Nakmadinovich",
@@ -240,7 +240,7 @@
     {
       "name": "Kozhamberdieva Alma",
       "role": "Chief Accountant",
-      "bio": "Manages major corporate clients. Specialization: tax reporting, audit, and 1C."
+      "bio": "Manages major corporate clients. Specialization: tax reporting, accounting workflow, and 1C."
     },
     {
       "name": "Omarova Liza",
@@ -282,8 +282,8 @@
   "process_title": "How we rebuild accounting",
   "process": [
     {
-      "title": "Audit and reverse engineering",
-      "text": "We don't just &quot;pick up&quot; the database. We conduct a deep technical audit: check data integrity in 1C, identify gaps in document chains, analyze tax and accounting registers. We find hidden tax risks, stuck balances, and incorrect entries."
+      "title": "Express analysis and reverse engineering",
+      "text": "We don't just &quot;pick up&quot; the database. We conduct a deep technical analysis: check data integrity in 1C, identify gaps in document chains, analyze tax and accounting registers. We find hidden tax risks, stuck balances, and incorrect entries."
     },
     {
       "title": "Data normalization",

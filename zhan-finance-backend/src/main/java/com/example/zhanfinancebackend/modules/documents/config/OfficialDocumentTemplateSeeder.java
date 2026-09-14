@@ -50,7 +50,7 @@ public class OfficialDocumentTemplateSeeder {
         // 2. Report of Rendered Services
         createTemplateIfAbsent(
                 "Отчет об оказанных услугах (АВР)",
-                "Подробный отчет о выполненных бухгалтерских и юридических работах по задаче",
+                "Подробный отчет о выполненных бухгалтерских и консультационных работах по задаче",
                 admin,
                 this::generateServicesReportDocx
         );
@@ -222,7 +222,7 @@ public class OfficialDocumentTemplateSeeder {
             addParagraph(doc, "Исполнитель: ТОО \"Zhan Finance\"", false, ParagraphAlignment.LEFT, 200);
             addParagraph(doc, "Заказчик: {{CLIENT_COMPANY}} (ИИН/БИН: {{CLIENT_IIN}})");
             addParagraph(doc, " ");
-            addParagraph(doc, "Настоящий отчет составлен о том, что Исполнителем были оказаны следующие бухгалтерские/юридические услуги за период обслуживания:");
+            addParagraph(doc, "Настоящий отчет составлен о том, что Исполнителем были оказаны следующие бухгалтерские и консультационные услуги за период обслуживания:");
             addParagraph(doc, " ");
             
             // Detailed report table

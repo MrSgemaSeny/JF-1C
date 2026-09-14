@@ -62,7 +62,7 @@
   "homeAbout": {
     "badge": "About Us",
     "title": "CHOOSE <1>PEACE OF MIND</1> — <br/>AND FOCUS ON GROWING <br/>YOUR BUSINESS",
-    "description": "We handle audits, test tax strategies, and think through every accounting detail — so you can just focus on scaling your company.",
+    "description": "We handle tax inspections, test tax strategies, and think through every accounting detail — so you can just focus on scaling your company.",
     "link": "Learn more about us"
   },
   "homeServices": {
@@ -807,7 +807,7 @@
         {
           "value": "2 bln ₸",
           "label": "saved for clients",
-          "description": "Through legal tax optimization, VAT refunds, audit of overpayments, and prevention of fines."
+          "description": "Through legal tax optimization, VAT refunds, overpayment detection, and prevention of fines."
         },
         {
           "value": "100%",
@@ -829,8 +829,8 @@
       "title": "How we rebuild accounting",
       "items": [
         {
-          "title": "Audit and reverse engineering",
-          "text": "We don't just 'pick up' the database. We conduct a deep technical audit: check data integrity in 1C, identify gaps in document chains, analyze tax and accounting registers. We find hidden tax risks, stuck balances, and incorrect postings."
+          "title": "Express analysis and reverse engineering",
+          "text": "We don't just 'pick up' the database. We conduct a deep technical analysis: check data integrity in 1C, identify gaps in document chains, analyze tax and accounting registers. We find hidden tax risks, stuck balances, and incorrect postings."
         },
         {
           "title": "Data normalization",
@@ -1145,10 +1145,10 @@
     },
     "6": {
       "title": "Counterparty Analysis",
-      "description": "Legal check of partner and client reliability before deals.",
+      "description": "Tax check of partner and client reliability before deals.",
       "features": {
-        "0": "Counterparty check",
-        "1": "Risk analysis",
+        "0": "SRC registry verification",
+        "1": "Tax risk analysis",
         "2": "Cooperation recommendations"
       }
     },
@@ -1158,7 +1158,7 @@
       "features": {
         "0": "Financial guarantee under SLA",
         "1": "24/7 State Revenue personal account monitoring",
-        "2": "Desk audit tax defense"
+        "2": "Desk tax inspection defense"
       }
     },
     "s1": {
@@ -1208,10 +1208,10 @@
     },
     "s6": {
       "title": "Counterparty Analysis",
-      "description": "Legal check of partner and client reliability before deals.",
+      "description": "Tax check of partner and client reliability before deals.",
       "features": {
-        "0": "Counterparty check",
-        "1": "Risk analysis",
+        "0": "SRC registry verification",
+        "1": "Tax risk analysis",
         "2": "Cooperation recommendations"
       }
     }
@@ -1251,7 +1251,7 @@
           "Бухгалтерия": "Accounting",
           "Налоги": "Taxes",
           "Кадры": "HR",
-          "Юридическая защита": "Legal Protection"
+          "Юридическая защита": "Tax Consulting"
         }
       },
       "timeline": {
@@ -1356,7 +1356,7 @@
     "Ведение кадровых документов, табелей, расчет отпускных и больничных.": "Maintenance of HR documents, timesheets, calculation of vacation and sick leave.",
     "Приведём в порядок документы, исправим ошибки и пересдадим отчётность.": "We will put documents in order, correct errors, and resubmit reports.",
     "Работа с актами, накладными, счетами и внутренней бухгалтерией.": "Work with acts, invoices, bills, and internal accounting.",
-    "Юридическая проверка надежности партнеров и клиентов до сделки.": "Legal verification of the reliability of partners and clients before the deal."
+    "Юридическая проверка надежности партнеров и клиентов до сделки.": "Tax verification of the reliability of partners and clients before the deal."
   },
   "serviceFeatures": {
     "Полный учет операций": "Full transaction accounting",
@@ -1368,13 +1368,13 @@
     "Расчет заработной платы": "Payroll calculation",
     "Кадровое делопроизводство": "HR administration and records",
     "Отчетность по сотрудникам": "Employee tax and pension reporting",
-    "Аудит текущей базы": "Audit of current database and 1C",
+    "Аудит текущей базы": "Express analysis of current database and 1C",
     "Восстановление документов": "Restoration of missing documents",
     "Пересдача отчетности": "Resubmission of tax declarations",
     "Ввод актов и накладных": "Data entry of acts and waybills",
     "Сверка с контрагентами": "Reconciliation statements with counterparties",
     "Контроль задолженности": "Accounts receivable & payable tracking",
-    "Анализ налоговых рисков": "Analysis of tax and legal risks",
+    "Анализ налоговых рисков": "Tax risk analysis",
     "Проверка по реестрам": "Verification via state registries",
     "Выдача заключения": "Issuance of official risk assessment report"
   },
