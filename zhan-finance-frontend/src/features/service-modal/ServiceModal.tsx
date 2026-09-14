@@ -1,26 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, CheckCircle2, Paperclip, X, FileText } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
 import { Input } from '@/shared/ui/Input/Input';
 import { Textarea } from '@/shared/ui/Input/Textarea';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
-import { DatePicker } from '@/shared/ui/DatePicker';
 import { ROUTES } from '@/shared/config/routes';
-import { toast } from '@/shared/ui/Toast/ToastContext';
-
-const MAX_FILES = 5;
-const MAX_FILE_SIZE_MB = 10;
-const ALLOWED_EXTENSIONS = ['.pdf', '.xlsx', '.xls', '.docx', '.doc', '.jpg', '.jpeg', '.png', '.csv', '.txt', '.md', '.zip', '.rar', '.7z'];
-
-function formatFileSize(bytes: number): string {
-  if (!bytes || bytes === 0) return '0 B';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 interface ServiceModalProps {
   item: ServiceDto;
@@ -43,67 +30,30 @@ export function ServiceModal({
   isSubmitting = false,
   isLoggedIn = false,
   initialMessage = '',
-  initialPreferredDate = '',
 }: ServiceModalProps) {
   const { t } = useTranslation(['modals', 'landing', 'common']);
   const [message, setMessage] = useState(initialMessage);
-  const [preferredDate, setPreferredDate] = useState(initialPreferredDate);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [files, setFiles] = useState<File[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEscapeKey(onClose);
 
   useEffect(() => {
     if (initialMessage) setMessage(initialMessage);
-    if (initialPreferredDate) setPreferredDate(initialPreferredDate);
-  }, [initialMessage, initialPreferredDate]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    const validFiles: File[] = [];
-
-    for (const file of selectedFiles) {
-      if (files.length + validFiles.length >= MAX_FILES) break;
-      
-      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!ALLOWED_EXTENSIONS.includes(ext)) {
-        toast.error(t('serviceModal.files.forbiddenExt', { 
-          defaultValue: `Файл ${file.name} заблокирован: загрузка исполняемых файлов (.exe, .sh, .js) запрещена из соображений безопасности.`
-        }), { duration: 6000 });
-        continue;
-      }
-      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-        toast.error(t('serviceModal.files.fileTooLarge', { 
-          defaultValue: `Размер файла ${file.name} превышает лимит ${MAX_FILE_SIZE_MB} МБ.`
-        }), { duration: 5000 });
-        continue;
-      }
-      
-      validFiles.push(file);
-    }
-
-    setFiles(prev => [...prev, ...validFiles]);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-  };
+  }, [initialMessage]);
 
   const handleRequest = () => {
     if (isLoggedIn) {
-      onRequest?.(item, message || undefined, preferredDate || undefined, files.length > 0 ? files : undefined);
+      onRequest?.(item, message || undefined);
     } else {
       if (onGuestRequest && (!name || !phone)) {
         alert(t('serviceModal.validation.fillContacts', { defaultValue: 'Пожалуйста, заполните имя и телефон' }));
         return;
       }
       if (onGuestRequest) {
-        onGuestRequest(item, name, phone, message || undefined, preferredDate || undefined, files.length > 0 ? files : undefined);
+        onGuestRequest(item, name, phone, message || undefined);
       } else {
-        onRequest?.(item, message || undefined, preferredDate || undefined, files.length > 0 ? files : undefined);
+        onRequest?.(item, message || undefined);
       }
     }
   };
@@ -115,7 +65,7 @@ export function ServiceModal({
         onClick={onClose}
       >
         <motion.div
-          className="w-[95vw] max-w-[1400px] overflow-hidden rounded-[24px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar relative flex flex-col"
+          className="w-[95vw] max-w-[960px] overflow-hidden rounded-[24px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar relative flex flex-col"
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -198,63 +148,8 @@ export function ServiceModal({
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder={t('serviceModal.orderForm.commentPlaceholder', { defaultValue: 'Например: нужно ведение ИП на УСН...' })}
-                      label={t('serviceModal.orderForm.comment', { defaultValue: 'Дополнительный комментарий' })}
+                      label={t('serviceModal.orderForm.comment', { defaultValue: 'Описание' })}
                     />
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('serviceModal.orderForm.date', { defaultValue: 'Желаемая дата звонка (необязательно)' })}</label>
-                      <DatePicker
-                        value={preferredDate}
-                        onChange={setPreferredDate}
-                        min={new Date().toISOString().split('T')[0]}
-                      />
-                    </div>
-
-                    <div className="space-y-3">
-                      <label className="block text-sm font-medium text-gray-700">
-                        {t('serviceModal.files.label', { defaultValue: 'Прикрепить файлы' })}
-                      </label>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        multiple
-                        accept={ALLOWED_EXTENSIONS.join(',')}
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={files.length >= MAX_FILES}
-                        className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 text-sm font-medium hover:border-brand-green hover:text-brand-green hover:bg-brand-green/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        <Paperclip size={16} />
-                        {files.length >= MAX_FILES
-                          ? t('serviceModal.files.maxReached', { defaultValue: 'Максимум файлов' })
-                          : t('serviceModal.files.attach', { defaultValue: 'Выбрать файлы' })}
-                      </button>
-                      <p className="text-[11px] text-gray-400">
-                        {t('serviceModal.files.hint', { defaultValue: 'PDF, XLSX, DOCX, JPG, PNG. До 10 МБ, макс. 5 файлов.' })}
-                      </p>
-
-                      {files.length > 0 && (
-                        <div className="space-y-2">
-                          {files.map((file, i) => (
-                            <div key={`${file.name}-${i}`} className="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-200 text-sm">
-                              <FileText size={14} className="text-brand-green shrink-0" />
-                              <span className="flex-1 truncate text-gray-700 font-medium">{file.name}</span>
-                              <span className="text-gray-400 text-xs shrink-0">{formatFileSize(file.size)}</span>
-                              <button
-                                type="button"
-                                onClick={() => removeFile(i)}
-                                className="p-1 text-gray-400 hover:text-red-500 transition-colors shrink-0"
-                              >
-                                <X size={14} />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
 
                     <button
                       onClick={handleRequest}

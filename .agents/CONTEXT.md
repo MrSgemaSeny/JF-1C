@@ -14,11 +14,12 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Landing Enhancements (Why Outsource, 2-Column Services, 4 Tariffs, Extended FAQ, Contact WhatsApp Form)**:
+1. **Landing & Modal Enhancements (Why Outsource, 2-Column Services, 4 Tariffs, 2-Column FAQ, ServiceModal Cleanup)**:
    - Added `WhyOutsource.tsx` section on `HomePage.tsx` highlighting SLA benefits and breakdown of outsource accounting scope without badge slop.
    - Updated `HomeServices.tsx` and `ServicesCatalog.tsx` to render two distinct categorized columns: «Разовые услуги» and «Аутсорс-бухгалтерия» (subscription-based).
    - Expanded tariffs to 4 distinct tiers in `PricingTable.tsx` and `pricing-plans.ts` (30k, 100k, 200k, 400k KZT/mo, with compact layout and "Бизнес" tier).
-   - Extended FAQ accordion to 6 questions/answers covering SLA liability, primary doc workflow, and tax authority audits; removed standalone contact form from FAQ block in favor of clean support links.
+   - Compacted FAQ accordion to 2-column grid (`grid-cols-1 md:grid-cols-2`) with reduced section padding.
+   - Cleaned up `ServiceModal.tsx`: removed cluttered date picker and file attachments from the right sidebar, streamlined to Name, Phone, Description («Описание») and Submit button, narrowed modal max-width to 960px.
    - Updated contact form message prefix to `Описание:` (replacing `Задача:`) in `useContactForm.ts` and UI label to `Описание` across locales (`ru`, `kk`, `zh`, `en`).
 2. **Landing Contact & FAQ Block Unification (FaqContact Widget)**:
    - Promoted `ServicesFaqContact` into a clean shared FSD widget `@/widgets/faq-contact` (`FaqContact.tsx`), preserving backwards compatibility via re-export.

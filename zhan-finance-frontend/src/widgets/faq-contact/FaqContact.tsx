@@ -8,32 +8,32 @@ interface FaqContactProps {
   className?: string;
 }
 
-export function FaqContact({ id = 'faq', className = 'bg-brand-beige py-28' }: FaqContactProps) {
+export function FaqContact({ id = 'faq', className = 'bg-brand-beige py-16 sm:py-20' }: FaqContactProps) {
   const { t } = useTranslation('landing');
   return (
     <Section id={id} className={className}>
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-[32px] p-8 sm:p-12 shadow-sm border border-brand-green/10">
-          <h3 className="text-3xl sm:text-4xl font-black text-brand-green mb-8 text-center uppercase tracking-tight">
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-white rounded-[28px] p-6 sm:p-10 shadow-sm border border-brand-green/10">
+          <h3 className="text-2xl sm:text-3xl font-black text-brand-green mb-6 text-center uppercase tracking-tight">
             {t('faq_title', { defaultValue: 'Часто задаваемые вопросы' })}
           </h3>
-          <div className="space-y-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-6 items-start">
             {faqs.map((f, i) => (
-              <details key={i} className="rounded-2xl border border-brand-green/10 bg-brand-beige/30 p-5 shadow-sm group">
-                <summary className="cursor-pointer font-bold text-brand-green text-base sm:text-lg flex items-center justify-between list-none">
+              <details key={i} className="rounded-xl border border-brand-green/10 bg-brand-beige/30 p-4 shadow-sm group">
+                <summary className="cursor-pointer font-bold text-brand-green text-sm sm:text-base flex items-center justify-between list-none">
                   <span>{t(f.qKey)}</span>
-                  <span className="text-brand-green/60 text-xl font-black ml-4 group-open:rotate-45 transition-transform">+</span>
+                  <span className="text-brand-green/60 text-lg font-black ml-3 group-open:rotate-45 transition-transform flex-shrink-0">+</span>
                 </summary>
-                <p className="mt-3 text-brand-green/75 leading-relaxed text-sm sm:text-base border-t border-brand-green/10 pt-3">
+                <p className="mt-2.5 text-brand-green/75 leading-relaxed text-xs sm:text-sm border-t border-brand-green/10 pt-2.5">
                   {t(f.aKey)}
                 </p>
               </details>
             ))}
           </div>
 
-          <div className="pt-6 border-t border-brand-green/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="pt-5 border-t border-brand-green/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-brand-green/60 mb-1">
+              <p className="text-xs font-bold uppercase tracking-wider text-brand-green/60 mb-0.5">
                 Остались ещё вопросы?
               </p>
               <p className="text-xs font-semibold text-brand-green/80">
