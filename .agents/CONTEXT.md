@@ -14,7 +14,11 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Removal of Eyebrow Mini-Badges Across Landing Pages**:
+1. **Team Member Cards Redesign (On-Card Typography & Hover Overlay)**:
+   - Moved name and role labels directly inside the specialist cards (`Team.tsx`) over a subtle bottom gradient in default state, removing external labels underneath.
+   - Implemented sleek hover state: photo becomes semi-transparent (`opacity-20`, `scale-105`) over a dark green backdrop while full bio, name, and role are centered inside the card.
+   - Verified 100% test pass (19 test files, 74 tests).
+2. **Removal of Eyebrow Mini-Badges Across Landing Pages**:
    - Completely removed redundant pill badges with dots and uppercase eyebrow tags from landing and about sections: `OutsourceIncluded.tsx` («Комплексный сервис»), `HomeAbout.tsx` («О компании»), `AboutHero.tsx`, `AboutIdeology.tsx` («Наша идеология»), `AboutProcess.tsx` («Инженерный подход»), `AboutGuarantees.tsx` («Ответственность»), and converted leader badge in `Team.tsx` to clean typography.
    - Verified 100% test pass (19 test files, 74 tests).
 2. **Repository Cleanup, Scratch Archiving & Modern .gitignore**:
