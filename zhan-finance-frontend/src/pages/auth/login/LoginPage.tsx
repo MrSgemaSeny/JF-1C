@@ -1,6 +1,6 @@
 import { useState, useRef, FormEvent, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { ArrowRight, Mail, Lock } from 'lucide-react';
+import { ArrowRight, Mail, Lock, Clock } from 'lucide-react';
 import { ROUTES } from '@/shared/config/routes';
 import { ApiError, extractValidationErrors } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -133,7 +133,7 @@ export function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-24">
         <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10 text-center">
           <div className="mx-auto w-16 h-16 bg-brand-green/10 rounded-full flex items-center justify-center mb-6">
-            <span className="text-3xl">⏳</span>
+            <Clock className="w-8 h-8 text-brand-green" />
           </div>
           <h2 className="text-2xl font-black uppercase text-brand-green mb-4">Статус аккаунта</h2>
           <p className="text-brand-green/70 mb-8 leading-relaxed font-medium">
