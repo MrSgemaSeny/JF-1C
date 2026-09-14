@@ -109,7 +109,7 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
           {showMessage && (
             <div>
               <label className="block text-sm font-bold mb-2 uppercase tracking-wider opacity-70">
-                {t('contactForm.fields.message.label', { defaultValue: 'Краткое описание задачи' })}
+                {t('contactForm.fields.message.label', { defaultValue: 'Описание' })}
               </label>
               <textarea
                 value={message}

@@ -1488,7 +1488,7 @@
   "contactForm.fields.phone.label": "Телефон",
   "contactForm.fields.email.label": "Email (необязательно)",
   "contactForm.fields.email.placeholder": "name@example.com",
-  "contactForm.fields.message.label": "Краткое описание задачи",
+  "contactForm.fields.message.label": "Описание",
   "contactForm.fields.message.placeholder": "Расскажите, чем мы можем вам помочь...",
   "contactForm.buttons.submitting": "Отправляем...",
   "contactForm.buttons.submit": "Отправить заявку",

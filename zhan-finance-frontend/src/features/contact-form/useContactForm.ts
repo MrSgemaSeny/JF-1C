@@ -55,7 +55,7 @@ export function useContactForm() {
         `Имя: ${name}`,
         `Телефон: ${phone}`,
         email ? `Email: ${email}` : null,
-        message ? `Задача: ${message}` : null,
+        message ? `Описание: ${message}` : null,
         `Источник: zhanfinance.kz`
       ].filter(Boolean);
 
