@@ -11,42 +11,40 @@
         font-family: 'a_Simpler', sans-serif;
         font-weight: 900;
         font-size: 135px;
-        fill: #0D5E36;
+        fill: #00562D;
         text-anchor: start;
       }
       .logo-finance {
         font-family: 'a_Simpler', sans-serif;
         font-weight: 900;
-        font-size: 80px;
-        letter-spacing: 5px;
-        fill: #1E2420;
+        font-size: 90px;
+        fill: #1F1F1F;
         text-anchor: start;
       }
       .logo-line {
-        stroke: #0D5E36;
-        stroke-width: 6;
-        stroke-linecap: square;
+        stroke: #00562D;
+        stroke-width: 7;
+        stroke-linecap: butt;
       }
       .logo-sub {
         font-family: 'a_Simpler', sans-serif;
         font-weight: 900;
-        font-size: 27px;
-        letter-spacing: 2px;
-        fill: #1E2420;
+        font-size: 28px;
+        fill: #1F1F1F;
         text-anchor: start;
       }
     </style>
   </defs>
 
   <!-- ЖАН -->
-  <text x="30" y="145" class="logo-zhan">ЖАН</text>
+  <text x="30" y="148" class="logo-zhan">ЖАН</text>
 
   <!-- FINANCE -->
-  <text x="440" y="96" class="logo-finance">FINANCE</text>
+  <text x="420" y="98" class="logo-finance" textLength="515" lengthAdjust="spacingAndGlyphs">FINANCE</text>
 
-  <!-- Разделительная линия -->
-  <line x1="440" y1="110" x2="930" y2="110" class="logo-line" />
+  <!-- Разделительная линия (строго от F до E) -->
+  <line x1="420" y1="112" x2="935" y2="112" class="logo-line" />
 
-  <!-- БУХГАЛТЕРЛІК КОМПАНИЯ -->
-  <text x="440" y="145" class="logo-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+  <!-- БУХГАЛТЕРЛІК КОМПАНИЯ (строго от F до E) -->
+  <text x="420" y="148" class="logo-sub" textLength="515" lengthAdjust="spacingAndGlyphs">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
 </svg>
