@@ -1497,7 +1497,7 @@
   "serviceModal.close": "Close",
   "serviceModal.about": "About service",
   "serviceModal.includes": "What is included in the price:",
-  "serviceModal.orderForm.title": "Leave a request",
+  "serviceModal.orderForm.title": "Description",
   "serviceModal.orderForm.descriptionLoggedIn": "Describe the task or click \"Leave a request\", and our specialist will contact you.",
   "serviceModal.orderForm.descriptionGuest": "Fill out the form below so we can contact you and discuss the details.",
   "serviceModal.orderForm.namePlaceholder": "John Doe",

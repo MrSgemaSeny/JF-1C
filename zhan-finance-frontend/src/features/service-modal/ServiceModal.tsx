@@ -61,7 +61,7 @@ export function ServiceModal({
   return (
     <AnimatePresence>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-brand-green/80 p-4 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-md"
         onClick={onClose}
       >
         <motion.div
@@ -118,7 +118,7 @@ export function ServiceModal({
 
             <div className="w-full lg:w-[420px] shrink-0">
               <div className="space-y-4 rounded-3xl bg-gray-50 border border-gray-200/60 p-6 sm:p-8 shadow-sm">
-                <h5 className="text-xl font-black text-gray-900">{t('serviceModal.orderForm.title', { defaultValue: 'Оставить заявку' })}</h5>
+                <h5 className="text-xl font-black text-gray-900">{t('serviceModal.orderForm.title', { defaultValue: 'Описание' })}</h5>
                 <p className="text-gray-500 text-sm font-medium leading-relaxed mb-4">
                   {isLoggedIn
                     ? t('serviceModal.orderForm.descriptionLoggedIn', { defaultValue: 'Опишите задачу или нажмите «Оставить заявку», и наш специалист свяжется с вами.' })
@@ -148,7 +148,6 @@ export function ServiceModal({
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder={t('serviceModal.orderForm.commentPlaceholder', { defaultValue: 'Например: нужно ведение ИП на УСН...' })}
-                      label={t('serviceModal.orderForm.comment', { defaultValue: 'Описание' })}
                     />
 
                     <button

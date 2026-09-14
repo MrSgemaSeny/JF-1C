@@ -1498,7 +1498,7 @@
   "serviceModal.close": "Закрыть",
   "serviceModal.about": "О сервисе",
   "serviceModal.includes": "Что входит в стоимость:",
-  "serviceModal.orderForm.title": "Оставить заявку",
+  "serviceModal.orderForm.title": "Сипаттама",
   "serviceModal.orderForm.descriptionLoggedIn": "Опишите задачу или нажмите «Оставить заявку», и наш специалист свяжется с вами.",
   "serviceModal.orderForm.descriptionGuest": "Заполните форму ниже, чтобы мы могли связаться с вами и обсудить детали.",
   "serviceModal.orderForm.namePlaceholder": "Иван Иванов",
