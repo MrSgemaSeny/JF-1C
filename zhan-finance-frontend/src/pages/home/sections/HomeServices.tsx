@@ -1,105 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
 import { ROUTES } from '@/shared/config/routes';
 import { useApiData } from '@/shared/hooks/useApiData';
 import { fetchHighlightedServices } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
-import { requestTask } from '@/entities/task/api/taskApi';
-import { uploadDocument } from '@/entities/document/api/documentApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
-import { SuccessModal } from '@/shared/ui/SuccessModal';
-import { useAuth } from '@/features/auth/AuthContext';
-import { toast } from '@/shared/ui/Toast/ToastContext';
-import { ApiError, apiRequest } from '@/shared/api/http';
 import { useTranslation, Trans } from 'react-i18next';
 
 export function HomeServices() {
   const { t } = useTranslation('common');
   const { data: services, isLoading } = useApiData(fetchHighlightedServices);
   const [selectedService, setSelectedService] = useState<ServiceDto | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | React.ReactNode | null>(null);
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [restoredMessage, setRestoredMessage] = useState('');
-  const [restoredDate, setRestoredDate] = useState('');
-
-  // Восстанавливаем заявку из sessionStorage при логине
-  useEffect(() => {
-    if (!user) return; // Юзер не авторизован, ничего не делаем
-
-    const pending = sessionStorage.getItem('pendingServiceOrder');
-    if (!pending) return; // Нет отложенной заявки
-
-    try {
-      const order = JSON.parse(pending);
-      if (services) {
-        const service = services.find((s) => s.id === order.serviceId);
-        if (service) {
-          setSelectedService(service);
-          setRestoredMessage(order.message || '');
-          setRestoredDate(order.preferredDate || '');
-          sessionStorage.removeItem('pendingServiceOrder');
-        }
-      }
-    } catch (error) {
-      console.error('Failed to restore pending order:', error);
-      sessionStorage.removeItem('pendingServiceOrder');
-    }
-  }, [user, services]);
-
-  const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string, files?: File[]) => {
-    if (!user) {
-      const pendingOrder = {
-        serviceId: service.id,
-        message,
-        preferredDate,
-        returnUrl: location.pathname, // Откуда пришли
-      };
-      sessionStorage.setItem('pendingServiceOrder', JSON.stringify(pendingOrder));
-      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(location.pathname)}`);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const createdTask = await requestTask({ 
-        clientId: user.userId,
-        title: `${t('homeServices.orderPrefix')} ${service.title}`,
-        description: message,
-        dueDate: preferredDate,
-        serviceIds: [service.id]
-      });
-
-      // Upload attached files to the created task
-      if (files && files.length > 0 && createdTask?.id) {
-        const failedFiles: string[] = [];
-        for (const file of files) {
-          try {
-            await uploadDocument(file, undefined, createdTask.id);
-          } catch (fileErr) {
-            console.error('Failed to upload file attachment:', file.name, fileErr);
-            failedFiles.push(file.name);
-          }
-        }
-        if (failedFiles.length > 0) {
-          toast.warning(`Заявка создана, но не удалось загрузить файлы: ${failedFiles.join(', ')}`);
-        }
-      }
-
-      setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
-      setSelectedService(null);
-    } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('homeServices.errorMessage'));
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <Section className="bg-white py-32 relative">
@@ -121,18 +36,6 @@ export function HomeServices() {
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
-
-        {/* Success banner */}
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mb-8 rounded-2xl bg-green-50 border border-green-200 p-4 text-green-800 font-medium text-center"
-          >
-            {successMessage}
-          </motion.div>
-        )}
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -184,11 +87,7 @@ export function HomeServices() {
               transition={{ duration: 0.4, delay: i * 0.08 }}
               viewport={{ once: true }}
               className="bg-brand-beige/20 p-8 rounded-[32px] border border-brand-green/10 hover:border-brand-green/30 hover:bg-brand-beige transition-all group flex flex-col cursor-pointer justify-between shadow-sm hover:shadow-md"
-              onClick={() => {
-                setSelectedService(service);
-                setRestoredMessage('');
-                setRestoredDate('');
-              }}
+              onClick={() => setSelectedService(service)}
             >
               <div>
                 <h3 className="text-2xl font-black uppercase text-brand-green mb-3 leading-tight">
@@ -271,55 +170,8 @@ export function HomeServices() {
         <ServiceModal
           item={selectedService}
           onClose={() => setSelectedService(null)}
-          onRequest={handleRequestService}
-          onGuestRequest={async (service, name, phone, message, preferredDate, files) => {
-            setIsSubmitting(true);
-            try {
-              let fullMessage = `Услуга: ${service.title}`;
-              if (message) fullMessage += `\nКомментарий: ${message}`;
-              if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
-              
-              const res = await apiRequest<{ id: number }>('/api/v1/contact-requests', {
-                method: 'POST',
-                body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
-              });
-
-              if (files && files.length > 0 && res.id) {
-                try {
-                  const formData = new FormData();
-                  files.forEach(file => formData.append('files', file));
-                  await apiRequest(`/api/v1/contact-requests/${res.id}/files`, {
-                    method: 'POST',
-                    body: formData,
-                  });
-                  setSuccessMessage(t('homeServices.successMessageFiles', { defaultValue: 'Ваша заявка отправлена!\n\nФайлы успешно прикреплены. Ожидайте звонка от нашего специалиста.' }));
-                } catch (fileErr) {
-                  console.error('Failed to upload guest request files:', fileErr);
-                  setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
-                }
-              } else {
-                setSuccessMessage(t('homeServices.successMessage', { title: service.title }));
-              }
-              setSelectedService(null);
-            } catch (err) {
-              toast.error(t('homeServices.errorMessage'));
-            } finally {
-              setIsSubmitting(false);
-            }
-          }}
-          isSubmitting={isSubmitting}
-          isLoggedIn={!!user}
-          initialMessage={restoredMessage}
-          initialPreferredDate={restoredDate}
         />
       )}
-
-      <SuccessModal
-        isOpen={!!successMessage}
-        onClose={() => setSuccessMessage(null)}
-        title={t('homeServices.modalTitle')}
-        message={successMessage || ''}
-      />
     </Section>
   );
 }

@@ -1,110 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { Section } from '@/shared/ui/Section';
 import { useApiData } from '@/shared/hooks/useApiData';
 import { fetchServices } from '@/entities/service/api/servicesApi';
 import type { ServiceDto } from '@/entities/service/api/servicesApi';
-import { requestTask } from '@/entities/task/api/taskApi';
-import { uploadDocument } from '@/entities/document/api/documentApi';
 import { ServiceModal } from '@/features/service-modal/ServiceModal';
-import { SuccessModal } from '@/shared/ui/SuccessModal';
-import { useAuth } from '@/features/auth/AuthContext';
-import { ROUTES } from '@/shared/config/routes';
-import { toast } from '@/shared/ui/Toast/ToastContext';
-import { ApiError, apiRequest } from '@/shared/api/http';
 import { useTranslation, Trans } from 'react-i18next';
 
 export function ServicesCatalog() {
   const { t } = useTranslation('common');
   const { data: services, isLoading } = useApiData(fetchServices);
   const [active, setActive] = useState<ServiceDto | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [restoredMessage, setRestoredMessage] = useState('');
-  const [restoredDate, setRestoredDate] = useState('');
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  // Восстанавливаем заявку из sessionStorage при логине
-  useEffect(() => {
-    if (!user) return; // Юзер не авторизован, ничего не делаем
-
-    const pending = sessionStorage.getItem('pendingServiceOrder');
-    if (!pending) return; // Нет отложенной заявки
-
-    try {
-      const order = JSON.parse(pending);
-      if (services) {
-        const service = services.find((s) => s.id === order.serviceId);
-        if (service) {
-          setActive(service);
-          setRestoredMessage(order.message || '');
-          setRestoredDate(order.preferredDate || '');
-          sessionStorage.removeItem('pendingServiceOrder');
-        }
-      }
-    } catch (error) {
-      console.error('Failed to restore pending order:', error);
-      sessionStorage.removeItem('pendingServiceOrder');
-    }
-  }, [user, services]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setActive(null); };
-    document.body.style.overflow = active ? 'hidden' : '';
-    window.addEventListener('keydown', onKey);
-    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
-  }, [active]);
-
-  const handleRequestService = async (service: ServiceDto, message?: string, preferredDate?: string, files?: File[]) => {
-    if (!user) {
-      const pendingOrder = {
-        serviceId: service.id,
-        message,
-        preferredDate,
-        returnUrl: location.pathname, // Откуда пришли
-      };
-      sessionStorage.setItem('pendingServiceOrder', JSON.stringify(pendingOrder));
-      navigate(`${ROUTES.LOGIN}?from=${encodeURIComponent(location.pathname)}`);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const createdTask = await requestTask({ 
-        clientId: user.userId,
-        title: `${t('services.catalog.orderTaskPrefix', { defaultValue: 'Заказ услуги: ' })}${service.title}`,
-        description: message,
-        dueDate: preferredDate,
-        serviceIds: [service.id]
-      });
-
-      // Upload attached files to the created task
-      if (files && files.length > 0 && createdTask?.id) {
-        const failedFiles: string[] = [];
-        for (const file of files) {
-          try {
-            await uploadDocument(file, undefined, createdTask.id);
-          } catch (fileErr) {
-            console.error('Failed to upload file attachment:', file.name, fileErr);
-            failedFiles.push(file.name);
-          }
-        }
-        if (failedFiles.length > 0) {
-          toast.warning(`Заявка создана, но не удалось загрузить файлы: ${failedFiles.join(', ')}`);
-        }
-      }
-
-      toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
-      setActive(null);
-    } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('services.catalog.error', { defaultValue: 'Ошибка при отправке запроса. Попробуйте позже.' }));
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <>
@@ -165,11 +72,7 @@ export function ServicesCatalog() {
               transition={{ duration: 0.4, delay: i * 0.08 }}
               viewport={{ once: true }}
               className="bg-brand-beige/20 p-8 rounded-[32px] border border-brand-green/10 hover:border-brand-green/30 hover:bg-brand-beige transition-all group flex flex-col cursor-pointer justify-between shadow-sm hover:shadow-md"
-              onClick={() => {
-                setActive(service);
-                setRestoredMessage('');
-                setRestoredDate('');
-              }}
+              onClick={() => setActive(service)}
             >
               <div>
                 <h3 className="text-2xl font-black uppercase text-brand-green mb-3 leading-tight">
@@ -243,49 +146,8 @@ export function ServicesCatalog() {
         <ServiceModal
           item={active}
           onClose={() => setActive(null)}
-          onRequest={handleRequestService}
-          onGuestRequest={async (service, name, phone, message, preferredDate, files) => {
-            setIsSubmitting(true);
-            try {
-              let fullMessage = `Услуга: ${service.title}`;
-              if (message) fullMessage += `\nКомментарий: ${message}`;
-              if (preferredDate) fullMessage += `\nЖелаемая дата: ${preferredDate}`;
-              
-              const res = await apiRequest<{ id: number }>('/api/v1/contact-requests', {
-                method: 'POST',
-                body: JSON.stringify({ name, phone, message: fullMessage, source: 'landing' })
-              });
-
-              if (files && files.length > 0 && res.id) {
-                try {
-                  const formData = new FormData();
-                  files.forEach(file => formData.append('files', file));
-                  await apiRequest(`/api/v1/contact-requests/${res.id}/files`, {
-                    method: 'POST',
-                    body: formData,
-                  });
-                  toast.success(t('services.catalog.successFiles', { defaultValue: 'Заявка отправлена! Ваши файлы прикреплены. Ожидайте звонка от нашего специалиста.' }));
-                } catch (fileErr) {
-                  console.error('Failed to upload guest request files:', fileErr);
-                  toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
-                }
-              } else {
-                toast.success(t('services.catalog.success', { title: service.title, defaultValue: `Запрос на услугу «${service.title}» отправлен!` }));
-              }
-              setActive(null);
-            } catch (err) {
-              toast.error(t('services.catalog.error', { defaultValue: 'Ошибка при отправке запроса. Попробуйте позже.' }));
-            } finally {
-              setIsSubmitting(false);
-            }
-          }}
-          isSubmitting={isSubmitting}
-          isLoggedIn={!!user}
-          initialMessage={restoredMessage}
-          initialPreferredDate={restoredDate}
         />
       )}
-
     </>
   );
 }

@@ -14,10 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Landing & Services Parity (ServicesCatalog Parity, Pricing Heading, 2-Column Services, 4 Tariffs, Footer Scroll Binding)**:
+1. **Landing & Services Parity (ServicesCatalog Parity, Pricing Heading, 2-Column Services, 4 Tariffs, Informational ServiceModal)**:
    - Synchronized `ServicesCatalog.tsx` with `HomeServices.tsx`: exact white background, unified `РЕШЕНИЯ ДЛЯ ВАШЕГО БИЗНЕСА` heading with subtitle, identical beige 2-column header badges and card layout.
+   - Refactored `ServiceModal.tsx` to be purely informational: displays service title, image, full description («О сервисе») and what is included («Что входит в стоимость»), removed all order forms / textareas from the service modal on landing pages, and added «Получить консультацию» button that scrolls to footer contact form.
    - Set default `id="contact"` on `Footer.tsx` and updated CTA buttons in `WhyOutsource.tsx` («Получить консультацию») and `PricingTable.tsx` («Выбрать тариф») to smoothly scroll directly to the Footer contact form.
-   - Cleaned up `ServiceModal.tsx`: replaced green background with neutral blur backdrop (`bg-black/40 backdrop-blur-md`), changed right-hand panel header to «Описание» across all locales (`ru`, `kk`, `zh`, `en`), streamlined form to Name, Phone, Description, and Submit button.
    - Updated contact form message prefix to `Описание:` (replacing `Задача:`) in `useContactForm.ts` and UI label to `Описание` across locales (`ru`, `kk`, `zh`, `en`).
 2. **Landing Contact & FAQ Block Unification (FaqContact Widget)**:
    - Promoted `ServicesFaqContact` into a clean shared FSD widget `@/widgets/faq-contact` (`FaqContact.tsx`), preserving backwards compatibility via re-export.
