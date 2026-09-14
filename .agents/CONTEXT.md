@@ -14,10 +14,10 @@
 - **Roles**: 6 roles -- ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Recently Completed
-1. **Team Member Cards Redesign (Frosted Dark Glass, Orynbasar Avatar & Blurred Hover)**:
-   - Implemented floating frosted-glass bottom panel (`bg-neutral-900/65 backdrop-blur-md border border-white/10`) with `font-logo` (`a_Simpler`) typography for team cards.
+1. **Team Member Cards Redesign (Soft Green Frosted Glass, Inter Font, Orynbasar Avatar & Blurred Hover)**:
+   - Replaced dark/harsh styling with floating soft green frosted-glass bottom panel (`bg-brand-green/80 backdrop-blur-md border border-white/15`) and clean `Inter` font-sans typography.
    - Connected photo `ryo_sticker_02_confident.jpg` (`orynbasar.jpg`) for IT specialist Orynbasar (Мурат Орынбасар) in `team.ts`.
-   - Built smooth hover effect: photo dynamically blurs (`group-hover:blur-md group-hover:scale-105`) under a sleek frosted dark glass backdrop (`bg-neutral-900/60 backdrop-blur-md`) displaying specialist bio.
+   - Built smooth hover effect: photo dynamically blurs (`group-hover:blur-md group-hover:scale-105`) under soft green backdrop (`bg-brand-green/85 backdrop-blur-md`) displaying specialist bio.
    - Verified 100% test pass (19 test files, 74 tests).
 2. **Removal of Eyebrow Mini-Badges Across Landing Pages**:
    - Completely removed redundant pill badges with dots and uppercase eyebrow tags from landing and about sections: `OutsourceIncluded.tsx` («Комплексный сервис»), `HomeAbout.tsx` («О компании»), `AboutHero.tsx`, `AboutIdeology.tsx` («Наша идеология»), `AboutProcess.tsx` («Инженерный подход»), `AboutGuarantees.tsx` («Ответственность»), and converted leader badge in `Team.tsx` to clean typography.
