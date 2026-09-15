@@ -208,7 +208,6 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
               required
               autoFocus
               autoComplete="name"
-              maxLength={120}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               disabled={isSubmitting}

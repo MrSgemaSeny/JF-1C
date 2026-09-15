@@ -9,6 +9,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: ReactNode;
   loading?: boolean;
   success?: boolean;
+  showCharCount?: boolean;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -20,6 +21,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       icon,
       loading,
       success,
+      showCharCount = false,
       className = '',
       required,
       disabled,
@@ -40,7 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={`flex flex-col gap-1.5 ${className}`}>
         {/* Label Row */}
-        {(label || maxLength) && (
+        {(label || (showCharCount && maxLength)) && (
           <div className="flex items-center justify-between">
             {label && (
               <label htmlFor={props.id} className="text-sm font-semibold text-brand-green/90">
@@ -48,7 +50,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 {required && <span className="text-red-500 ml-1">*</span>}
               </label>
             )}
-            {maxLength && (
+            {showCharCount && maxLength && (
               <span className={`text-xs ${charCount > maxLength ? 'text-red-500' : 'text-brand-green/50'}`}>
                 {charCount}/{maxLength}
               </span>
