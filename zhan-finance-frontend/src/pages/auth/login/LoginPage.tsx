@@ -175,7 +175,7 @@ export function LoginPage() {
             <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">{t('login.title')}</h1>
             <p className="text-brand-green/70 text-sm mb-7 leading-relaxed">{t('login.subtitle')}</p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <Input
                 id="email"
                 type="email"

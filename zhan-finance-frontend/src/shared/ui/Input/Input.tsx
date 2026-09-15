@@ -1,6 +1,6 @@
 import { forwardRef, InputHTMLAttributes, ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, CheckCircle2, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -72,7 +72,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             value={value}
             disabled={disabled || loading}
-            required={required}
+            aria-required={required}
             maxLength={maxLength}
             type={currentType}
             className={`
@@ -116,9 +116,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               initial={{ opacity: 0, y: -5, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: -5, height: 0 }}
-              className="text-xs font-medium text-red-500 pl-1"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50/80 border border-red-200 text-xs font-medium text-red-600"
             >
-              {error}
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-500" />
+              <span>{error}</span>
             </motion.p>
           ) : hint ? (
             <motion.p
