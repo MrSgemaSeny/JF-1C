@@ -516,6 +516,19 @@ describe('Tier 3: Cross-Feature Combinations (dateFormat & LanguageSwitcher)', (
         }
       }
     });
+
+    it('TC-T3-DATE-07: formatHeaderDate formats correct weekday and month for ru, kk, en, zh', () => {
+      const formatHeaderDate = (dateFormatModule as any).formatHeaderDate;
+      expect(typeof formatHeaderDate, 'formatHeaderDate must be exported as a function').toBe('function');
+
+      if (typeof formatHeaderDate === 'function') {
+        const testDate = new Date('2026-09-15T12:00:00'); // Tuesday, September 15
+        expect(formatHeaderDate(testDate, 'ru')).toBe('Вторник, 15 сентября');
+        expect(formatHeaderDate(testDate, 'kk')).toBe('Сейсенбі, 15 қыркүйек');
+        expect(formatHeaderDate(testDate, 'en')).toBe('Tuesday, September 15');
+        expect(formatHeaderDate(testDate, 'zh')).toBe('9月15日 星期二');
+      }
+    });
   });
 
   describe('LanguageSwitcher Integration & Codes', () => {

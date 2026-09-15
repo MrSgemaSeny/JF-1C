@@ -7,6 +7,7 @@ import type { EmployeeDto } from '@/entities/employee/model/types';
 import { getSecureImageUrl } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth/AuthContext';
+import { formatDate } from '@/shared/lib/dateFormat';
 
 interface TaskKanbanCardProps {
   task: TaskDto;
@@ -45,7 +46,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRigh
   const currencyStr = task.currency || t('kanban.currency', { defaultValue: 'тенге' });
   
   const dateStr = task.createdAt 
-    ? new Date(task.createdAt).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'short' })
+    ? formatDate(task.createdAt, i18n.language, { day: 'numeric', month: 'short' })
     : '';
 
   return (

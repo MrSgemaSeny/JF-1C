@@ -7,8 +7,46 @@ const LOCALE_MAP: Record<string, string> = {
   zh: 'zh-CN',
 };
 
+const MONTH_NAMES_GENITIVE: Record<string, string[]> = {
+  ru: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
+  kk: ['қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым', 'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  zh: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+};
+
+const WEEKDAY_NAMES_MAP: Record<string, string[]> = {
+  ru: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+  kk: ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'],
+  en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  zh: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+};
+
 export function getIntlLocale(locale: string = 'ru'): string {
-  return LOCALE_MAP[locale] || locale || 'ru-RU';
+  const code = (locale || 'ru').slice(0, 2).toLowerCase();
+  return LOCALE_MAP[code] || LOCALE_MAP[locale] || locale || 'ru-RU';
+}
+
+export function formatHeaderDate(date: Date | string | number, locale: string = 'ru'): string {
+  const d = typeof date === 'object' && date instanceof Date ? date : new Date(date);
+  if (isNaN(d.getTime())) return '';
+  const lang = (locale || 'ru').slice(0, 2).toLowerCase();
+  const dayOfWeek = d.getDay();
+  const dayOfMonth = d.getDate();
+  const month = d.getMonth();
+
+  const weekdays = WEEKDAY_NAMES_MAP[lang] || WEEKDAY_NAMES_MAP.ru;
+  const months = MONTH_NAMES_GENITIVE[lang] || MONTH_NAMES_GENITIVE.ru;
+
+  if (lang === 'zh') {
+    return `${months[month]}${dayOfMonth}日 ${weekdays[dayOfWeek]}`;
+  }
+  if (lang === 'en') {
+    return `${weekdays[dayOfWeek]}, ${months[month]} ${dayOfMonth}`;
+  }
+  if (lang === 'kk') {
+    return `${weekdays[dayOfWeek]}, ${dayOfMonth} ${months[month]}`;
+  }
+  return `${weekdays[dayOfWeek]}, ${dayOfMonth} ${months[month]}`;
 }
 
 export function formatDate(

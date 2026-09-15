@@ -17,7 +17,7 @@ import { ROUTES } from '@/shared/config/routes';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { Bell, CheckCircle2, Globe, Mail, LogOut } from 'lucide-react';
 
-import { getIntlLocale } from '@/shared/lib/dateFormat';
+import { getIntlLocale, formatHeaderDate } from '@/shared/lib/dateFormat';
 
 function HeaderProfile() {
   const { user, logout } = useAuth();
@@ -44,11 +44,7 @@ function HeaderProfile() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const dateStr = time.toLocaleDateString(getIntlLocale(i18n.language), { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'long' 
-  });
+  const dateStr = formatHeaderDate(time, i18n.language);
   
   const timeStr = time.toLocaleTimeString(getIntlLocale(i18n.language), {
     hour: '2-digit',

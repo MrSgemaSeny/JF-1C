@@ -8,6 +8,7 @@ import { Spinner } from '@/shared/ui/Spinner';
 
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
+import { formatDate } from '@/shared/lib/dateFormat';
 
 // Colors remain hardcoded but can be translated later if needed, they are not primarily shown in the UI here.
 const COLORS = [
@@ -20,7 +21,7 @@ const COLORS = [
 
 export function CalendarPage() {
   const { user } = useAuth();
-  const { t, i18n } = useTranslation(['calendar', 'common']);
+  const { t, i18n } = useTranslation('common');
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   
   const startDate = `${currentYear}-01-01`;
@@ -255,7 +256,7 @@ export function CalendarPage() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h3 className="font-bold text-lg text-gray-900">
-                {t('calendarWidget.eventsOn', { defaultValue: 'События на' })} {new Date(selectedDate).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {t('calendarWidget.eventsOn', { defaultValue: 'События на' })} {formatDate(selectedDate, i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />

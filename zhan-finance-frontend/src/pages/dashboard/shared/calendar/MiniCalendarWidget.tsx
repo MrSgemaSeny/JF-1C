@@ -7,6 +7,7 @@ import { ROUTES } from '@/shared/config/routes';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
 import { useTranslation } from 'react-i18next';
+import { formatDate, getIntlLocale } from '@/shared/lib/dateFormat';
 const COLORS = [
   { value: 'BLUE', bg: 'bg-blue-100', text: 'text-blue-800' },
   { value: 'RED', bg: 'bg-red-100', text: 'text-red-800' },
@@ -17,7 +18,7 @@ const COLORS = [
 
 export function MiniCalendarWidget() {
   const { user } = useAuth();
-  const { t, i18n } = useTranslation(['common']);
+  const { t, i18n } = useTranslation('common');
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const year = currentDate.getFullYear();
@@ -55,21 +56,20 @@ export function MiniCalendarWidget() {
     setIsModalOpen(true);
   };
 
-  const locale = i18n.language === 'en' ? 'en-US' : 'ru-RU';
-  
   const currentMonthName = useMemo(() => {
-    const name = new Intl.DateTimeFormat(locale, { month: 'long' }).format(currentDate);
+    const months = t('calendarPage.months', { returnObjects: true });
+    if (Array.isArray(months) && months.length === 12) {
+      return months[currentDate.getMonth()];
+    }
+    const name = new Intl.DateTimeFormat(getIntlLocale(i18n.language), { month: 'long' }).format(currentDate);
     return name.charAt(0).toUpperCase() + name.slice(1);
-  }, [currentDate, locale]);
+  }, [currentDate, i18n.language, t]);
 
   const dayNames = useMemo(() => {
-    return Array.from({ length: 7 }, (_, i) => {
-      // 2021-11-01 is Monday
-      const d = new Date(2021, 10, i + 1);
-      const name = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(d);
-      return name.charAt(0).toUpperCase() + name.slice(1);
-    });
-  }, [locale]);
+    const days = t('calendarPage.daysShort', { returnObjects: true });
+    if (Array.isArray(days) && days.length === 7) return days;
+    return ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  }, [t]);
 
   const handleSaveEvent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -248,7 +248,7 @@ export function MiniCalendarWidget() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h3 className="font-bold text-lg text-gray-900">
-                {t('calendarWidget.eventsOn')} {new Date(selectedDate).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}
+                {t('calendarWidget.eventsOn')} {formatDate(selectedDate, i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />

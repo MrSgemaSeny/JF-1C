@@ -4,8 +4,7 @@ import { Bell, Check, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 import { clsx } from 'clsx';
-import { formatDistanceToNow } from 'date-fns';
-import { ru, enUS } from 'date-fns/locale';
+import { formatRelativeTime } from '@/shared/lib/dateFormat';
 import { useTranslation } from 'react-i18next';
 import { translateNotificationTitle, translateNotificationMessage } from '@/shared/i18n/notificationTranslator';
 
@@ -90,7 +89,7 @@ export function NotificationBell() {
                           {translateNotificationTitle(notification.title, i18n.language)}
                         </h4>
                         <span className="text-[10px] text-gray-400 whitespace-nowrap shrink-0">
-                          {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: i18n.language === 'en' ? enUS : ru })}
+                          {formatRelativeTime(notification.createdAt, i18n.language)}
                         </span>
                       </div>
                       <p className={clsx("text-xs line-clamp-2", !notification.read ? "text-gray-700" : "text-gray-500")}>
