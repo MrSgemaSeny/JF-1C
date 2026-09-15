@@ -47,7 +47,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   ],
   CLIENT: [
     { label: 'Overview', href: ROUTES.CLIENT },
-    { label: '1C Reports', href: ROUTES.CLIENT_1C_REPORTS },
+    { label: '1C Reports', href: ROUTES.CLIENT_1C },
     { label: 'Services', href: ROUTES.CLIENT_SERVICES },
     { label: 'Calendar', href: ROUTES.CLIENT_CALENDAR },
     { label: 'Chat', href: ROUTES.CLIENT_CHAT },

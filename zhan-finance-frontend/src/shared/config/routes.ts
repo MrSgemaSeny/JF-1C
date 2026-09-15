@@ -63,6 +63,8 @@ export const ROUTES = {
   EMPLOYEE_DOCUMENTS: '/employee/documents',
   EMPLOYEE_CALENDAR: '/employee/calendar',
   CLIENT: '/client',
+  CLIENT_1C: '/client/1c',
+  CLIENT_1C_REPORT: '/client/1c/:report',
   CLIENT_DOCUMENTS: '/client/documents',
   CLIENT_CHAT: '/client/chat',
   CLIENT_CALENDAR: '/client/calendar',

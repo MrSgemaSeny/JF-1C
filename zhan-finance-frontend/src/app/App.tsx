@@ -221,8 +221,10 @@ export function App() {
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />
                 <Route path={ROUTES.CLIENT_CALENDAR} element={<CalendarPage />} />
                 <Route path={ROUTES.CLIENT_SERVICES} element={<ClientServicesPage />} />
-                <Route path={ROUTES.CLIENT_1C_REPORTS} element={<ClientOneCReportsPage />} />
-                <Route path={ROUTES.CLIENT_REPORTS} element={<Navigate to={ROUTES.CLIENT_1C_REPORTS} replace />} />
+                <Route path={ROUTES.CLIENT_1C} element={<ClientOneCReportsPage />} />
+                <Route path={ROUTES.CLIENT_1C_REPORT} element={<ClientOneCReportsPage />} />
+                <Route path={ROUTES.CLIENT_1C_REPORTS} element={<Navigate to={ROUTES.CLIENT_1C} replace />} />
+                <Route path={ROUTES.CLIENT_REPORTS} element={<Navigate to={ROUTES.CLIENT_1C} replace />} />
               </Route>
 
               {/* Learner Routes */}
