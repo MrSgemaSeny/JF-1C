@@ -42,10 +42,10 @@ export function CompleteProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-16 sm:py-24">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
-        <div className="flex items-center justify-between gap-4 mb-8">
-          <BrandLogo className="h-9 sm:h-10 w-auto" />
+    <div className="min-h-screen flex flex-col justify-center items-center bg-brand-beige px-4 sm:px-6 py-6 sm:py-12 md:py-14">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-6 sm:p-9 md:p-10 my-auto">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 mb-6 sm:mb-8">
+          <BrandLogo className="h-7 sm:h-9 md:h-10 w-auto" />
           <LanguageSwitcher />
         </div>
 

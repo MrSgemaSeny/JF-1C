@@ -152,11 +152,11 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-brand-beige px-4 sm:px-6 py-8 sm:py-12 md:py-14">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-7 sm:p-9 md:p-10 my-auto">
-        <div className="flex items-center justify-between gap-4 mb-8">
-          <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none" aria-label={t('login.toHome')}>
-            <BrandLogo className="h-9 sm:h-10 w-auto group-hover:opacity-85 transition-opacity" />
+    <div className="min-h-screen flex flex-col justify-center items-center bg-brand-beige px-4 sm:px-6 py-6 sm:py-12 md:py-14">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-6 sm:p-9 md:p-10 my-auto">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 mb-6 sm:mb-8">
+          <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none shrink-0" aria-label={t('login.toHome')}>
+            <BrandLogo className="h-7 sm:h-9 md:h-10 w-auto group-hover:opacity-85 transition-opacity" />
           </Link>
           <LanguageSwitcher />
         </div>

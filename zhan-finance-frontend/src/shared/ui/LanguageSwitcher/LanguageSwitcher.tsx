@@ -33,7 +33,7 @@ export const LanguageSwitcher = ({ className = '' }: { className?: string }) => 
   const currentLang = i18n.language || 'ru';
 
   return (
-    <div className={`flex items-center bg-brand-green/5 border border-brand-green/10 rounded-full p-1 shadow-sm ${className}`}>
+    <div className={`flex items-center bg-brand-green/5 border border-brand-green/10 rounded-full p-0.5 sm:p-1 shadow-sm shrink-0 ${className}`}>
       {LANGUAGES.map(({ code, label }) => {
         const isActive = currentLang === code || currentLang.startsWith(`${code}-`);
         return (
@@ -41,7 +41,7 @@ export const LanguageSwitcher = ({ className = '' }: { className?: string }) => 
             key={code}
             type="button"
             onClick={() => handleLanguageChange(code)}
-            className={`text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all ${
+            className={`text-[10px] sm:text-xs font-bold px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-full transition-all ${
               isActive 
                 ? 'bg-brand-green text-brand-beige shadow-md' 
                 : 'text-brand-green/70 hover:text-brand-green hover:bg-brand-green/10'
