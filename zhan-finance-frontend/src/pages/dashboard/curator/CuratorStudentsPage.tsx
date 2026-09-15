@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { apiRequest } from '@/shared/api/http';
-import { Users, GraduationCap, CheckCircle2 } from 'lucide-react';
+import { formatDate } from '@/shared/lib/dateFormat';
 import { Spinner } from '@/shared/ui/Spinner';
 
 interface StudentProgressDto {
@@ -17,6 +18,7 @@ interface StudentProgressDto {
 }
 
 export function CuratorStudentsPage() {
+  const { t, i18n } = useTranslation('common');
   const [students, setStudents] = useState<StudentProgressDto[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,25 +44,25 @@ export function CuratorStudentsPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Студенты и успеваемость</h1>
-        <p className="text-sm text-gray-500 mt-1">Прогресс прохождения курсов вашими студентами</p>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('curator.studentsPage.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('curator.studentProgress')}</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         {students.length === 0 ? (
           <div className="py-16 text-center text-gray-500">
-            Ученики пока не записаны на ваши курсы
+            {t('curator.studentsPage.empty')}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  <th className="p-4 pl-6">Студент</th>
-                  <th className="p-4">Курс</th>
-                  <th className="p-4">Дата записи</th>
-                  <th className="p-4">Пройдено уроков</th>
-                  <th className="p-4 pr-6">Прогресс</th>
+                  <th className="p-4 pl-6">{t('curator.studentsPage.columns.student')}</th>
+                  <th className="p-4">{t('curator.studentsPage.columns.course')}</th>
+                  <th className="p-4">{t('curator.studentsPage.columns.enrolledAt')}</th>
+                  <th className="p-4">{t('curator.studentsPage.columns.lessonsPassed')}</th>
+                  <th className="p-4 pr-6">{t('curator.studentsPage.columns.progress')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 text-sm">
@@ -72,10 +74,10 @@ export function CuratorStudentsPage() {
                     </td>
                     <td className="p-4 font-medium text-gray-800">{s.courseTitle}</td>
                     <td className="p-4 text-xs text-gray-500">
-                      {new Date(s.enrolledAt).toLocaleDateString()}
+                      {formatDate(s.enrolledAt, i18n.language)}
                     </td>
                     <td className="p-4 font-semibold text-gray-700">
-                      {s.completedLessonsCount} уроков
+                      {s.completedLessonsCount}
                     </td>
                     <td className="p-4 pr-6">
                       <div className="flex items-center gap-3">

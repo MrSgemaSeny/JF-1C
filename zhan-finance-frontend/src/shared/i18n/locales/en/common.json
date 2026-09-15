@@ -187,7 +187,8 @@
       "EMPLOYEE": "Employee",
       "CLIENT": "Client",
       "LEARNER": "Learner",
-      "CURATOR": "1C Curator"
+      "CURATOR": "1C Curator",
+      "ADVISOR": "Advisor"
     }
   },
   "calendarPage": {
@@ -226,7 +227,9 @@
     "emptyTitle": "No notifications yet",
     "emptySubtitle": "When there's an update about your documents or tasks, it will appear here.",
     "confirm": "Ok",
-    "open": "Open"
+    "open": "Open",
+    "unreadSubtitle_few": "You have {{count}} unread notifications.",
+    "unreadSubtitle_many": "You have {{count}} unread notifications."
   },
   "clientChat": {
     "sidebarTitle": "Support",
@@ -340,7 +343,9 @@
     "securityTitle": "Security",
     "updatePasswordBtn": "Update Password",
     "saving": "Saving...",
-    "googleNoPassword": "You signed in via Google, so password change is not available here. Manage security in your Google account."
+    "googleNoPassword": "You signed in via Google, so password change is not available here. Manage security in your Google account.",
+    "language": "Interface Language",
+    "languageDesc": "Select your preferred language for the system"
   },
   "adminDashboard": {
     "title": "Overview",
@@ -490,6 +495,12 @@
     "noStage": "No stage"
   },
   "stages": {
+    "new": "New",
+    "in_progress": "In Progress",
+    "review": "Under Review",
+    "done": "Completed",
+    "won": "Won",
+    "lost": "Lost",
     "Новый": "New",
     "Сбор документов": "Document Collection",
     "Предоплата": "Prepayment",
@@ -789,7 +800,8 @@
       "EMPLOYEE": "Employee",
       "CLIENT": "Client",
       "LEARNER": "Learner",
-      "CURATOR": "1C Curator"
+      "CURATOR": "1C Curator",
+      "ADVISOR": "Advisor"
     },
     "soon": "Your invoices and documents will appear here soon."
   },
@@ -1467,7 +1479,7 @@
   "weeklySummary.subtitle": "Automatic dashboard with daily updates",
   "weeklySummary.currentWeek": "Current week",
   "weeklySummary.completed": "Completed",
-  "weeklySummary.inProgress": "В процессе",
+  "weeklySummary.inProgress": "In progress",
   "weeklySummary.deadlines": "Deadlines",
   "weeklySummary.documents": "Documents",
   "weeklySummary.revenue": "Revenue from completed tasks",
@@ -1547,5 +1559,128 @@
     "policyLink": "Learn more in Cookie Policy",
     "acceptAll": "Accept all",
     "essentialOnly": "Essential only"
+  },
+  "advisor": {
+    "title": "Advisor Portal",
+    "subtitle": "Client portfolio and team overview",
+    "workloadBtn": "Team Workload",
+    "taskPoolBtn": "Task Pool",
+    "stats": {
+      "clients": "Total Clients",
+      "employees": "Team Specialists",
+      "avgWorkload": "Average Workload",
+      "tasksInPool": "Tasks in Pool"
+    },
+    "workloadPage": {
+      "title": "Team Workload Balancing",
+      "subtitle": "Specialists monitoring and task reassignment",
+      "table": {
+        "specialist": "Specialist",
+        "role": "Role",
+        "totalTasks": "Total Tasks",
+        "inProgress": "In Progress",
+        "review": "In Review",
+        "status": "Workload Status",
+        "action": "Action"
+      },
+      "badges": {
+        "low": "Low",
+        "optimal": "Optimal",
+        "high": "High",
+        "overloaded": "Overloaded"
+      },
+      "assignTask": "Assign Task"
+    }
+  },
+  "curator": {
+    "title": "Curator Portal",
+    "subtitle": "Manage assigned courses and students",
+    "stats": {
+      "assignedCourses": "Assigned Courses",
+      "activeStudents": "Active Students",
+      "performance": "Performance"
+    },
+    "myCourses": "My Courses",
+    "studentProgress": "Student Progress",
+    "coursesPage": {
+      "title": "Assigned Courses",
+      "searchPlaceholder": "Search courses...",
+      "empty": "No courses assigned to you yet"
+    },
+    "studentsPage": {
+      "title": "Enrolled Students",
+      "searchPlaceholder": "Search by name or email...",
+      "empty": "No students found",
+      "columns": {
+        "student": "Student",
+        "course": "Course",
+        "enrolledAt": "Enrollment Date",
+        "lessonsPassed": "Completed Lessons",
+        "progress": "Progress",
+        "lastActivity": "Last Activity"
+      }
+    }
+  },
+  "adminCurators": {
+    "title": "Learning Curators",
+    "subtitle": "Manage curator accounts and course access",
+    "addBtn": "Add Curator",
+    "empty": "No curators added yet",
+    "status": {
+      "active": "Active",
+      "blocked": "Blocked"
+    },
+    "actions": {
+      "block": "Block access",
+      "unblock": "Unblock"
+    }
+  },
+  "adminSecurity": {
+    "title": "Security & 2FA",
+    "subtitle": "Two-factor authentication via Google Authenticator",
+    "status": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "steps": {
+      "step1": "Step 1: Install app",
+      "step1Desc": "Install Google Authenticator or other TOTP app on your phone",
+      "step2": "Step 2: Scan QR code",
+      "step2Desc": "Scan the code with the app camera",
+      "step3": "Step 3: Enter 6-digit code",
+      "step3Desc": "Enter the code from app to confirm"
+    },
+    "buttons": {
+      "enable": "Enable 2FA",
+      "disable": "Disable 2FA",
+      "cancel": "Cancel"
+    }
+  },
+  "oneCReports": {
+    "title": "1C Accounting",
+    "subtitle": "Generate official accounting statements and reports from 1C ERP",
+    "tabs": {
+      "osv": "TB",
+      "saldo": "Balance",
+      "reconciliation": "Reconciliation",
+      "accountCard": "Account Card",
+      "cashBook": "Cash & Receipts",
+      "stock": "Stock & Inventory"
+    },
+    "period": "Period:",
+    "quickPeriod": {
+      "thisMonth": "This month",
+      "prevMonth": "Last month",
+      "q1": "Q1",
+      "q2": "Q2",
+      "ytd": "YTD"
+    },
+    "generate": "Generate",
+    "generating": "Querying 1C...",
+    "empty": "Click 'Generate' to fetch report",
+    "noData": "No records found in 1C for selected period"
+  },
+  "errors": {
+    "taskNotFound": "Task not found"
   }
 }

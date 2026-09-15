@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { apiRequest } from '@/shared/api/http';
 import { BookOpen, Users, ArrowRight } from 'lucide-react';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -21,6 +22,7 @@ interface StudentProgress {
 }
 
 export function CuratorOverviewPage() {
+  const { t } = useTranslation('common');
   const [courses, setCourses] = useState<Course[]>([]);
   const [students, setStudents] = useState<StudentProgress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,8 +54,8 @@ export function CuratorOverviewPage() {
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Кабинет Куратора</h1>
-        <p className="text-sm text-gray-500 mt-1">Управление закрепленными курсами и отслеживание успеваемости студентов</p>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('curator.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('curator.subtitle')}</p>
       </div>
 
       {/* Metrics */}
@@ -63,7 +65,7 @@ export function CuratorOverviewPage() {
             <BookOpen size={24} />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Закреплено курсов</p>
+            <p className="text-sm font-medium text-gray-500">{t('curator.stats.assignedCourses')}</p>
             <p className="text-2xl font-bold text-gray-900">{courses.length}</p>
           </div>
         </div>
@@ -73,7 +75,7 @@ export function CuratorOverviewPage() {
             <Users size={24} />
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Активных студентов</p>
+            <p className="text-sm font-medium text-gray-500">{t('curator.stats.activeStudents')}</p>
             <p className="text-2xl font-bold text-gray-900">{students.length}</p>
           </div>
         </div>
@@ -82,14 +84,14 @@ export function CuratorOverviewPage() {
       {/* Recent Courses */}
       <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-bold text-gray-900">Мои курсы</h2>
+          <h2 className="text-lg font-bold text-gray-900">{t('curator.myCourses')}</h2>
           <Link to={ROUTES.CURATOR_COURSES} className="text-xs font-semibold text-brand-green hover:underline flex items-center gap-1">
-            Все курсы <ArrowRight size={14} />
+            {t('curator.coursesPage.title')} <ArrowRight size={14} />
           </Link>
         </div>
         
         {courses.length === 0 ? (
-          <p className="text-sm text-gray-500 py-4">За вами пока не закреплены курсы</p>
+          <p className="text-sm text-gray-500 py-4">{t('curator.coursesPage.empty')}</p>
         ) : (
           <div className="grid md:grid-cols-2 gap-4">
             {courses.map(course => (
@@ -100,7 +102,7 @@ export function CuratorOverviewPage() {
                     {course.status}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 line-clamp-2">{course.description || 'Без описания'}</p>
+                <p className="text-xs text-gray-500 line-clamp-2">{course.description || t('curator.noDescription', 'Без описания')}</p>
               </div>
             ))}
           </div>

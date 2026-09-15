@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Calendar,
   RefreshCw,
@@ -8,13 +9,15 @@ import {
   Filter,
 } from 'lucide-react';
 
-type ReportType = 'osv' | 'saldo' | 'reconciliation' | 'account-card' | 'cash-book' | 'stock';
+type ReportType = 'osv' | 'saldo' | 'reconciliation' | 'accountCard' | 'cashBook' | 'stock';
 
 interface ReportTabConfig {
   id: ReportType;
   path: string;
-  label: string;
-  shortLabel: string;
+  labelKey: string;
+  shortLabelKey: string;
+  defaultLabel: string;
+  defaultShortLabel: string;
   description: string;
   columns: { key: string; label: string; subColumns?: string[]; align?: 'left' | 'right' | 'center' }[];
 }
@@ -23,8 +26,10 @@ const REPORT_TABS: ReportTabConfig[] = [
   {
     id: 'osv',
     path: 'osv',
-    label: 'Оборотно-сальдовая ведомость (ОСВ)',
-    shortLabel: 'ОСВ',
+    labelKey: 'oneCReports.tabs.osv',
+    shortLabelKey: 'oneCReports.tabs.osv',
+    defaultLabel: 'Оборотно-сальдовая ведомость (ОСВ)',
+    defaultShortLabel: 'ОСВ',
     description: 'Сводные обороты и сальдо по всем синтетическим счетам бухгалтерского учета РК',
     columns: [
       { key: 'account', label: 'Счет учета', align: 'left' },
@@ -37,8 +42,10 @@ const REPORT_TABS: ReportTabConfig[] = [
   {
     id: 'saldo',
     path: 'saldo',
-    label: 'Сальдовая ведомость',
-    shortLabel: 'Сальдо',
+    labelKey: 'oneCReports.tabs.saldo',
+    shortLabelKey: 'oneCReports.tabs.saldo',
+    defaultLabel: 'Сальдовая ведомость',
+    defaultShortLabel: 'Сальдо',
     description: 'Развернутое сальдо по субсчетам и контрагентам на заданную дату',
     columns: [
       { key: 'account', label: 'Код субсчета', align: 'left' },
@@ -52,8 +59,10 @@ const REPORT_TABS: ReportTabConfig[] = [
   {
     id: 'reconciliation',
     path: 'reconciliation',
-    label: 'Акт сверки взаиморасчетов',
-    shortLabel: 'Акт сверки',
+    labelKey: 'oneCReports.tabs.reconciliation',
+    shortLabelKey: 'oneCReports.tabs.reconciliation',
+    defaultLabel: 'Акт сверки взаиморасчетов',
+    defaultShortLabel: 'Акт сверки',
     description: 'Двустороннее сопоставление первичных документов и платежей с контрагентом',
     columns: [
       { key: 'date', label: 'Дата операции', align: 'left' },
@@ -65,10 +74,12 @@ const REPORT_TABS: ReportTabConfig[] = [
     ],
   },
   {
-    id: 'account-card',
+    id: 'accountCard',
     path: 'account-card',
-    label: 'Карточка счета / Анализ счета',
-    shortLabel: 'Карточка счета',
+    labelKey: 'oneCReports.tabs.accountCard',
+    shortLabelKey: 'oneCReports.tabs.accountCard',
+    defaultLabel: 'Карточка счета / Анализ счета',
+    defaultShortLabel: 'Карточка счета',
     description: 'Детальная хронология проводок по конкретному бухгалтерскому счету (1010, 1030, 3310, 1210)',
     columns: [
       { key: 'date', label: 'Дата и время', align: 'left' },
@@ -81,10 +92,12 @@ const REPORT_TABS: ReportTabConfig[] = [
     ],
   },
   {
-    id: 'cash-book',
+    id: 'cashBook',
     path: 'cash-book',
-    label: 'Кассовая книга и фискальные чеки',
-    shortLabel: 'Касса и чеки',
+    labelKey: 'oneCReports.tabs.cashBook',
+    shortLabelKey: 'oneCReports.tabs.cashBook',
+    defaultLabel: 'Кассовая книга и фискальные чеки',
+    defaultShortLabel: 'Касса и чеки',
     description: 'Реестр фискальных Z-отчетов, чеков WebKassa и кассовых ордеров (ПКО / РКО)',
     columns: [
       { key: 'orderNum', label: 'Номер чека / ордера', align: 'left' },
@@ -98,8 +111,10 @@ const REPORT_TABS: ReportTabConfig[] = [
   {
     id: 'stock',
     path: 'stock',
-    label: 'Остатки номенклатуры и ТМЦ',
-    shortLabel: 'Склад и ТМЦ',
+    labelKey: 'oneCReports.tabs.stock',
+    shortLabelKey: 'oneCReports.tabs.stock',
+    defaultLabel: 'Остатки номенклатуры и ТМЦ',
+    defaultShortLabel: 'Склад и ТМЦ',
     description: 'Материальный отчет по складам, списаниям и поступлениям номенклатурных позиций',
     columns: [
       { key: 'sku', label: 'Артикул / Код', align: 'left' },
@@ -128,6 +143,7 @@ const ACCOUNT_OPTIONS = [
 ];
 
 export function ClientOneCReportsPage() {
+  const { t } = useTranslation(['common']);
   const { report } = useParams<{ report?: string }>();
   const navigate = useNavigate();
 
@@ -184,10 +200,10 @@ export function ClientOneCReportsPage() {
       {/* Top Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          1С Бухгалтерия
+          {t('oneCReports.title', { defaultValue: '1С Бухгалтерия' })}
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Формирование регламентированных отчетов и ведомостей из учетной системы 1С
+          {t('oneCReports.subtitle', { defaultValue: 'Формирование регламентированных отчетов и ведомостей из учетной системы 1С' })}
         </p>
       </div>
 
@@ -206,7 +222,7 @@ export function ClientOneCReportsPage() {
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                {tab.shortLabel}
+                {t(tab.shortLabelKey, { defaultValue: tab.defaultShortLabel })}
               </button>
             );
           })}
@@ -217,7 +233,7 @@ export function ClientOneCReportsPage() {
       <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-base font-semibold text-gray-900">
-            {activeReport.label}
+            {t(activeReport.labelKey, { defaultValue: activeReport.defaultLabel })}
           </h2>
           <p className="text-xs text-gray-500 mt-0.5">
             {activeReport.description}
@@ -226,36 +242,38 @@ export function ClientOneCReportsPage() {
 
         {/* Quick Period Presets */}
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-gray-400 mr-1">Период:</span>
+          <span className="text-xs text-gray-400 mr-1">
+            {t('oneCReports.period', { defaultValue: 'Период:' })}
+          </span>
           <button
             onClick={() => handleQuickPeriod('thisMonth')}
             className="px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            Этот месяц
+            {t('oneCReports.quickPeriod.thisMonth', { defaultValue: 'Этот месяц' })}
           </button>
           <button
             onClick={() => handleQuickPeriod('prevMonth')}
             className="px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            Прошлый месяц
+            {t('oneCReports.quickPeriod.prevMonth', { defaultValue: 'Прошлый месяц' })}
           </button>
           <button
             onClick={() => handleQuickPeriod('q1')}
             className="px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            I кв.
+            {t('oneCReports.quickPeriod.q1', { defaultValue: 'I кв.' })}
           </button>
           <button
             onClick={() => handleQuickPeriod('q2')}
             className="px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            II кв.
+            {t('oneCReports.quickPeriod.q2', { defaultValue: 'II кв.' })}
           </button>
           <button
             onClick={() => handleQuickPeriod('ytd')}
             className="px-2.5 py-1 text-xs font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            С начала года
+            {t('oneCReports.quickPeriod.ytd', { defaultValue: 'С начала года' })}
           </button>
         </div>
       </div>
@@ -289,7 +307,7 @@ export function ClientOneCReportsPage() {
             </div>
 
             {/* Account Selector (for OSV, Saldo, Account-Card) */}
-            {(activeReport.id === 'osv' || activeReport.id === 'saldo' || activeReport.id === 'account-card') && (
+            {(activeReport.id === 'osv' || activeReport.id === 'saldo' || activeReport.id === 'accountCard') && (
               <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
                 <Filter className="w-4 h-4 text-gray-400 shrink-0" />
                 <select
@@ -316,7 +334,11 @@ export function ClientOneCReportsPage() {
               className="flex items-center gap-2 px-4 py-2 bg-brand-green text-white text-xs font-semibold rounded-lg hover:bg-brand-green/90 transition-all disabled:opacity-50 cursor-pointer shadow-xs"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
-              <span>{isGenerating ? 'Запрос в 1С...' : 'Сформировать'}</span>
+              <span>
+                {isGenerating
+                  ? t('oneCReports.generating', { defaultValue: 'Запрос в 1С...' })
+                  : t('oneCReports.generate', { defaultValue: 'Сформировать' })}
+              </span>
             </button>
           </div>
 
@@ -392,8 +414,8 @@ export function ClientOneCReportsPage() {
                   className="py-12 px-4 text-center text-sm text-gray-500"
                 >
                   {hasGenerated
-                    ? 'Данные за указанный период отсутствуют в 1С'
-                    : 'Нажмите «Сформировать» для получения отчёта'}
+                    ? t('oneCReports.noData', { defaultValue: 'Данные за указанный период отсутствуют в 1С' })
+                    : t('oneCReports.empty', { defaultValue: 'Нажмите «Сформировать» для получения отчёта' })}
                 </td>
               </tr>
             </tbody>

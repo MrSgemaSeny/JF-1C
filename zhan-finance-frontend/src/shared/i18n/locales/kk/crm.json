@@ -1,16 +1,128 @@
 {
-  "kanban": {
-    "title": "Канбан тақтасы",
-    "moveError": "Тапсырманы жылжыту сәтсіз аяқталды",
-    "search": "Іздеу...",
-    "allPipelines": "Барлық воронкалар"
+  "taskPool": {
+    "title": "Тапсырмалар пулы",
+    "empty": "Бос тапсырмалар жоқ",
+    "actions": {
+      "take": "Жұмысқа алу",
+      "drop": "Тапсырмадан бас тарту",
+      "assign": "Тағайындау"
+    },
+    "status": {
+      "PENDING": "Күтілуде",
+      "IN_PROGRESS": "Жұмыста",
+      "DONE": "Аяқталды",
+      "CANCELLED": "Бас тартылды"
+    },
+    "columns": {
+      "title": "Атауы",
+      "client": "Клиент",
+      "status": "Күйі",
+      "created": "Құрылды",
+      "assignee": "Орындаушы",
+      "actions": "Әрекеттер"
+    }
   },
-  "stages": {
-    "new": "Жаңа",
-    "in_progress": "Орындалуда",
-    "review": "Тексеруде",
-    "done": "Аяқталды",
-    "won": "Сәтті аяқталды",
-    "lost": "Бас тартылды"
+  "tasks": {
+    "title": "Тапсырмалар",
+    "count_one": "{{count}} тапсырма",
+    "count_few": "{{count}} тапсырма",
+    "count_many": "{{count}} тапсырма",
+    "count_other": "{{count}} тапсырма"
+  },
+  "kanban": {
+    "noPipelines": "Құбырлар бапталмаған",
+    "currency": "теңге",
+    "quickDeal": "Жылдам мәміле",
+    "call": "Қоңырау шалу:",
+    "phoneNotSpecified": "Телефон көрсетілмеген",
+    "emailAction": "Жазу:",
+    "emailNotSpecified": "Email көрсетілмеген",
+    "chatWith": "Чат:",
+    "clientNotSpecified": "Клиент көрсетілмеген",
+    "noClient": "Клиентсіз",
+    "addDeal": "+ Мәміле",
+    "allStages": "Барлық кезеңдер",
+    "sort": {
+      "newest": "Алдымен жаңалары",
+      "oldest": "Алдымен ескілері",
+      "deadline_asc": "Мерзімі ↑",
+      "deadline_desc": "Мерзімі ↓"
+    },
+    "unsavedChanges": "Сізде сақталмаған өзгерістер бар! Шынымен шыққыңыз келе ме?",
+    "deleteConfirm": "Бұл тапсырманы біржола жою керек пе?",
+    "deleteError": "Тапсырманы жою кезінде қате кетті",
+    "reset": "Қалпына келтіру",
+    "of": "ішінен",
+    "tasks": "тапсырма",
+    "noFilteredTasks": "Таңдалған сүзгілер бойынша тапсырмалар табылмады",
+    "resetFilters": "Сүзгілерді тазарту"
+  },
+  "errors": {
+    "taskNotFound": "Тапсырма табылмады"
+  },
+  "taskCard": {
+    "untitledTask": "Атаусыз",
+    "client": "Клиент:",
+    "unassigned": "Тағайындалмаған",
+    "assignee": "Орындаушы:",
+    "deleteSubtask": "Ішкі тапсырманы жою",
+    "addSubtask": "Ішкі тапсырма қосу",
+    "deadline": "Мерзімі"
+  },
+  "taskModal": {
+    "assignError": "Тапсырманы тағайындау мүмкін болмады",
+    "clickToEdit": "Өзгерту үшін басыңыз",
+    "client": "Клиент:",
+    "assignee": "Орындаушы:",
+    "unassigned": "Тағайындалмаған (Пул)",
+    "take": "Жұмысқа алу",
+    "drop": "Бас тарту",
+    "created": "Құрылды:",
+    "description": "Сипаттамасы",
+    "edit": "Өзгерту",
+    "addDescription": "Толығырақ сипаттама қосыңыз...",
+    "save": "Сақтау",
+    "cancel": "Болдырмау",
+    "noDescription": "Сипаттама жоқ...",
+    "linkedServices": "Байланысты қызметтер",
+    "attachments": "Қоса берілген файлдар",
+    "attachFile": "Файлды бекіту",
+    "attach": "Бекіту",
+    "download": "Жүктеп алу",
+    "noAttachments": "Қоса берілген құжаттар жоқ",
+    "tags": "Белгілер",
+    "noTags": "Белгілер жоқ",
+    "addTag": "Белгі қосу (Enter)",
+    "subtasks": "Ішкі тапсырмалар",
+    "deleteSubtask": "Ішкі тапсырманы жою",
+    "noSubtasks": "Ішкі тапсырмалар жоқ",
+    "addSubtask": "Ішкі тапсырма қосу...",
+    "comments": "Пікірлер",
+    "history": "Тарих",
+    "noComments": "Пікірлер жоқ. Бірінші болыңыз!",
+    "emptyHistory": "Тарих бос",
+    "writeComment": "Пікір жазу...",
+    "send": "Жіберу"
+  },
+  "taskCreate": {
+    "error": "Тапсырма құру кезінде қате кетті",
+    "title": "Жаңа өтінім",
+    "subject": "Өтінімнің мәні",
+    "subjectPlaceholder": "Мысалы: Табыс туралы анықтама, Бухгалтерлік қызмет көрсету...",
+    "details": "Мәліметтер (міндетті емес)",
+    "detailsPlaceholder": "Тапсырманы толығырақ сипаттаңыз...",
+    "deadline": "Қажетті мерзім (Дедлайн)",
+    "linkedServices": "Байланысты қызметтер",
+    "subtasks": "Ішкі тапсырмалар (чек-парақ)",
+    "addSubtaskPlaceholder": "Чек-парақ тармағын қосу...",
+    "attachments": "Қоса берілген файлдар",
+    "attachFiles": "Файлдарды тіркеу",
+    "cancel": "Болдырмау",
+    "submitting": "Құрылуда...",
+    "submit": "Өтінім құру"
+  },
+  "taskDetailsPage": {
+    "loadError": "Тапсырманы жүктеу кезінде қате кетті.",
+    "back": "Артқа"
   }
 }

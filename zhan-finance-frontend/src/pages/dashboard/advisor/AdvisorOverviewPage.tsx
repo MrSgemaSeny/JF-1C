@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getEmployees, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
 import { getClients } from '@/entities/client/api/clientApi';
 import { getTasks } from '@/entities/task/api/taskApi';
@@ -10,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 
 export function AdvisorOverviewPage() {
+  const { t } = useTranslation(['common', 'crm']);
   const navigate = useNavigate();
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
   const [clients, setClients] = useState<ClientDto[]>([]);
@@ -35,18 +37,18 @@ export function AdvisorOverviewPage() {
         setUnassignedTasks(unassigned as TaskDto[]);
       } catch (e: any) {
         console.error('Failed to load Advisor Overview:', e);
-        setError(e?.message || 'Не удалось загрузить данные панели Эдвайзера');
+        setError(e?.message || t('advisor.loadError', { defaultValue: 'Не удалось загрузить данные панели Эдвайзера' }));
       } finally {
         setIsLoading(false);
       }
     }
     loadAdvisorData();
-  }, []);
+  }, [t]);
 
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-gray-400 font-medium animate-pulse">Загрузка панели Эдвайзера...</div>
+        <div className="text-gray-400 font-medium animate-pulse">{t('loading')}</div>
       </div>
     );
   }
@@ -63,11 +65,13 @@ export function AdvisorOverviewPage() {
         <div>
           <div className="flex items-center gap-2 text-brand-green text-xs font-black uppercase tracking-wider mb-2">
             <ShieldCheck className="w-4 h-4 text-brand-green" />
-            Портал Эдвайзера / Старшего наставника
+            {t('advisor.title', { defaultValue: 'Портал Эдвайзера' })}
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">Обзор портфеля и команды</h1>
+          <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+            {t('advisor.subtitle', { defaultValue: 'Обзор портфеля и команды' })}
+          </h1>
           <p className="text-gray-500 text-sm mt-1 max-w-xl">
-            Мониторинг нагрузки сотрудников, глобальное управление клиентами и распределение задач из пула.
+            {t('advisor.workloadPage.subtitle', { defaultValue: 'Мониторинг специалистов и перераспределение задач' })}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -77,7 +81,7 @@ export function AdvisorOverviewPage() {
             className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex items-center gap-2 cursor-pointer"
           >
             <Users className="w-4 h-4" />
-            Нагрузка команды
+            {t('advisor.workloadBtn', { defaultValue: 'Нагрузка команды' })}
           </button>
           <button
             type="button"
@@ -85,7 +89,7 @@ export function AdvisorOverviewPage() {
             className="px-5 py-2.5 bg-brand-beige/50 hover:bg-brand-beige text-brand-green border border-brand-green/20 text-sm font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer"
           >
             <Layers className="w-4 h-4" />
-            Пул задач ({unassignedTasks.length})
+            {t('advisor.taskPoolBtn', { defaultValue: 'Пул задач' })} ({unassignedTasks.length})
           </button>
         </div>
       </div>
@@ -94,9 +98,10 @@ export function AdvisorOverviewPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-2xs flex items-center justify-between">
           <div>
-            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">Всего клиентов</div>
+            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">
+              {t('advisor.stats.clients', { defaultValue: 'Всего клиентов' })}
+            </div>
             <div className="text-3xl font-black text-gray-900 mt-1">{clients.length}</div>
-            <div className="text-xs text-brand-green font-semibold mt-1">Полный доступ компании</div>
           </div>
           <div className="p-4 bg-emerald-50 text-brand-green rounded-2xl">
             <UserCheck className="w-6 h-6" />
@@ -105,9 +110,10 @@ export function AdvisorOverviewPage() {
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-2xs flex items-center justify-between">
           <div>
-            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">Активные задачи</div>
+            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">
+              {t('adminDashboard.totalTasks', { defaultValue: 'Активные задачи' })}
+            </div>
             <div className="text-3xl font-black text-gray-900 mt-1">{tasks.length}</div>
-            <div className="text-xs text-blue-600 font-semibold mt-1">В процессе выполнения</div>
           </div>
           <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl">
             <Briefcase className="w-6 h-6" />
@@ -116,9 +122,10 @@ export function AdvisorOverviewPage() {
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-2xs flex items-center justify-between">
           <div>
-            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">Пул свободный</div>
+            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">
+              {t('advisor.stats.tasksInPool', { defaultValue: 'Задач в пуле' })}
+            </div>
             <div className="text-3xl font-black text-amber-600 mt-1">{unassignedTasks.length}</div>
-            <div className="text-xs text-amber-600 font-semibold mt-1">Требуют назначения</div>
           </div>
           <div className="p-4 bg-amber-50 text-amber-600 rounded-2xl">
             <Clock className="w-6 h-6" />
@@ -127,9 +134,10 @@ export function AdvisorOverviewPage() {
 
         <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-2xs flex items-center justify-between">
           <div>
-            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">Команда</div>
+            <div className="text-xs font-bold uppercase text-gray-400 tracking-wider">
+              {t('advisor.stats.employees', { defaultValue: 'Специалистов в команде' })}
+            </div>
             <div className="text-3xl font-black text-emerald-600 mt-1">{employees.length}</div>
-            <div className="text-xs text-emerald-600 font-semibold mt-1">Сотрудники и Эдвайзеры</div>
           </div>
           <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl">
             <Users className="w-6 h-6" />
@@ -143,15 +151,19 @@ export function AdvisorOverviewPage() {
         <div className="lg:col-span-2 bg-white rounded-3xl p-6 border border-gray-200/80 shadow-2xs space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Загруженность специалистов</h2>
-              <p className="text-xs text-gray-500">Текущий распределительный баланс команды</p>
+              <h2 className="text-xl font-bold text-gray-900">
+                {t('adminDashboard.workload', { defaultValue: 'Загруженность специалистов' })}
+              </h2>
+              <p className="text-xs text-gray-500">
+                {t('adminDashboard.workloadDesc', { defaultValue: 'Текущий баланс команды' })}
+              </p>
             </div>
             <button
               type="button"
               onClick={() => navigate(ROUTES.ADVISOR_WORKLOAD)}
               className="text-xs font-bold text-brand-green hover:text-brand-green/80 flex items-center gap-1 cursor-pointer"
             >
-              Подробнее <ArrowRight className="w-3.5 h-3.5" />
+              {t('homeServices.more', { defaultValue: 'Подробнее' })} <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -167,13 +179,15 @@ export function AdvisorOverviewPage() {
                     </div>
                     <div>
                       <div className="text-sm font-bold text-gray-900">{emp.fullName}</div>
-                      <div className="text-xs text-gray-400">{emp.email} • <span className="font-semibold text-brand-green">{emp.role}</span></div>
+                      <div className="text-xs text-gray-400">
+                        {emp.email} • <span className="font-semibold text-brand-green">{t(`sidebar.roles.${emp.role}`, { defaultValue: emp.role })}</span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <span className="text-sm font-black text-gray-900">{empTasksCount}</span>
-                      <span className="text-xs text-gray-400"> задач</span>
+                      <span className="text-xs text-gray-400"> {t('crm:kanban.tasks', { defaultValue: 'задач' })}</span>
                     </div>
                     <div className={`w-2.5 h-2.5 rounded-full ${statusColor}`} />
                   </div>
@@ -187,7 +201,9 @@ export function AdvisorOverviewPage() {
         <div className="bg-white rounded-3xl p-6 border border-gray-200/80 shadow-2xs space-y-6 flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Пул нераспределённых задач</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                {t('taskPool.title', { defaultValue: 'Пул задач' })}
+              </h2>
               <span className="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-bold">
                 {unassignedTasks.length}
               </span>
@@ -196,7 +212,7 @@ export function AdvisorOverviewPage() {
             {unassignedTasks.length === 0 ? (
               <div className="py-12 text-center text-gray-400 text-sm">
                 <CheckSquare className="w-8 h-8 mx-auto text-emerald-400 mb-2 opacity-60" />
-                Все задачи распределены по исполнителям!
+                {t('taskPool.emptyDescription', { defaultValue: 'Все задачи распределены по исполнителям!' })}
               </div>
             ) : (
               <div className="space-y-3">
@@ -204,7 +220,7 @@ export function AdvisorOverviewPage() {
                   <div key={task.id} className="p-3.5 rounded-xl border border-amber-100 bg-amber-50/30 hover:bg-amber-50/60 transition-colors">
                     <div className="text-sm font-bold text-gray-900 truncate">{task.title}</div>
                     <div className="text-xs text-gray-500 mt-1 flex items-center justify-between">
-                      <span>{task.client?.companyName || task.client?.fullName || 'Без клиента'}</span>
+                      <span>{task.client?.companyName || task.client?.fullName || t('crm:kanban.noClient', { defaultValue: 'Без клиента' })}</span>
                       <span className="font-medium text-amber-700">{task.stage?.name}</span>
                     </div>
                   </div>
@@ -218,7 +234,7 @@ export function AdvisorOverviewPage() {
             onClick={() => navigate(ROUTES.ADVISOR_TASK_POOL)}
             className="w-full py-3 bg-brand-beige/50 text-brand-green hover:bg-brand-beige rounded-2xl text-sm font-bold transition-colors text-center block border border-brand-green/20 cursor-pointer"
           >
-            Перейти в Пул задач
+            {t('advisor.taskPoolBtn', { defaultValue: 'Пул задач' })}
           </button>
         </div>
       </div>

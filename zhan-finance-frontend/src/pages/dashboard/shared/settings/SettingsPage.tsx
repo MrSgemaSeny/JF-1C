@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Camera, Lock, User, Save, Upload, Shield, Building2, Phone } from 'lucide-react';
+import { Camera, Lock, User, Save, Upload, Shield, Building2, Phone, Globe } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getMyProfile, updateMyProfile, updateMyPassword, uploadAvatar, UserProfileDto } from '@/entities/user/api/userApi';
 import { Spinner } from '@/shared/ui/Spinner';
 import { API_BASE_URL, getSecureImageUrl } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 
 export function SettingsPage() {
   const { user, setUser } = useAuth();
@@ -365,6 +366,21 @@ export function SettingsPage() {
             </form>
           </div>
         )}
+        {/* Language Preferences Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <Globe className="w-5 h-5 text-brand-green" />
+                <h3 className="text-xl font-bold text-gray-900">{t('settings.language', 'Язык интерфейса')}</h3>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">{t('settings.languageDesc', 'Выберите предпочтительный язык для отображения интерфейса')}</p>
+            </div>
+            <div className="pt-2 sm:pt-0">
+              <LanguageSwitcher />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

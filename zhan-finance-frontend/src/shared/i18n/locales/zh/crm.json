@@ -1,0 +1,128 @@
+{
+  "taskPool": {
+    "title": "任务公共池",
+    "empty": "暂无可领取的任务",
+    "actions": {
+      "take": "领取任务",
+      "drop": "放弃任务",
+      "assign": "指派任务"
+    },
+    "status": {
+      "PENDING": "等待处理",
+      "IN_PROGRESS": "进行中",
+      "DONE": "已完成",
+      "CANCELLED": "已取消"
+    },
+    "columns": {
+      "title": "任务标题",
+      "client": "客户",
+      "status": "状态",
+      "created": "创建时间",
+      "assignee": "执行人",
+      "actions": "操作"
+    }
+  },
+  "tasks": {
+    "title": "任务列表",
+    "count_one": "{{count}} 个任务",
+    "count_few": "{{count}} 个任务",
+    "count_many": "{{count}} 个任务",
+    "count_other": "{{count}} 个任务"
+  },
+  "kanban": {
+    "noPipelines": "未配置业务流程管道",
+    "currency": "坚戈",
+    "quickDeal": "快速交易",
+    "call": "拨打电话：",
+    "phoneNotSpecified": "未填写电话",
+    "emailAction": "发送邮件：",
+    "emailNotSpecified": "未填写邮箱",
+    "chatWith": "与用户沟通：",
+    "clientNotSpecified": "未指定客户",
+    "noClient": "无客户",
+    "addDeal": "+ 添加事项",
+    "allStages": "所有阶段",
+    "sort": {
+      "newest": "最新优先",
+      "oldest": "最早优先",
+      "deadline_asc": "截止日期升序 ↑",
+      "deadline_desc": "截止日期降序 ↓"
+    },
+    "unsavedChanges": "您有尚未保存的更改，确定要离开吗？",
+    "deleteConfirm": "确定永久删除此任务吗？",
+    "deleteError": "删除任务失败",
+    "reset": "重置",
+    "of": "之",
+    "tasks": "任务",
+    "noFilteredTasks": "没有符合筛选条件的任务",
+    "resetFilters": "重置筛选条件"
+  },
+  "errors": {
+    "taskNotFound": "未找到任务"
+  },
+  "taskCard": {
+    "untitledTask": "未命名任务",
+    "client": "客户：",
+    "unassigned": "未指派",
+    "assignee": "执行人：",
+    "deleteSubtask": "删除子任务",
+    "addSubtask": "添加子任务",
+    "deadline": "截止时间"
+  },
+  "taskModal": {
+    "assignError": "指派任务失败",
+    "clickToEdit": "点击进行修改",
+    "client": "客户：",
+    "assignee": "执行人：",
+    "unassigned": "未指派（公共池）",
+    "take": "领取任务",
+    "drop": "放弃",
+    "created": "创建时间：",
+    "description": "任务描述",
+    "edit": "编辑",
+    "addDescription": "添加更详细的描述...",
+    "save": "保存",
+    "cancel": "取消",
+    "noDescription": "暂无描述...",
+    "linkedServices": "关联服务",
+    "attachments": "附件列表",
+    "attachFile": "上传附件",
+    "attach": "上传",
+    "download": "下载",
+    "noAttachments": "暂无附加文档",
+    "tags": "标签",
+    "noTags": "暂无标签",
+    "addTag": "添加标签 (Enter)",
+    "subtasks": "子任务清单",
+    "deleteSubtask": "删除子任务",
+    "noSubtasks": "暂无子任务",
+    "addSubtask": "添加子任务...",
+    "comments": "沟通记录",
+    "history": "变更历史",
+    "noComments": "暂无留言记录",
+    "emptyHistory": "暂无历史记录",
+    "writeComment": "写下沟通留言...",
+    "send": "发送"
+  },
+  "taskCreate": {
+    "error": "创建任务时出错",
+    "title": "新建申请",
+    "subject": "申请事项",
+    "subjectPlaceholder": "例如：收入证明、代理记账服务...",
+    "details": "具体细节（选填）",
+    "detailsPlaceholder": "详细描述您的需求...",
+    "deadline": "期望完成时间",
+    "linkedServices": "关联服务",
+    "subtasks": "任务子项清单",
+    "addSubtaskPlaceholder": "添加清单项目...",
+    "attachments": "附件",
+    "attachFiles": "上传附件文件",
+    "cancel": "取消",
+    "submitting": "提交中...",
+    "submit": "提交申请"
+  },
+  "taskDetailsPage": {
+    "loadError": "加载任务失败。",
+    "back": "返回"
+  }
+}

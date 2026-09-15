@@ -17,6 +17,8 @@ import { ROUTES } from '@/shared/config/routes';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { Bell, CheckCircle2, Globe, Mail, LogOut } from 'lucide-react';
 
+import { getIntlLocale } from '@/shared/lib/dateFormat';
+
 function HeaderProfile() {
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
@@ -42,13 +44,13 @@ function HeaderProfile() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const dateStr = time.toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { 
+  const dateStr = time.toLocaleDateString(getIntlLocale(i18n.language), { 
     weekday: 'long', 
     day: 'numeric', 
     month: 'long' 
   });
   
-  const timeStr = time.toLocaleTimeString(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
+  const timeStr = time.toLocaleTimeString(getIntlLocale(i18n.language), {
     hour: '2-digit',
     minute: '2-digit'
   });
@@ -175,7 +177,8 @@ export function DashboardLayout() {
           {/* Desktop Topbar */}
           <div className="hidden lg:flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white z-10">
             <GlobalSearch />
-            <div className="flex items-center pl-4 ml-auto">
+            <div className="flex items-center gap-3 pl-4 ml-auto">
+              <LanguageSwitcher />
               <HeaderProfile />
             </div>
           </div>

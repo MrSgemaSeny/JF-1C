@@ -102,7 +102,7 @@ export function AdminSecurityPage() {
                   {t('adminSecurity.totpTitle', { defaultValue: 'Google Authenticator / TOTP 2FA' })}
                 </h2>
                 <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${is2FAEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                  {is2FAEnabled ? 'Включена' : 'Не подключена'}
+                  {is2FAEnabled ? t('adminSecurity.status.enabled', 'Включена') : t('adminSecurity.status.disabled', 'Не подключена')}
                 </span>
               </div>
               <p className="text-sm text-gray-500 mt-0.5">
@@ -120,7 +120,7 @@ export function AdminSecurityPage() {
                 className="px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-sm font-bold rounded-xl transition-all flex items-center gap-2 shrink-0"
               >
                 <ShieldAlert size={16} />
-                {t('adminSecurity.disableBtn', { defaultValue: 'Отключить 2FA' })}
+                {t('adminSecurity.buttons.disable', { defaultValue: 'Отключить 2FA' })}
               </button>
             ) : (
               <button
@@ -129,7 +129,7 @@ export function AdminSecurityPage() {
                 className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex items-center gap-2 shrink-0 disabled:opacity-50"
               >
                 {isLoading ? <Loader2 size={16} className="animate-spin" /> : <QrCode size={16} />}
-                {t('adminSecurity.enableBtn', { defaultValue: 'Настроить 2FA' })}
+                {t('adminSecurity.buttons.enable', { defaultValue: 'Настроить 2FA' })}
               </button>
             )
           )}
@@ -147,7 +147,7 @@ export function AdminSecurityPage() {
                 onClick={() => { setPhase('idle'); setSetupData(null); }}
                 className="text-xs font-semibold text-gray-500 hover:text-gray-800"
               >
-                Отмена
+                {t('adminSecurity.buttons.cancel', 'Отмена')}
               </button>
             </div>
 
@@ -159,9 +159,9 @@ export function AdminSecurityPage() {
 
               <div className="space-y-4 text-sm text-gray-700">
                 <ol className="list-decimal list-inside space-y-2 font-medium text-gray-800">
-                  <li>Установите **Google Authenticator**, **Authy** или **1Password**.</li>
-                  <li>Отсканируйте QR-код слева в приложении.</li>
-                  <li>Или введите ключ секретного кода вручную:</li>
+                  <li>{t('adminSecurity.steps.step1', 'Установите Google Authenticator или другое TOTP-приложение')}</li>
+                  <li>{t('adminSecurity.steps.step2', 'Отсканируйте QR-код в приложении')}</li>
+                  <li>{t('adminSecurity.steps.step3', 'Или введите ключ вручную:')}</li>
                 </ol>
 
                 <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-xl border border-gray-200 font-mono text-xs font-bold text-gray-900 break-all">
@@ -169,7 +169,7 @@ export function AdminSecurityPage() {
                   <button
                     onClick={copySecret}
                     className="p-1.5 hover:bg-white rounded-md text-gray-600 transition-colors shrink-0"
-                    title="Скопировать ключ"
+                    title={t('common.copy', 'Скопировать')}
                   >
                     {copiedSecret ? <CheckCircle2 size={16} className="text-green-600" /> : <Copy size={16} />}
                   </button>
@@ -195,7 +195,7 @@ export function AdminSecurityPage() {
                   disabled={confirmCode.length !== 6 || isLoading}
                   className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-brand-green/20 disabled:opacity-50 shrink-0"
                 >
-                  {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Активировать'}
+                  {isLoading ? <Loader2 size={16} className="animate-spin" /> : t('adminSecurity.buttons.enable', 'Активировать')}
                 </button>
               </div>
             </form>
@@ -208,18 +208,18 @@ export function AdminSecurityPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-red-900 flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-red-600" />
-                Отключение двухфакторной аутентификации
+                {t('adminSecurity.buttons.disable', 'Отключение двухфакторной аутентификации')}
               </h3>
               <button
                 type="button"
                 onClick={() => { setPhase('idle'); setDisableCode(''); }}
                 className="text-xs font-semibold text-gray-500 hover:text-gray-800"
               >
-                Отмена
+                {t('adminSecurity.buttons.cancel', 'Отмена')}
               </button>
             </div>
             <p className="text-sm text-gray-600">
-              Для подтверждения отключения 2FA введите текущий 6-значный код из вашего приложения Authenticator:
+              {t('adminSecurity.disablePrompt', { defaultValue: 'Для подтверждения отключения 2FA введите текущий 6-значный код из вашего приложения Authenticator:' })}
             </p>
             <div className="flex items-center gap-3 max-w-xs">
               <input
@@ -235,7 +235,7 @@ export function AdminSecurityPage() {
                 disabled={disableCode.length !== 6 || isLoading}
                 className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-red-600/20 disabled:opacity-50 shrink-0"
               >
-                {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Отключить'}
+                {isLoading ? <Loader2 size={16} className="animate-spin" /> : t('adminSecurity.buttons.disable', 'Отключить')}
               </button>
             </div>
           </form>

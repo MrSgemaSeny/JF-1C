@@ -6,19 +6,20 @@ import { z } from 'zod';
 
 import translationRU from 'zod-i18n-map/locales/ru/zod.json';
 import translationEN from 'zod-i18n-map/locales/en/zod.json';
+import translationZH from 'zod-i18n-map/locales/zh-CN/zod.json';
 
 import commonRU from './locales/ru/common.json';
 import authRU from './locales/ru/auth.json';
 import crmRU from './locales/ru/crm.json';
 import landingRU from './locales/ru/landing.json';
+import tasksRU from './locales/ru/tasks.json';
+import modalsRU from './locales/ru/modals.json';
 
 import commonEN from './locales/en/common.json';
 import authEN from './locales/en/auth.json';
 import crmEN from './locales/en/crm.json';
 import landingEN from './locales/en/landing.json';
-import tasksRU from './locales/ru/tasks.json';
 import tasksEN from './locales/en/tasks.json';
-import modalsRU from './locales/ru/modals.json';
 import modalsEN from './locales/en/modals.json';
 
 import commonKK from './locales/kk/common.json';
@@ -31,6 +32,9 @@ import modalsKK from './locales/kk/modals.json';
 import commonZH from './locales/zh/common.json';
 import landingZH from './locales/zh/landing.json';
 import authZH from './locales/zh/auth.json';
+import crmZH from './locales/zh/crm.json';
+import tasksZH from './locales/zh/tasks.json';
+import modalsZH from './locales/zh/modals.json';
 
 i18n
   .use(initReactI18next)
@@ -77,11 +81,11 @@ i18n
       zh: {
         common: commonZH,
         auth: authZH,
-        crm: crmEN,
+        crm: crmZH,
         landing: landingZH,
-        tasks: tasksEN,
-        modals: modalsEN,
-        zod: translationEN
+        tasks: tasksZH,
+        modals: modalsZH,
+        zod: translationZH
       },
     },
   });

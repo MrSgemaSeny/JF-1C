@@ -5,7 +5,7 @@ import {
   Paperclip, FileText, Download, Archive, Trash2, Plus, Edit2,
   Hash, PlayCircle, XCircle, Info, ShieldCheck,
 } from 'lucide-react';
-import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus } from '../model/types';
+import type { TaskDto, TaskCommentDto, TaskActivityDto, SubtaskStatus, UserDto } from '../model/types';
 import { getTaskComments, addTaskComment, getTaskHistory, assignTask } from '../api/taskApi';
 import { getEmployees } from '@/entities/employee/api/employeeApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
@@ -73,8 +73,9 @@ export function TaskDetailsModal({
   const currentUser = user
     ? { id: user.userId, fullName: user.fullName, email: user.email, role: user.role }
     : null;
-
-  const taskActions = currentUser ? useTaskActions(task, currentUser) : null;
+  const fallbackUser: UserDto = { id: 0, fullName: '', email: '', role: 'CLIENT' };
+  const rawTaskActions = useTaskActions(task, currentUser ?? fallbackUser);
+  const taskActions = currentUser ? rawTaskActions : null;
   const { data: pipelines } = usePipelinesQuery();
 
   // ── Data state ──────────────────────────────────────────────────────────

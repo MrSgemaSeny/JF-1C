@@ -112,15 +112,15 @@ export function AdminCuratorsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Кураторы обучения</h1>
-          <p className="text-sm text-gray-500 mt-1">Управление аккаунтами кураторов и привязкой к курсам</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('adminCurators.title')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('adminCurators.subtitle')}</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-brand-green text-white font-medium rounded-xl hover:bg-green-800 transition-colors shadow-sm"
         >
           <Plus size={18} />
-          <span>Добавить куратора</span>
+          <span>{t('adminCurators.addBtn')}</span>
         </button>
       </div>
 
@@ -128,7 +128,7 @@ export function AdminCuratorsPage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {curators.length === 0 ? (
           <div className="col-span-full py-16 bg-white rounded-2xl border border-gray-100 text-center text-gray-500">
-            Кураторы пока не добавлены
+            {t('adminCurators.empty')}
           </div>
         ) : (
           curators.map((c) => (
@@ -141,7 +141,7 @@ export function AdminCuratorsPage() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${c.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                      {c.enabled ? 'Активен' : 'Заблокирован'}
+                      {c.enabled ? t('adminCurators.status.active') : t('adminCurators.status.blocked')}
                     </span>
                     <div className="relative">
                       <button
@@ -164,7 +164,7 @@ export function AdminCuratorsPage() {
                               }`}
                             >
                               {c.enabled ? <UserX size={15} /> : <UserCheck size={15} />}
-                              <span>{c.enabled ? 'Заблокировать доступ' : 'Разблокировать'}</span>
+                              <span>{c.enabled ? t('adminCurators.actions.block') : t('adminCurators.actions.unblock')}</span>
                             </button>
                           </div>
                         </>
@@ -176,7 +176,7 @@ export function AdminCuratorsPage() {
                 <div className="mt-6 pt-5 border-t border-gray-50">
                   <div className="flex items-center gap-2 text-sm font-semibold text-gray-500 mb-2">
                     <BookOpen size={16} className="text-brand-green" />
-                    <span>Назначено курсов: <span className="text-gray-900">{c.assignedCourseIds.length}</span></span>
+                    <span>{t('adminCurators.coursesCount', 'Назначено курсов:')} <span className="text-gray-900">{c.assignedCourseIds.length}</span></span>
                   </div>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export function AdminCuratorsPage() {
                   onClick={() => setSelectedCurator(c)}
                   className="w-full py-3 bg-gray-50 hover:bg-brand-green/10 hover:text-brand-green text-gray-700 text-sm font-bold rounded-xl transition-all"
                 >
-                  Управление курсами
+                  {t('adminCurators.manageCourses', 'Управление курсами')}
                 </button>
               </div>
             </div>
@@ -198,10 +198,10 @@ export function AdminCuratorsPage() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
-            <h2 className="text-xl font-bold text-gray-900">Новый куратор</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('adminCurators.modalTitle', 'Новый куратор')}</h2>
             <form onSubmit={handleCreateCurator} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">ФИО</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('auth.register.fullName', 'ФИО')}</label>
                 <input
                   type="text"
                   required
@@ -223,7 +223,7 @@ export function AdminCuratorsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Начальный пароль</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminLearners.password', 'Начальный пароль')}</label>
                 <input
                   type="password"
                   required
@@ -240,14 +240,14 @@ export function AdminCuratorsPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50"
                 >
-                  Отмена
+                  {t('common.cancel', 'Отмена')}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="flex-1 py-2.5 bg-brand-green text-white rounded-xl text-sm font-semibold hover:bg-green-800 disabled:opacity-50"
                 >
-                  {submitting ? 'Создание...' : 'Создать'}
+                  {submitting ? t('ui.saving', 'Создание...') : t('common.create', 'Создать')}
                 </button>
               </div>
             </form>
@@ -259,10 +259,10 @@ export function AdminCuratorsPage() {
       {selectedCurator && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
-            <h2 className="text-xl font-bold text-gray-900">Назначенные курсы: {selectedCurator.fullName}</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('adminCurators.assignModalTitle', 'Назначенные курсы:')} {selectedCurator.fullName}</h2>
             <div className="max-h-60 overflow-y-auto space-y-2">
               {courses.length === 0 ? (
-                <p className="text-sm text-gray-500">Курсы в системе отсутствуют</p>
+                <p className="text-sm text-gray-500">{t('adminCurators.noCourses', 'Курсы в системе отсутствуют')}</p>
               ) : (
                 courses.map((course) => {
                   const isAssigned = selectedCurator.assignedCourseIds.includes(course.id);
@@ -283,7 +283,7 @@ export function AdminCuratorsPage() {
                           isAssigned ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-brand-green/10 text-brand-green hover:bg-brand-green/20'
                         }`}
                       >
-                        {isAssigned ? 'Отвязать' : 'Привязать'}
+                        {isAssigned ? t('adminCurators.unbind', 'Отвязать') : t('adminCurators.bind', 'Привязать')}
                       </button>
                     </div>
                   );
@@ -295,7 +295,7 @@ export function AdminCuratorsPage() {
                 onClick={() => setSelectedCurator(null)}
                 className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200"
               >
-                Закрыть
+                {t('common.close', 'Закрыть')}
               </button>
             </div>
           </div>

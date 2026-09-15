@@ -1,0 +1,30 @@
+{
+  "reject": {
+    "reasons": {
+      "changedMind": "改变主意",
+      "tooExpensive": "价格过高",
+      "noTime": "暂无时间",
+      "foundAnother": "已找到其他服务商"
+    },
+    "title": "取消任务",
+    "warningTitle": "注意！此操作不可逆。",
+    "warningDesc": "取消后该任务将移至已归档列表，后续将无法修改其状态。",
+    "reasonPrompt": "请选择取消原因：",
+    "additionalComments": "补充说明（选填）",
+    "customReason": "或者填写其他原因（必填）",
+    "placeholder": "请详细说明取消任务的原因...",
+    "cancel": "取消",
+    "submit": "确认取消",
+    "submitting": "提交中..."
+  },
+  "reject.title": "取消任务",
+  "reject.warningTitle": "注意！此操作不可逆。",
+  "reject.warningDesc": "取消后该任务将移至已归档列表，后续将无法修改其状态。",
+  "reject.reasonPrompt": "请选择取消原因：",
+  "reject.additionalComments": "补充说明（选填）",
+  "reject.customReason": "或者填写其他原因（必填）",
+  "reject.placeholder": "请详细说明取消任务的原因...",
+  "reject.cancel": "取消",
+  "reject.submitting": "提交中...",
+  "reject.submit": "确认取消"
+}

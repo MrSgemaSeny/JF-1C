@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { apiRequest } from '@/shared/api/http';
 import { BookOpen } from 'lucide-react';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -12,6 +13,7 @@ interface Course {
 }
 
 export function CuratorCoursesPage() {
+  const { t } = useTranslation('common');
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,14 +39,14 @@ export function CuratorCoursesPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Закрепленные курсы</h1>
-        <p className="text-sm text-gray-500 mt-1">Список учебных программ, куратором которых вы являетесь</p>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('curator.coursesPage.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('curator.subtitle')}</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.length === 0 ? (
           <div className="col-span-full py-16 bg-white rounded-2xl border border-gray-100 text-center text-gray-500">
-            За вами пока не закреплен ни один курс
+            {t('curator.coursesPage.empty')}
           </div>
         ) : (
           courses.map((course) => (
@@ -55,11 +57,11 @@ export function CuratorCoursesPage() {
                     <BookOpen size={20} />
                   </div>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${course.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-                    {course.status === 'PUBLISHED' ? 'Опубликован' : 'Черновик'}
+                    {course.status === 'PUBLISHED' ? t('search.status.published', 'Опубликован') : t('search.status.draft', 'Черновик')}
                   </span>
                 </div>
                 <h3 className="font-bold text-lg text-gray-900 leading-snug">{course.title}</h3>
-                <p className="text-sm text-gray-500 line-clamp-3">{course.description || 'Описание не указано'}</p>
+                <p className="text-sm text-gray-500 line-clamp-3">{course.description || t('curator.noDescription', 'Описание не указано')}</p>
               </div>
             </div>
           ))

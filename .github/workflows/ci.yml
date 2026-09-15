@@ -15,7 +15,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Make gradlew executable
+        run: chmod +x ./zhan-finance-backend/gradlew
+      - name: Run Backend Tests
+        run: ./gradlew test --no-daemon
+        working-directory: ./zhan-finance-backend
+
   build:
+    needs: backend-test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -28,6 +44,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ./zhan-finance-frontend/package-lock.json
       - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
       - run: npx vitest run
       - run: npm run build
         env:

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getEmployees, getEmployeeWorkload, type EmployeeWorkloadDto } from '@/entities/employee/api/employeeApi';
 import { getTasks, assignTask } from '@/entities/task/api/taskApi';
 import type { EmployeeDto } from '@/entities/employee/model/types';
@@ -8,15 +9,13 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/shared/config/routes';
 
 export function AdvisorWorkloadPage() {
+  const { t } = useTranslation(['common', 'crm']);
   const navigate = useNavigate();
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
   const [workloads, setWorkloads] = useState<Map<number, number>>(new Map());
   const [tasks, setTasks] = useState<TaskDto[]>([]);
   const [unassignedTasks, setUnassignedTasks] = useState<TaskDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
-  const [assigningToEmployeeId, setAssigningToEmployeeId] = useState<number | null>(null);
-
   const [pendingAssignment, setPendingAssignment] = useState<{ taskId: number; employeeId: number } | null>(null);
 
   async function loadWorkloadData() {
@@ -52,14 +51,14 @@ export function AdvisorWorkloadPage() {
       await loadWorkloadData();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при назначении задачи');
+      alert(t('crm:taskModal.assignError', { defaultValue: 'Ошибка при назначении задачи' }));
     }
   }
 
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-gray-400 font-medium animate-pulse">Загрузка мониторинга нагрузки...</div>
+        <div className="text-gray-400 font-medium animate-pulse">{t('loading')}</div>
       </div>
     );
   }
@@ -71,11 +70,13 @@ export function AdvisorWorkloadPage() {
         <div>
           <div className="flex items-center gap-2 text-brand-green text-xs font-black uppercase tracking-wider mb-1">
             <ShieldCheck className="w-4 h-4 text-brand-green" />
-            Балансировка нагрузки команды
+            {t('advisor.workloadPage.title', { defaultValue: 'Балансировка нагрузки команды' })}
           </div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Мониторинг специалистов</h1>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">
+            {t('advisor.workloadPage.title', { defaultValue: 'Мониторинг специалистов' })}
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
-            Распределение задач из пула и оптимальная балансировка нагрузки между сотрудниками.
+            {t('advisor.workloadPage.subtitle', { defaultValue: 'Распределение задач из пула и оптимальная балансировка нагрузки между сотрудниками.' })}
           </p>
         </div>
         <button
@@ -84,7 +85,7 @@ export function AdvisorWorkloadPage() {
           className="px-5 py-2.5 bg-brand-green hover:bg-brand-green/90 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex items-center gap-2 cursor-pointer"
         >
           <Layers className="w-4 h-4" />
-          Пул нераспределенных задач ({unassignedTasks.length})
+          {t('taskPool.title', { defaultValue: 'Пул задач' })} ({unassignedTasks.length})
         </button>
       </div>
 
@@ -111,34 +112,42 @@ export function AdvisorWorkloadPage() {
                   <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                     emp.role === 'ADVISOR' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-50 text-blue-700'
                   }`}>
-                    {emp.role}
+                    {t(`sidebar.roles.${emp.role}`, { defaultValue: emp.role })}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
-                  <span className="text-xs font-bold text-gray-500 uppercase">Нагрузка</span>
+                  <span className="text-xs font-bold text-gray-500 uppercase">
+                    {t('adminDashboard.workload', { defaultValue: 'Нагрузка' })}
+                  </span>
                   <span className={`text-sm font-black px-2.5 py-0.5 rounded-lg ${
                     isOverloaded ? 'bg-red-100 text-red-700' : activeTasksCount > 3 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
                   }`}>
-                    {activeTasksCount} активных задач
+                    {activeTasksCount} {t('crm:kanban.tasks', { defaultValue: 'задач' })}
                   </span>
                 </div>
 
                 {/* Current Tasks List */}
                 <div className="space-y-2">
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Текущие задачи</div>
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    {t('employeeOverview.allTasks', { defaultValue: 'Текущие задачи' })}
+                  </div>
                   {empTasks.length === 0 ? (
-                    <div className="text-xs text-gray-400 italic py-2">Свободен для новых задач</div>
+                    <div className="text-xs text-gray-400 italic py-2">
+                      {t('employeeOverview.noPlannedTasks', { defaultValue: 'Свободен для новых задач' })}
+                    </div>
                   ) : (
-                    empTasks.slice(0, 3).map((t) => (
-                      <div key={t.id} className="text-xs p-2.5 bg-gray-50/80 rounded-xl font-medium text-gray-700 truncate flex justify-between items-center">
-                        <span className="truncate">{t.title}</span>
-                        <span className="text-[10px] text-brand-green font-bold ml-2 shrink-0">{t.stage?.name}</span>
+                    empTasks.slice(0, 3).map((tItem) => (
+                      <div key={tItem.id} className="text-xs p-2.5 bg-gray-50/80 rounded-xl font-medium text-gray-700 truncate flex justify-between items-center">
+                        <span className="truncate">{tItem.title}</span>
+                        <span className="text-[10px] text-brand-green font-bold ml-2 shrink-0">{tItem.stage?.name}</span>
                       </div>
                     ))
                   )}
                   {empTasks.length > 3 && (
-                    <div className="text-[11px] text-gray-400 text-right font-medium">+ еще {empTasks.length - 3} задач</div>
+                    <div className="text-[11px] text-gray-400 text-right font-medium">
+                      + {empTasks.length - 3} {t('crm:kanban.tasks', { defaultValue: 'задач' })}
+                    </div>
                   )}
                 </div>
               </div>
@@ -155,10 +164,10 @@ export function AdvisorWorkloadPage() {
                     value={pendingAssignment?.employeeId === emp.id ? pendingAssignment.taskId : ''}
                     className="w-full text-xs font-bold p-2.5 rounded-xl border border-brand-green/20 bg-brand-beige/30 text-brand-green hover:bg-brand-beige/60 transition-colors cursor-pointer"
                   >
-                    <option value="" disabled>+ Выбрать задачу из пула</option>
+                    <option value="" disabled>+ {t('advisor.workloadPage.assignTask', { defaultValue: 'Выбрать задачу из пула' })}</option>
                     {unassignedTasks.map((ut) => (
                       <option key={ut.id} value={ut.id}>
-                        {ut.title} ({ut.client?.companyName || ut.client?.fullName || 'Без клиента'})
+                        {ut.title} ({ut.client?.companyName || ut.client?.fullName || t('crm:kanban.noClient', { defaultValue: 'Без клиента' })})
                       </option>
                     ))}
                   </select>
@@ -170,14 +179,14 @@ export function AdvisorWorkloadPage() {
                         onClick={() => handleAssignTask(pendingAssignment.taskId, pendingAssignment.employeeId)}
                         className="flex-1 py-2 bg-brand-green hover:bg-brand-green/90 text-white text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer"
                       >
-                        Подтвердить
+                        {t('save')}
                       </button>
                       <button
                         type="button"
                         onClick={() => setPendingAssignment(null)}
                         className="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold rounded-xl transition-all cursor-pointer"
                       >
-                        Отмена
+                        {t('cancel')}
                       </button>
                     </div>
                   )}

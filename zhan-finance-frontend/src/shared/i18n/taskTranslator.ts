@@ -23,7 +23,7 @@ export function translateStageName(stage: { name: string; nameEn?: string } | un
 export function translateTaskTitle(title: string | undefined, t: TFunction): string {
   if (!title) return '';
   
-  let translatedTitle = title;
+  const translatedTitle = title;
   
   const prefixes = [
     { ru: "Запрос на услугу:", key: "taskPrefixes.Запрос на услугу" },

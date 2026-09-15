@@ -25,6 +25,6 @@
   "reject.customReason": "Or write your own reason (required)",
   "reject.placeholder": "Tell us more about why you decided to reject the task...",
   "reject.cancel": "Cancel",
-  "reject.submitting": "Отправка...",
+  "reject.submitting": "Submitting...",
   "reject.submit": "Submit rejection"
 }

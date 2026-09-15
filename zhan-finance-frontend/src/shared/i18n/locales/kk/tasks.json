@@ -34,5 +34,25 @@
     "cancel": "Болдырмау",
     "save": "Сақтау",
     "saving": "Сақталуда..."
-  }
+  },
+  "details.backToList": "Тізімге қайту",
+  "details.archive": "Мұрағатқа жіберу",
+  "details.created": "Құрылды",
+  "details.edited": "Өңделді",
+  "details.confirm": "Растау",
+  "details.toRework": "Қайта өңдеуге жіберу",
+  "details.editTask": "Өңдеу",
+  "details.rejectTask": "Тапсырмадан бас тарту",
+  "details.cancelled": "Тапсырма тоқтатылды",
+  "details.reason": "Себебі:",
+  "details.description": "Сипаттама",
+  "details.noDescription": "Сипаттама көрсетілмеген...",
+  "details.relatedServices": "Байланысты қызметтер",
+  "details.documents": "Құжаттар",
+  "details.additionalInfo": "Қосымша ақпарат",
+  "details.amount": "Сомасы:",
+  "details.deadline": "Мерзімі:",
+  "details.source": "Көзі:",
+  "details.recentEvents": "Соңғы оқиғалар",
+  "details.historyEmpty": "Тарих бос"
 }
