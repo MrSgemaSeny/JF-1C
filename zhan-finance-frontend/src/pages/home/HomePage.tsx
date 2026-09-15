@@ -1,6 +1,7 @@
 import { Header } from '@/widgets/header/Header';
 import { Hero } from '@/widgets/hero/Hero';
 import { HomeAbout } from './sections/HomeAbout';
+import { HomeServices } from './sections/HomeServices';
 import { OutsourceIncluded } from './sections/OutsourceIncluded';
 import { HomeAdvantages } from './sections/HomeAdvantages';
 import { Trust } from '@/widgets/trust/Trust';
@@ -22,6 +23,7 @@ export function HomePage() {
       <main>
         <Hero />
         <HomeAbout />
+        <HomeServices />
         <OutsourceIncluded />
         <HomeAdvantages />
         <Trust />

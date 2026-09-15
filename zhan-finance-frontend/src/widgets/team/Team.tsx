@@ -1,113 +1,306 @@
-import { motion } from 'framer-motion';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Section } from '@/shared/ui/Section';
 import { Container } from '@/shared/ui/Container';
-import { teamLeader, teamSpecialists } from '@/shared/config/content/team';
+import { teamLeader, teamSpecialists, TeamMember } from '@/shared/config/content/team';
 import { useTranslation } from 'react-i18next';
+import { LayoutGrid, Sliders, ChevronLeft, ChevronRight, X, PhoneCall, CheckCircle, Shield } from 'lucide-react';
 
 export function Team() {
   const { t } = useTranslation('landing');
+  const [viewMode, setViewMode] = useState<'grid' | 'carousel'>('grid');
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = direction === 'left' ? -320 : 320;
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const allMembers = [teamLeader, ...teamSpecialists];
 
   return (
-    <Section className="bg-brand-beige py-16 lg:py-24 overflow-hidden">
+    <Section className="bg-brand-beige py-16 lg:py-24 overflow-hidden relative">
       <Container className="max-w-[1200px]">
-        {/* Heading */}
-        <div className="text-center mb-10 sm:mb-14">
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.05] tracking-tight text-brand-green break-words">
-            {t('team_title', { defaultValue: 'Команда' })} <br />
-            <span className="text-brand-green/40">{t('team_subtitle', { defaultValue: 'экспертов' })}</span>
-          </h2>
+        {/* Heading & View Switcher */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14">
+          <div>
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.05] tracking-tight text-brand-green break-words">
+              {t('team_title', { defaultValue: 'Команда' })} <br />
+              <span className="text-brand-green/40">{t('team_subtitle', { defaultValue: 'экспертов' })}</span>
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-brand-green/75 max-w-xl">
+              {t('team_desc', { defaultValue: 'За каждым проектом стоят квалифицированные специалисты с многолетним опытом в бухгалтерии и налогах РК.' })}
+            </p>
+          </div>
+
+          {/* Mode switch */}
+          <div className="flex items-center gap-1 p-1 bg-brand-green/10 rounded-2xl self-start md:self-auto">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                viewMode === 'grid'
+                  ? 'bg-brand-green text-brand-beige shadow-sm'
+                  : 'text-brand-green/70 hover:text-brand-green'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              {t('team_mode_grid', { defaultValue: 'Сетка' })}
+            </button>
+            <button
+              onClick={() => setViewMode('carousel')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                viewMode === 'carousel'
+                  ? 'bg-brand-green text-brand-beige shadow-sm'
+                  : 'text-brand-green/70 hover:text-brand-green'
+              }`}
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              {t('team_mode_carousel', { defaultValue: 'Карусель' })}
+            </button>
+          </div>
         </div>
 
-        {/* --- РУКОВОДИТЕЛЬ (ВЫДЕЛЕН) --- */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="flex flex-col md:flex-row items-center gap-6 sm:gap-8 md:gap-12 p-6 sm:p-8 md:p-11 rounded-[24px] sm:rounded-[28px] bg-brand-green/[0.08] border border-brand-green/20 mb-10 sm:mb-14 shadow-sm"
-        >
-          <div className="shrink-0 w-44 h-56 sm:w-52 sm:h-64 md:w-56 md:h-72 rounded-[18px] sm:rounded-[20px] overflow-hidden bg-brand-green/10 border border-brand-green/20 relative shadow-inner">
-            {teamLeader.photo ? (
-              <img src={teamLeader.photo} alt={t(teamLeader.nameKey)} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-brand-green/40">
-                <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-            )}
-          </div>
-          <div className="text-center md:text-left">
-            <p className="text-xs font-bold uppercase tracking-wider text-brand-green/70 mb-2">
-              {t(teamLeader.roleKey)}
-            </p>
-            <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-brand-green leading-[1.15] mb-4">
-              {t(teamLeader.nameKey)}
-            </h3>
-            {teamLeader.bioKey && (
-              <p className="text-sm md:text-base text-brand-green/85 leading-relaxed max-w-xl">
-                {t(teamLeader.bioKey)}
-              </p>
-            )}
-          </div>
-        </motion.div>
-
-        {/* --- СЕТКА СПЕЦИАЛИСТОВ (4x2) --- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {teamSpecialists.map((member, index) => (
+        {/* --- VIEW MODE 1: STRICT GRID (1 LEADER + 8 SPECIALISTS) --- */}
+        {viewMode === 'grid' && (
+          <div>
+            {/* РУКОВОДИТЕЛЬ (ВЫДЕЛЕН) */}
             <motion.div
-              key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
+              transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="group cursor-pointer"
+              onClick={() => setSelectedMember(teamLeader)}
+              className="group cursor-pointer flex flex-col md:flex-row items-center gap-6 sm:gap-8 md:gap-12 p-6 sm:p-8 md:p-11 rounded-[24px] sm:rounded-[28px] bg-brand-green/[0.08] border border-brand-green/20 mb-10 sm:mb-14 shadow-sm hover:shadow-xl hover:border-brand-green/40 transition-all"
             >
-              {/* Card with Image & Hover Overlay */}
-              <div className="relative aspect-[3/4] rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
-                {/* Photo / Avatar */}
-                {member.photo ? (
-                  <img
-                    src={member.photo}
-                    alt={t(member.nameKey)}
-                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:blur-md"
-                  />
+              <div className="shrink-0 w-44 h-56 sm:w-52 sm:h-64 md:w-56 md:h-72 rounded-[18px] sm:rounded-[20px] overflow-hidden bg-brand-green/10 border border-brand-green/20 relative shadow-inner">
+                {teamLeader.photo ? (
+                  <img src={teamLeader.photo} alt={t(teamLeader.nameKey)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-16 transition-all duration-300 group-hover:scale-105 group-hover:blur-md">
+                  <div className="w-full h-full flex items-center justify-center text-brand-green/40">
                     <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </div>
                 )}
+              </div>
+              <div className="text-center md:text-left flex-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-green text-brand-beige text-[11px] font-bold uppercase tracking-wider mb-3">
+                  <Shield className="w-3 h-3" />
+                  {t(teamLeader.roleKey)}
+                </div>
+                <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-brand-green leading-[1.15] mb-4">
+                  {t(teamLeader.nameKey)}
+                </h3>
+                {teamLeader.bioKey && (
+                  <p className="text-sm md:text-base text-brand-green/85 leading-relaxed max-w-2xl mb-4">
+                    {t(teamLeader.bioKey)}
+                  </p>
+                )}
+                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-green group-hover:underline">
+                  {t('team_view_details', { defaultValue: 'Подробнее о специалисте →' })}
+                </span>
+              </div>
+            </motion.div>
 
-                {/* Default State: Sleek floating soft green frosted-glass bottom panel */}
-                <div className="absolute inset-x-3 bottom-3 p-3.5 rounded-2xl bg-brand-green/80 backdrop-blur-md border border-white/15 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none text-left shadow-lg">
-                  <p className="font-bold text-sm md:text-base text-brand-beige leading-snug mb-0.5">
-                    {t(member.nameKey)}
-                  </p>
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-brand-beige/80">
-                    {t(member.roleKey)}
-                  </p>
+            {/* СЕТКА СПЕЦИАЛИСТОВ (4x2) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {teamSpecialists.map((member, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  viewport={{ once: true }}
+                  onClick={() => setSelectedMember(member)}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative aspect-[3/4] rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
+                    {member.photo ? (
+                      <img
+                        src={member.photo}
+                        alt={t(member.nameKey)}
+                        className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-16 transition-all duration-300 group-hover:scale-105">
+                        <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </div>
+                    )}
+
+                    <div className="absolute inset-x-3 bottom-3 p-3.5 rounded-2xl bg-brand-green/80 backdrop-blur-md border border-white/15 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none text-left shadow-lg">
+                      <p className="font-bold text-sm md:text-base text-brand-beige leading-snug mb-0.5">
+                        {t(member.nameKey)}
+                      </p>
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-brand-beige/80">
+                        {t(member.roleKey)}
+                      </p>
+                    </div>
+
+                    <div className="absolute inset-0 bg-brand-green/90 backdrop-blur-md p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-brand-beige">
+                      <p className="font-bold text-base md:text-lg text-brand-beige mb-1 leading-snug">
+                        {t(member.nameKey)}
+                      </p>
+                      <p className="text-xs font-medium uppercase tracking-wider text-brand-beige/80 mb-3 pb-2 border-b border-brand-beige/20 w-3/4">
+                        {t(member.roleKey)}
+                      </p>
+                      {member.bioKey && (
+                        <p className="text-xs leading-relaxed text-brand-beige/90 font-normal line-clamp-4 mb-4">
+                          {t(member.bioKey)}
+                        </p>
+                      )}
+                      <span className="text-[11px] font-bold uppercase tracking-wider bg-brand-beige text-brand-green px-3 py-1.5 rounded-full">
+                        {t('team_more_btn', { defaultValue: 'Открыть профиль' })}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* --- VIEW MODE 2: CAROUSEL --- */}
+        {viewMode === 'carousel' && (
+          <div className="relative">
+            <div className="flex justify-end gap-2 mb-4">
+              <button
+                onClick={() => scrollCarousel('left')}
+                className="w-10 h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
+                aria-label="Previous"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => scrollCarousel('right')}
+                className="w-10 h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
+                aria-label="Next"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div
+              ref={carouselRef}
+              className="flex gap-6 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory"
+            >
+              {allMembers.map((member, index) => (
+                <div
+                  key={index}
+                  onClick={() => setSelectedMember(member)}
+                  className="shrink-0 w-72 sm:w-80 snap-start group cursor-pointer"
+                >
+                  <div className="relative aspect-[3/4] rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
+                    {member.photo ? (
+                      <img
+                        src={member.photo}
+                        alt={t(member.nameKey)}
+                        className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-16">
+                        <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </div>
+                    )}
+
+                    <div className="absolute inset-x-3 bottom-3 p-4 rounded-2xl bg-brand-green/85 backdrop-blur-md border border-white/15 text-left shadow-lg">
+                      <p className="font-bold text-base text-brand-beige leading-snug mb-0.5">
+                        {t(member.nameKey)}
+                      </p>
+                      <p className="text-xs font-medium uppercase tracking-wider text-brand-beige/80">
+                        {t(member.roleKey)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* --- DETAIL MODAL ON CARD SELECTION --- */}
+        <AnimatePresence>
+          {selectedMember && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-brand-beige rounded-[32px] p-6 sm:p-8 max-w-xl w-full border border-brand-green/20 shadow-2xl relative text-brand-green max-h-[90vh] overflow-y-auto"
+              >
+                <button
+                  onClick={() => setSelectedMember(null)}
+                  className="absolute top-5 right-5 p-2 rounded-full bg-brand-green/10 text-brand-green hover:bg-brand-green hover:text-brand-beige transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-6">
+                  <div className="w-28 h-36 rounded-2xl overflow-hidden bg-brand-green/10 border border-brand-green/20 shrink-0">
+                    {selectedMember.photo ? (
+                      <img src={selectedMember.photo} alt={t(selectedMember.nameKey)} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-brand-green/40">
+                        <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <span className="inline-block text-xs font-bold uppercase tracking-wider text-brand-green/70 bg-brand-green/10 px-3 py-1 rounded-full mb-2">
+                      {t(selectedMember.roleKey)}
+                    </span>
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-brand-green mb-2">
+                      {t(selectedMember.nameKey)}
+                    </h3>
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-brand-green/80">
+                      <CheckCircle className="w-4 h-4 text-brand-green" />
+                      <span>{t('team_certified_specialist', { defaultValue: 'Сертифицированный специалист ЖАН FINANCE' })}</span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Hover State: Blurred photo underneath with soft green backdrop */}
-                <div className="absolute inset-0 bg-brand-green/85 backdrop-blur-md p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-brand-beige">
-                  <p className="font-bold text-base md:text-lg text-brand-beige mb-1 leading-snug">
-                    {t(member.nameKey)}
-                  </p>
-                  <p className="text-xs font-medium uppercase tracking-wider text-brand-beige/80 mb-3 pb-2 border-b border-brand-beige/20 w-3/4">
-                    {t(member.roleKey)}
-                  </p>
-                  {member.bioKey && (
-                    <p className="text-xs leading-relaxed text-brand-beige/90 font-normal">
-                      {t(member.bioKey)}
+                <div className="border-t border-brand-green/10 pt-4 mb-6 space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-brand-green/60">
+                    {t('team_about_specialist', { defaultValue: 'Опыт и специализация' })}
+                  </h4>
+                  {selectedMember.bioKey && (
+                    <p className="text-sm text-brand-green/90 leading-relaxed">
+                      {t(selectedMember.bioKey)}
                     </p>
                   )}
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {['1С:Предприятие 8.3', 'ИС ЭСФ и СНТ', 'Налоговый кодекс РК', 'Кабинет НП', 'Кадровый учет'].map((tag) => (
+                    <span key={tag} className="text-[11px] font-bold bg-white px-3 py-1 rounded-lg border border-brand-green/10 text-brand-green/80">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => {
+                    setSelectedMember(null);
+                    setTimeout(() => (document.getElementById('contact') || document.getElementById('footer'))?.scrollIntoView({ behavior: 'smooth' }), 100);
+                  }}
+                  className="w-full py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider text-xs hover:bg-brand-green/90 transition-all flex items-center justify-center gap-2 shadow-lg"
+                >
+                  <PhoneCall className="w-4 h-4" />
+                  {t('team_consult_btn', { defaultValue: 'Получить консультацию с этим специалистом' })}
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </Container>
     </Section>
   );

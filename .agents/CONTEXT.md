@@ -8,7 +8,7 @@
 
 ## Infrastructure & Test State
 - **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL). JaCoCo configured for coverage tracking.
-- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (19 test files, 168 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
+- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (19 test files, 169 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
 - **CI/CD (.github/workflows/ci.yml)**: Continuous quality gate enforcing backend test execution, frontend linting, typechecking, Vitest execution, and GitHub Pages deployment.
 - **Storage (Cloudflare R2)**: Provisioned bucket `jf1c-documents` for Epic-15/Epic-21 ($0 egress).
 - **Auth & Security**: JWT Bearer, refresh token rotation, TOTP 2FA, Bucket4j rate limiting, row-level CRM access controls.
@@ -17,9 +17,14 @@
 ## Key Completed Features & Milestones
 1. **Full Automated Test Coverage Across Backend, Frontend & CI/CD**:
    - Comprehensive MockMvc, JUnit 5, Mockito, and Spring Security ACL test coverage for all controllers and domain services.
-   - 168 unit and integration tests across frontend entities, widgets, features, contexts, and pages.
+   - 169 unit and integration tests across frontend entities, widgets, features, contexts, and pages.
    - ESLint 9 flat config with zero warnings and strict TypeScript mode enabled.
    - Dual-track E2E test inventory (`TEST_READY.md`, 202 test specs across 4 tiers) and test infrastructure (`TEST_INFRA.md`).
+
+2. **Branding, Landing & Team Redesign (ЖАН FINANCE)**:
+   - Текстовый брендинг «ЖАН FINANCE» на шрифте `a_Simpler`, сквозная замена во всех компонентах и 4 языках.
+   - Команда: 1 руководитель + 8 проверенных специалистов, переключатель «Сетка» / «Карусель» и модальное окно деталей.
+   - Услуги (Разовые / Аутсорс с SLA), 4 тарифа, FAQ, WhatsApp QR-флоу, выбор роли на странице авторизации.
 
 2. **100% 4-Language i18n & Dictionary Parity (`ru`, `kk`, `en`, `zh`)**:
    - Complete key parity across all 4 locales in `src/shared/i18n/locales/` (96/96 automated parity tests).
