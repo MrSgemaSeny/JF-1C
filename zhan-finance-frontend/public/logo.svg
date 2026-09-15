@@ -29,7 +29,7 @@
       .logo-sub {
         font-family: 'a_Simpler', sans-serif;
         font-weight: 900;
-        font-size: 29px;
+        font-size: 27.5px;
         fill: #1F1F1F;
         text-anchor: middle;
       }
@@ -46,5 +46,5 @@
   <line x1="75" y1="360" x2="425" y2="360" class="logo-line" />
 
   <!-- БУХГАЛТЕРЛІК КОМПАНИЯ -->
-  <text x="250" y="405" class="logo-sub">БУХГАЛТЕРЛІК КОМПАНИЯ</text>
+  <text x="250" y="405" class="logo-sub">БУХГАЛТЕРЛIK КОМПАНИЯ</text>
 </svg>
