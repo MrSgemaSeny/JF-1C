@@ -33,20 +33,26 @@ CRM (Task, Stage, Pipeline, CrmAccessService), Billing (Invoice, Subscription),
 LMS (Course -> Chapter -> Lesson -> LessonBlock, Certificate),
 Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 
+## 🛑 CRITICAL INITIALIZATION SEQUENCE (MUST DO FIRST)
+1. **Brain's Protocol (Second Brain)**: Ты ОБЯЗАН неукоснительно следовать протоколам из `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`. **В самом начале каждой новой сессии ты ДОЛЖЕН прочитать файлы в папке `context/` (например, `me.md`, `projects.md`, `rules.md`). Это твой Second Brain.**
+2. **CONTEXT.md**: ALWAYS read `.agents/CONTEXT.md` at the start of a session to understand the current project state.
+*Do NOT execute any code or write any plans until you have completed these two reads.*
+
 ## Critical Rules — NEVER violate
-1. **Brain's Protocol (Second Brain)**: You MUST strictly obey and read the global Second Brain context before making major architectural decisions. It is located at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`. Update it if necessary.
-2. **Flyway Migrations**: NEVER modify files in db/migration/ — existing Flyway migrations are immutable. New changes require V109+.
-3. **Secrets**: Secrets and passwords belong strictly in env vars and GitHub Secrets, never hardcoded in source files.
-4. **DB Operations**: DB seeding/startup operations strictly via @EventListener(ApplicationReadyEvent.class).
-5. **No @PostConstruct**: @PostConstruct for DB operations is forbidden (race condition with Flyway).
-6. **Flyway Clean**: flywayClean only on local throwaway DB, never on production.
-7. **Checksum Integrity**: Modifying applied Flyway migrations breaks checksums and breaks deployment.
-8. **Docker**: Do not suggest or configure Docker unless explicitly requested.
-9. **Communication**: NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
-10. **Tests before pushing**: Never push to branches if there are errors or failing tests.
-11. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
-12. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
-13. **Contact Form & Backend API Status**: The backend API POST `/api/v1/contact-requests` call in `useContactForm.ts` is intentionally commented out in favor of the direct WhatsApp flow (+77750584021 / wa.me). AI agents MUST ALWAYS verify and inform the user about this status before modifying contact form logic.
+1. **Workflow (Журнал)**: ТЕСТЫ ПРОШЛИ -> ЗАПИСЬ В ЖУРНАЛ (`journal/YYYY-MM-DD/jf-1c.md`) -> GIT PUSH. Никогда наоборот.
+2. **Brain's Protocol (Second Brain)**: You MUST strictly obey and read the global Second Brain context before making major architectural decisions. It is located at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`. Update it if necessary.
+3. **Flyway Migrations**: NEVER modify files in db/migration/ — existing Flyway migrations are immutable. New changes require V109+.
+4. **Secrets**: Secrets and passwords belong strictly in env vars and GitHub Secrets, never hardcoded in source files.
+5. **DB Operations**: DB seeding/startup operations strictly via @EventListener(ApplicationReadyEvent.class).
+6. **No @PostConstruct**: @PostConstruct for DB operations is forbidden (race condition with Flyway).
+7. **Flyway Clean**: flywayClean only on local throwaway DB, never on production.
+8. **Checksum Integrity**: Modifying applied Flyway migrations breaks checksums and breaks deployment.
+9. **Docker**: Do not suggest or configure Docker unless explicitly requested.
+10. **Communication**: NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
+11. **Tests before pushing**: Never push to branches if there are errors or failing tests.
+12. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
+13. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
+14. **Contact Form & Backend API Status**: The backend API POST `/api/v1/contact-requests` call in `useContactForm.ts` is intentionally commented out in favor of the direct WhatsApp flow (+77750584021 / wa.me). AI agents MUST ALWAYS verify and inform the user about this status before modifying contact form logic.
 ## Current Status
 - Flyway migration chain V1->V108 verified on clean DB [DONE]
 - GitHub Actions DB backups + Telegram notifications [DONE]
