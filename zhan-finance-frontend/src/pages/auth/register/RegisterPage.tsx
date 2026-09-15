@@ -165,8 +165,40 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
         </div>
 
         <div className="animate-in fade-in duration-300">
+          {/* Role Selector */}
+          <div className="grid grid-cols-2 p-1 bg-brand-green/5 border border-brand-green/10 rounded-2xl mb-6">
+            <button
+              type="button"
+              onClick={() => {
+                if (isEmployeeRoute) navigate(ROUTES.REGISTER);
+              }}
+              className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
+                !isEmployeeRoute
+                  ? 'bg-brand-green text-brand-beige shadow-sm'
+                  : 'text-brand-green/60 hover:text-brand-green'
+              }`}
+            >
+              {t('register.roleClient', { defaultValue: 'Клиент' })}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!isEmployeeRoute) navigate(ROUTES.REGISTER_EMPLOYEE);
+              }}
+              className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
+                isEmployeeRoute
+                  ? 'bg-brand-green text-brand-beige shadow-sm'
+                  : 'text-brand-green/60 hover:text-brand-green'
+              }`}
+            >
+              {t('register.roleEmployee', { defaultValue: 'Сотрудник' })}
+            </button>
+          </div>
+
           <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">{t('register.title')}</h1>
-          <p className="text-brand-green/70 text-sm mb-6 leading-relaxed">{t('register.subtitle')}</p>
+          <p className="text-brand-green/70 text-sm mb-6 leading-relaxed">
+            {isEmployeeRoute ? t('register.employeeSubtitle') : t('register.subtitle')}
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             <Input
