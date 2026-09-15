@@ -47,7 +47,6 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 11. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
 12. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
 13. **Contact Form & Backend API Status**: The backend API POST `/api/v1/contact-requests` call in `useContactForm.ts` is intentionally commented out in favor of the direct WhatsApp flow (+77750584021 / wa.me). AI agents MUST ALWAYS verify and inform the user about this status before modifying contact form logic.
-14. **Autonomous CI/CD Monitoring**: AI agents must autonomously monitor, diagnose, fix, and verify GitHub Actions CI/CD pipeline runs after pushing changes. If a pipeline failure occurs, the agent must identify the root cause, apply fixes, push, and verify that the build turns green without waiting for user prompting.
 ## Current Status
 - Flyway migration chain V1->V108 verified on clean DB [DONE]
 - GitHub Actions DB backups + Telegram notifications [DONE]
@@ -68,6 +67,7 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - Epic-21 (1C Data Gateway & Fiscal Hub): Planned [PLANNED]
 - Documents redesign (Employee + Client pages) [DONE]
 - Task Pool reopening logic [DONE]
+- Hardening Plan (P0/P1/P2 audit-driven): Planned [PLANNED] — см. `docs/future/future_plan.md`
 
 ## Epic Management
 - **Epic Directory**: `Epics/Plan/Epic-{N}-{slug}/epic.md`
