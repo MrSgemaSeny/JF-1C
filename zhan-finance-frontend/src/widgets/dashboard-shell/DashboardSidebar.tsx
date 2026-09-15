@@ -24,6 +24,8 @@ import {
   History,
   User,
   FileSpreadsheet,
+  ShieldCheck,
+  BarChart2,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
@@ -31,6 +33,7 @@ import { API_BASE_URL, getSecureImageUrl } from '@/shared/api/http';
 import { twMerge } from 'tailwind-merge';
 import LogoImage from '@/shared/assets/icons/logo.png';
 import { BrandLogo } from '@/shared/ui/BrandLogo';
+import { ROUTES } from '@/shared/config/routes';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
   'Overview':            <LayoutDashboard size={16} />,
@@ -50,11 +53,16 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'My Requests':         <Briefcase size={16} />,
   'Services':            <Briefcase size={16} />,
   'Courses':             <BookOpen size={16} />,
+  'My Courses':          <BookOpen size={16} />,
   'Learners':            <Users size={16} />,
+  'Students':            <Users size={16} />,
+  'Curators':            <UserCheck size={16} />,
   'Invoices':            <CreditCard size={16} />,
   'Subscriptions':       <RefreshCw size={16} />,
   'Audit Logs':          <History size={16} />,
   'Templates':           <FileText size={16} />,
+  '2FA Security':        <ShieldCheck size={16} />,
+  'Team Workload':       <BarChart2 size={16} />,
   'Settings':            <Settings size={16} />,
   'Notifications':       <Bell size={16} />,
 };
@@ -129,7 +137,20 @@ export function DashboardSidebar({
         {/* Nav */}
         <nav className="flex-1 py-4 space-y-1 overflow-y-auto overflow-x-hidden px-3 relative">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.href;
+            const isRootRoleRoute = (href: string) => [
+              ROUTES.ADMIN,
+              ROUTES.CLIENT,
+              ROUTES.EMPLOYEE,
+              ROUTES.ADVISOR,
+              ROUTES.CURATOR,
+              ROUTES.HOME,
+              ROUTES.SETTINGS,
+              ROUTES.NOTIFICATIONS,
+            ].includes(href as any);
+
+            const isActive =
+              location.pathname === item.href ||
+              (!isRootRoleRoute(item.href) && location.pathname.startsWith(item.href + '/'));
             const icon = NAV_ICONS[item.label] ?? <ChevronRight size={16} />;
             
             let i18nKey = '';
@@ -137,7 +158,10 @@ export function DashboardSidebar({
               case 'Overview': i18nKey = 'nav.overview'; break;
               case '1C Reports': i18nKey = 'nav.oneCReports'; break;
               case 'Courses': i18nKey = 'nav.courses'; break;
+              case 'My Courses': i18nKey = 'nav.myCourses'; break;
               case 'Learners': i18nKey = 'nav.learners'; break;
+              case 'Students': i18nKey = 'nav.students'; break;
+              case 'Curators': i18nKey = 'nav.curators'; break;
               case 'Chat': i18nKey = 'nav.chat'; break;
               case 'Employees': i18nKey = 'nav.employees'; break;
               case 'Clients': i18nKey = 'nav.clients'; break;
@@ -151,6 +175,8 @@ export function DashboardSidebar({
               case 'Invoices': i18nKey = 'nav.invoices'; break;
               case 'Subscriptions': i18nKey = 'nav.subscriptions'; break;
               case 'Audit Logs': i18nKey = 'nav.auditLogs'; break;
+              case '2FA Security': i18nKey = 'nav.security'; break;
+              case 'Team Workload': i18nKey = 'nav.teamWorkload'; break;
               case 'Settings': i18nKey = 'nav.settings'; break;
               case 'Notifications': i18nKey = 'nav.notifications'; break;
               case 'Calendar': i18nKey = 'nav.calendar'; break;
