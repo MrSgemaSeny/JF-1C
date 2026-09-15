@@ -114,7 +114,7 @@ export function DashboardSidebar({
         <div className="flex items-center justify-between px-4 lg:px-6 py-4 border-b border-gray-100 min-h-[64px]">
           <Link to="/" className="flex items-center gap-2.5 overflow-hidden flex-1 min-w-0" onClick={() => { if (window.innerWidth < 1024) onMobileClose(); }}>
             {isDesktopCollapsed ? (
-              <img src={LogoImage} alt="ЖАН FINANCE" className="w-8 h-8 rounded shrink-0 object-contain" />
+              <BrandLogo variant="square" className="w-8 h-8 shrink-0" />
             ) : (
               <BrandLogo className="h-7 w-auto shrink-0" />
             )}
