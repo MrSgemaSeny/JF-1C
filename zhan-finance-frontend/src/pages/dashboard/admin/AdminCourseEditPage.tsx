@@ -109,7 +109,7 @@ export function AdminCourseEditPage() {
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brand-green text-white font-semibold text-sm rounded-xl hover:bg-brand-green/90 active:scale-95 transition-all shadow-sm disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
-          {isSaving ? 'Сохранение...' : t('adminCourseEdit.save', { defaultValue: 'Сохранить изменения' })}
+          {isSaving ? t('adminCourseEdit.saving', { defaultValue: 'Сохранение...' }) : t('adminCourseEdit.save', { defaultValue: 'Сохранить изменения' })}
         </button>
       </div>
 
@@ -118,11 +118,11 @@ export function AdminCourseEditPage() {
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-brand-green" />
-            <h2 className="text-lg font-bold text-gray-900">Основная информация</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t('adminCourseEdit.basicInfo', { defaultValue: 'Основная информация' })}</h2>
           </div>
           <div className="flex items-center gap-3 bg-gray-50 px-3.5 py-1.5 rounded-xl border border-gray-200/60">
             <span className="text-xs font-semibold text-gray-600">
-              {isPublished ? 'Доступен всем' : 'Приватный черновик'}
+              {isPublished ? t('adminCourseEdit.public', { defaultValue: 'Доступен всем' }) : t('adminCourseEdit.privateDraft', { defaultValue: 'Приватный черновик' })}
             </span>
             <button
               onClick={handlePublishToggleClick}

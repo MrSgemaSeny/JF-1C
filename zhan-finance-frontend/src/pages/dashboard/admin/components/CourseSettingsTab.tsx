@@ -40,9 +40,11 @@ export function CourseSettingsTab({
       </div>
       <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-100">
         <div>
-          <h4 className="font-medium text-gray-900">Опубликовать курс</h4>
+          <h4 className="font-medium text-gray-900">{t('adminCourseEdit.publishCourse', { defaultValue: 'Опубликовать курс' })}</h4>
           <p className="text-sm text-gray-500">
-            {isPublished ? 'Курс сейчас опубликован и виден всем.' : 'Курс скрыт. Опубликуйте его, чтобы сделать доступным.'}
+            {isPublished 
+              ? t('adminCourseEdit.publishedDesc', { defaultValue: 'Курс сейчас опубликован и виден всем.' }) 
+              : t('adminCourseEdit.hiddenDesc', { defaultValue: 'Курс скрыт. Опубликуйте его, чтобы сделать доступным.' })}
           </p>
         </div>
         <button

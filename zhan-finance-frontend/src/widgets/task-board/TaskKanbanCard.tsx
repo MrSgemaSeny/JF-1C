@@ -153,8 +153,8 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRigh
       {(task.isSlaBreached || (task.userLabels && task.userLabels.length > 0)) && (
         <div className="flex flex-wrap items-center gap-1 mt-1">
           {task.isSlaBreached && (
-            <span className="bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded border border-red-300 flex items-center gap-1" title="Превышено время нахождения на текущем этапе (SLA)">
-              SLA просрочен
+            <span className="bg-red-100 text-red-700 text-[10px] font-semibold px-2 py-0.5 rounded border border-red-300 flex items-center gap-1" title={t('crm:kanban.slaBreachedTooltip', { defaultValue: 'Превышено время нахождения на текущем этапе (SLA)' })}>
+              {t('crm:kanban.slaOverdue', { defaultValue: 'SLA просрочен' })}
             </span>
           )}
           {task.userLabels?.map((lbl) => (
@@ -215,7 +215,7 @@ export function TaskKanbanCard({ task, onClick, userRole, onOpenChat, onMoveRigh
                   ? 'text-gray-300 border-gray-200 bg-gray-50 cursor-not-allowed' 
                   : 'text-blue-500 border-blue-200 bg-blue-50 hover:bg-blue-100 hover:text-blue-600'
               }`}
-              title={disableMoveRight ? "Перемещение заблокировано" : "Переместить на следующий этап"}
+              title={disableMoveRight ? t('crm:kanban.moveBlocked', { defaultValue: 'Перемещение заблокировано' }) : t('crm:kanban.moveToNext', { defaultValue: 'Переместить на следующий этап' })}
             >
               <ArrowRight size={14} />
             </button>

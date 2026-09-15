@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 
 export function AdminEmployeesPage() {
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const [activeTab, setActiveTab] = useState<'ACTIVE' | 'PENDING'>('ACTIVE');
   const [employees, setEmployees] = useState<EmployeeDto[]>([]);
   const [pendingEmployees, setPendingEmployees] = useState<EmployeeDto[]>([]);
@@ -151,7 +151,7 @@ export function AdminEmployeesPage() {
 
       <div className="bg-white shadow-sm border border-gray-200/60 rounded-2xl overflow-hidden">
         {isLoading ? (
-          <div className="p-12 text-center text-gray-400">Загрузка...</div>
+          <div className="p-12 text-center text-gray-400">{t('common.loading')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-100">
@@ -161,7 +161,7 @@ export function AdminEmployeesPage() {
                     {t('adminEmployees.employee')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    Роль
+                    {t('adminEmployees.role')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                     {t('adminEmployees.email')}
@@ -202,7 +202,7 @@ export function AdminEmployeesPage() {
                       <div className="flex sm:block justify-between items-center sm:items-start gap-4">
                         <span className="sm:hidden text-xs font-bold text-gray-500 uppercase shrink-0">{t('adminEmployees.registrationDate')}</span>
                         <div className="text-sm text-gray-500 text-right sm:text-left">
-                          {new Date(emp.createdAt).toLocaleDateString('ru-RU', {
+                          {new Date(emp.createdAt).toLocaleDateString(i18n.language === 'en' ? 'en-US' : i18n.language === 'kk' ? 'kk-KZ' : i18n.language === 'zh' ? 'zh-CN' : 'ru-RU', {
                             day: 'numeric',
                             month: 'long',
                             year: 'numeric'
@@ -241,7 +241,7 @@ export function AdminEmployeesPage() {
                             return (
                               <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border ${badgeColor}`}>
                                 <Briefcase className="w-3 h-3" />
-                                {count} задач
+                                {count} {t('adminEmployees.tasksCount')}
                               </span>
                             );
                           })()}
@@ -250,24 +250,24 @@ export function AdminEmployeesPage() {
                             <button
                               onClick={() => handleDemote(emp.id)}
                               className="px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 rounded-md text-xs font-bold transition-colors"
-                              title="Понизить до роли EMPLOYEE"
+                              title={t('adminEmployees.demoteToEmployeeTitle')}
                             >
-                              В Employee
+                              {t('adminEmployees.toEmployee')}
                             </button>
                           ) : (
                             <button
                               onClick={() => handlePromote(emp.id)}
                               className="px-2.5 py-1 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-md text-xs font-bold transition-colors"
-                              title="Повысить до роли ADVISOR"
+                              title={t('adminEmployees.promoteToAdvisorTitle')}
                             >
-                              В Advisor
+                              {t('adminEmployees.toAdvisor')}
                             </button>
                           )}
 
                           <button
                             onClick={() => handleToggleStatus(emp.id)}
                             className="px-2.5 py-1 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md text-xs font-bold transition-colors"
-                            title="Изменить статус активности"
+                            title={t('adminEmployees.toggleStatusTitle')}
                           >
                             <UserX className="w-3 h-3" />
                           </button>
@@ -275,7 +275,7 @@ export function AdminEmployeesPage() {
                           <button
                             onClick={() => handleDelete(emp.id)}
                             className="px-2.5 py-1 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-md text-xs font-bold transition-colors"
-                            title="Удалить сотрудника"
+                            title={t('adminEmployees.deleteEmployeeTitle')}
                           >
                             <UserMinus className="w-3 h-3" />
                           </button>

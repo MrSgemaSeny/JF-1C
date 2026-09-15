@@ -155,13 +155,13 @@ export function AdminLessonEditPage() {
                             onClick={() => setVideoType('link')}
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${videoType === 'link' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            По ссылке
+                            {t('adminLessonEdit.byLink')}
                         </button>
                         <button 
                             onClick={() => setVideoType('file')}
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${videoType === 'file' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            Загрузить файл
+                            {t('adminLessonEdit.uploadFile')}
                         </button>
                     </div>
                 </div>

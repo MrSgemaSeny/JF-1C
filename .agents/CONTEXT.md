@@ -22,9 +22,9 @@
    - Dual-track E2E test inventory (`TEST_READY.md`, 202 test specs across 4 tiers) and test infrastructure (`TEST_INFRA.md`).
 
 2. **100% 4-Language i18n & Dictionary Parity (`ru`, `kk`, `en`, `zh`)**:
-   - Complete key parity across all 4 locales in `src/shared/i18n/locales/`.
-   - Created missing Chinese dictionaries (`zh/crm.json`, `zh/modals.json`, `zh/tasks.json`) and synchronized Kazakh schemes.
-   - Automated parity test suite `i18nParity.test.ts` (96 tests) verifying bidirectional key alignment.
+   - Complete key parity across all 4 locales in `src/shared/i18n/locales/` (96/96 automated parity tests).
+   - 100% localized coverage across all authenticated portals, internal dashboards, admin tools, CRM boards, templates, and modals.
+   - Zero hardcoded UI strings, strict absence of Cyrillic characters in Chinese locale.
    - Centralized date and currency formatting utilities (`dateFormat.ts`).
 
 3. **1C Client Hub & Report Stubs (`/client/1c`) [ТЕСТОВЫЙ / FRONTEND-ONLY]**:

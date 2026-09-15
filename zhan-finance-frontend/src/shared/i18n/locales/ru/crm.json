@@ -55,7 +55,11 @@
     "of": "из",
     "tasks": "задач",
     "noFilteredTasks": "Нет задач по выбранным фильтрам",
-    "resetFilters": "Сбросить фильтры"
+    "resetFilters": "Сбросить фильтры",
+    "slaOverdue": "SLA просрочен",
+    "slaBreachedTooltip": "Превышено время нахождения на текущем этапе (SLA)",
+    "moveBlocked": "Перемещение заблокировано",
+    "moveToNext": "Переместить на следующий этап"
   },
   "errors": {
     "taskNotFound": "Задача не найдена"
@@ -102,7 +106,10 @@
     "noComments": "Нет комментариев. Будьте первыми!",
     "emptyHistory": "История пуста",
     "writeComment": "Написать комментарий...",
-    "send": "Отправить"
+    "send": "Отправить",
+    "reassignmentRequested": "Ожидается отказ",
+    "docSigned": "Подписано",
+    "docPendingSignature": "Ожидает подписи"
   },
   "taskCreate": {
     "error": "Ошибка при создании задачи",
@@ -124,5 +131,15 @@
   "taskDetailsPage": {
     "loadError": "Ошибка при загрузке задачи.",
     "back": "Назад"
+  },
+  "taskBoard": {
+    "selectAll": "Выбрать все",
+    "tasksSelected": "задач выбрано",
+    "changeStage": "Сменить стадию...",
+    "selectTask": "Выбрать задачу",
+    "assignEmployee": "Назначить сотрудника...",
+    "addLabel": "Добавить метку...",
+    "applying": "Применяем...",
+    "apply": "Применить"
   }
 }

@@ -11,135 +11,183 @@ import {
 
 type ReportType = 'osv' | 'saldo' | 'reconciliation' | 'accountCard' | 'cashBook' | 'stock';
 
+interface SubColumnConfig {
+  key: string;
+  labelKey: string;
+  defaultLabel: string;
+}
+
+interface ColumnConfig {
+  key: string;
+  labelKey: string;
+  defaultLabel: string;
+  subColumns?: SubColumnConfig[];
+  align?: 'left' | 'right' | 'center';
+}
+
 interface ReportTabConfig {
   id: ReportType;
   path: string;
   labelKey: string;
   shortLabelKey: string;
+  descKey: string;
   defaultLabel: string;
   defaultShortLabel: string;
   description: string;
-  columns: { key: string; label: string; subColumns?: string[]; align?: 'left' | 'right' | 'center' }[];
+  columns: ColumnConfig[];
 }
 
 const REPORT_TABS: ReportTabConfig[] = [
   {
     id: 'osv',
     path: 'osv',
-    labelKey: 'oneCReports.tabs.osv',
+    labelKey: 'oneCReports.reports.osv.title',
     shortLabelKey: 'oneCReports.tabs.osv',
+    descKey: 'oneCReports.reports.osv.desc',
     defaultLabel: 'Оборотно-сальдовая ведомость (ОСВ)',
     defaultShortLabel: 'ОСВ',
     description: 'Сводные обороты и сальдо по всем синтетическим счетам бухгалтерского учета РК',
     columns: [
-      { key: 'account', label: 'Счет учета', align: 'left' },
-      { key: 'name', label: 'Наименование счета', align: 'left' },
-      { key: 'startBalance', label: 'Сальдо на начало', subColumns: ['Дебет', 'Кредит'], align: 'right' },
-      { key: 'turnover', label: 'Обороты за период', subColumns: ['Дебет', 'Кредит'], align: 'right' },
-      { key: 'endBalance', label: 'Сальдо на конец', subColumns: ['Дебет', 'Кредит'], align: 'right' },
+      { key: 'account', labelKey: 'oneCReports.columns.account', defaultLabel: 'Счет учета', align: 'left' },
+      { key: 'name', labelKey: 'oneCReports.columns.name', defaultLabel: 'Наименование счета', align: 'left' },
+      {
+        key: 'startBalance',
+        labelKey: 'oneCReports.columns.startBalance',
+        defaultLabel: 'Сальдо на начало',
+        subColumns: [
+          { key: 'debit', labelKey: 'oneCReports.columns.debit', defaultLabel: 'Дебет' },
+          { key: 'credit', labelKey: 'oneCReports.columns.credit', defaultLabel: 'Кредит' },
+        ],
+        align: 'right',
+      },
+      {
+        key: 'turnover',
+        labelKey: 'oneCReports.columns.turnover',
+        defaultLabel: 'Обороты за период',
+        subColumns: [
+          { key: 'debit', labelKey: 'oneCReports.columns.debit', defaultLabel: 'Дебет' },
+          { key: 'credit', labelKey: 'oneCReports.columns.credit', defaultLabel: 'Кредит' },
+        ],
+        align: 'right',
+      },
+      {
+        key: 'endBalance',
+        labelKey: 'oneCReports.columns.endBalance',
+        defaultLabel: 'Сальдо на конец',
+        subColumns: [
+          { key: 'debit', labelKey: 'oneCReports.columns.debit', defaultLabel: 'Дебет' },
+          { key: 'credit', labelKey: 'oneCReports.columns.credit', defaultLabel: 'Кредит' },
+        ],
+        align: 'right',
+      },
     ],
   },
   {
     id: 'saldo',
     path: 'saldo',
-    labelKey: 'oneCReports.tabs.saldo',
+    labelKey: 'oneCReports.reports.saldo.title',
     shortLabelKey: 'oneCReports.tabs.saldo',
+    descKey: 'oneCReports.reports.saldo.desc',
     defaultLabel: 'Сальдовая ведомость',
     defaultShortLabel: 'Сальдо',
     description: 'Развернутое сальдо по субсчетам и контрагентам на заданную дату',
     columns: [
-      { key: 'account', label: 'Код субсчета', align: 'left' },
-      { key: 'subconto', label: 'Аналитика / Субконто', align: 'left' },
-      { key: 'startDebit', label: 'Входящее сальдо (Дт)', align: 'right' },
-      { key: 'startCredit', label: 'Входящее сальдо (Кт)', align: 'right' },
-      { key: 'endDebit', label: 'Исходящее сальдо (Дт)', align: 'right' },
-      { key: 'endCredit', label: 'Исходящее сальдо (Кт)', align: 'right' },
+      { key: 'account', labelKey: 'oneCReports.columns.subAccount', defaultLabel: 'Код субсчета', align: 'left' },
+      { key: 'subconto', labelKey: 'oneCReports.columns.subconto', defaultLabel: 'Аналитика / Субконто', align: 'left' },
+      { key: 'startDebit', labelKey: 'oneCReports.columns.startDebit', defaultLabel: 'Входящее сальдо (Дт)', align: 'right' },
+      { key: 'startCredit', labelKey: 'oneCReports.columns.startCredit', defaultLabel: 'Входящее сальдо (Кт)', align: 'right' },
+      { key: 'endDebit', labelKey: 'oneCReports.columns.endDebit', defaultLabel: 'Исходящее сальдо (Дт)', align: 'right' },
+      { key: 'endCredit', labelKey: 'oneCReports.columns.endCredit', defaultLabel: 'Исходящее сальдо (Кт)', align: 'right' },
     ],
   },
   {
     id: 'reconciliation',
     path: 'reconciliation',
-    labelKey: 'oneCReports.tabs.reconciliation',
+    labelKey: 'oneCReports.reports.reconciliation.title',
     shortLabelKey: 'oneCReports.tabs.reconciliation',
+    descKey: 'oneCReports.reports.reconciliation.desc',
     defaultLabel: 'Акт сверки взаиморасчетов',
     defaultShortLabel: 'Акт сверки',
     description: 'Двустороннее сопоставление первичных документов и платежей с контрагентом',
     columns: [
-      { key: 'date', label: 'Дата операции', align: 'left' },
-      { key: 'doc', label: 'Документ учета (СФ / АВР / Платеж)', align: 'left' },
-      { key: 'ourDebit', label: 'Дебет (ТОО / Наш учет)', align: 'right' },
-      { key: 'ourCredit', label: 'Кредит (ТОО / Наш учет)', align: 'right' },
-      { key: 'partnerDebit', label: 'Дебет (Контрагент)', align: 'right' },
-      { key: 'partnerCredit', label: 'Кредит (Контрагент)', align: 'right' },
+      { key: 'date', labelKey: 'oneCReports.columns.date', defaultLabel: 'Дата операции', align: 'left' },
+      { key: 'doc', labelKey: 'oneCReports.columns.doc', defaultLabel: 'Документ учета (СФ / АВР / Платеж)', align: 'left' },
+      { key: 'ourDebit', labelKey: 'oneCReports.columns.ourDebit', defaultLabel: 'Дебет (ТОО / Наш учет)', align: 'right' },
+      { key: 'ourCredit', labelKey: 'oneCReports.columns.ourCredit', defaultLabel: 'Кредит (ТОО / Наш учет)', align: 'right' },
+      { key: 'partnerDebit', labelKey: 'oneCReports.columns.partnerDebit', defaultLabel: 'Дебет (Контрагент)', align: 'right' },
+      { key: 'partnerCredit', labelKey: 'oneCReports.columns.partnerCredit', defaultLabel: 'Кредит (Контрагент)', align: 'right' },
     ],
   },
   {
     id: 'accountCard',
     path: 'account-card',
-    labelKey: 'oneCReports.tabs.accountCard',
+    labelKey: 'oneCReports.reports.accountCard.title',
     shortLabelKey: 'oneCReports.tabs.accountCard',
+    descKey: 'oneCReports.reports.accountCard.desc',
     defaultLabel: 'Карточка счета / Анализ счета',
     defaultShortLabel: 'Карточка счета',
     description: 'Детальная хронология проводок по конкретному бухгалтерскому счету (1010, 1030, 3310, 1210)',
     columns: [
-      { key: 'date', label: 'Дата и время', align: 'left' },
-      { key: 'doc', label: 'Первичный документ 1С', align: 'left' },
-      { key: 'corrAccount', label: 'Корр. счет', align: 'center' },
-      { key: 'content', label: 'Содержание хозяйственной операции', align: 'left' },
-      { key: 'debit', label: 'Дебет (KZT)', align: 'right' },
-      { key: 'credit', label: 'Кредит (KZT)', align: 'right' },
-      { key: 'balance', label: 'Текущий остаток', align: 'right' },
+      { key: 'date', labelKey: 'oneCReports.columns.dateTime', defaultLabel: 'Дата и время', align: 'left' },
+      { key: 'doc', labelKey: 'oneCReports.columns.doc1c', defaultLabel: 'Первичный документ 1С', align: 'left' },
+      { key: 'corrAccount', labelKey: 'oneCReports.columns.corrAccount', defaultLabel: 'Корр. счет', align: 'center' },
+      { key: 'content', labelKey: 'oneCReports.columns.content', defaultLabel: 'Содержание хозяйственной операции', align: 'left' },
+      { key: 'debit', labelKey: 'oneCReports.columns.debit', defaultLabel: 'Дебет (KZT)', align: 'right' },
+      { key: 'credit', labelKey: 'oneCReports.columns.credit', defaultLabel: 'Кредит (KZT)', align: 'right' },
+      { key: 'balance', labelKey: 'oneCReports.columns.currentBalance', defaultLabel: 'Текущий остаток', align: 'right' },
     ],
   },
   {
     id: 'cashBook',
     path: 'cash-book',
-    labelKey: 'oneCReports.tabs.cashBook',
+    labelKey: 'oneCReports.reports.cashBook.title',
     shortLabelKey: 'oneCReports.tabs.cashBook',
+    descKey: 'oneCReports.reports.cashBook.desc',
     defaultLabel: 'Кассовая книга и фискальные чеки',
     defaultShortLabel: 'Касса и чеки',
     description: 'Реестр фискальных Z-отчетов, чеков WebKassa и кассовых ордеров (ПКО / РКО)',
     columns: [
-      { key: 'orderNum', label: 'Номер чека / ордера', align: 'left' },
-      { key: 'dateTime', label: 'Дата / Время фискализации', align: 'left' },
-      { key: 'operationType', label: 'Тип (ПКО / РКО / Чек)', align: 'center' },
-      { key: 'paymentType', label: 'Вид оплаты (Наличные / QR / Карта)', align: 'left' },
-      { key: 'amount', label: 'Сумма операции (KZT)', align: 'right' },
-      { key: 'fiscalSign', label: 'Фискальный признак (ФП)', align: 'center' },
+      { key: 'orderNum', labelKey: 'oneCReports.columns.orderNum', defaultLabel: 'Номер чека / ордера', align: 'left' },
+      { key: 'dateTime', labelKey: 'oneCReports.columns.fiscalDateTime', defaultLabel: 'Дата / Время фискализации', align: 'left' },
+      { key: 'operationType', labelKey: 'oneCReports.columns.operationType', defaultLabel: 'Тип (ПКО / РКО / Чек)', align: 'center' },
+      { key: 'paymentType', labelKey: 'oneCReports.columns.paymentType', defaultLabel: 'Вид оплаты (Наличные / QR / Карта)', align: 'left' },
+      { key: 'amount', labelKey: 'oneCReports.columns.amountKzt', defaultLabel: 'Сумма операции (KZT)', align: 'right' },
+      { key: 'fiscalSign', labelKey: 'oneCReports.columns.fiscalSign', defaultLabel: 'Фискальный признак (ФП)', align: 'center' },
     ],
   },
   {
     id: 'stock',
     path: 'stock',
-    labelKey: 'oneCReports.tabs.stock',
+    labelKey: 'oneCReports.reports.stock.title',
     shortLabelKey: 'oneCReports.tabs.stock',
+    descKey: 'oneCReports.reports.stock.desc',
     defaultLabel: 'Остатки номенклатуры и ТМЦ',
     defaultShortLabel: 'Склад и ТМЦ',
     description: 'Материальный отчет по складам, списаниям и поступлениям номенклатурных позиций',
     columns: [
-      { key: 'sku', label: 'Артикул / Код', align: 'left' },
-      { key: 'name', label: 'Номенклатура', align: 'left' },
-      { key: 'warehouse', label: 'Склад хранения', align: 'left' },
-      { key: 'unit', label: 'Ед. изм.', align: 'center' },
-      { key: 'startQty', label: 'Нач. остаток', align: 'right' },
-      { key: 'incomeQty', label: 'Приход', align: 'right' },
-      { key: 'outcomeQty', label: 'Расход', align: 'right' },
-      { key: 'endQty', label: 'Кон. остаток', align: 'right' },
+      { key: 'sku', labelKey: 'oneCReports.columns.sku', defaultLabel: 'Артикул / Код', align: 'left' },
+      { key: 'name', labelKey: 'oneCReports.columns.nomenclature', defaultLabel: 'Номенклатура', align: 'left' },
+      { key: 'warehouse', labelKey: 'oneCReports.columns.warehouse', defaultLabel: 'Склад хранения', align: 'left' },
+      { key: 'unit', labelKey: 'oneCReports.columns.unit', defaultLabel: 'Ед. изм.', align: 'center' },
+      { key: 'startQty', labelKey: 'oneCReports.columns.startQty', defaultLabel: 'Нач. остаток', align: 'right' },
+      { key: 'incomeQty', labelKey: 'oneCReports.columns.incomeQty', defaultLabel: 'Приход', align: 'right' },
+      { key: 'outcomeQty', labelKey: 'oneCReports.columns.outcomeQty', defaultLabel: 'Расход', align: 'right' },
+      { key: 'endQty', labelKey: 'oneCReports.columns.endQty', defaultLabel: 'Кон. остаток', align: 'right' },
     ],
   },
 ];
 
 const ACCOUNT_OPTIONS = [
-  { value: 'all', label: 'Все счета плана счетов РК' },
-  { value: '1010', label: '1010 — Денежные средства в кассе' },
-  { value: '1030', label: '1030 — Денежные средства на текущих банковских счетах' },
-  { value: '1210', label: '1210 — Краткосрочная дебиторская задолженность покупателей' },
-  { value: '1310', label: '1310 — Сырье и материалы' },
-  { value: '1330', label: '1330 — Товары' },
-  { value: '3110', label: '3110 — Корпоративный подоходный налог к уплате' },
-  { value: '3130', label: '3130 — Налог на добавленную стоимость (НДС)' },
-  { value: '3310', label: '3310 — Краткосрочная кредиторская задолженность поставщикам' },
-  { value: '3350', label: '3350 — Краткосрочная задолженность по оплате труда' },
+  { value: 'all', labelKey: 'oneCReports.accounts.all', defaultLabel: 'Все счета плана счетов РК' },
+  { value: '1010', labelKey: 'oneCReports.accounts.acc1010', defaultLabel: '1010 — Денежные средства в кассе' },
+  { value: '1030', labelKey: 'oneCReports.accounts.acc1030', defaultLabel: '1030 — Денежные средства на текущих банковских счетах' },
+  { value: '1210', labelKey: 'oneCReports.accounts.acc1210', defaultLabel: '1210 — Краткосрочная дебиторская задолженность покупателей' },
+  { value: '1310', labelKey: 'oneCReports.accounts.acc1310', defaultLabel: '1310 — Сырье и материалы' },
+  { value: '1330', labelKey: 'oneCReports.accounts.acc1330', defaultLabel: '1330 — Товары' },
+  { value: '3110', labelKey: 'oneCReports.accounts.acc3110', defaultLabel: '3110 — Корпоративный подоходный налог к уплате' },
+  { value: '3130', labelKey: 'oneCReports.accounts.acc3130', defaultLabel: '3130 — Налог на добавленную стоимость (НДС)' },
+  { value: '3310', labelKey: 'oneCReports.accounts.acc3310', defaultLabel: '3310 — Краткосрочная кредиторская задолженность поставщикам' },
+  { value: '3350', labelKey: 'oneCReports.accounts.acc3350', defaultLabel: '3350 — Краткосрочная задолженность по оплате труда' },
 ];
 
 export function ClientOneCReportsPage() {
@@ -236,7 +284,7 @@ export function ClientOneCReportsPage() {
             {t(activeReport.labelKey, { defaultValue: activeReport.defaultLabel })}
           </h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            {activeReport.description}
+            {t(activeReport.descKey, { defaultValue: activeReport.description })}
           </p>
         </div>
 
@@ -320,7 +368,7 @@ export function ClientOneCReportsPage() {
                 >
                   {ACCOUNT_OPTIONS.map((acc) => (
                     <option key={acc.value} value={acc.value}>
-                      {acc.label}
+                      {t(acc.labelKey, { defaultValue: acc.defaultLabel })}
                     </option>
                   ))}
                 </select>
@@ -347,18 +395,18 @@ export function ClientOneCReportsPage() {
             <button
               disabled
               className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 text-gray-400 text-xs font-medium rounded-lg border border-gray-200 cursor-not-allowed"
-              title="Экспорт в Excel будет доступен после синхронизации 1С"
+              title={t('oneCReports.actions.exportExcelTooltip', { defaultValue: 'Экспорт в Excel будет доступен после синхронизации 1С' })}
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Excel</span>
+              <span>{t('oneCReports.actions.exportExcel', { defaultValue: 'Excel' })}</span>
             </button>
             <button
               disabled
               className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 text-gray-400 text-xs font-medium rounded-lg border border-gray-200 cursor-not-allowed"
-              title="Печать PDF будет доступна после синхронизации 1С"
+              title={t('oneCReports.actions.printTooltip', { defaultValue: 'Печать PDF будет доступна после синхронизации 1С' })}
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Печать</span>
+              <span>{t('oneCReports.actions.print', { defaultValue: 'Печать' })}</span>
             </button>
           </div>
         </div>
@@ -378,7 +426,7 @@ export function ClientOneCReportsPage() {
                       col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
                     }`}
                   >
-                    {col.label}
+                    {t(col.labelKey, { defaultValue: col.defaultLabel })}
                   </th>
                 ))}
               </tr>
@@ -392,7 +440,7 @@ export function ClientOneCReportsPage() {
                           key={`${col.key}-${idx}`}
                           className="p-2 border-r border-gray-200 last:border-r-0 text-right"
                         >
-                          {sub}
+                          {t(sub.labelKey, { defaultValue: sub.defaultLabel })}
                         </th>
                       ));
                     }

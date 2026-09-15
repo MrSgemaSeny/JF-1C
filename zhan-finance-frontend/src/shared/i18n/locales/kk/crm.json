@@ -55,7 +55,11 @@
     "of": "ішінен",
     "tasks": "тапсырма",
     "noFilteredTasks": "Таңдалған сүзгілер бойынша тапсырмалар табылмады",
-    "resetFilters": "Сүзгілерді тазарту"
+    "resetFilters": "Сүзгілерді тазарту",
+    "slaOverdue": "SLA мерзімі өтті",
+    "slaBreachedTooltip": "Ағымдағы кезеңде болу уақыты асып кетті (SLA)",
+    "moveBlocked": "Жылжыту бұғатталған",
+    "moveToNext": "Келесі кезеңге жылжыту"
   },
   "errors": {
     "taskNotFound": "Тапсырма табылмады"
@@ -102,7 +106,10 @@
     "noComments": "Пікірлер жоқ. Бірінші болыңыз!",
     "emptyHistory": "Тарих бос",
     "writeComment": "Пікір жазу...",
-    "send": "Жіберу"
+    "send": "Жіберу",
+    "reassignmentRequested": "Бас тарту күтілуде",
+    "docSigned": "Қол қойылды",
+    "docPendingSignature": "Қол қою күтілуде"
   },
   "taskCreate": {
     "error": "Тапсырма құру кезінде қате кетті",
@@ -124,5 +131,15 @@
   "taskDetailsPage": {
     "loadError": "Тапсырманы жүктеу кезінде қате кетті.",
     "back": "Артқа"
+  },
+  "taskBoard": {
+    "selectAll": "Барлығын таңдау",
+    "tasksSelected": "тапсырма таңдалды",
+    "changeStage": "Кезеңді өзгерту...",
+    "selectTask": "Тапсырманы таңдау",
+    "assignEmployee": "Қызметкерді тағайындау...",
+    "addLabel": "Белгі қосу...",
+    "applying": "Қолданылуда...",
+    "apply": "Қолдану"
   }
 }

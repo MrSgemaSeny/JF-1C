@@ -285,7 +285,7 @@ export function EmployeeDocumentsPage() {
             onChange={(e) => setSelectedClientId(e.target.value === '' ? '' : Number(e.target.value))}
             className="bg-transparent text-xs font-bold text-gray-800 border-none focus:ring-0 py-1 pr-8 cursor-pointer"
           >
-            <option value="">Все подопечные клиенты</option>
+            <option value="">{t('employeeDocuments.allClients', { defaultValue: 'Все подопечные клиенты' })}</option>
             {clients.map(client => (
               <option key={client.id} value={client.user.id}>
                 {client.user.fullName} ({client.user.email})
@@ -302,7 +302,7 @@ export function EmployeeDocumentsPage() {
             <FileText size={22} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Всего документов</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('documents.metrics.total', { defaultValue: 'Всего документов' })}</p>
             <p className="text-2xl font-black text-gray-900 mt-0.5">{metrics.total}</p>
           </div>
         </div>
@@ -312,7 +312,7 @@ export function EmployeeDocumentsPage() {
             <Archive size={22} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Ожидают подписи</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('documents.metrics.pending', { defaultValue: 'Ожидают подписи' })}</p>
             <p className="text-2xl font-black text-amber-600 mt-0.5">{metrics.awaiting}</p>
           </div>
         </div>
@@ -322,7 +322,7 @@ export function EmployeeDocumentsPage() {
             <ShieldCheck size={22} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Подписано</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('documents.metrics.confirmed', { defaultValue: 'Подписано' })}</p>
             <p className="text-2xl font-black text-blue-600 mt-0.5">{metrics.signed}</p>
           </div>
         </div>
@@ -358,12 +358,12 @@ export function EmployeeDocumentsPage() {
           <div>
             <p className="text-sm font-bold text-gray-900">
               {!selectedClientId 
-                ? 'Выберите клиента выше для загрузки документа' 
+                ? t('employeeDocuments.selectClientPrompt', { defaultValue: 'Выберите клиента выше для загрузки документа' }) 
                 : isUploading 
-                ? 'Загрузка документа...' 
-                : 'Перетащите файл или нажмите для загрузки'}
+                ? t('documents.upload.uploading', { defaultValue: 'Загрузка документа...' }) 
+                : t('documents.upload.dragOrClick', { defaultValue: 'Перетащите файл или нажмите для загрузки' })}
             </p>
-            <p className="text-xs font-medium text-gray-400 mt-1">PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ</p>
+            <p className="text-xs font-medium text-gray-400 mt-1">{t('documents.upload.formats', { defaultValue: 'PDF, DOCX, XLSX, PNG, JPG, ZIP до 20 МБ' })}</p>
           </div>
         </div>
 
@@ -420,7 +420,7 @@ export function EmployeeDocumentsPage() {
                 uploaderFilter === 'all' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
               )}
             >
-              Все источники
+              {t('documents.uploaderFilter.all', { defaultValue: 'Все источники' })}
             </button>
             <button
               type="button"
@@ -431,7 +431,7 @@ export function EmployeeDocumentsPage() {
               )}
             >
               <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-              От компании
+              {t('documents.uploaderFilter.company', { defaultValue: 'От компании' })}
             </button>
             <button
               type="button"
@@ -442,7 +442,7 @@ export function EmployeeDocumentsPage() {
               )}
             >
               <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              От клиентов
+              {t('documents.uploaderFilter.client', { defaultValue: 'От клиентов' })}
             </button>
           </div>
         </div>
@@ -455,7 +455,7 @@ export function EmployeeDocumentsPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Поиск по файлам или клиенту..."
+              placeholder={t('employeeDocuments.searchPlaceholder', { defaultValue: 'Поиск по файлам или клиенту...' })}
               className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-medium text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:bg-white transition-all"
             />
             {searchQuery && (
@@ -478,7 +478,7 @@ export function EmployeeDocumentsPage() {
                 className="px-3.5 py-2 bg-brand-green hover:bg-brand-green/90 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-2xs cursor-pointer active:scale-95 disabled:opacity-50"
               >
                 {isDownloadingZip ? <Spinner className="w-3.5 h-3.5 text-white" /> : <Archive size={14} />}
-                <span>Скачать ZIP ({selectedIds.size})</span>
+                <span>{t('documents.actions.downloadZip', { defaultValue: `Скачать ZIP (${selectedIds.size})`, count: selectedIds.size })}</span>
               </button>
             )}
 
@@ -488,10 +488,10 @@ export function EmployeeDocumentsPage() {
                 onChange={(e: any) => setSortBy(e.target.value)}
                 className="appearance-none pl-3 pr-8 py-2 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-green/20 cursor-pointer"
               >
-                <option value="date-desc">Сначала новые</option>
-                <option value="date-asc">Сначала старые</option>
-                <option value="name">По названию (А-Я)</option>
-                <option value="size">По размеру</option>
+                <option value="date-desc">{t('documents.sort.dateDesc', { defaultValue: 'Сначала новые' })}</option>
+                <option value="date-asc">{t('documents.sort.dateAsc', { defaultValue: 'Сначала старые' })}</option>
+                <option value="name">{t('documents.sort.name', { defaultValue: 'По названию (А-Я)' })}</option>
+                <option value="size">{t('documents.sort.size', { defaultValue: 'По размеру' })}</option>
               </select>
               <ArrowUpDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
@@ -504,7 +504,7 @@ export function EmployeeDocumentsPage() {
                   'p-1.5 rounded-lg transition-all cursor-pointer',
                   viewMode === 'table' ? 'bg-white text-brand-green shadow-xs' : 'text-gray-400 hover:text-gray-700'
                 )}
-                title="Таблица"
+                title={t('documents.viewMode.table', { defaultValue: 'Таблица' })}
               >
                 <List size={16} />
               </button>
@@ -515,7 +515,7 @@ export function EmployeeDocumentsPage() {
                   'p-1.5 rounded-lg transition-all cursor-pointer',
                   viewMode === 'grid' ? 'bg-white text-brand-green shadow-xs' : 'text-gray-400 hover:text-gray-700'
                 )}
-                title="Сетка"
+                title={t('documents.viewMode.grid', { defaultValue: 'Сетка' })}
               >
                 <LayoutGrid size={16} />
               </button>
@@ -534,9 +534,9 @@ export function EmployeeDocumentsPage() {
           <div className="w-16 h-16 bg-emerald-50 text-brand-green rounded-2xl flex items-center justify-center mx-auto mb-4">
             <FileIcon size={28} />
           </div>
-          <h3 className="text-gray-900 font-bold text-base mb-1">Документы не найдены</h3>
+          <h3 className="text-gray-900 font-bold text-base mb-1">{t('documents.empty.title', { defaultValue: 'Документы не найдены' })}</h3>
           <p className="text-gray-500 text-xs max-w-sm mx-auto">
-            Попробуйте изменить выбранного клиента, категорию или поисковый запрос.
+            {t('employeeDocuments.emptyDesc', { defaultValue: 'Попробуйте изменить выбранного клиента, категорию или поисковый запрос.' })}
           </p>
         </div>
       ) : (
@@ -553,12 +553,12 @@ export function EmployeeDocumentsPage() {
                       className="rounded border-gray-300 text-brand-green focus:ring-brand-green cursor-pointer"
                     />
                   </th>
-                  <th className="px-6 py-4">Название файла</th>
-                  <th className="px-6 py-4">Клиент</th>
-                  <th className="px-6 py-4">Тип</th>
-                  <th className="px-6 py-4">Статус подписи</th>
-                  <th className="px-6 py-4">Размер</th>
-                  <th className="px-6 py-4 text-right">Действия</th>
+                  <th className="px-6 py-4">{t('documents.table.file', { defaultValue: 'Название файла' })}</th>
+                  <th className="px-6 py-4">{t('documents.table.client', { defaultValue: 'Клиент' })}</th>
+                  <th className="px-6 py-4">{t('documents.table.type', { defaultValue: 'Тип' })}</th>
+                  <th className="px-6 py-4">{t('documents.table.signature', { defaultValue: 'Статус подписи' })}</th>
+                  <th className="px-6 py-4">{t('documents.table.size', { defaultValue: 'Размер' })}</th>
+                  <th className="px-6 py-4 text-right">{t('documents.table.actions', { defaultValue: 'Действия' })}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 font-medium">
@@ -596,7 +596,7 @@ export function EmployeeDocumentsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-xs font-bold text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/60">
-                          {doc.clientName || 'Клиент системный'}
+                          {doc.clientName || t('employeeDocuments.unknownClient')}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -608,17 +608,17 @@ export function EmployeeDocumentsPage() {
                         {clientUploaded ? (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200/80 rounded-full font-bold text-xs shadow-2xs">
                             <Upload size={13} />
-                            От клиента
+                            {t('documents.status.fromClient', { defaultValue: 'От клиента' })}
                           </span>
                         ) : isConfirmed ? (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full font-bold text-xs shadow-2xs">
                             <ShieldCheck size={14} />
-                            Подписано {doc.confirmedAt ? new Date(doc.confirmedAt).toLocaleDateString() : ''}
+                            {t('documents.status.signed', { defaultValue: 'Подписано' })} {doc.confirmedAt ? new Date(doc.confirmedAt).toLocaleDateString() : ''}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200/80 rounded-full font-bold text-xs shadow-2xs">
                             <CheckCircle2 size={13} />
-                            Ожидает подписи
+                            {t('documents.status.pendingSignature', { defaultValue: 'Ожидает подписи' })}
                           </span>
                         )}
                       </td>
@@ -631,16 +631,16 @@ export function EmployeeDocumentsPage() {
                             type="button"
                             onClick={() => handleDownload(doc)}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 hover:text-brand-green hover:bg-emerald-50 border border-gray-200/80 hover:border-brand-green/30 rounded-xl font-bold text-xs transition-all cursor-pointer"
-                            title="Скачать"
+                            title={t('documents.actions.download', { defaultValue: 'Скачать' })}
                           >
                             <Download size={14} />
-                            <span className="hidden sm:inline">Скачать</span>
+                            <span className="hidden sm:inline">{t('documents.actions.download', { defaultValue: 'Скачать' })}</span>
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDelete(doc.id)}
                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200/50 rounded-xl transition-all cursor-pointer"
-                            title="Удалить"
+                            title={t('documents.actions.delete', { defaultValue: 'Удалить' })}
                           >
                             <Trash2 size={16} />
                           </button>

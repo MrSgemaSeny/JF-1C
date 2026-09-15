@@ -55,7 +55,11 @@
     "of": "of",
     "tasks": "tasks",
     "noFilteredTasks": "No tasks match selected filters",
-    "resetFilters": "Reset filters"
+    "resetFilters": "Reset filters",
+    "slaOverdue": "SLA overdue",
+    "slaBreachedTooltip": "Time limit on current stage exceeded (SLA)",
+    "moveBlocked": "Movement blocked",
+    "moveToNext": "Move to next stage"
   },
   "errors": {
     "taskNotFound": "Task not found"
@@ -102,7 +106,10 @@
     "noComments": "No comments yet. Be the first!",
     "emptyHistory": "History is empty",
     "writeComment": "Write a comment...",
-    "send": "Send"
+    "send": "Send",
+    "reassignmentRequested": "Rejection pending",
+    "docSigned": "Signed",
+    "docPendingSignature": "Pending signature"
   },
   "taskCreate": {
     "error": "Error creating task",
@@ -124,5 +131,15 @@
   "taskDetailsPage": {
     "loadError": "Error loading task.",
     "back": "Back"
+  },
+  "taskBoard": {
+    "selectAll": "Select all",
+    "tasksSelected": "tasks selected",
+    "changeStage": "Change stage...",
+    "selectTask": "Select task",
+    "assignEmployee": "Assign employee...",
+    "addLabel": "Add label...",
+    "applying": "Applying...",
+    "apply": "Apply"
   }
 }

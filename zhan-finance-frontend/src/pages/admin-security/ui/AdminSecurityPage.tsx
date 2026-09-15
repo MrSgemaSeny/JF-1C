@@ -26,7 +26,7 @@ export function AdminSecurityPage() {
       setPhase('setup');
       setConfirmCode('');
     } catch (err: any) {
-      toast.error(err.message || 'Ошибка загрузки 2FA setup');
+      toast.error(err.message || t('adminSecurity.setupError'));
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +45,7 @@ export function AdminSecurityPage() {
       setSetupData(null);
       setConfirmCode('');
     } catch (err: any) {
-      toast.error(err.message || 'Неверный код 2FA');
+      toast.error(err.message || t('adminSecurity.invalidCode'));
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +63,7 @@ export function AdminSecurityPage() {
       setPhase('idle');
       setDisableCode('');
     } catch (err: any) {
-      toast.error(err.message || 'Неверный код 2FA');
+      toast.error(err.message || t('adminSecurity.invalidCode'));
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +154,7 @@ export function AdminSecurityPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
               <div className="flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 shadow-inner">
                 <img src={setupData.qrCodeImage} alt="2FA QR Code" className="w-48 h-48 rounded-lg" />
-                <span className="text-xs text-gray-400 mt-2 font-mono">Scan QR in Authenticator App</span>
+                <span className="text-xs text-gray-400 mt-2 font-mono">{t('adminSecurity.scanQrPrompt')}</span>
               </div>
 
               <div className="space-y-4 text-sm text-gray-700">

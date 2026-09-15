@@ -7,7 +7,7 @@ import { useToast } from '@/shared/ui/Toast/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function AdminTemplatesPage() {
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common']);
   const toast = useToast();
   const [templates, setTemplates] = useState<DocumentTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,10 +49,10 @@ export function AdminTemplatesPage() {
       setUploadDescription('');
       setUploadFile(null);
       
-      toast.success('Шаблон успешно загружен');
+      toast.success(t('adminTemplates.uploadSuccess'));
       await fetchTemplates();
     } catch (err: any) {
-      toast.error(err.message || 'Upload failed');
+      toast.error(err.message || t('adminTemplates.uploadError'));
     } finally {
       setIsUploading(false);
     }
@@ -62,11 +62,11 @@ export function AdminTemplatesPage() {
     if (!templateToDelete) return;
     try {
       await documentTemplateApi.deleteTemplate(templateToDelete);
-      toast.success('Шаблон удален');
+      toast.success(t('adminTemplates.deleteSuccess'));
       setTemplateToDelete(null);
       await fetchTemplates();
     } catch (err: any) {
-      toast.error(err.message || 'Delete failed');
+      toast.error(err.message || t('adminTemplates.deleteError'));
     }
   };
 
@@ -74,7 +74,7 @@ export function AdminTemplatesPage() {
     try {
       await documentTemplateApi.downloadTemplate(template.id, template.name + '.docx');
     } catch (err: any) {
-      toast.error(err.message || 'Download failed');
+      toast.error(err.message || t('adminTemplates.downloadError'));
     }
   };
 
@@ -286,8 +286,8 @@ export function AdminTemplatesPage() {
                                 <p className="text-sm text-gray-500 mt-0.5 truncate pr-4">{template.description}</p>
                               )}
                               <div className="flex items-center gap-3 mt-2 text-xs font-medium text-gray-400">
-                                <span className="bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md">{new Date(template.createdAt).toLocaleDateString('ru-RU')}</span>
-                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{template.createdByName || 'Система'}</span>
+                                <span className="bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md">{new Date(template.createdAt).toLocaleDateString(i18n.language === 'en' ? 'en-US' : i18n.language === 'kk' ? 'kk-KZ' : i18n.language === 'zh' ? 'zh-CN' : 'ru-RU')}</span>
+                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{template.createdByName || t('adminTemplates.systemCreator')}</span>
                               </div>
                             </div>
                           </div>
@@ -296,12 +296,12 @@ export function AdminTemplatesPage() {
                               onClick={() => handleDownload(template)}
                               className="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-2 font-medium text-sm"
                             >
-                              <Download size={18} /> Скачать
+                              <Download size={18} /> {t('adminTemplates.download')}
                             </button>
                             <button
                               onClick={() => setTemplateToDelete(template.id)}
                               className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Удалить шаблон"
+                              title={t('adminTemplates.deleteTitle')}
                             >
                               <Trash2 size={20} />
                             </button>
@@ -336,7 +336,7 @@ export function AdminTemplatesPage() {
             >
               <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-red-50/50">
                 <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <AlertCircle size={20} className="text-red-500" /> Подтверждение удаления
+                  <AlertCircle size={20} className="text-red-500" /> {t('adminTemplates.deleteConfirmTitle')}
                 </h3>
                 <button onClick={() => setTemplateToDelete(null)} className="text-gray-400 hover:text-gray-600 hover:bg-white rounded-full p-1 transition-colors">
                   <X size={20} />
@@ -344,20 +344,20 @@ export function AdminTemplatesPage() {
               </div>
               <div className="p-6">
                 <p className="text-base text-gray-600 leading-relaxed">
-                  Вы уверены, что хотите удалить этот шаблон? Восстановить его будет невозможно, и сотрудники больше не смогут использовать его для генерации документов.
+                  {t('adminTemplates.deleteConfirmDesc')}
                 </p>
                 <div className="mt-8 flex justify-end gap-3">
                   <button
                     onClick={() => setTemplateToDelete(null)}
                     className="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-gray-200"
                   >
-                    Отмена
+                    {t('common.cancel')}
                   </button>
                   <button
                     onClick={handleDeleteConfirm}
                     className="px-5 py-2.5 text-sm font-bold text-white bg-red-600 rounded-xl hover:bg-red-700 shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-all hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
                   >
-                    Удалить навсегда
+                    {t('adminTemplates.deleteForever')}
                   </button>
                 </div>
               </div>

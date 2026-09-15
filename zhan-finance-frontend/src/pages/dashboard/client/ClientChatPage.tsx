@@ -253,7 +253,7 @@ export function ClientChatPage() {
   const handleDeleteMessage = async (msgId: number) => {
     try {
       await deleteChatMessage(msgId);
-      setMessages(prev => prev.map(m => m.id === msgId ? { ...m, isDeleted: true, content: 'Пользователь удалил сообщение' } : m));
+      setMessages(prev => prev.map(m => m.id === msgId ? { ...m, isDeleted: true, content: t('clientChat.deletedMessage') } : m));
     } catch (error) {
       console.error(error);
     }
@@ -296,7 +296,7 @@ export function ClientChatPage() {
           {isLoadingContacts ? (
             <div className="flex justify-center p-8"><Spinner className="w-6 h-6 text-brand-green" /></div>
           ) : filteredContacts.length === 0 ? (
-            <div className="text-center text-gray-400 p-8 text-sm">Нет контактов</div>
+            <div className="text-center text-gray-400 p-8 text-sm">{t('clientChat.noContacts')}</div>
           ) : (
             filteredContacts.map(contact => (
               <motion.button

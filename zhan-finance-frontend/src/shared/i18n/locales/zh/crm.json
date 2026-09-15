@@ -55,7 +55,11 @@
     "of": "之",
     "tasks": "任务",
     "noFilteredTasks": "没有符合筛选条件的任务",
-    "resetFilters": "重置筛选条件"
+    "resetFilters": "重置筛选条件",
+    "slaOverdue": "SLA已逾期",
+    "slaBreachedTooltip": "超出当前阶段时限 (SLA)",
+    "moveBlocked": "移动已锁定",
+    "moveToNext": "移至下一阶段"
   },
   "errors": {
     "taskNotFound": "未找到任务"
@@ -102,7 +106,10 @@
     "noComments": "暂无留言记录",
     "emptyHistory": "暂无历史记录",
     "writeComment": "写下沟通留言...",
-    "send": "发送"
+    "send": "发送",
+    "reassignmentRequested": "待退单审批",
+    "docSigned": "已签署",
+    "docPendingSignature": "待签署"
   },
   "taskCreate": {
     "error": "创建任务时出错",
@@ -124,5 +131,15 @@
   "taskDetailsPage": {
     "loadError": "加载任务失败。",
     "back": "返回"
+  },
+  "taskBoard": {
+    "selectAll": "全选",
+    "tasksSelected": "项任务已选",
+    "changeStage": "更改阶段...",
+    "selectTask": "选择任务",
+    "assignEmployee": "指派员工...",
+    "addLabel": "添加标签...",
+    "applying": "应用中...",
+    "apply": "应用"
   }
 }

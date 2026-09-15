@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
+import { getIntlLocale } from '@/shared/lib/dateFormat';
 
 interface DatePickerProps {
   value: string; // ISO format 'YYYY-MM-DD'
@@ -16,8 +17,7 @@ export function DatePicker({ value, onChange, min, placeholder, className }: Dat
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const lang = i18n.language === 'en' ? 'en' : 'ru';
-  const locale = lang === 'en' ? 'en-US' : 'ru-RU';
+  const locale = getIntlLocale(i18n.language);
 
   // Parse current value or fallback to today for view month
   const selectedDateObj = useMemo(() => {
@@ -255,16 +255,16 @@ export function DatePicker({ value, onChange, min, placeholder, className }: Dat
             <button
               type="button"
               onClick={handleClear}
-              className="text-gray-400 hover:text-red-500 font-medium transition-colors"
+              className="text-gray-400 hover:text-red-500 font-medium transition-colors cursor-pointer"
             >
-              {lang === 'en' ? 'Clear' : 'Очистить'}
+              {t('datePicker.clear', { defaultValue: 'Очистить' })}
             </button>
             <button
               type="button"
               onClick={handleSelectToday}
-              className="text-brand-green font-bold hover:underline transition-colors"
+              className="text-brand-green font-bold hover:underline transition-colors cursor-pointer"
             >
-              {lang === 'en' ? 'Today' : 'Сегодня'}
+              {t('datePicker.today', { defaultValue: 'Сегодня' })}
             </button>
           </div>
         </div>

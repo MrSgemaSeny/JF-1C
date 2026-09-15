@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CourseDto, LessonDto, createChapter, createLessonForChapter, deleteChapter, deleteLesson } from '@/entities/course/api/courseApi';
 import { ChevronDown, ChevronRight, Plus, Video, FileText, Layers, Edit3, Check, X, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CourseCurriculumTabProps {
   course: CourseDto;
@@ -9,6 +10,7 @@ interface CourseCurriculumTabProps {
 }
 
 export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCurriculumTabProps) {
+  const { t } = useTranslation(['common']);
   const [expandedChapters, setExpandedChapters] = useState<Record<number, boolean>>({});
   const [isAddingChapter, setIsAddingChapter] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState('');
@@ -28,7 +30,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
       onReload();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при создании модуля');
+      alert(t('adminCourseEdit.createChapterError', { defaultValue: 'Ошибка при создании модуля' }));
     }
   };
 
@@ -41,30 +43,30 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
       onReload();
     } catch (e) {
       console.error(e);
-      alert('Ошибка при создании урока');
+      alert(t('adminCourseEdit.lessonCreateError', { defaultValue: 'Ошибка создания урока.' }));
     }
   };
 
   const handleDeleteChapter = async (chapterId: number) => {
-    if (window.confirm('Удалить этот модуль и все его уроки? Это действие нельзя отменить.')) {
+    if (window.confirm(t('adminCourseEdit.deleteChapterConfirm', { defaultValue: 'Удалить этот модуль и все его уроки? Это действие нельзя отменить.' }))) {
       try {
         await deleteChapter(chapterId);
         onReload();
       } catch (e) {
         console.error(e);
-        alert('Ошибка при удалении модуля');
+        alert(t('adminCourseEdit.deleteChapterError', { defaultValue: 'Ошибка при удалении модуля' }));
       }
     }
   };
 
   const handleDeleteLesson = async (lessonId: number) => {
-    if (window.confirm('Удалить этот урок?')) {
+    if (window.confirm(t('adminCourseEdit.lessonDeleteConfirm', { defaultValue: 'Удалить этот урок?' }))) {
       try {
         await deleteLesson(lessonId);
         onReload();
       } catch (e) {
         console.error(e);
-        alert('Ошибка при удалении урока');
+        alert(t('adminCourseEdit.lessonDeleteError', { defaultValue: 'Ошибка при удалении урока' }));
       }
     }
   };
@@ -75,7 +77,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
       <div className="flex items-center justify-between border-b border-gray-100 pb-4">
         <div className="flex items-center gap-2">
           <Layers className="w-5 h-5 text-brand-green" />
-          <h2 className="text-lg font-bold text-gray-900">Программа курса</h2>
+          <h2 className="text-lg font-bold text-gray-900">{t('adminCourseEdit.curriculumTitle', { defaultValue: 'Программа курса' })}</h2>
         </div>
 
         {!isAddingChapter && (
@@ -83,7 +85,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
             onClick={() => setIsAddingChapter(true)}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-brand-green/10 text-brand-green font-semibold text-xs rounded-xl hover:bg-brand-green hover:text-white transition-all shadow-xs"
           >
-            <Plus className="w-4 h-4" /> Добавить модуль
+            <Plus className="w-4 h-4" /> {t('adminCourseEdit.addChapterBtn', { defaultValue: 'Добавить модуль' })}
           </button>
         )}
       </div>
@@ -92,7 +94,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
       {isAddingChapter && (
         <div className="bg-emerald-50/50 border border-emerald-200/70 p-4 rounded-2xl space-y-3 animate-in fade-in zoom-in-95 duration-150">
           <label className="block text-xs font-bold text-emerald-900 uppercase tracking-wider">
-            Название нового модуля / главы
+            {t('adminCourseEdit.chapterTitleLabel', { defaultValue: 'Название нового модуля / главы' })}
           </label>
           <div className="flex items-center gap-2">
             <input 
@@ -100,7 +102,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
               autoFocus
               value={newChapterTitle}
               onChange={e => setNewChapterTitle(e.target.value)}
-              placeholder="Например: Модуль 1. Основы работы в 1С..."
+              placeholder={t('adminCourseEdit.chapterTitlePlaceholder', { defaultValue: 'Например: Модуль 1. Основы работы в 1С...' })}
               className="flex-1 px-3.5 py-2 text-sm bg-white border border-emerald-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none font-medium"
               onKeyDown={e => e.key === 'Enter' && handleAddChapter()}
             />
@@ -108,13 +110,13 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
               onClick={handleAddChapter}
               className="inline-flex items-center gap-1 px-4 py-2 bg-brand-green text-white text-xs font-bold rounded-xl hover:bg-brand-green/90 transition-all shadow-sm"
             >
-              <Check className="w-4 h-4" /> Сохранить
+              <Check className="w-4 h-4" /> {t('common:save', { defaultValue: 'Сохранить' })}
             </button>
             <button 
               onClick={() => setIsAddingChapter(false)}
               className="inline-flex items-center gap-1 px-3 py-2 text-gray-500 hover:text-gray-700 text-xs font-medium rounded-xl hover:bg-gray-100 transition-colors"
             >
-              <X className="w-4 h-4" /> Отмена
+              <X className="w-4 h-4" /> {t('common:cancel', { defaultValue: 'Отмена' })}
             </button>
           </div>
         </div>
@@ -141,11 +143,11 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                       {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </button>
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider shrink-0">
-                      Модуль {idx + 1}
+                      {t('adminCourseEdit.modulePrefix', { defaultValue: 'Модуль' })} {idx + 1}
                     </span>
                     <h3 className="font-bold text-gray-900 text-sm truncate">{chapter.title}</h3>
                     <span className="text-xs text-gray-400 font-medium px-2 py-0.5 bg-gray-100 rounded-full shrink-0">
-                      {chapter.lessons?.length || 0} уроков
+                      {chapter.lessons?.length || 0} {t('adminCourseEdit.lessonsCount', { defaultValue: 'уроков' })}
                     </span>
                   </div>
 
@@ -156,7 +158,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                         handleDeleteChapter(chapter.id);
                       }}
                       className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 hover:text-red-500 hover:bg-red-50 px-2.5 py-1 rounded-lg transition-colors"
-                      title="Удалить модуль"
+                      title={t('adminCourseEdit.deleteChapterTitle', { defaultValue: 'Удалить модуль' })}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -168,7 +170,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                       }}
                       className="inline-flex items-center gap-1 text-xs font-semibold text-brand-green hover:bg-brand-green/10 px-2.5 py-1 rounded-lg transition-colors"
                     >
-                      <Plus className="w-3.5 h-3.5" /> Урок
+                      <Plus className="w-3.5 h-3.5" /> {t('adminCourseEdit.lessonBtn', { defaultValue: 'Урок' })}
                     </button>
                   </div>
                 </div>
@@ -208,11 +210,11 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                             <div className="flex items-center gap-3 shrink-0">
                               {lesson.durationMinutes && (
                                 <span className="text-xs text-gray-400 font-medium">
-                                  {lesson.durationMinutes} мин
+                                  {lesson.durationMinutes} {t('adminCourseEdit.minutesShort', { defaultValue: 'мин' })}
                                 </span>
                               )}
                               <span className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-xs font-bold text-brand-green bg-brand-green/10 px-2.5 py-1 rounded-lg transition-all">
-                                <Edit3 className="w-3.5 h-3.5" /> Изменить
+                                <Edit3 className="w-3.5 h-3.5" /> {t('adminCourseEdit.editLesson', { defaultValue: 'Редактировать' })}
                               </span>
                               <button 
                                 onClick={(e) => {
@@ -220,7 +222,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                                   handleDeleteLesson(lesson.id);
                                 }}
                                 className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-colors"
-                                title="Удалить урок"
+                                title={t('adminCourseEdit.deleteLessonTitle', { defaultValue: 'Удалить урок' })}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -230,7 +232,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                       })
                     ) : (
                       <div className="text-center py-6 bg-white border border-dashed border-gray-200 rounded-xl">
-                        <p className="text-xs text-gray-400 font-medium">В этом модуле пока нет уроков</p>
+                        <p className="text-xs text-gray-400 font-medium">{t('adminCourseEdit.noLessonsInChapter', { defaultValue: 'В этом модуле пока нет уроков' })}</p>
                       </div>
                     )}
 
@@ -242,7 +244,7 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                           autoFocus
                           value={newLessonTitle}
                           onChange={e => setNewLessonTitle(e.target.value)}
-                          placeholder="Название нового урока..."
+                          placeholder={t('adminCourseEdit.lessonPlaceholder', { defaultValue: 'Например: Урок 1. Установка и настройка...' })}
                           className="flex-1 px-3 py-1.5 text-xs bg-white border border-emerald-300 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-medium"
                           onKeyDown={e => e.key === 'Enter' && handleAddLesson(chapter.id)}
                         />
@@ -250,13 +252,13 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
                           onClick={() => handleAddLesson(chapter.id)}
                           className="px-3 py-1.5 bg-brand-green text-white text-xs font-bold rounded-lg hover:bg-brand-green/90 transition-all shadow-xs"
                         >
-                          Сохранить
+                          {t('common:save', { defaultValue: 'Сохранить' })}
                         </button>
                         <button 
                           onClick={() => setAddingLessonToChapter(null)}
                           className="px-2.5 py-1.5 text-xs text-gray-500 hover:text-gray-700 font-medium rounded-lg"
                         >
-                          Отмена
+                          {t('common:cancel', { defaultValue: 'Отмена' })}
                         </button>
                       </div>
                     )}
@@ -267,13 +269,13 @@ export function CourseCurriculumTab({ course, onEditLesson, onReload }: CourseCu
           })
         ) : (
           <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
-            <p className="text-sm font-semibold text-gray-500 mb-1">Курс пока не содержит модулей</p>
-            <p className="text-xs text-gray-400 mb-4">Нажмите кнопку ниже, чтобы добавить первый обучающий модуль</p>
+            <p className="text-sm font-semibold text-gray-500 mb-1">{t('adminCourseEdit.noChapters', { defaultValue: 'Нет созданных модулей' })}</p>
+            <p className="text-xs text-gray-400 mb-4">{t('adminCourseEdit.noChaptersDesc', { defaultValue: 'Создайте первый модуль, чтобы начать наполнять курс уроками.' })}</p>
             <button 
               onClick={() => setIsAddingChapter(true)}
               className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-green text-white text-xs font-bold rounded-xl hover:bg-brand-green/90 shadow-sm transition-all"
             >
-              <Plus className="w-4 h-4" /> Создать первый модуль
+              <Plus className="w-4 h-4" /> {t('adminCourseEdit.addChapterBtn', { defaultValue: 'Добавить модуль' })}
             </button>
           </div>
         )}

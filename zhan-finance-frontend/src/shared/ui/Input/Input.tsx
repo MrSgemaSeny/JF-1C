@@ -1,6 +1,7 @@
 import { forwardRef, InputHTMLAttributes, ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -32,6 +33,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const { t } = useTranslation(['common']);
     const isError = Boolean(error);
     const charCount = typeof value === 'string' ? value.length : 0;
     const [showPassword, setShowPassword] = useState(false);
@@ -98,7 +100,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="text-brand-green/40 hover:text-brand-green/70 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-green/20 rounded-md p-0.5"
-                aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                aria-label={showPassword ? t('ui.hidePassword', { defaultValue: 'Скрыть пароль' }) : t('ui.showPassword', { defaultValue: 'Показать пароль' })}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>

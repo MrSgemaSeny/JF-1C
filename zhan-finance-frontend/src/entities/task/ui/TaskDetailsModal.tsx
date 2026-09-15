@@ -457,7 +457,7 @@ export function TaskDetailsModal({
                       disabled={isAssigning || task.reassignmentRequested}
                       className="w-full flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
                     >
-                      <XCircle size={15} /> {task.reassignmentRequested ? 'Ожидается отказ' : t('taskModal.drop', { defaultValue: 'Отказаться' })}
+                      <XCircle size={15} /> {task.reassignmentRequested ? t('crm:taskModal.reassignmentRequested', { defaultValue: 'Ожидается отказ' }) : t('taskModal.drop', { defaultValue: 'Отказаться' })}
                     </button>
                   )}
                 </div>
@@ -744,11 +744,11 @@ export function TaskDetailsModal({
                           </p>
                           {isConfirmed ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded border border-green-200">
-                              <ShieldCheck size={11} /> Подписано
+                              <ShieldCheck size={11} /> {t('crm:taskModal.docSigned', { defaultValue: 'Подписано' })}
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                              <Clock size={11} /> Ожидает подписи
+                              <Clock size={11} /> {t('crm:taskModal.docPendingSignature', { defaultValue: 'Ожидает подписи' })}
                             </span>
                           )}
                         </div>

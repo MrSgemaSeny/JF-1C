@@ -489,10 +489,10 @@ export function ClientDocumentsPage() {
               onChange={(e: any) => setSortBy(e.target.value)}
               className="appearance-none pl-3 pr-8 py-2 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-green/20 cursor-pointer"
             >
-              <option value="date-desc">Сначала новые</option>
-              <option value="date-asc">Сначала старые</option>
-              <option value="name">По названию (А-Я)</option>
-              <option value="size">По размеру</option>
+              <option value="date-desc">{t('documents.sort.dateDesc', { defaultValue: 'Сначала новые' })}</option>
+              <option value="date-asc">{t('documents.sort.dateAsc', { defaultValue: 'Сначала старые' })}</option>
+              <option value="name">{t('documents.sort.name', { defaultValue: 'По названию (А-Я)' })}</option>
+              <option value="size">{t('documents.sort.size', { defaultValue: 'По размеру' })}</option>
             </select>
             <ArrowUpDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
@@ -764,7 +764,7 @@ export function ClientDocumentsPage() {
       {selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md text-gray-900 px-6 py-3.5 rounded-2xl shadow-xl z-40 flex items-center gap-5 border border-brand-green/20 animate-in slide-in-from-bottom-5 duration-200">
           <span className="text-xs font-bold text-gray-600">
-            Выбрано документов: <strong className="text-brand-green font-black">{selectedIds.size}</strong>
+            {t('documents.selection.selected', { defaultValue: 'Выбрано документов:' })} <strong className="text-brand-green font-black">{selectedIds.size}</strong>
           </span>
           <div className="h-4 w-px bg-gray-200" />
           <button

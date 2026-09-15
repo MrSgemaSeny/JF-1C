@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FileDown, Zap, Loader2, FileText, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { documentTemplateApi } from '../api/documentTemplateApi';
 import { DocumentTemplate } from '../model/types';
 import { useToast } from '@/shared/ui/Toast/ToastContext';
@@ -10,6 +11,7 @@ interface GenerateDocumentButtonProps {
 }
 
 export function GenerateDocumentButton({ taskId, onSuccess }: GenerateDocumentButtonProps) {
+  const { t } = useTranslation(['common']);
   const toast = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [templates, setTemplates] = useState<DocumentTemplate[]>([]);
@@ -67,7 +69,7 @@ export function GenerateDocumentButton({ taskId, onSuccess }: GenerateDocumentBu
         className="text-brand-green hover:text-green-700 p-1 rounded transition-colors disabled:opacity-50 flex items-center gap-1 text-xs font-medium"
       >
         {isGenerating ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} />}
-        Сгенерировать
+        {t('documents.actions.generate')}
       </button>
 
       {isOpen && (
@@ -75,7 +77,7 @@ export function GenerateDocumentButton({ taskId, onSuccess }: GenerateDocumentBu
           <div className="fixed inset-0 z-[100] sm:hidden bg-black/40 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
           <div className="fixed sm:absolute bottom-0 left-0 right-0 sm:bottom-auto sm:left-auto sm:right-0 sm:mt-2 w-full sm:w-80 max-h-[80vh] bg-white sm:rounded-lg rounded-t-2xl shadow-2xl border-t sm:border border-gray-100 z-[101] overflow-hidden flex flex-col pb-safe sm:pb-0">
             <div className="px-4 py-4 sm:py-2 bg-gray-50 border-b border-gray-100 flex justify-between items-center shrink-0">
-              <h4 className="text-sm sm:text-xs font-semibold text-gray-700 sm:text-gray-500 uppercase tracking-wider">Выберите шаблон</h4>
+              <h4 className="text-sm sm:text-xs font-semibold text-gray-700 sm:text-gray-500 uppercase tracking-wider">{t('documents.actions.selectTemplate')}</h4>
               <button className="sm:hidden p-1 text-gray-500 hover:text-gray-700 bg-gray-200 rounded-full" onClick={() => setIsOpen(false)}>
                 <X size={16} />
               </button>
@@ -87,7 +89,7 @@ export function GenerateDocumentButton({ taskId, onSuccess }: GenerateDocumentBu
                   <Loader2 size={24} className="animate-spin mx-auto text-brand-green" />
                 </div>
               ) : templates.length === 0 ? (
-                <div className="p-8 text-center text-sm text-gray-500">Нет доступных шаблонов</div>
+                <div className="p-8 text-center text-sm text-gray-500">{t('documents.actions.noTemplates')}</div>
               ) : (
                 <ul className="divide-y divide-gray-50">
                   {templates.map(t => (

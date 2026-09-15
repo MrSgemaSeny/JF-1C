@@ -315,7 +315,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
             ) : (
               <Square size={16} className="text-gray-400" />
             )}
-            <span>Выбрать все ({filteredAndSorted.length})</span>
+            <span>{t('taskBoard.selectAll', { defaultValue: 'Выбрать все' })} ({filteredAndSorted.length})</span>
           </button>
         )}
 
@@ -374,7 +374,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
                     toggleSelectOne(task.id);
                   }}
                   className="absolute top-3 right-3 z-20 p-1 bg-white/90 rounded-md shadow-xs hover:bg-white transition-colors cursor-pointer"
-                  title="Выбрать задачу"
+                  title={t('taskBoard.selectTask', { defaultValue: 'Выбрать задачу' })}
                 >
                   {isSelected ? (
                     <CheckSquare size={18} className="text-blue-600" />
@@ -414,7 +414,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
           <div className="flex items-center gap-2 pr-3 border-r border-gray-700">
             <CheckSquare size={18} className="text-blue-400" />
             <span className="text-xs font-bold text-gray-100 whitespace-nowrap">
-              {selectedIds.size} задач выбрано
+              {selectedIds.size} {t('taskBoard.tasksSelected', { defaultValue: 'задач выбрано' })}
             </span>
           </div>
 
@@ -428,7 +428,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
                   onChange={(e) => setBatchStageId(e.target.value ? Number(e.target.value) : null)}
                   className="bg-gray-800 text-xs text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
                 >
-                  <option value="">Сменить стадию...</option>
+                  <option value="">{t('taskBoard.changeStage', { defaultValue: 'Сменить стадию...' })}</option>
                   {stages.map(s => (
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
@@ -445,7 +445,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
                   onChange={(e) => setBatchAssigneeId(e.target.value ? Number(e.target.value) : null)}
                   className="bg-gray-800 text-xs text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
                 >
-                  <option value="">Назначить сотрудника...</option>
+                  <option value="">{t('taskBoard.assignEmployee', { defaultValue: 'Назначить сотрудника...' })}</option>
                   {employees.map(e => (
                     <option key={e.id} value={e.id}>{e.fullName}</option>
                   ))}
@@ -462,7 +462,7 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
                   onChange={(e) => setBatchLabelId(e.target.value ? Number(e.target.value) : null)}
                   className="bg-gray-800 text-xs text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer"
                 >
-                  <option value="">Добавить метку...</option>
+                  <option value="">{t('taskBoard.addLabel', { defaultValue: 'Добавить метку...' })}</option>
                   {myLabels.map(l => (
                     <option key={l.id} value={l.id}>{l.name}</option>
                   ))}
@@ -475,13 +475,13 @@ export const TaskGridBoard = forwardRef<TaskGridBoardRef, TaskGridBoardProps>(({
               disabled={isApplyingBatch}
               className="ml-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition-colors shadow-xs cursor-pointer disabled:opacity-50"
             >
-              {isApplyingBatch ? 'Применяем...' : 'Применить'}
+              {isApplyingBatch ? t('taskBoard.applying', { defaultValue: 'Применяем...' }) : t('taskBoard.apply', { defaultValue: 'Применить' })}
             </button>
 
             <button
               onClick={() => setSelectedIds(new Set())}
               className="text-gray-400 hover:text-white p-1 ml-1 cursor-pointer"
-              title="Снять выбор"
+              title={t('common:actions.deselect', { defaultValue: 'Снять выбор' })}
             >
               <X size={16} />
             </button>

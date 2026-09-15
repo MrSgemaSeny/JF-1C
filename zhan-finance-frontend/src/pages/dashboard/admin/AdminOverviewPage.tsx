@@ -242,13 +242,13 @@ export function AdminOverviewPage() {
                   <td className="py-3 text-center">
                     {(() => {
                       let loadBg = "bg-green-50 text-green-700 border-green-200";
-                      let loadLabel = "Низкая нагрузка (<5 задач)";
+                      let loadLabel = t('adminDashboard.workloadLow');
                       if (emp.activeTasks >= 10) {
                         loadBg = "bg-red-50 text-red-700 border-red-200 font-bold";
-                        loadLabel = "Высокая нагрузка (>10 задач)";
+                        loadLabel = t('adminDashboard.workloadHigh');
                       } else if (emp.activeTasks >= 5) {
                         loadBg = "bg-amber-50 text-amber-700 border-amber-200";
-                        loadLabel = "Средняя нагрузка (5-10 задач)";
+                        loadLabel = t('adminDashboard.workloadMedium');
                       }
                       return (
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-medium text-xs ${loadBg}`} title={loadLabel}>
@@ -268,7 +268,7 @@ export function AdminOverviewPage() {
                   </td>
                   <td className="py-3 text-center">
                     <span className="text-gray-700 font-medium text-sm">
-                      {emp.avgCompletionDays ? emp.avgCompletionDays.toFixed(1) + ' дн.' : '-'}
+                      {emp.avgCompletionDays ? `${emp.avgCompletionDays.toFixed(1)} ${t('adminDashboard.daysSuffix')}` : '-'}
                     </span>
                   </td>
                 </tr>

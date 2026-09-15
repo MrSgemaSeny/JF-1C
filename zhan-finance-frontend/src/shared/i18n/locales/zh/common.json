@@ -20,7 +20,8 @@
   },
   "datePicker": {
     "selectDate": "选择日期",
-    "clear": "清空"
+    "clear": "清空",
+    "today": "今天"
   },
   "loading": "正在加载...",
   "success": "操作成功",
@@ -216,7 +217,14 @@
       "五",
       "六",
       "日"
-    ]
+    ],
+    "colors": {
+      "blue": "蓝色",
+      "red": "红色 (截止期)",
+      "green": "绿色",
+      "yellow": "黄色",
+      "purple": "紫色"
+    }
   },
   "notifications": {
     "title": "系统通知",
@@ -242,7 +250,9 @@
       "EMPLOYEE": "专属会计",
       "CLIENT": "企业客户"
     },
-    "noMessages": "暂无留言，写下您的第一条咨询吧！"
+    "noMessages": "暂无留言，写下您的第一条咨询吧！",
+    "noContacts": "暂无联系人",
+    "deletedMessage": "用户已删除此消息"
   },
   "documents": {
     "title": "文档中心",
@@ -275,7 +285,8 @@
       "type": "类型",
       "signature": "签署状态",
       "size": "大小",
-      "actions": "操作"
+      "actions": "操作",
+      "client": "客户"
     },
     "uploaderFilter": {
       "all": "全部来源",
@@ -286,14 +297,19 @@
       "signed": "已完成签署",
       "confirm": "确认并签署",
       "confirming": "正在签署...",
-      "clientUploaded": "由您上传"
+      "clientUploaded": "由您上传",
+      "fromClient": "来自客户",
+      "pendingSignature": "待签署"
     },
     "actions": {
       "download": "下载",
       "delete": "删除",
       "downloadZip": "打包下载选中项 ({{count}})",
       "formingZip": "正在生成 ZIP 压缩包...",
-      "deselect": "取消选择"
+      "deselect": "取消选择",
+      "generate": "生成",
+      "selectTemplate": "选择模板",
+      "noTemplates": "暂无可用的模板"
     },
     "empty": {
       "title": "未找到相关文档",
@@ -307,6 +323,15 @@
       "confirmSuccess": "文档已成功确认并签署",
       "confirmError": "签署文档出错",
       "zipError": "生成 ZIP 压缩包出错"
+    },
+    "sort": {
+      "dateDesc": "最新在前",
+      "dateAsc": "最早在前",
+      "name": "按名称 (A-Z)",
+      "size": "按大小"
+    },
+    "selection": {
+      "selected": "已选文件数:"
     }
   },
   "settings": {
@@ -382,7 +407,11 @@
       "ON_REVIEW": "复核中",
       "DONE": "完成",
       "CANCELLED": "取消"
-    }
+    },
+    "workloadLow": "低负载 (<5项任务)",
+    "workloadMedium": "中等负载 (5-10项任务)",
+    "workloadHigh": "高负载 (>10项任务)",
+    "daysSuffix": "天"
   },
   "adminTemplates": {
     "title": "文档模板管理",
@@ -405,7 +434,19 @@
     "cheatSheetDesc": "将这些变量直接复制填入 .docx 模板中，生成文件时将自动替换为真实业务数据。",
     "clientData": "客户主体信息",
     "taskData": "业务任务信息",
-    "systemValues": "系统时间与标识"
+    "systemValues": "系统时间与标识",
+    "uploadSuccess": "模板上传成功",
+    "deleteSuccess": "模板已删除",
+    "system": "系统",
+    "deleteTitle": "删除模板",
+    "deleteConfirmTitle": "确认删除",
+    "deleteConfirmDesc": "您确定要删除此模板吗？它将无法恢复，员工也将无法再使用它来生成文档。",
+    "deleteForever": "永久删除",
+    "uploadError": "上传模板出错",
+    "deleteError": "删除模板出错",
+    "downloadError": "下载模板出错",
+    "download": "下载",
+    "systemCreator": "系统"
   },
   "adminCourses": {
     "title": "培训课程管理",
@@ -543,7 +584,19 @@
     "noActive": "暂无在职员工",
     "noPending": "暂无待审批申请",
     "approveConfirm": "确认审批通过该员工？审批后该员工将获得系统操作权限。",
-    "approveError": "审批操作失败"
+    "approveError": "审批操作失败",
+    "role": "角色",
+    "demoteToEmployee": "降级为 EMPLOYEE 角色",
+    "toEmployee": "转为员工",
+    "promoteToAdvisor": "晋升为 ADVISOR 角色",
+    "toAdvisor": "转为顾问",
+    "toggleStatus": "切换活跃状态",
+    "deleteEmployee": "删除员工",
+    "tasksCount": "个任务",
+    "demoteToEmployeeTitle": "降级为员工角色",
+    "promoteToAdvisorTitle": "提升为顾问角色",
+    "toggleStatusTitle": "切换活跃状态",
+    "deleteEmployeeTitle": "删除员工"
   },
   "adminCourseEdit": {
     "courseUpdated": "课程已更新",
@@ -571,7 +624,31 @@
     "lessonNamePlaceholder": "例如：第一讲 账户结构与借贷记账...",
     "cancel": "取消",
     "creating": "创建中...",
-    "createLesson": "确认创建"
+    "createLesson": "确认创建",
+    "curriculumTitle": "课程大纲",
+    "addChapterBtn": "添加模块",
+    "chapterTitleLabel": "新模块 / 章节名称",
+    "chapterTitlePlaceholder": "例如：模块 1. 1C 财务操作基础...",
+    "modulePrefix": "模块",
+    "lessonsCount": "节课",
+    "lessonBtn": "课时",
+    "addLessonTitle": "新课时名称",
+    "lessonPlaceholder": "例如：第 1 课. 系统安装与配置...",
+    "minutesShort": "分钟",
+    "deleteChapterConfirm": "删除此模块及其所有课时？此操作不可撤销。",
+    "deleteChapterTitle": "删除模块",
+    "deleteChapterError": "删除模块时出错",
+    "createChapterError": "创建模块时出错",
+    "noChapters": "暂无创建的模块",
+    "noChaptersDesc": "创建第一个模块以开始添加课程内容。",
+    "noLessonsInChapter": "尚未添加课时",
+    "publishCourse": "发布课程",
+    "publishedDesc": "课程当前已发布并向所有人可见。",
+    "hiddenDesc": "课程已隐藏。发布后学员方可访问。",
+    "basicInfo": "基本信息",
+    "public": "所有人可见",
+    "privateDraft": "私密草稿",
+    "saving": "保存中..."
   },
   "adminLessonEdit": {
     "saveSuccess": "课时已成功保存！",
@@ -587,7 +664,9 @@
     "downloadOpen": "下载 / 预览",
     "uploadText": "点击上传视频课件或随堂资料",
     "uploadSubtext": "重新上传将覆盖现有课时文件",
-    "size": "大小："
+    "size": "大小：",
+    "byLink": "通过链接",
+    "uploadFile": "上传文件"
   },
   "adminInvoices": {
     "title": "账单发票",
@@ -598,7 +677,19 @@
     "clientId": "客户实体 ID",
     "amount": "结算金额",
     "status": "结算状态",
-    "dueDate": "支付截止日"
+    "dueDate": "支付截止日",
+    "statusPaid": "已付款",
+    "statusOverdue": "逾期",
+    "statusIssued": "已开具",
+    "createdSuccess": "发票开具成功！",
+    "createError": "开具发票时出错",
+    "newInvoiceTitle": "开具新发票",
+    "purpose": "付款用途",
+    "purposePlaceholder": "七月份会计服务",
+    "amountKzt": "金额 (₸)",
+    "clientIdLabel": "客户 ID",
+    "dueDateLabel": "付款截止日期",
+    "issueBtn": "开具发票"
   },
   "adminSubscriptions": {
     "title": "常年财税订阅",
@@ -609,7 +700,21 @@
     "monthlyPrice": "月度费用",
     "status": "服务状态",
     "startsAt": "生效起始日",
-    "endsAt": "期满截止日"
+    "endsAt": "期满截止日",
+    "defaultPlan": "专业套餐",
+    "perMonth": "₸/月",
+    "createdSuccess": "订阅已成功创建！",
+    "createError": "创建订阅时出错",
+    "statusActive": "活跃",
+    "statusCancelled": "已取消",
+    "indefinite": "无期限",
+    "newSubscriptionTitle": "办理新订阅",
+    "planNameLabel": "套餐名称",
+    "planNamePlaceholder": "基础版 / 专业版套餐",
+    "monthlyPriceLabel": "每月费用 (₸)",
+    "startsAtLabel": "开始日期",
+    "endsAtLabel": "结束日期 (可选)",
+    "createSubscriptionBtn": "创建订阅"
   },
   "employeeClients": {
     "title": "我的签约客户",
@@ -676,7 +781,11 @@
     "docActions": "操作",
     "noDocs": "暂未查询到文件",
     "noDocsSubtext": "上传文件以向企业客户交付文档",
-    "unknownClient": "未知客户"
+    "unknownClient": "未知客户",
+    "allClients": "所有指派客户",
+    "selectClientPrompt": "请在上方选择客户以上传文档",
+    "searchPlaceholder": "按文件名称或客户搜索...",
+    "emptyDesc": "请尝试更改选定的客户、类别或搜索关键词。"
   },
   "clientServices": {
     "title": "服务选购",
@@ -982,7 +1091,9 @@
     "successModal": {
       "title": "操作成功！",
       "button": "确定"
-    }
+    },
+    "hidePassword": "隐藏密码",
+    "showPassword": "显示密码"
   },
   "contactForm": {
     "title": "咨询与业务对接",
@@ -1650,7 +1761,12 @@
       "enable": "激活 2FA 保护",
       "disable": "停用 2FA 保护",
       "cancel": "取消"
-    }
+    },
+    "setupError": "加载 2FA 设置出错",
+    "invalidCode": "2FA 验证码无效",
+    "enabledSuccess": "双重身份验证已成功启用！",
+    "disabledSuccess": "2FA 已成功停用",
+    "scanQrPrompt": "在验证器应用中扫描二维码"
   },
   "oneCReports": {
     "title": "1C 财务报表",
@@ -1674,7 +1790,97 @@
     "generate": "查询生成",
     "generating": "正在同步 1C...",
     "empty": "点击“查询生成”调取账簿数据",
-    "noData": "选定期间内 1C 系统无对应凭证数据"
+    "noData": "选定期间内 1C 系统无对应凭证数据",
+    "reports": {
+      "osv": {
+        "title": "科目汇总表与科目余额表 (OSV)",
+        "short": "余额表",
+        "desc": "哈萨克斯坦会计科目体系下所有统驭科目的汇总发生额与期末余额"
+      },
+      "saldo": {
+        "title": "明细科目余额表",
+        "short": "明细余额",
+        "desc": "指定日期按子科目和往来单位展开的详细余额清单"
+      },
+      "reconciliation": {
+        "title": "往来对账单",
+        "short": "对账单",
+        "desc": "与往来客户双方原始凭证、发票与收付款项的双向核对"
+      },
+      "accountCard": {
+        "title": "科目明细账 / 科目分析",
+        "short": "科目账卡",
+        "desc": "指定会计科目 (1010, 1030, 3310, 1210) 的分录发生流水与时间序列"
+      },
+      "cashBook": {
+        "title": "现金日记账与税务收据",
+        "short": "现金账",
+        "desc": "税务Z报表、WebKassa财政收据与收付款凭证登记簿 (PKO / RKO)"
+      },
+      "stock": {
+        "title": "存货与物料结存报表",
+        "short": "库存物料",
+        "desc": "按仓库维度的物料库存结存、出库、入库与流转报表"
+      }
+    },
+    "columns": {
+      "account": "会计科目",
+      "name": "科目名称",
+      "startBalance": "期初余额",
+      "turnover": "本期发生额",
+      "endBalance": "期末余额",
+      "debit": "借方",
+      "credit": "贷方",
+      "subAccount": "子科目代码",
+      "subconto": "辅助核算 / 明细项",
+      "startDebit": "期初借方",
+      "startCredit": "期初贷方",
+      "endDebit": "期末借方",
+      "endCredit": "期末贷方",
+      "date": "业务日期",
+      "dateTime": "日期与时间",
+      "doc": "会计凭证 (发票/确认单/付款)",
+      "doc1c": "1C原始凭证",
+      "ourDebit": "借方 (我方账目)",
+      "ourCredit": "贷方 (我方账目)",
+      "partnerDebit": "借方 (往来单位)",
+      "partnerCredit": "贷方 (往来单位)",
+      "corrAccount": "对方科目",
+      "content": "经济业务摘要",
+      "amountKzt": "业务金额 (KZT)",
+      "currentBalance": "当前余额",
+      "orderNum": "收据/凭证号",
+      "fiscalDateTime": "发票开具时间",
+      "operationType": "凭证类型",
+      "paymentType": "支付方式",
+      "fiscalSign": "财政标识代码",
+      "sku": "货号/编码",
+      "nomenclature": "商品/物料名称",
+      "warehouse": "仓库",
+      "unit": "计量单位",
+      "startQty": "期初结存",
+      "incomeQty": "入库",
+      "outcomeQty": "出库",
+      "endQty": "期末结存"
+    },
+    "actions": {
+      "exportExcel": "导出至Excel",
+      "exportExcelTooltip": "1C同步完成后支持Excel导出",
+      "print": "打印",
+      "printTooltip": "1C同步完成后支持PDF打印"
+    },
+    "accounts": {
+      "all": "哈萨克斯坦会计准则全科目",
+      "acc1010": "1010 — 库存现金",
+      "acc1030": "1030 — 银行结算账户存款",
+      "acc1210": "1210 — 应收账款 (短期客户往来)",
+      "acc1310": "1310 — 原材料及物料",
+      "acc1330": "1330 — 库存商品",
+      "acc3110": "3110 — 应交企业所得税",
+      "acc3130": "3130 — 应交增值税 (VAT)",
+      "acc3310": "3310 — 应付账款 (短期供应商往来)",
+      "acc3350": "3350 — 应付职工薪酬"
+    }
   },
   "taskPrefixes": {
     "Запрос на услугу": "服务咨询：",

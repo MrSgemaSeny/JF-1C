@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function TotpVerifyForm({ preAuthToken, onSuccess, onBack }: Props) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['auth', 'common']);
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,7 +62,7 @@ export function TotpVerifyForm({ preAuthToken, onSuccess, onBack }: Props) {
       const response = await verify2FA({ preAuthToken, code: codeToSubmit });
       onSuccess(response);
     } catch (err: any) {
-      setError(t('auth.totp.invalidCode', { defaultValue: 'Неверный код 2FA. Проверьте точное время на устройстве.' }));
+      setError(t('totp.invalidCode'));
       setCode(Array(6).fill(''));
       inputRefs.current[0]?.focus();
     } finally {
@@ -83,10 +83,10 @@ export function TotpVerifyForm({ preAuthToken, onSuccess, onBack }: Props) {
           <Lock size={28} />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-          {t('auth.totp.title', { defaultValue: 'Двухфакторная аутентификация' })}
+          {t('totp.title')}
         </h2>
         <p className="text-sm text-gray-500 mt-2 max-w-sm mx-auto">
-          {t('auth.totp.subtitle', { defaultValue: 'Введите 6-значный код из приложения Authenticator на вашем устройстве' })}
+          {t('totp.subtitle')}
         </p>
       </div>
 
@@ -125,10 +125,10 @@ export function TotpVerifyForm({ preAuthToken, onSuccess, onBack }: Props) {
           {isSubmitting ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>{t('auth.totp.verifying', { defaultValue: 'Проверка...' })}</span>
+              <span>{t('totp.verifying')}</span>
             </>
           ) : (
-            t('auth.totp.confirmBtn', { defaultValue: 'Подтвердить вход' })
+            t('totp.confirmBtn')
           )}
         </button>
 
@@ -139,21 +139,21 @@ export function TotpVerifyForm({ preAuthToken, onSuccess, onBack }: Props) {
           className="w-full py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors flex items-center justify-center gap-1.5"
         >
           <ArrowLeft size={16} />
-          {t('auth.totp.backBtn', { defaultValue: 'Вернуться к вводу пароля' })}
+          {t('totp.backBtn')}
         </button>
       </div>
 
       <div className="pt-6 space-y-4">
         <div className="p-4 bg-amber-50/80 border border-amber-200/50 rounded-xl">
           <p className="text-xs text-amber-800 leading-relaxed text-center">
-            <strong>Внимание:</strong> Если вы попали на эту страницу случайно или подозреваете, что кто-то другой пытается войти в ваш аккаунт, немедленно свяжитесь с поддержкой и смените пароль.
+            {t('totp.warningNotice')}
           </p>
         </div>
         
         <p className="text-xs text-gray-400 text-center">
-          Продолжая, вы соглашаетесь с нашей{' '}
+          {t('totp.agreeText')}{' '}
           <a href="/privacy-policy" className="text-brand-green hover:underline font-medium">
-            Политикой конфиденциальности
+            {t('totp.privacyPolicy')}
           </a>
         </p>
       </div>

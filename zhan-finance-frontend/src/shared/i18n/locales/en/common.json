@@ -20,7 +20,8 @@
   },
   "datePicker": {
     "selectDate": "Select date",
-    "clear": "Clear"
+    "clear": "Clear",
+    "today": "Today"
   },
   "loading": "Loading...",
   "success": "Success",
@@ -216,7 +217,14 @@
       "Fr",
       "Sa",
       "Su"
-    ]
+    ],
+    "colors": {
+      "blue": "Blue",
+      "red": "Red (Deadline)",
+      "green": "Green",
+      "yellow": "Yellow",
+      "purple": "Purple"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -242,7 +250,9 @@
       "EMPLOYEE": "ACCOUNTANT",
       "CLIENT": "CLIENT"
     },
-    "noMessages": "No messages. Send the first message!"
+    "noMessages": "No messages. Send the first message!",
+    "noContacts": "No contacts",
+    "deletedMessage": "Message deleted by user"
   },
   "documents": {
     "title": "Documents",
@@ -275,7 +285,8 @@
       "type": "Type",
       "signature": "Signature status",
       "size": "Size",
-      "actions": "Actions"
+      "actions": "Actions",
+      "client": "Client"
     },
     "uploaderFilter": {
       "all": "All sources",
@@ -286,14 +297,19 @@
       "signed": "Signed",
       "confirm": "Confirm",
       "confirming": "Confirming...",
-      "clientUploaded": "Uploaded by you"
+      "clientUploaded": "Uploaded by you",
+      "fromClient": "From client",
+      "pendingSignature": "Pending signature"
     },
     "actions": {
       "download": "Download",
       "delete": "Delete",
       "downloadZip": "Download selected ({{count}}) as ZIP",
       "formingZip": "Forming ZIP...",
-      "deselect": "Deselect"
+      "deselect": "Deselect",
+      "generate": "Generate",
+      "selectTemplate": "Select template",
+      "noTemplates": "No templates available"
     },
     "empty": {
       "title": "No documents found",
@@ -307,6 +323,15 @@
       "confirmSuccess": "Document confirmed and signed successfully",
       "confirmError": "Failed to confirm document",
       "zipError": "Failed to generate ZIP archive"
+    },
+    "sort": {
+      "dateDesc": "Newest first",
+      "dateAsc": "Oldest first",
+      "name": "By name (A-Z)",
+      "size": "By size"
+    },
+    "selection": {
+      "selected": "Selected documents:"
     }
   },
   "settings": {
@@ -382,7 +407,11 @@
       "ON_REVIEW": "On Review",
       "DONE": "Done",
       "CANCELLED": "Cancelled"
-    }
+    },
+    "workloadLow": "Low workload (<5 tasks)",
+    "workloadMedium": "Medium workload (5-10 tasks)",
+    "workloadHigh": "High workload (>10 tasks)",
+    "daysSuffix": "d."
   },
   "adminTemplates": {
     "title": "Document Templates",
@@ -405,7 +434,19 @@
     "cheatSheetDesc": "Insert these variables directly into your .docx file text. During generation, they will be replaced with real values.",
     "clientData": "Client Data",
     "taskData": "Task Data",
-    "systemValues": "System Values"
+    "systemValues": "System Values",
+    "uploadSuccess": "Template uploaded successfully",
+    "deleteSuccess": "Template deleted",
+    "system": "System",
+    "deleteTitle": "Delete template",
+    "deleteConfirmTitle": "Confirm Deletion",
+    "deleteConfirmDesc": "Are you sure you want to delete this template? It cannot be recovered and employees will no longer be able to use it to generate documents.",
+    "deleteForever": "Delete Forever",
+    "uploadError": "Template upload error",
+    "deleteError": "Template deletion error",
+    "downloadError": "Template download error",
+    "download": "Download",
+    "systemCreator": "System"
   },
   "adminCourses": {
     "title": "Course Management",
@@ -543,7 +584,19 @@
     "noActive": "No active employees",
     "noPending": "No pending requests",
     "approveConfirm": "Approve this employee? They will get access to the system.",
-    "approveError": "Error approving employee"
+    "approveError": "Error approving employee",
+    "role": "Role",
+    "demoteToEmployee": "Demote to EMPLOYEE role",
+    "toEmployee": "To Employee",
+    "promoteToAdvisor": "Promote to ADVISOR role",
+    "toAdvisor": "To Advisor",
+    "toggleStatus": "Toggle active status",
+    "deleteEmployee": "Delete employee",
+    "tasksCount": "tasks",
+    "demoteToEmployeeTitle": "Demote to EMPLOYEE",
+    "promoteToAdvisorTitle": "Promote to ADVISOR",
+    "toggleStatusTitle": "Toggle active status",
+    "deleteEmployeeTitle": "Delete employee"
   },
   "adminCourseEdit": {
     "courseUpdated": "Course updated",
@@ -571,7 +624,31 @@
     "lessonNamePlaceholder": "Introduction to...",
     "cancel": "Cancel",
     "creating": "Creating...",
-    "createLesson": "Create lesson"
+    "createLesson": "Create lesson",
+    "curriculumTitle": "Course Curriculum",
+    "addChapterBtn": "Add Module",
+    "chapterTitleLabel": "New Module / Chapter Title",
+    "chapterTitlePlaceholder": "e.g. Module 1: Fundamentals of 1C Accounting...",
+    "modulePrefix": "Module",
+    "lessonsCount": "lessons",
+    "lessonBtn": "Lesson",
+    "addLessonTitle": "New Lesson Title",
+    "lessonPlaceholder": "e.g. Lesson 1: Installation and Setup...",
+    "minutesShort": "min",
+    "deleteChapterConfirm": "Delete this module and all its lessons? This action cannot be undone.",
+    "deleteChapterTitle": "Delete module",
+    "deleteChapterError": "Error deleting module",
+    "createChapterError": "Error creating module",
+    "noChapters": "No modules created yet",
+    "noChaptersDesc": "Create your first module to begin adding lessons to the course.",
+    "noLessonsInChapter": "No lessons added yet",
+    "publishCourse": "Publish Course",
+    "publishedDesc": "The course is currently published and visible to all.",
+    "hiddenDesc": "The course is hidden. Publish it to make it accessible.",
+    "basicInfo": "Basic Information",
+    "public": "Available to all",
+    "privateDraft": "Private draft",
+    "saving": "Saving..."
   },
   "adminLessonEdit": {
     "saveSuccess": "Lesson saved successfully!",
@@ -587,7 +664,9 @@
     "downloadOpen": "Download / Open",
     "uploadText": "Click to upload video or file",
     "uploadSubtext": "This will replace the current file if any",
-    "size": "Size:"
+    "size": "Size:",
+    "byLink": "Via URL",
+    "uploadFile": "Upload File"
   },
   "adminInvoices": {
     "title": "Invoices",
@@ -598,7 +677,19 @@
     "clientId": "Client ID",
     "amount": "Amount",
     "status": "Status",
-    "dueDate": "Due Date"
+    "dueDate": "Due Date",
+    "statusPaid": "Paid",
+    "statusOverdue": "Overdue",
+    "statusIssued": "Issued",
+    "createdSuccess": "Invoice issued successfully!",
+    "createError": "Error issuing invoice",
+    "newInvoiceTitle": "Issue New Invoice",
+    "purpose": "Payment Purpose",
+    "purposePlaceholder": "Accounting support for July",
+    "amountKzt": "Amount (₸)",
+    "clientIdLabel": "Client ID",
+    "dueDateLabel": "Due Date",
+    "issueBtn": "Issue Invoice"
   },
   "adminSubscriptions": {
     "title": "Subscriptions",
@@ -609,7 +700,21 @@
     "monthlyPrice": "Monthly Price",
     "status": "Status",
     "startsAt": "Starts At",
-    "endsAt": "Ends At"
+    "endsAt": "Ends At",
+    "defaultPlan": "Professional Plan",
+    "perMonth": "₸/mo",
+    "createdSuccess": "Subscription created successfully!",
+    "createError": "Error creating subscription",
+    "statusActive": "Active",
+    "statusCancelled": "Cancelled",
+    "indefinite": "Indefinite",
+    "newSubscriptionTitle": "Issue New Subscription",
+    "planNameLabel": "Plan Name",
+    "planNamePlaceholder": "Basic / Pro Plan",
+    "monthlyPriceLabel": "Monthly Payment (₸)",
+    "startsAtLabel": "Start Date",
+    "endsAtLabel": "End Date (optional)",
+    "createSubscriptionBtn": "Create Subscription"
   },
   "employeeClients": {
     "title": "My Clients",
@@ -676,7 +781,11 @@
     "docActions": "Actions",
     "noDocs": "No documents found",
     "noDocsSubtext": "Upload documents to share them with clients",
-    "unknownClient": "Unknown Client"
+    "unknownClient": "Unknown Client",
+    "allClients": "All assigned clients",
+    "selectClientPrompt": "Select a client above to upload a document",
+    "searchPlaceholder": "Search by files or client...",
+    "emptyDesc": "Try changing selected client, category, or search query."
   },
   "clientServices": {
     "title": "Services",
@@ -982,7 +1091,9 @@
     "successModal": {
       "title": "Success!",
       "button": "Great"
-    }
+    },
+    "hidePassword": "Hide password",
+    "showPassword": "Show password"
   },
   "contactForm": {
     "title": "Contact Us",
@@ -1654,7 +1765,12 @@
       "enable": "Enable 2FA",
       "disable": "Disable 2FA",
       "cancel": "Cancel"
-    }
+    },
+    "setupError": "2FA setup loading error",
+    "invalidCode": "Invalid 2FA code",
+    "enabledSuccess": "Two-factor authentication enabled successfully!",
+    "disabledSuccess": "2FA disabled successfully",
+    "scanQrPrompt": "Scan QR in Authenticator App"
   },
   "oneCReports": {
     "title": "1C Accounting",
@@ -1678,7 +1794,97 @@
     "generate": "Generate",
     "generating": "Querying 1C...",
     "empty": "Click 'Generate' to fetch report",
-    "noData": "No records found in 1C for selected period"
+    "noData": "No records found in 1C for selected period",
+    "reports": {
+      "osv": {
+        "title": "Trial Balance (TB / OSV)",
+        "short": "TB",
+        "desc": "Summary turnovers and balances across all synthetic accounts under RK Chart of Accounts"
+      },
+      "saldo": {
+        "title": "Subaccount Balance Sheet",
+        "short": "Balances",
+        "desc": "Detailed balance breakdown by subaccounts and counterparties as of specified date"
+      },
+      "reconciliation": {
+        "title": "Statement of Account Reconciliation",
+        "short": "Reconciliation",
+        "desc": "Bilateral matching of primary documents, invoices, and settlement payments"
+      },
+      "accountCard": {
+        "title": "Account Ledger / Account Card",
+        "short": "Account Card",
+        "desc": "Chronological transaction entries for specified ledger account (1010, 1030, 3310, 1210)"
+      },
+      "cashBook": {
+        "title": "Cash Book & Fiscal Receipts",
+        "short": "Cash & Receipts",
+        "desc": "Registry of fiscal Z-reports, WebKassa receipts, and cash vouchers (PKO / RKO)"
+      },
+      "stock": {
+        "title": "Inventory & Material Balances",
+        "short": "Stock & Goods",
+        "desc": "Material stock report by warehouse storage, write-offs, and receipts"
+      }
+    },
+    "columns": {
+      "account": "Account Code",
+      "name": "Account Name",
+      "startBalance": "Opening Balance",
+      "turnover": "Period Turnover",
+      "endBalance": "Closing Balance",
+      "debit": "Debit",
+      "credit": "Credit",
+      "subAccount": "Subaccount Code",
+      "subconto": "Analytics / Subconto",
+      "startDebit": "Opening Debit",
+      "startCredit": "Opening Credit",
+      "endDebit": "Closing Debit",
+      "endCredit": "Closing Credit",
+      "date": "Operation Date",
+      "dateTime": "Date and Time",
+      "doc": "Accounting Doc (Invoice / Act / Payment)",
+      "doc1c": "1C Primary Document",
+      "ourDebit": "Debit (LLP / Our Books)",
+      "ourCredit": "Credit (LLP / Our Books)",
+      "partnerDebit": "Debit (Counterparty)",
+      "partnerCredit": "Credit (Counterparty)",
+      "corrAccount": "Corr. Account",
+      "content": "Transaction Description",
+      "amountKzt": "Amount (KZT)",
+      "currentBalance": "Current Balance",
+      "orderNum": "Receipt / Order No.",
+      "fiscalDateTime": "Fiscalization Date / Time",
+      "operationType": "Type (PKO / RKO / Cheque)",
+      "paymentType": "Payment Method (Cash / QR / Card)",
+      "fiscalSign": "Fiscal Sign (FP)",
+      "sku": "SKU / Code",
+      "nomenclature": "Item Name",
+      "warehouse": "Warehouse",
+      "unit": "Unit",
+      "startQty": "Opening Qty",
+      "incomeQty": "Receipts",
+      "outcomeQty": "Issues",
+      "endQty": "Closing Qty"
+    },
+    "actions": {
+      "exportExcel": "Export to Excel",
+      "exportExcelTooltip": "Excel export will be available after 1C synchronization",
+      "print": "Print",
+      "printTooltip": "PDF printing will be available after 1C synchronization"
+    },
+    "accounts": {
+      "all": "All accounts of RK Chart of Accounts",
+      "acc1010": "1010 — Cash in hand",
+      "acc1030": "1030 — Cash at bank current accounts",
+      "acc1210": "1210 — Short-term trade accounts receivable",
+      "acc1310": "1310 — Raw materials and supplies",
+      "acc1330": "1330 — Goods for resale",
+      "acc3110": "3110 — Corporate income tax payable",
+      "acc3130": "3130 — Value added tax (VAT) payable",
+      "acc3310": "3310 — Short-term trade accounts payable",
+      "acc3350": "3350 — Short-term employee payroll payable"
+    }
   },
   "errors": {
     "taskNotFound": "Task not found"
