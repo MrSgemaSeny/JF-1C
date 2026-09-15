@@ -63,6 +63,8 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - Epic-09 (2FA): Done [DONE]
 - Epic-18 (Landing): Done [DONE]
 - Epic-19 (Advisor): Done [DONE]
+- Epic-20 (AI Assistant): Planned [PLANNED]
+- Epic-21 (1C Data Gateway & Fiscal Hub): Planned [PLANNED]
 - Documents redesign (Employee + Client pages) [DONE]
 - Task Pool reopening logic [DONE]
 
@@ -72,7 +74,7 @@ Documents, Chat, Notifications, Audit, Search, Calendar, Landing
 - **When adding a new feature**: check if it belongs to an existing epic. If not, create a new Epic-{N+1} directory and epic.md
 - **When modifying existing feature**: update the corresponding epic's Реализовано section
 - **Status values**: Done | In Progress | Partial | Planned
-- **Current epic count**: 18 (Epic-01 through Epic-19, no Epic-14)
+- **Current epic count**: 20 (Epic-01 through Epic-21, no Epic-14)
 - **Format**: Follow the template in AI_agent_instruction.md section 5
 
 ## Behavior & Communication Rules
