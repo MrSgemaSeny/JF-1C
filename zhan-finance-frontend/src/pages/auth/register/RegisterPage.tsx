@@ -155,8 +155,8 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-16 sm:py-24">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-brand-beige px-4 sm:px-6 py-8 sm:py-12 md:py-14">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-7 sm:p-9 md:p-10 my-auto">
         <div className="flex items-center justify-between gap-4 mb-8">
           <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none" aria-label={t('register.homeLink')}>
             <BrandLogo className="h-9 sm:h-10 w-auto group-hover:opacity-85 transition-opacity" />

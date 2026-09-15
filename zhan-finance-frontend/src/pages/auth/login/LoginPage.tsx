@@ -152,8 +152,8 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-beige px-6 py-16 sm:py-24">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-8 sm:p-10">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-brand-beige px-4 sm:px-6 py-8 sm:py-12 md:py-14">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-brand-green/10 p-7 sm:p-9 md:p-10 my-auto">
         <div className="flex items-center justify-between gap-4 mb-8">
           <Link to={ROUTES.HOME} className="flex items-center group focus:outline-none" aria-label={t('login.toHome')}>
             <BrandLogo className="h-9 sm:h-10 w-auto group-hover:opacity-85 transition-opacity" />
@@ -173,7 +173,7 @@ export function LoginPage() {
         ) : (
           <>
             <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">{t('login.title')}</h1>
-            <p className="text-brand-green/70 text-sm mb-8 leading-relaxed">{t('login.subtitle')}</p>
+            <p className="text-brand-green/70 text-sm mb-7 leading-relaxed">{t('login.subtitle')}</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
@@ -204,7 +204,7 @@ export function LoginPage() {
                 placeholder={t('login.passwordPlaceholder')}
               />
 
-              <div className="flex justify-end -mt-2 mb-2">
+              <div className="flex justify-end -mt-1.5 mb-1.5">
                 <Link
                   to={ROUTES.FORGOT_PASSWORD}
                   className="text-xs font-semibold text-brand-green/75 hover:text-brand-green hover:underline transition-colors"
@@ -222,7 +222,7 @@ export function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex items-center justify-center gap-2 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base"
+                className="w-full flex items-center justify-center gap-2 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-colors shadow-lg shadow-brand-green/15 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 {isSubmitting ? t('login.loggingIn') : t('login.loginBtn')}
                 {!isSubmitting && <ArrowRight className="w-4 h-4" />}
