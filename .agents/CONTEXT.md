@@ -27,10 +27,11 @@
    - Automated parity test suite `i18nParity.test.ts` (96 tests) verifying bidirectional key alignment.
    - Centralized date and currency formatting utilities (`dateFormat.ts`).
 
-3. **1C Client Hub & Authentic Report Stubs (`/client/1c`)**:
-   - Clean, production-grade 1C client portal (`ClientOneCReportsPage.tsx`) with nested subroutes (`/client/1c/osv`, `/client/1c/saldo`, `/client/1c/reconciliation`, `/client/1c/account-card`, `/client/1c/cash-book`, `/client/1c/stock`).
-   - Accounting standards of Republic of Kazakhstan (Chart of Accounts, Debit/Credit columns, period filter presets).
-   - Strict zero-mock-data empty states ready for OData integration.
+3. **1C Client Hub & Report Stubs (`/client/1c`) [ТЕСТОВЫЙ / FRONTEND-ONLY]**:
+   - Раздел `/client/1c` и вложенные маршруты (`/osv`, `/saldo`, `/reconciliation`, `/account-card`, `/cash-book`, `/stock`) — исключительно тестовый фронтенд-интерфейс без данных.
+   - Бекенд-интеграции и реальных финансовых данных на текущий момент нет.
+   - Моковые/фейковые финансовые данные строго запрещены: отображается чистый Empty State в ожидании OData-шлюза.
+   - Полноценный запуск двусторонней синхронизации запланирован в Фазе 3 в рамках Epic-21 (1C Data Gateway).
 
 4. **Epic-21 Roadmap (1C Data Gateway & Fiscal Hub)**:
-   - Full technical specification and architecture roadmap in `Epics/Plan/Epic-21-1c-data-gateway/epic.md`.
+   - Полная архитектурная спецификация и дорожная карта интеграции в `Epics/Plan/Epic-21-1c-data-gateway/epic.md`.
