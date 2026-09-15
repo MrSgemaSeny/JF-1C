@@ -1,10 +1,11 @@
 # ZhanFinance (JF-1C)
 
 [![Release](https://img.shields.io/badge/Release-v1.0.0-blue.svg)](https://github.com/MrSgemaSeny/JF-1C/releases/tag/v1.0.0)
+[![Commits](https://img.shields.io/badge/Commits-664-informational.svg)](https://github.com/MrSgemaSeny/JF-1C/commits/main)
 [![Backend](https://img.shields.io/badge/Backend-Spring_Boot_3.4_%7C_Java_17-orange.svg)](https://spring.io/projects/spring-boot)
 [![Frontend](https://img.shields.io/badge/Frontend-React_19_%7C_TypeScript_%7C_Tailwind_v4-61DAFB.svg)](https://react.dev)
 [![Database](https://img.shields.io/badge/Database-PostgreSQL_17_%7C_Flyway_V1--V121-336791.svg)](https://www.postgresql.org)
-[![Automated Tests](https://img.shields.io/badge/Tests-243_Unit%2FIntegration_%2B_9_E2E_Suites-brightgreen.svg)](https://github.com/MrSgemaSeny/JF-1C)
+[![Automated Tests](https://img.shields.io/badge/Tests-338_Unit%2FIntegration_%2B_9_E2E_Suites-brightgreen.svg)](https://github.com/MrSgemaSeny/JF-1C)
 [![Architecture](https://img.shields.io/badge/Architecture-Modular_Monolith_%2B_FSD-purple.svg)](https://feature-sliced.design)
 
 B2B SaaS-платформа и CRM-система, спроектированная под задачи бухгалтерского консалтинга, налогового сопровождения и финансового аутсорсинга в Республике Казахстан.
@@ -44,7 +45,7 @@ B2B SaaS-платформа и CRM-система, спроектированн�
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                            FRONTEND PRESENTATION LAYER                           │
-│  React 19 SPA (Vite) │ Feature-Sliced Design (FSD) │ Tailwind v4 │ i18n (KZ/RU/EN)│
+│  React 19 SPA (Vite) │ Feature-Sliced Design (FSD) │ Tailwind v4 │ i18n (4 Locales)│
 │  TanStack Query v5   │ WebSocket STOMP Client      │ @dnd-kit Kanban Board        │
 └────────────────────────────────────────┬─────────────────────────────────────────┘
                                          │ HTTPS / WSS
@@ -96,7 +97,7 @@ B2B SaaS-платформа и CRM-система, спроектированн�
 - **Стилизация:** Tailwind CSS v4, CSS Variables, Lucide Icons.
 - **Клиентское состояние:** TanStack React Query v5 с глобальной обработкой ошибок и синглтон-промисом обновления JWT.
 - **UI-компоненты:** `@dnd-kit` (Kanban Board), SunEditor (Rich Text), Zod (схемы валидации).
-- **Интернационализация:** `i18next` (Русский, Казахский, Английский).
+- **Интернационализация:** `i18next` (Русский, Казахский, Английский, Китайский).
 - **Тестирование:** Vitest, React Testing Library, jsdom.
 
 ### Инфраструктура
@@ -206,7 +207,7 @@ JF-1C/
 │   │   ├── features/               # Бизнес-функционал (AuthForm, ContactForm)
 │   │   ├── entities/               # Доменные модели (Task, User, Document, Invoice)
 │   │   └── shared/                 # Переиспользуемый UI, клиент API http.ts
-│   └── src/**/*.test.ts(x)         # 72 Vitest + React Testing Library тестов
+│   └── src/**/*.test.ts(x)         # 169 Vitest + React Testing Library тестов
 ├── tests/                          # Сквозные верификационные и E2E сьюты
 │   ├── e2e/                        # 9 сценариев полного цикла (CRM, LMS, Chat, Billing, IDOR, UI)
 │   ├── artillery/                  # Сценарии нагрузочного тестирования и бенчмарки
@@ -261,13 +262,13 @@ npm run dev
 
 Тестовое покрытие разделено на три уровня: юнит/интеграционные тесты, сквозные E2E-сьюты полного жизненного цикла и нагрузочные профили.
 
-### 9.1. Юнит и интеграционные тесты (243 теста)
+### 9.1. Юнит и интеграционные тесты (338 тестов)
 
 | Слой | Тест-раннер | Файлов | Тестов | Результат |
 |---|---|---|---|---|
 | **Backend** | JUnit 5 + Mockito + MockMvc | 46 классов | 169 тестов | 100% Passed (0 errors) |
-| **Frontend** | Vitest + React Testing Library | 19 файлов | 74 теста | 100% Passed (0 errors) |
-| **ИТОГО** | | **65 файлов** | **243 теста** | **100% GREEN** |
+| **Frontend** | Vitest + React Testing Library | 19 файлов | 169 тестов | 100% Passed (0 errors) |
+| **ИТОГО** | | **65 файлов** | **338 тестов** | **100% GREEN** |
 
 ```bash
 # Запуск тестов бэкенда:
