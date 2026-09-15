@@ -58,7 +58,20 @@ runSuite('8. Documents Management & Global Search Full Lifecycle', 'node e2e/doc
 // 9. Live Billing & Invoices Full Lifecycle
 runSuite('9. Billing & Invoices Full Lifecycle', 'node e2e/billing-invoices-live.mjs');
 
+// 10. Live Rate Limit Enforcement (Bucket4j 429)
+runSuite('10. Bucket4j Rate Limiting Lifecycle', 'node e2e/rate-limit-lifecycle.mjs');
+
+// 11. Live ADVISOR Read-Only Boundary Enforcement
+runSuite('11. ADVISOR Read-Only Boundary Lifecycle', 'node e2e/advisor-readonly-lifecycle.mjs');
+
+// 12. Live Global Search & Role Isolation
+runSuite('12. Global Search & Role Isolation Lifecycle', 'node e2e/search-lifecycle.mjs');
+
+// 13. Live Two-Factor Authentication (2FA) Lifecycle
+runSuite('13. Two-Factor Authentication Lifecycle', 'node e2e/2fa-lifecycle.mjs');
+
 console.log(`\n======================================================================`);
 console.log(`COMPREHENSIVE E2E VERIFICATION SUMMARY`);
 console.log(`======================================================================`);
 console.table(results);
+
