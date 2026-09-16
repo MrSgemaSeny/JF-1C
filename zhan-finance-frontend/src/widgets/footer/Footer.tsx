@@ -18,7 +18,7 @@ export function Footer({ id = 'contact' }: FooterProps) {
           <div className="space-y-8 sm:space-y-12">
             <div>
               <div className="mb-4 sm:mb-6">
-                <BrandLogo variant="inverted" className="h-8 sm:h-10 md:h-12 w-auto" />
+                <BrandLogo variant="inverted" className="h-14 sm:h-16 md:h-20 w-auto" />
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-[1.1] tracking-tight break-words">
                 {t('footer.slogan1')}
