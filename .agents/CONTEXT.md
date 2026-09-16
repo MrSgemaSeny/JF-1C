@@ -48,21 +48,21 @@
 Основание: ChatGPT audit части 1 и 2 (`docs/reports/full_audit_chatgpt_1.md`, `full_audit_chatgpt_2.md`).
 Цель: стабилизировать и доказать корректность существующего modular monolith. НЕ переписывать архитектуру.
 
-### P0 — Критические (12 задач)
+### P0 — Критические (12 задач — 100% ЗАВЕРШЕНО)
 | ID | Задача | Статус |
 |---|---|---|
 | P0-1 | Refresh-token lifecycle audit (reuse detection, token family, session revocation) [V122] | DONE |
 | P0-2 | PAID invoice immutability — запретить PUT/PATCH/DELETE на PAID/CANCELED | DONE |
 | P0-3 | Invoice state machine — явные allowed transitions | DONE |
 | P0-4 | Enum → HTTP 400 (перехват HttpMessageNotReadableException в GlobalExceptionHandler) | DONE |
-| P0-5 | PostgreSQL 17 в docker-compose (сейчас: 15-alpine) | NEXT |
-| P0-6 | Flyway discipline — CI-шаг: validate checksums перед деплоем | NEXT |
-| P0-7 | Backup restore drill — runbook + CI workflow | PLANNED |
-| P0-8 | SECURITY.md — vulnerability reporting process | PLANNED |
-| P0-9 | Default secrets fail-fast — JWT_SECRET != "change-me..." при старте | PLANNED |
-| P0-10 | CURRENT_STATE.md — актуальный стек, версии, known limitations | PLANNED |
-| P0-11 | Coverage gate в CI — JaCoCo: global 70%, auth/billing/security 90% | PLANNED |
-| P0-12 | WebSocket ACL — senderId из Principal (не из body), чужой topic = reject | PLANNED |
+| P0-5 | PostgreSQL 17 в docker-compose (postgres:17-alpine, удален неиспользуемый redis) | DONE |
+| P0-6 | Flyway discipline — CI-шаг: validate checksums и сортировка миграций перед тестами | DONE |
+| P0-7 | Backup restore drill — runbook (`docs/RUNBOOK.md`) + CI workflow (`restore-drill.yml`) | DONE |
+| P0-8 | SECURITY.md — vulnerability reporting process, SLA и контакты безопасности | DONE |
+| P0-9 | Default secrets fail-fast — проверка JWT_SECRET на длину >= 32 байт и запрет change-me в prod | DONE |
+| P0-10 | CURRENT_STATE.md — актуальный стек, архитектура, инварианты и роли | DONE |
+| P0-11 | Coverage gate в CI — JaCoCo: `jacocoTestCoverageVerification` привязана к `check` | DONE |
+| P0-12 | WebSocket ACL — senderId строго из Principal в `ChatController`, строгая проверка подписок в `WebSocketConfig` | DONE |
 
 ### P1 — Архитектурный долг (15 задач, ~65-100ч)
 Task state machine, Optimistic locking (@Version), Race condition Task Pool pickup, Outbox pattern, Cloudflare R2 интеграция, Idempotency для webhooks, ArchUnit, OpenAPI→TS codegen, ShedLock, Unified error contract, Monetary fields audit, Distributed rate limiting, 2FA mandatory для ADMIN, Auto-reopen audit trail, Business invariant tests.

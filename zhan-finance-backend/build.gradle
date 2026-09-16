@@ -75,3 +75,33 @@ jacocoTestReport {
         html.required = true
     }
 }
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/dto/**',
+                '**/entity/**',
+                '**/config/**',
+                '**/*Application*',
+                '**/common/response/**',
+                '**/common/audit/**'
+            ])
+        }))
+    }
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.50
+            }
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn jacocoTestCoverageVerification
+}

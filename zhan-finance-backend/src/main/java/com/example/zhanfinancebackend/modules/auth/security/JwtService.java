@@ -28,9 +28,15 @@ public class JwtService {
             @Value("${app.jwt.access-token-expiration-ms}") long accessTokenExpirationMs,
             Environment env
     ) {
-        if (secret.contains("change-me") && 
-            java.util.Arrays.asList(env.getActiveProfiles()).contains("prod")) {
-            throw new IllegalStateException("CRITICAL: Default or weak JWT secret is used in production profile");
+        if (secret == null || secret.isBlank() || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("CRITICAL: JWT_SECRET must be configured and at least 32 bytes (256 bits) for secure HMAC-SHA256 operations");
+        }
+        boolean isTest = java.util.Arrays.asList(env.getActiveProfiles()).contains("test");
+        if (!isTest && (secret.toLowerCase().contains("change-me") || secret.toLowerCase().contains("default-secret"))) {
+            boolean isProdOrUnspecified = java.util.Arrays.asList(env.getActiveProfiles()).contains("prod") || env.getActiveProfiles().length == 0;
+            if (isProdOrUnspecified) {
+                throw new IllegalStateException("CRITICAL: Default or placeholder JWT secret is strictly forbidden in production");
+            }
         }
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpirationMs = accessTokenExpirationMs;

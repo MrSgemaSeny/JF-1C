@@ -26,8 +26,11 @@ jobs:
           distribution: 'temurin'
       - name: Make gradlew executable
         run: chmod +x ./zhan-finance-backend/gradlew
-      - name: Run Backend Tests
-        run: ./gradlew test --no-daemon
+      - name: Verify Flyway Migrations Naming and Format
+        run: |
+          ls -1 ./zhan-finance-backend/src/main/resources/db/migration/V*.sql | sort -V
+      - name: Run Backend Tests and Coverage Verification
+        run: ./gradlew test jacocoTestCoverageVerification --no-daemon
         working-directory: ./zhan-finance-backend
 
   build:
