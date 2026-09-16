@@ -25,10 +25,12 @@ public class TwoFactorController {
 
     private final TwoFactorService twoFactorService;
     private final AuthService authService;
+    private final AuthCookieHelper authCookieHelper;
 
-    public TwoFactorController(TwoFactorService twoFactorService, AuthService authService) {
+    public TwoFactorController(TwoFactorService twoFactorService, AuthService authService, AuthCookieHelper authCookieHelper) {
         this.twoFactorService = twoFactorService;
         this.authService = authService;
+        this.authCookieHelper = authCookieHelper;
     }
 
     @PostMapping("/verify")
@@ -37,7 +39,7 @@ public class TwoFactorController {
 
         twoFactorService.deletePreAuthToken(request.preAuthToken());
         AuthResponse response = authService.buildFullAuthResponse(user);
-        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
+        authCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 

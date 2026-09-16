@@ -31,11 +31,18 @@ public class AuthController {
     private final AuthService authService;
     private final GoogleAuthService googleAuthService;
     private final PasswordResetService passwordResetService;
+    private final AuthCookieHelper authCookieHelper;
 
-    public AuthController(AuthService authService, GoogleAuthService googleAuthService, PasswordResetService passwordResetService) {
+    public AuthController(
+            AuthService authService,
+            GoogleAuthService googleAuthService,
+            PasswordResetService passwordResetService,
+            AuthCookieHelper authCookieHelper
+    ) {
         this.authService = authService;
         this.googleAuthService = googleAuthService;
         this.passwordResetService = passwordResetService;
+        this.authCookieHelper = authCookieHelper;
     }
 
 
@@ -46,7 +53,7 @@ public class AuthController {
         if (response == null) {
             return ApiResponse.success(null, "Заявка на регистрацию отправлена. Ожидайте подтверждения администратора.");
         }
-        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
+        authCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
@@ -68,14 +75,14 @@ public class AuthController {
         if (response == null) {
             return ApiResponse.success(null, "Заявка на регистрацию отправлена. Ожидайте подтверждения администратора.");
         }
-        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
+        authCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse httpServletResponse) {
         AuthResponse response = authService.login(request);
-        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
+        authCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
@@ -94,14 +101,14 @@ public class AuthController {
             );
         }
         AuthResponse response = authService.refresh(new RefreshRequest(tokenToRefresh));
-        AuthCookieHelper.setTokenCookies(httpServletResponse, response);
+        authCookieHelper.setTokenCookies(httpServletResponse, response);
         return ApiResponse.success(response);
     }
 
     @PostMapping("/logout")
     public ApiResponse<Void> logout(@CookieValue(name = "refreshToken", required = false) String refreshTokenCookie, HttpServletResponse httpServletResponse) {
         authService.logout(refreshTokenCookie);
-        AuthCookieHelper.clearTokenCookies(httpServletResponse);
+        authCookieHelper.clearTokenCookies(httpServletResponse);
         return ApiResponse.success(null, "Успешный выход");
     }
 

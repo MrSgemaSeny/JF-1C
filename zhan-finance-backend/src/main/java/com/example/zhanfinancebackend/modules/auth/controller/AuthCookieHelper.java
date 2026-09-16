@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthCookieHelper {
 
-    private static long refreshTokenExpirationMs = 1209600000L;
+    private final long refreshTokenExpirationMs;
 
     public AuthCookieHelper(@Value("${app.jwt.refresh-token-expiration-ms}") long refreshTokenExpirationMs) {
-        AuthCookieHelper.refreshTokenExpirationMs = refreshTokenExpirationMs;
+        this.refreshTokenExpirationMs = refreshTokenExpirationMs;
     }
 
-    public static void setTokenCookies(HttpServletResponse response, AuthResponse authResponse) {
+    public void setTokenCookies(HttpServletResponse response, AuthResponse authResponse) {
         if (authResponse == null || authResponse.accessToken() == null) {
             return;
         }
@@ -43,7 +43,7 @@ public class AuthCookieHelper {
         }
     }
 
-    public static void clearTokenCookies(HttpServletResponse response) {
+    public void clearTokenCookies(HttpServletResponse response) {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(true)
