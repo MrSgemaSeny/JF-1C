@@ -1,16 +1,16 @@
 # ZhanFinance (JF-1C)
 
-[![Release](https://img.shields.io/badge/Release-v1.0.0-blue.svg)](https://github.com/MrSgemaSeny/JF-1C/releases/tag/v1.0.0)
-[![Commits](https://img.shields.io/badge/Commits-664-informational.svg)](https://github.com/MrSgemaSeny/JF-1C/commits/main)
+[![Release](https://img.shields.io/badge/Release-v1.1.0-blue.svg)](https://github.com/MrSgemaSeny/JF-1C/releases)
+[![Commits](https://img.shields.io/badge/Commits-670+-informational.svg)](https://github.com/MrSgemaSeny/JF-1C/commits/main)
 [![Backend](https://img.shields.io/badge/Backend-Spring_Boot_3.4_%7C_Java_17-orange.svg)](https://spring.io/projects/spring-boot)
 [![Frontend](https://img.shields.io/badge/Frontend-React_19_%7C_TypeScript_%7C_Tailwind_v4-61DAFB.svg)](https://react.dev)
 [![Database](https://img.shields.io/badge/Database-PostgreSQL_17_%7C_Flyway_V1--V121-336791.svg)](https://www.postgresql.org)
-[![Automated Tests](https://img.shields.io/badge/Tests-338_Unit%2FIntegration_%2B_9_E2E_Suites-brightgreen.svg)](https://github.com/MrSgemaSeny/JF-1C)
+[![Automated Tests](https://img.shields.io/badge/Tests-366_Unit%2FIntegration_%2B_9_E2E_Suites-brightgreen.svg)](https://github.com/MrSgemaSeny/JF-1C)
 [![Architecture](https://img.shields.io/badge/Architecture-Modular_Monolith_%2B_FSD-purple.svg)](https://feature-sliced.design)
 
 B2B SaaS-платформа и CRM-система, спроектированная под задачи бухгалтерского консалтинга, налогового сопровождения и финансового аутсорсинга в Республике Казахстан.
 
-Система объединяет распределенный пул задач, генерацию типовых первичных документов (АВР, счета, договоры), биллинг, корпоративную обучающую платформу (LMS), STOMP-чаты и лидогенерацию в едином защищенном контуре с ролевым разграничением прав.
+Система объединяет распределенный пул задач (Dynamic Task Pool), генерацию первичных бухгалтерских документов (АВР, счета, договоры), биллинг, корпоративную обучающую платформу (LMS), STOMP-чаты в реальном времени, 2FA аутентификацию (TOTP) и лидогенерацию в защищенном контуре с ролевым разграничением прав (6 ролей) и изоляцией данных на уровне строк (Row-Level Security).
 
 ---
 
@@ -35,8 +35,9 @@ B2B SaaS-платформа и CRM-система, спроектированн�
 Система автоматизирует типовые операции компании, оказывающей бухгалтерские и юридические услуги:
 - **Контроль сроков отчетности:** предотвращение штрафов за несвоевременную сдачу налоговых деклараций через детерминированные воронки задач и календарные дедлайны.
 - **Распределение операционной нагрузки (Task Pool):** нераспределенные задачи собираются в общем пуле, где сотрудники берут их в работу по своей квалификации; при отклонении результата задача автоматически возвращается в работу (auto-reopen).
-- **Документооборот по стандартам РК:** автоматическая сборка актов выполненных работ (АВР), счетов-фактур, договоров на бухгалтерское сопровождение и соглашений о неразглашении (NDA) с корректным рендерингом кириллицы.
+- **Документооборот по стандартам РК:** автоматическая сборка актов выполненных работ (АВР), счетов-фактур, договоров на бухгалтерское сопровождение и соглашений о неразглашении (NDA) с рендерингом кириллицы через OpenHTMLtoPDF.
 - **Онбординг клиентов и стажеров:** обучающие курсы (LMS) с пошаговыми уроками, отслеживанием прогресса и выдачей сертификатов.
+- **Клиентский 1С-хаб:** модуль отображения регламентированных отчетов (ОСВ, сальдо, акты сверки, кассовая книга, склад) в рамках подготовки к интеграции с 1С:Предприятие 8.3 (Epic-21).
 
 ---
 
@@ -53,9 +54,10 @@ B2B SaaS-платформа и CRM-система, спроектированн�
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                         SECURITY & TRAFFIC CONTROL LAYER                         │
 │  ApiRateLimitFilter (Bucket4j) │ Strict Security Headers (CSP, HSTS, Frame)     │
-│  JwtAuthenticationFilter       │ CORS / SameSite Cookie Control                  │
+│  JwtAuthenticationFilter       │ SameSite=Strict / Secure Cookie Control        │
+│  AuthRateLimitFilter (10/min)  │ CORS (Strict Production Origin Whitelist)       │
 └────────────────────────────────────────┬─────────────────────────────────────────┘
-                                         │ Context-Path: /api/v1/**
+                                         │ Context-Path: /api, Controllers: /v1/**
                                          ▼
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                       SPRING BOOT 3 MODULAR MONOLITH CORE                        │
@@ -73,7 +75,7 @@ B2B SaaS-платформа и CRM-система, спроектированн�
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                          PERSISTENCE & CACHING LAYER                             │
 │  PostgreSQL 17 Database │ Flyway Schema Migrations (V1–V121) │ Caffeine L2 Cache │
-│  DatabaseStorage (BLOB) │ LocalStorage Fallback              │ Append-Only Audit │
+│  DatabaseStorage (BLOB) │ LocalStorage Fallback / Cloudflare R2 │ Append-Only Audit│
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -83,27 +85,28 @@ B2B SaaS-платформа и CRM-система, спроектированн�
 
 ### Backend
 - **Среда выполнения:** Java 17, Spring Boot 3.4+, Spring Framework 6.
-- **Безопасность:** Spring Security 6, JWT (Access 15 мин + Refresh 30 дней с ротацией в БД), 2FA TOTP (RFC 6238) с защитой от подбора.
+- **Безопасность:** Spring Security 6, Stateless JWT в `httpOnly` `SameSite=Strict` `Secure` cookie + Bearer Authorization, 2FA TOTP (RFC 6238) с защитой от перебора (pre-auth attempts), Row-Level Access Services (`CrmAccessService`, `InvoiceAccessService`, `DocumentAccessService`).
 - **Хранилище данных:** PostgreSQL 17, Spring Data JPA, Hibernate 6, пул соединений HikariCP.
-- **Миграции схемы:** Flyway (неизменяемая цепочка V1–V121 с верификацией контрольных сумм).
-- **Сетевой транспорт:** WebSocket, STOMP, SockJS с серверной авторизацией очередей.
+- **Миграции схемы:** Flyway (неизменяемая цепочка V1–V121 с строгой верификацией контрольных сумм).
+- **Сетевой транспорт:** WebSocket, STOMP, SockJS с серверной авторизацией очередей `/topic/chat/{userId}`.
 - **Кэш и троттлинг:** Caffeine Cache (per-region TTL), Bucket4j Token Bucket (`ApiRateLimitFilter`, `AuthRateLimitFilter`).
 - **Генерация PDF:** Thymeleaf, OpenHTMLtoPDF с валидацией наличия шрифтов и кириллической таблицей символов.
-- **Тестирование:** JUnit 5, Mockito, AssertJ, Spring MockMvc, H2.
+- **Тестирование:** JUnit 5, Mockito, AssertJ, Spring MockMvc, H2 (197 тестов, 100% Pass).
 
 ### Frontend
 - **Среда сборки:** React 19, TypeScript 5.x, Vite.
 - **Архитектура:** Feature-Sliced Design (FSD v2.1) (`shared` -> `entities` -> `features` -> `widgets` -> `pages` -> `app`).
-- **Стилизация:** Tailwind CSS v4, CSS Variables, Lucide Icons.
-- **Клиентское состояние:** TanStack React Query v5 с глобальной обработкой ошибок и синглтон-промисом обновления JWT.
+- **Стилизация:** Tailwind CSS v4, CSS Variables, Lucide Icons, шрифт `a_Simpler` в брендинге «ЖАН FINANCE».
+- **Клиентское состояние:** TanStack React Query v5 с глобальной обработкой ошибок и синглтон-промисом обновления JWT (`http.ts`).
 - **UI-компоненты:** `@dnd-kit` (Kanban Board), SunEditor (Rich Text), Zod (схемы валидации).
-- **Интернационализация:** `i18next` (Русский, Казахский, Английский, Китайский).
-- **Тестирование:** Vitest, React Testing Library, jsdom.
+- **Интернационализация:** `i18next` (Русский, Казахский, Английский, Китайский) со 100% паритетом ключей (97 тестов).
+- **Тестирование:** Vitest, React Testing Library, jsdom (169 тестов, 100% Pass).
 
 ### Инфраструктура
-- **Backend:** Fly.io (изолированный контейнер, регион `ams`).
-- **Frontend:** GitHub Pages (SPA-маршрутизация с fallback через `404.html`).
-- **CI/CD:** GitHub Actions (автоматический запуск тестов, сборка артефактов, деплой, бэкапы БД, Telegram-оповещения).
+- **Backend:** Fly.io (изолированный контейнер, регион `ams`, `zhanfinance.fly.dev`).
+- **Frontend:** GitHub Pages (`https://mrsgemaseny.github.io/JF-1C/`, SPA-маршрутизация с fallback через `404.html`).
+- **Объектное хранилище:** Cloudflare R2 (бакет `jf1c-documents` для масштабируемого хранения документов).
+- **CI/CD:** GitHub Actions (автоматический запуск тестов, проверка TypeScript, линтинг ESLint 9, сборка артефактов, деплой, бэкапы БД, Telegram-оповещения).
 
 ---
 
@@ -117,48 +120,54 @@ B2B SaaS-платформа и CRM-система, спроектированн�
 
 ### 4.2. Документооборот (Document Hub)
 - Шаблоны документов РК: АВР, счета на оплату, договоры консалтинга, соглашения NDA.
-- Двухуровневое хранение: хранение файлов в PostgreSQL (`stored_files` BLOB) с переключением на локальную файловую систему при превышении лимитов.
+- Двухуровневое хранение: хранение файлов в PostgreSQL (`stored_files` BLOB) с переключением на файловую систему и Cloudflare R2 при масштабировании.
 - Валидация загрузок: проверка MIME-типов по белому списку и защита от Path Traversal.
 
 ### 4.3. Ролевая модель (6 Ролей)
 1. **`ADMIN`** — полный доступ к платформе, финансовым реестрам, аудиту и управлению правами.
 2. **`EMPLOYEE`** — ведение закрепленных задач, клиентов и рабочих документов.
-3. **`CLIENT`** — личный кабинет: мониторинг статуса учета, согласование актов, скачивание счетов.
+3. **`CLIENT`** — личный кабинет: мониторинг статуса учета, согласование актов, скачивание счетов, 1С-отчеты.
 4. **`LEARNER`** — обучающийся: доступ к открытым курсам, просмотр уроков, завершение этапов.
 5. **`CURATOR`** — куратор: проверка заданий и контроль прогресса обучающихся.
 6. **`ADVISOR`** — советник/супервизор: строгий режим наблюдения (Read-Only) за задачами и документами без права модификации.
 
 ### 4.4. Обучающая платформа (LMS)
 - Иерархия контента: Курс -> Глава -> Урок -> Блоки контента (видео, текст, файлы).
-- Отслеживание прогресса: фиксация завершенных уроков по пользователям, выпуск сертификатов.
+- Отслеживание прогресса: фиксация завершенных уроков по пользователям, выпуск номерных сертификатов.
 
-### 4.5. Коммуникации и Алерты
-- STOMP-чаты с сохранением истории переписки и счетчиками непрочитанных сообщений.
-- Асинхронные уведомления дежурным администраторам в Telegram о новых лидах и системных событиях.
+### 4.5. Лидогенерация и Коммуникации
+- Прямой WhatsApp-флоу (+77750584021 / wa.me) с генерацией QR-кодов и готовыми шаблонами обращений.
+- STOMP-чаты в реальном времени с сохранением истории переписки и счетчиками непрочитанных сообщений.
+- Асинхронные уведомления дежурным администраторам в Telegram о новых заявках и системных событиях.
+
+### 4.6. Клиентский 1С-Хаб (`/client/1c`)
+- Пользовательский интерфейс регламентированных финансовых отчетов: ОСВ, сальдо, акты сверки, карточка счета, кассовая книга, складские остатки.
+- Текущее состояние: UI-контракт и отображение Empty State в ожидании OData/REST шлюза синхронизации (разработка запланирована в Epic-21).
 
 ---
 
 ## 5. Безопасность, Изоляция Данных и Закрытые Уязвимости
 
-В ходе сквозного аудита безопасности и E2E-верификации были закрыты следующие уязвимости и архитектурные дефекты:
+В ходе сквозного аудита безопасности, устранения BOLA/IDOR и E2E-верификации были закрыты следующие уязвимости и архитектурные риски:
 
-1. **Разграничение доступа к счетам (Invoice IDOR & Mutation):**
-   - Устранена возможность модификации чужих счетов клиентом (`PUT /v1/billing/invoices/{id}`): роль `CLIENT` удалена из `canWrite` и `canCreateFor` в `InvoiceAccessService`.
-   - Добавлен защищенный эндпоинт единичного запроса счета `GET /v1/billing/invoices/{id}` с валидацией `assertCanRead` (клиент имеет доступ только к собственным счетам, чужие запросы возвращают `403 Forbidden`).
+1. **CSRF & Cookie Hardening:**
+   - Для cookie access- и refresh-токенов (`AuthCookieHelper.java`) установлен режим `SameSite=Strict` совместно с `HttpOnly` и `Secure`.
+   - Из CORS конфигурации (`CorsConfig.java`, `application-prod.properties`) удален wildcard `https://*.github.io` — разрешен строго точный production origin `https://mrsgemaseny.github.io`.
 
-2. **Изоляция роли ADVISOR (Read-Only Enforcement):**
+2. **Разграничение доступа к счетам (Invoice IDOR & Mutation):**
+   - Устранена возможность модификации чужих счетов клиентом (`PUT /api/v1/billing/invoices/{id}`): роль `CLIENT` удалена из прав записи в `InvoiceAccessService`.
+   - Защищен эндпоинт получения счета `GET /api/v1/billing/invoices/{id}` с валидацией `assertCanRead` (клиент имеет доступ только к собственным счетам, чужие запросы возвращают `403 Forbidden`).
+
+3. **Изоляция роли ADVISOR (Read-Only Enforcement):**
    - В `CrmAccessService.canUpdateTaskDetails` и `TaskController.java` исключена роль `ADVISOR` из списка разрешенных для мутаций задач: консультант переведен в режим строгого чтения.
    - В `DocumentAccessService.canWrite` и `canCreateFor` исключена роль `ADVISOR`: советник не имеет права удалять, редактировать или создавать файлы от имени пользователей.
 
-3. **Реляционная целостность и каскадное удаление в LMS:**
-   - Метод `CourseService.deleteCourse` дополнен предварительным удалением связанных записей прогресса (`lessonProgressRepository.deleteByCourseId`), зачислений (`enrollmentRepository.deleteByCourseId`) и сертификатов (`certificateRepository.deleteByCourseId`) перед удалением сущности курса. Это устранило ошибку нарушения внешнего ключа `fk_enrollments_course_id` в PostgreSQL.
-   - В `CourseService.createChapter` внедрено явное сохранение `chapterRepository.save(chapter)` перед добавлением в коллекцию курса. Это гарантирует, что возвращаемый DTO содержит сгенерированный базой данных идентификатор, предотвращая возвращение `id: null` до коммита транзакции.
+4. **Реляционная целостность и каскадное удаление в LMS:**
+   - Метод `CourseService.deleteCourse` дополнен предварительным удалением связанных записей прогресса (`lessonProgressRepository.deleteByCourseId`), зачислений (`enrollmentRepository.deleteByCourseId`) и сертификатов (`certificateRepository.deleteByCourseId`) перед удалением сущности курса.
+   - В `CourseService.createChapter` внедрено явное сохранение `chapterRepository.save(chapter)` перед добавлением в коллекцию курса, предотвращая возврат `id: null`.
 
-4. **Отказоустойчивость генерации PDF:**
-   - В `PdfGeneratorService` добавлена предварительная проверка наличия файла шрифта (`/fonts/arial.ttf`) в ресурсах classpath перед вызовом рендерера. Отсутствие файла не приводит к необработанному исключению JVM и ошибке 500.
-
-5. **Обработка неподдерживаемых HTTP-методов:**
-   - В `GlobalExceptionHandler` добавлен специализированный обработчик `HttpRequestMethodNotSupportedException`, возвращающий корректный HTTP-статус `405 Method Not Allowed` вместо падения в `500 Internal Server Error`.
+5. **Отказоустойчивость генерации PDF:**
+   - В `PdfGeneratorService` добавлена предварительная проверка наличия файла шрифта (`/fonts/arial.ttf`) в ресурсах classpath перед вызовом рендерера.
 
 6. **Многоуровневое ограничение частоты запросов (Rate Limiting via Bucket4j):**
    - Лимит на эндпоинтах аутентификации (`/api/v1/auth/**`): 10 запросов в минуту на IP.
@@ -198,23 +207,23 @@ JF-1C/
 │   │       └── modules/            # Бизнес-модули: admin, auth, billing, chat,
 │   │                               # courses, crm, documents, landing, notifications
 │   ├── src/main/resources/         # Конфигурации, Flyway-миграции (db/migration/V1..V121)
-│   └── src/test/java/              # 169 JUnit 5 + Mockito тестов
+│   └── src/test/java/              # 197 JUnit 5 + Mockito тестов (100% Pass)
 ├── zhan-finance-frontend/          # React 19 + Vite + TypeScript приложение
 │   ├── src/
 │   │   ├── app/                    # Корневые провайдеры, маршрутизация, глобальные стили
 │   │   ├── pages/                  # Страницы по ролям (Admin, Employee, Client, Advisor, Public)
 │   │   ├── widgets/                # UI-блоки (TaskKanbanBoard, Sidebar, Header)
-│   │   ├── features/               # Бизнес-функционал (AuthForm, ContactForm)
+│   │   ├── features/               # Бизнес-функционал (AuthForm, ContactForm, 2FA)
 │   │   ├── entities/               # Доменные модели (Task, User, Document, Invoice)
-│   │   └── shared/                 # Переиспользуемый UI, клиент API http.ts
-│   └── src/**/*.test.ts(x)         # 169 Vitest + React Testing Library тестов
+│   │   └── shared/                 # Переиспользуемый UI, клиент API http.ts, i18n
+│   └── src/**/*.test.ts(x)         # 169 Vitest + React Testing Library тестов (100% Pass)
 ├── tests/                          # Сквозные верификационные и E2E сьюты
 │   ├── e2e/                        # 9 сценариев полного цикла (CRM, LMS, Chat, Billing, IDOR, UI)
 │   ├── artillery/                  # Сценарии нагрузочного тестирования и бенчмарки
 │   ├── run-all-e2e.mjs             # Мастер-раннер E2E-тестов
 │   └── run-all-tests.mjs           # Сводный раннер E2E + нагрузочных проверок
 ├── docs/                           # Инженерная документация (ARCHITECTURE, RUNBOOK, SYSTEM_VERIFICATION_REPORT)
-├── Epics/                          # Архитектурный план развития по эпикам
+├── Epics/                          # Архитектурный план развития по эпикам (Epic-01 .. Epic-21)
 ├── .agents/                        # Правила агента (AGENTS.md) и журнал контекста (CONTEXT.md)
 └── docker-compose.yml              # Локальное окружение (PostgreSQL 17)
 ```
@@ -262,13 +271,13 @@ npm run dev
 
 Тестовое покрытие разделено на три уровня: юнит/интеграционные тесты, сквозные E2E-сьюты полного жизненного цикла и нагрузочные профили.
 
-### 9.1. Юнит и интеграционные тесты (338 тестов)
+### 9.1. Юнит и интеграционные тесты (366 тестов)
 
 | Слой | Тест-раннер | Файлов | Тестов | Результат |
 |---|---|---|---|---|
-| **Backend** | JUnit 5 + Mockito + MockMvc | 46 классов | 169 тестов | 100% Passed (0 errors) |
+| **Backend** | JUnit 5 + Mockito + MockMvc | 46 классов | 197 тестов | 100% Passed (0 errors) |
 | **Frontend** | Vitest + React Testing Library | 19 файлов | 169 тестов | 100% Passed (0 errors) |
-| **ИТОГО** | | **65 файлов** | **338 тестов** | **100% GREEN** |
+| **ИТОГО** | | **65 файлов** | **366 тестов** | **100% GREEN** |
 
 ```bash
 # Запуск тестов бэкенда:
@@ -337,3 +346,5 @@ node run-all-e2e.mjs
 - [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — эксплуатационный регламент, мониторинг и процедуры восстановления.
 - [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) — стандарты кода, регламент миграций Flyway и правила оформления коммитов.
 - [`.agents/CONTEXT.md`](.agents/CONTEXT.md) — текущее операционное состояние проекта и технический бэклог.
+- [`docs/future/future_plan.md`](docs/future/future_plan.md) — Hardening Plan (P0/P1/P2) по итогам комплексных аудитов.
+
