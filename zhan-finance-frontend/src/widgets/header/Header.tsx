@@ -43,13 +43,13 @@ export function Header() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled || !isHome
-            ? 'bg-brand-beige/90 backdrop-blur-md border-b border-brand-green/10 py-1.5 shadow-sm'
-            : 'bg-transparent py-2.5'
+            ? 'bg-brand-beige/90 backdrop-blur-md border-b border-brand-green/10 py-1 shadow-sm'
+            : 'bg-transparent py-2'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link to={ROUTES.HOME} className="flex items-center group relative z-50 focus:outline-none" aria-label={t('publicNav.home', { defaultValue: 'На главную' })}>
-            <BrandLogo className="h-14 md:h-16 lg:h-18 w-auto group-hover:opacity-85 transition-opacity" />
+            <BrandLogo className="h-20 md:h-24 lg:h-28 w-auto group-hover:opacity-85 transition-opacity" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
