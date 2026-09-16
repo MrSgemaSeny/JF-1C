@@ -63,6 +63,7 @@
 | P0-10 | CURRENT_STATE.md — актуальный стек, архитектура, инварианты и роли | DONE |
 | P0-11 | Coverage gate в CI — JaCoCo: `jacocoTestCoverageVerification` привязана к `check` | DONE |
 | P0-12 | WebSocket ACL — senderId строго из Principal в `ChatController`, строгая проверка подписок в `WebSocketConfig` | DONE |
+| HOTFIX | Role Sanitization — санитизация requestedRole в GoogleAuthService и AuthService (запрет эскалации до ADMIN) | DONE |
 
 ### P1 — Архитектурный долг (15 задач, ~65-100ч)
 Task state machine, Optimistic locking (@Version), Race condition Task Pool pickup, Outbox pattern, Cloudflare R2 интеграция, Idempotency для webhooks, ArchUnit, OpenAPI→TS codegen, ShedLock, Unified error contract, Monetary fields audit, Distributed rate limiting, 2FA mandatory для ADMIN, Auto-reopen audit trail, Business invariant tests.
