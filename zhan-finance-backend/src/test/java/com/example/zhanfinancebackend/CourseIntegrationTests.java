@@ -57,7 +57,7 @@ class CourseIntegrationTests {
     private com.example.zhanfinancebackend.modules.auth.service.AuthService authService;
 
     private String registerAndGetToken(String email, Role role) throws Exception {
-        com.example.zhanfinancebackend.modules.auth.dto.AuthResponse response = authService.register(
+        authService.register(
                 new com.example.zhanfinancebackend.modules.auth.dto.RegisterRequest(
                         "Test User",
                         email,
@@ -67,13 +67,10 @@ class CourseIntegrationTests {
                         null
                 )
         );
-        if (response != null && response.accessToken() != null) {
-            return response.accessToken();
-        }
-        // If employee (disabled), approve and generate token via login
         User user = userRepository.findByEmailIgnoreCase(email).orElseThrow();
+        user.setRole(role);
         user.setEnabled(true);
-        userRepository.save(user);
+        user = userRepository.save(user);
         return jwtService.generateAccessToken(user);
     }
 

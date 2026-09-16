@@ -74,7 +74,12 @@ public class AuthService {
             throw new ConflictException(ErrorCode.EMAIL_ALREADY_REGISTERED.name());
         }
 
-        Role assignedRole = request.role() != null ? request.role() : Role.CLIENT;
+        Role assignedRole = (request.role() == Role.EMPLOYEE ||
+                request.role() == Role.CURATOR  ||
+                request.role() == Role.ADVISOR  ||
+                request.role() == Role.LEARNER)
+                ? request.role()
+                : Role.CLIENT;
         boolean isEmployee = assignedRole == Role.EMPLOYEE || assignedRole == Role.CURATOR || assignedRole == Role.ADVISOR;
 
         User user = new User(

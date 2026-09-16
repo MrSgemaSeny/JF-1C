@@ -140,12 +140,40 @@ class AuthServiceUnitTests {
                 .thenReturn(authentication);
         when(refreshTokenService.create(user)).thenReturn(new RefreshToken("refresh123", user, Instant.now().plus(Duration.ofDays(1))));
         when(jwtService.generateAccessToken(user)).thenReturn("access123");
-
         AuthResponse response = authService.login(request);
         
         assertThat(response.accessToken()).isEqualTo("access123");
         assertThat(response.refreshToken()).isEqualTo("refresh123");
         assertThat(response.email()).isEqualTo("user@test.com");
+    }
+
+    @Test
+    void register_AdminRoleAttempt_SanitizesToClient() {
+        RegisterRequest request = new RegisterRequest(
+                "Attacker",
+                "hacker@test.com",
+                "securePassword123",
+                Role.ADMIN,
+                null,
+                null
+        );
+
+        User savedUser = new User("Attacker", "hacker@test.com", "hashed123", Role.CLIENT);
+        ReflectionTestUtils.setField(savedUser, "id", 2L);
+
+        when(userRepository.existsByEmailIgnoreCase("hacker@test.com")).thenReturn(false);
+        when(passwordEncoder.encode("securePassword123")).thenReturn("hashed123");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User passedUser = invocation.getArgument(0);
+            assertThat(passedUser.getRole()).isEqualTo(Role.CLIENT);
+            return savedUser;
+        });
+        when(refreshTokenService.create(savedUser)).thenReturn(new RefreshToken("token123", savedUser, Instant.now().plus(Duration.ofDays(1))));
+        when(jwtService.generateAccessToken(savedUser)).thenReturn("accessToken123");
+
+        AuthResponse response = authService.register(request);
+
+        assertThat(response.role()).isEqualTo(Role.CLIENT);
     }
 }
 

@@ -116,7 +116,11 @@ public class GoogleAuthService {
             }
             isNewUser = false;
         } else {
-            Role assignedRole = requestedRole != null ? requestedRole : Role.CLIENT;
+            Role assignedRole = (requestedRole == Role.EMPLOYEE ||
+                    requestedRole == Role.CURATOR  ||
+                    requestedRole == Role.ADVISOR)
+                    ? requestedRole
+                    : Role.CLIENT;
             boolean isEmployee = assignedRole == Role.EMPLOYEE || assignedRole == Role.CURATOR || assignedRole == Role.ADVISOR;
 
             user = new User(
