@@ -2,10 +2,19 @@ package com.example.zhanfinancebackend.modules.auth.controller;
 
 import com.example.zhanfinancebackend.modules.auth.dto.AuthResponse;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuthCookieHelper {
+
+    private static long refreshTokenExpirationMs = 1209600000L;
+
+    public AuthCookieHelper(@Value("${app.jwt.refresh-token-expiration-ms}") long refreshTokenExpirationMs) {
+        AuthCookieHelper.refreshTokenExpirationMs = refreshTokenExpirationMs;
+    }
 
     public static void setTokenCookies(HttpServletResponse response, AuthResponse authResponse) {
         if (authResponse == null || authResponse.accessToken() == null) {
@@ -22,12 +31,13 @@ public class AuthCookieHelper {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
 
         if (authResponse.refreshToken() != null) {
+            int maxAge = (int) (refreshTokenExpirationMs / 1000);
             ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authResponse.refreshToken())
                     .httpOnly(true)
                     .secure(true)
                     .sameSite("Strict")
                     .path("/")
-                    .maxAge(7 * 24 * 60 * 60) // 7 days
+                    .maxAge(maxAge)
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
         }
