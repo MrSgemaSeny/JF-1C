@@ -15,7 +15,7 @@ public class AuthCookieHelper {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", authResponse.accessToken())
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("None")
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(15 * 60) // 15 minutes
                 .build();
@@ -25,7 +25,7 @@ public class AuthCookieHelper {
             ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authResponse.refreshToken())
                     .httpOnly(true)
                     .secure(true)
-                    .sameSite("None")
+                    .sameSite("Strict")
                     .path("/")
                     .maxAge(7 * 24 * 60 * 60) // 7 days
                     .build();
@@ -37,14 +37,14 @@ public class AuthCookieHelper {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("None")
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(0)
                 .build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("None")
+                .sameSite("Strict")
                 .path("/")
                 .maxAge(0)
                 .build();
