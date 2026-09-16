@@ -59,6 +59,57 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(
+            org.springframework.http.converter.HttpMessageNotReadableException exception,
+            HttpServletRequest request,
+            Locale locale
+    ) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Malformed JSON or invalid enum payload: {}", requestId, exception.getMessage());
+
+        String message = "Malformed request payload";
+        List<ErrorResponse.ErrorDetail> details = null;
+
+        Throwable cause = exception.getCause();
+        if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException ife) {
+            String fieldName = ife.getPath().stream()
+                    .map(com.fasterxml.jackson.databind.JsonMappingException.Reference::getFieldName)
+                    .filter(java.util.Objects::nonNull)
+                    .collect(Collectors.joining("."));
+            if (fieldName.isBlank()) {
+                fieldName = "unknown";
+            }
+
+            Class<?> targetType = ife.getTargetType();
+            if (targetType != null && targetType.isEnum()) {
+                Object[] enumConstants = targetType.getEnumConstants();
+                String allowed = java.util.Arrays.stream(enumConstants)
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
+                String errorMsg = String.format("Invalid value '%s' for enum %s. Allowed values: [%s]",
+                        ife.getValue(), targetType.getSimpleName(), allowed);
+                message = errorMsg;
+                details = List.of(new ErrorResponse.ErrorDetail(fieldName, errorMsg));
+            } else {
+                String errorMsg = String.format("Cannot deserialize value '%s' to %s",
+                        ife.getValue(), targetType != null ? targetType.getSimpleName() : "target type");
+                message = errorMsg;
+                details = List.of(new ErrorResponse.ErrorDetail(fieldName, errorMsg));
+            }
+        }
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "INVALID_PAYLOAD",
+                message,
+                details,
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException exception, HttpServletRequest request, Locale locale) {
         return buildResponse(HttpStatus.BAD_REQUEST, "BAD_REQUEST", exception, request, locale);

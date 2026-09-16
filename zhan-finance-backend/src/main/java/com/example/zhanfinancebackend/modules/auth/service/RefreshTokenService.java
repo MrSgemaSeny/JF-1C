@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
@@ -31,9 +32,11 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken create(User user) {
+        String familyId = UUID.randomUUID().toString();
         RefreshToken newToken = new RefreshToken(
                 UUID.randomUUID().toString(),
                 user,
+                familyId,
                 Instant.now().plusMillis(refreshTokenExpirationMs)
         );
         RefreshToken saved = refreshTokenRepository.save(newToken);
@@ -41,32 +44,56 @@ public class RefreshTokenService {
         return saved;
     }
 
+    /**
+     * Выполняет безопасную ротацию токена в рамках одной семьи (Token Family).
+     * При попытке повторного использования уже отозванного токена (Token Reuse Attack)
+     * немедленно отзывает всю семью токенов пользователя и прерывает сессию.
+     */
     @Transactional
-    public RefreshToken verify(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
+    public RefreshToken rotate(String rawToken) {
+        RefreshToken token = refreshTokenRepository.findByToken(rawToken)
                 .orElseThrow(() -> {
-                    log.warn("Refresh token not found - possible token reuse attack. Token: {}",
-                            token.substring(0, Math.min(8, token.length())) + "...");
+                    log.warn("Refresh token not found: {}",
+                            rawToken != null && rawToken.length() > 8 ? rawToken.substring(0, 8) + "..." : rawToken);
                     return new UnauthorizedException("Invalid refresh token");
                 });
 
-        int deleted = refreshTokenRepository.deleteByToken(token);
-        if (deleted == 0) {
-            log.warn("Refresh token already consumed by another transaction. Token: {}",
-                    token.substring(0, Math.min(8, token.length())) + "...");
-            throw new UnauthorizedException("Invalid refresh token");
+        if (token.isRevoked()) {
+            log.warn("CRITICAL: Token reuse detected! Family: {}, User: {}. Revoking all tokens in family.",
+                    token.getFamilyId(), token.getUser() != null ? token.getUser().getId() : "null");
+            refreshTokenRepository.revokeByFamilyId(token.getFamilyId(), Instant.now());
+            throw new UnauthorizedException("Compromised refresh token reused. Session terminated.");
         }
 
-        if (refreshToken.getExpiresAt().isBefore(Instant.now())) {
+        if (token.getExpiresAt().isBefore(Instant.now())) {
             throw new UnauthorizedException("Refresh token expired");
         }
 
-        return refreshToken;
+        // Помечаем текущий токен использованным/отозванным
+        token.setRevoked(true);
+        token.setRevokedAt(Instant.now());
+        refreshTokenRepository.save(token);
+
+        // Выпускаем новый токен в той же цепочке семьи
+        RefreshToken newToken = new RefreshToken(
+                UUID.randomUUID().toString(),
+                token.getUser(),
+                token.getFamilyId(),
+                Instant.now().plusMillis(refreshTokenExpirationMs)
+        );
+        return refreshTokenRepository.save(newToken);
+    }
+
+    @Transactional
+    public RefreshToken verify(String token) {
+        return rotate(token);
     }
 
     @Transactional
     public void revoke(String token) {
-        refreshTokenRepository.findByToken(token).ifPresent(refreshTokenRepository::delete);
+        refreshTokenRepository.findByToken(token).ifPresent(rt -> {
+            refreshTokenRepository.revokeByFamilyId(rt.getFamilyId(), Instant.now());
+        });
     }
 
     /**
@@ -75,16 +102,18 @@ public class RefreshTokenService {
      */
     @Transactional
     public void revokeAll(User user) {
-        int count = refreshTokenRepository.deleteAllByUser(user);
+        int count = refreshTokenRepository.revokeAllByUser(user, Instant.now());
         log.info("Revoked {} refresh tokens for user {}", count, user.getId());
     }
 
     @org.springframework.scheduling.annotation.Scheduled(cron = "0 0 2 * * ?") // Every day at 2 AM
     @Transactional
     public void purgeExpiredTokens() {
-        int deleted = refreshTokenRepository.deleteByExpiresAtBefore(Instant.now());
+        Instant now = Instant.now();
+        Instant purgeRevokedBefore = now.minus(7, ChronoUnit.DAYS);
+        int deleted = refreshTokenRepository.deleteExpiredAndRevokedTokens(now, purgeRevokedBefore);
         if (deleted > 0) {
-            log.info("Purged {} expired refresh tokens from the database", deleted);
+            log.info("Purged {} expired/revoked refresh tokens from the database", deleted);
         }
     }
 }

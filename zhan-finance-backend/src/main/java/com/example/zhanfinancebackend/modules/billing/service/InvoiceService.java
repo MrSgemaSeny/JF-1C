@@ -127,6 +127,13 @@ public class InvoiceService {
         Invoice invoice = get(user, id);
         invoiceAccessService.assertCanWrite(user, invoice);
         
+        if (invoice.getStatus() == Invoice.InvoiceStatus.PAID) {
+            throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot modify a PAID invoice");
+        }
+        if (invoice.getStatus() == Invoice.InvoiceStatus.CANCELED) {
+            throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot modify a CANCELED invoice");
+        }
+
         StringBuilder details = new StringBuilder();
         if (!invoice.getTitle().equals(request.title())) {
             details.append("Title changed from '").append(invoice.getTitle()).append("' to '").append(request.title()).append("'; ");
@@ -157,11 +164,25 @@ public class InvoiceService {
     }
 
     private void validateStatusTransition(Invoice.InvoiceStatus current, Invoice.InvoiceStatus target) {
-        if (current == Invoice.InvoiceStatus.PAID && target != Invoice.InvoiceStatus.PAID) {
+        if (current == target) {
+            return;
+        }
+        if (current == Invoice.InvoiceStatus.PAID) {
             throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot change status of a PAID invoice");
         }
-        if (current == Invoice.InvoiceStatus.CANCELED && target != Invoice.InvoiceStatus.CANCELED) {
+        if (current == Invoice.InvoiceStatus.CANCELED) {
             throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot change status of a CANCELED invoice");
+        }
+        boolean allowed = switch (current) {
+            case DRAFT -> target == Invoice.InvoiceStatus.ISSUED || target == Invoice.InvoiceStatus.CANCELED;
+            case ISSUED -> target == Invoice.InvoiceStatus.PAID || target == Invoice.InvoiceStatus.OVERDUE || target == Invoice.InvoiceStatus.CANCELED;
+            case OVERDUE -> target == Invoice.InvoiceStatus.PAID || target == Invoice.InvoiceStatus.CANCELED;
+            default -> false;
+        };
+        if (!allowed) {
+            throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException(
+                    "Invalid invoice status transition from " + current + " to " + target
+            );
         }
     }
 
@@ -169,6 +190,12 @@ public class InvoiceService {
     public void delete(User user, Long id) {
         Invoice invoice = get(user, id);
         invoiceAccessService.assertCanWrite(user, invoice);
+        if (invoice.getStatus() == Invoice.InvoiceStatus.PAID) {
+            throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot delete a PAID invoice");
+        }
+        if (invoice.getStatus() == Invoice.InvoiceStatus.CANCELED) {
+            throw new com.example.zhanfinancebackend.common.exception.UnprocessableEntityException("Cannot delete a CANCELED invoice");
+        }
         auditService.logAction("DELETE", "Invoice", invoice.getId(), "Invoice deleted: " + invoice.getTitle() + " with amount " + invoice.getAmount());
         invoiceRepository.delete(invoice);
     }

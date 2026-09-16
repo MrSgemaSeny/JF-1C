@@ -55,7 +55,7 @@ class InvoiceStatusTransitionTest {
         when(invoiceRepository.findByIdWithClient(42L)).thenReturn(Optional.of(paidInvoice));
 
         InvoiceDto updateReq = new InvoiceDto(
-                42L, admin.getId(), "Updated", new BigDecimal("100.00"),
+                42L, admin.getId(), "Test Invoice", new BigDecimal("100.00"),
                 Invoice.InvoiceStatus.DRAFT, LocalDate.now().plusDays(5)
         );
 
@@ -72,10 +72,83 @@ class InvoiceStatusTransitionTest {
         when(invoiceRepository.findByIdWithClient(43L)).thenReturn(Optional.of(canceledInvoice));
 
         InvoiceDto updateReq = new InvoiceDto(
-                43L, admin.getId(), "Updated", new BigDecimal("200.00"),
+                43L, admin.getId(), "Canceled Invoice", new BigDecimal("200.00"),
                 Invoice.InvoiceStatus.ISSUED, LocalDate.now().plusDays(5)
         );
 
         assertThrows(UnprocessableEntityException.class, () -> invoiceService.update(admin, 43L, updateReq));
+    }
+
+    @Test
+    @DisplayName("Попытка изменить поля (title/amount) оплаченного счета вызывает UnprocessableEntityException")
+    void updateInvoice_ModifyPaidFields_ThrowsUnprocessableEntity() {
+        when(invoiceRepository.findByIdWithClient(42L)).thenReturn(Optional.of(paidInvoice));
+
+        InvoiceDto updateReq = new InvoiceDto(
+                42L, admin.getId(), "New Title", new BigDecimal("999.00"),
+                Invoice.InvoiceStatus.PAID, LocalDate.now().plusDays(5)
+        );
+
+        assertThrows(UnprocessableEntityException.class, () -> invoiceService.update(admin, 42L, updateReq));
+    }
+
+    @Test
+    @DisplayName("Попытка удалить оплаченный счет вызывает UnprocessableEntityException")
+    void deleteInvoice_Paid_ThrowsUnprocessableEntity() {
+        when(invoiceRepository.findByIdWithClient(42L)).thenReturn(Optional.of(paidInvoice));
+
+        assertThrows(UnprocessableEntityException.class, () -> invoiceService.delete(admin, 42L));
+    }
+
+    @Test
+    @DisplayName("Попытка удалить отмененный счет вызывает UnprocessableEntityException")
+    void deleteInvoice_Canceled_ThrowsUnprocessableEntity() {
+        Invoice canceledInvoice = new Invoice(admin, "Canceled", new BigDecimal("100.00"), LocalDate.now().plusDays(5));
+        canceledInvoice.setId(44L);
+        canceledInvoice.setStatus(Invoice.InvoiceStatus.CANCELED);
+        when(invoiceRepository.findByIdWithClient(44L)).thenReturn(Optional.of(canceledInvoice));
+
+        assertThrows(UnprocessableEntityException.class, () -> invoiceService.delete(admin, 44L));
+    }
+
+    @Test
+    @DisplayName("Прямой переход DRAFT -> PAID недопустим без выставления счета (ISSUED)")
+    void updateInvoice_DraftToPaid_ThrowsUnprocessableEntity() {
+        Invoice draftInvoice = new Invoice(admin, "Draft", new BigDecimal("100.00"), LocalDate.now().plusDays(5));
+        draftInvoice.setId(45L);
+        draftInvoice.setStatus(Invoice.InvoiceStatus.DRAFT);
+        when(invoiceRepository.findByIdWithClient(45L)).thenReturn(Optional.of(draftInvoice));
+
+        InvoiceDto updateReq = new InvoiceDto(
+                45L, admin.getId(), "Draft", new BigDecimal("100.00"),
+                Invoice.InvoiceStatus.PAID, LocalDate.now().plusDays(5)
+        );
+
+        assertThrows(UnprocessableEntityException.class, () -> invoiceService.update(admin, 45L, updateReq));
+    }
+
+    @Test
+    @DisplayName("Корректный переход DRAFT -> ISSUED -> PAID разрешен")
+    void updateInvoice_ValidTransitions_Success() {
+        Invoice draftInvoice = new Invoice(admin, "Draft", new BigDecimal("100.00"), LocalDate.now().plusDays(5));
+        draftInvoice.setId(46L);
+        draftInvoice.setStatus(Invoice.InvoiceStatus.DRAFT);
+        when(invoiceRepository.findByIdWithClient(46L)).thenReturn(Optional.of(draftInvoice));
+
+        InvoiceDto issuedReq = new InvoiceDto(
+                46L, admin.getId(), "Draft", new BigDecimal("100.00"),
+                Invoice.InvoiceStatus.ISSUED, LocalDate.now().plusDays(5)
+        );
+
+        InvoiceDto result = invoiceService.update(admin, 46L, issuedReq);
+        assertEquals(Invoice.InvoiceStatus.ISSUED, result.status());
+
+        InvoiceDto paidReq = new InvoiceDto(
+                46L, admin.getId(), "Draft", new BigDecimal("100.00"),
+                Invoice.InvoiceStatus.PAID, LocalDate.now().plusDays(5)
+        );
+
+        InvoiceDto paidResult = invoiceService.update(admin, 46L, paidReq);
+        assertEquals(Invoice.InvoiceStatus.PAID, paidResult.status());
     }
 }

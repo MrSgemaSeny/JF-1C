@@ -10,9 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class RefreshTokenRotationTest {
@@ -32,9 +34,9 @@ class RefreshTokenRotationTest {
     }
 
     @Test
-    @DisplayName("create() сохраняет новый токен и очищает прошлые токены пользователя")
+    @DisplayName("create() сохраняет новый токен с familyId и очищает прошлые токены пользователя")
     void create_SavesNewTokenAndCleansUpOldTokens() {
-        RefreshToken tokenToReturn = new RefreshToken("new-token-uuid", testUser, Instant.now().plusSeconds(3600));
+        RefreshToken tokenToReturn = new RefreshToken("new-token-uuid", testUser, UUID.randomUUID().toString(), Instant.now().plusSeconds(3600));
         tokenToReturn.setId(100L);
 
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(tokenToReturn);
@@ -43,38 +45,64 @@ class RefreshTokenRotationTest {
 
         assertNotNull(result);
         assertEquals("new-token-uuid", result.getToken());
+        assertNotNull(result.getFamilyId());
         verify(refreshTokenRepository).save(any(RefreshToken.class));
         verify(refreshTokenRepository).deleteAllByUserExceptId(testUser, 100L);
     }
 
     @Test
-    @DisplayName("verify() возвращает токен если он действителен")
-    void verify_ValidToken_ReturnsRefreshToken() {
-        RefreshToken validToken = new RefreshToken("valid-token", testUser, Instant.now().plusSeconds(3600));
+    @DisplayName("rotate() отзывает старый токен и возвращает новый токен в той же семье")
+    void rotate_ValidToken_RevokesOldAndReturnsNewTokenInSameFamily() {
+        String familyId = UUID.randomUUID().toString();
+        RefreshToken validToken = new RefreshToken("valid-token", testUser, familyId, Instant.now().plusSeconds(3600));
         when(refreshTokenRepository.findByToken("valid-token")).thenReturn(Optional.of(validToken));
-        when(refreshTokenRepository.deleteByToken("valid-token")).thenReturn(1);
+        
+        when(refreshTokenRepository.save(any(RefreshToken.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RefreshToken result = refreshTokenService.verify("valid-token");
+        RefreshToken result = refreshTokenService.rotate("valid-token");
 
         assertNotNull(result);
-        assertEquals(validToken, result);
+        assertNotEquals("valid-token", result.getToken());
+        assertEquals(familyId, result.getFamilyId());
+        assertEquals(testUser, result.getUser());
+        assertTrue(validToken.isRevoked());
+        assertNotNull(validToken.getRevokedAt());
     }
 
     @Test
-    @DisplayName("verify() выбрасывает UnauthorizedException если токен истёк")
-    void verify_ExpiredToken_ThrowsUnauthorizedException() {
-        RefreshToken expiredToken = new RefreshToken("expired-token", testUser, Instant.now().minusSeconds(10));
+    @DisplayName("rotate() при обнаружении повторного использования (Token Reuse) отзывает всю семью токенов")
+    void rotate_RevokedToken_TriggersReuseDetectionAndRevokesFamily() {
+        String familyId = UUID.randomUUID().toString();
+        RefreshToken revokedToken = new RefreshToken("already-used-token", testUser, familyId, Instant.now().plusSeconds(3600));
+        revokedToken.setRevoked(true);
+        revokedToken.setRevokedAt(Instant.now().minusSeconds(60));
+
+        when(refreshTokenRepository.findByToken("already-used-token")).thenReturn(Optional.of(revokedToken));
+
+        UnauthorizedException exception = assertThrows(
+                UnauthorizedException.class,
+                () -> refreshTokenService.rotate("already-used-token")
+        );
+
+        assertTrue(exception.getMessage().contains("Compromised refresh token reused"));
+        verify(refreshTokenRepository).revokeByFamilyId(eq(familyId), any(Instant.class));
+    }
+
+    @Test
+    @DisplayName("rotate() выбрасывает UnauthorizedException если токен истёк")
+    void rotate_ExpiredToken_ThrowsUnauthorizedException() {
+        String familyId = UUID.randomUUID().toString();
+        RefreshToken expiredToken = new RefreshToken("expired-token", testUser, familyId, Instant.now().minusSeconds(10));
         when(refreshTokenRepository.findByToken("expired-token")).thenReturn(Optional.of(expiredToken));
-        when(refreshTokenRepository.deleteByToken("expired-token")).thenReturn(1);
 
-        assertThrows(UnauthorizedException.class, () -> refreshTokenService.verify("expired-token"));
+        assertThrows(UnauthorizedException.class, () -> refreshTokenService.rotate("expired-token"));
     }
 
     @Test
-    @DisplayName("verify() выбрасывает UnauthorizedException если токен не найден в базе")
-    void verify_UnknownToken_ThrowsUnauthorizedException() {
+    @DisplayName("rotate() выбрасывает UnauthorizedException если токен не найден в базе")
+    void rotate_UnknownToken_ThrowsUnauthorizedException() {
         when(refreshTokenRepository.findByToken("unknown-token")).thenReturn(Optional.empty());
 
-        assertThrows(UnauthorizedException.class, () -> refreshTokenService.verify("unknown-token"));
+        assertThrows(UnauthorizedException.class, () -> refreshTokenService.rotate("unknown-token"));
     }
 }

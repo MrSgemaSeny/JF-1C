@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Locale;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -118,5 +119,42 @@ class GlobalExceptionHandlerTest {
         assertEquals("INTERNAL_ERROR", response.getBody().getCode());
         assertTrue(response.getBody().getMessage().contains("Translated internal error"));
         assertTrue(response.getBody().getMessage().contains("Reference ID:"));
+    }
+
+    @Test
+    void testHandleHttpMessageNotReadableGeneral() {
+        org.springframework.http.converter.HttpMessageNotReadableException ex = 
+                new org.springframework.http.converter.HttpMessageNotReadableException("Required request body is missing", (org.springframework.http.HttpInputMessage) null);
+        
+        ResponseEntity<ErrorResponse> response = handler.handleHttpMessageNotReadable(ex, request, Locale.ENGLISH);
+        
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("INVALID_PAYLOAD", response.getBody().getCode());
+        assertEquals("Malformed request payload", response.getBody().getMessage());
+    }
+
+    @Test
+    void testHandleHttpMessageNotReadableInvalidEnum() {
+        com.fasterxml.jackson.databind.exc.InvalidFormatException ife = mock(com.fasterxml.jackson.databind.exc.InvalidFormatException.class);
+        when(ife.getValue()).thenReturn("UNKNOWN_STATUS");
+        doReturn(com.example.zhanfinancebackend.modules.billing.entity.Invoice.InvoiceStatus.class).when(ife).getTargetType();
+        
+        com.fasterxml.jackson.databind.JsonMappingException.Reference ref = new com.fasterxml.jackson.databind.JsonMappingException.Reference(null, "status");
+        when(ife.getPath()).thenReturn(List.of(ref));
+        
+        org.springframework.http.converter.HttpMessageNotReadableException ex = mock(org.springframework.http.converter.HttpMessageNotReadableException.class);
+        when(ex.getCause()).thenReturn(ife);
+        when(ex.getMessage()).thenReturn("Cannot deserialize value UNKNOWN_STATUS");
+        
+        ResponseEntity<ErrorResponse> response = handler.handleHttpMessageNotReadable(ex, request, Locale.ENGLISH);
+        
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("INVALID_PAYLOAD", response.getBody().getCode());
+        assertTrue(response.getBody().getMessage().contains("Invalid value 'UNKNOWN_STATUS' for enum InvoiceStatus"));
+        assertNotNull(response.getBody().getDetails());
+        assertEquals(1, response.getBody().getDetails().size());
+        assertEquals("status", response.getBody().getDetails().get(0).getField());
     }
 }

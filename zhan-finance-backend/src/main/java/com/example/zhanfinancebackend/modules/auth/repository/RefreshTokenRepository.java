@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
@@ -19,18 +20,24 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     @Modifying
     @Query("DELETE FROM RefreshToken rt WHERE rt.expiresAt < :now")
-    int deleteByExpiresAtBefore(@Param("now") java.time.Instant now);
+    int deleteByExpiresAtBefore(@Param("now") Instant now);
+
+    @Modifying
+    @Query("DELETE FROM RefreshToken rt WHERE rt.expiresAt < :now OR (rt.isRevoked = true AND rt.revokedAt < :purgeRevokedBefore)")
+    int deleteExpiredAndRevokedTokens(@Param("now") Instant now, @Param("purgeRevokedBefore") Instant purgeRevokedBefore);
 
     @Modifying
     @Query("DELETE FROM RefreshToken rt WHERE rt.user = :user")
     int deleteAllByUser(@Param("user") User user);
 
-    /**
-     * Удаляет все refresh-токены пользователя, кроме указанного ID.
-     * Используется в RefreshTokenService.create() для избежания race condition:
-     * сначала создаём новый токен, потом удаляем все старые,
-     * чтобы гарантировать, что у пользователя всегда есть валидный токен.
-     */
+    @Modifying
+    @Query("UPDATE RefreshToken rt SET rt.isRevoked = true, rt.revokedAt = :now WHERE rt.familyId = :familyId AND rt.isRevoked = false")
+    int revokeByFamilyId(@Param("familyId") String familyId, @Param("now") Instant now);
+
+    @Modifying
+    @Query("UPDATE RefreshToken rt SET rt.isRevoked = true, rt.revokedAt = :now WHERE rt.user = :user AND rt.isRevoked = false")
+    int revokeAllByUser(@Param("user") User user, @Param("now") Instant now);
+
     @Modifying
     @Query("DELETE FROM RefreshToken rt WHERE rt.user = :user AND rt.id != :excludeId")
     void deleteAllByUserExceptId(@Param("user") User user, @Param("excludeId") Long excludeId);
