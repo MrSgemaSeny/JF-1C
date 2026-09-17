@@ -22,16 +22,16 @@ export function Team() {
   const allMembers = [teamLeader, ...teamSpecialists];
 
   return (
-    <Section className="bg-brand-beige py-16 lg:py-24 overflow-hidden relative">
+    <Section className="bg-brand-beige py-12 sm:py-20 lg:py-24 overflow-hidden relative">
       <Container className="max-w-[1200px]">
         {/* Heading & View Switcher */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-6 sm:mb-14">
           <div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.05] tracking-tight text-brand-green break-words">
+            <h2 className="text-2xl sm:text-5xl lg:text-6xl font-black uppercase leading-[1.05] tracking-tight text-brand-green break-words">
               {t('team_title', { defaultValue: 'Команда' })} <br />
               <span className="text-brand-green/40">{t('team_subtitle', { defaultValue: 'экспертов' })}</span>
             </h2>
-            <p className="mt-3 text-sm sm:text-base text-brand-green/75 max-w-xl">
+            <p className="mt-2 text-xs sm:text-base text-brand-green/75 max-w-xl">
               {t('team_desc', { defaultValue: 'За каждым проектом стоят квалифицированные специалисты с многолетним опытом в бухгалтерии и налогах РК.' })}
             </p>
           </div>
@@ -40,7 +40,7 @@ export function Team() {
           <div className="flex items-center gap-1 p-1 bg-brand-green/10 rounded-2xl self-start md:self-auto">
             <button
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all ${
                 viewMode === 'grid'
                   ? 'bg-brand-green text-brand-beige shadow-sm'
                   : 'text-brand-green/70 hover:text-brand-green'
@@ -51,7 +51,7 @@ export function Team() {
             </button>
             <button
               onClick={() => setViewMode('carousel')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all ${
                 viewMode === 'carousel'
                   ? 'bg-brand-green text-brand-beige shadow-sm'
                   : 'text-brand-green/70 hover:text-brand-green'
@@ -73,9 +73,9 @@ export function Team() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
               onClick={() => setSelectedMember(teamLeader)}
-              className="group cursor-pointer flex flex-col md:flex-row items-center gap-6 sm:gap-8 md:gap-12 p-6 sm:p-8 md:p-11 rounded-[24px] sm:rounded-[28px] bg-brand-green/[0.08] border border-brand-green/20 mb-10 sm:mb-14 shadow-sm hover:shadow-xl hover:border-brand-green/40 transition-all"
+              className="group cursor-pointer flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 sm:gap-8 md:gap-12 p-4 sm:p-8 md:p-11 rounded-2xl sm:rounded-[28px] bg-brand-green/[0.08] border border-brand-green/20 mb-6 sm:mb-14 shadow-sm hover:shadow-xl hover:border-brand-green/40 transition-all"
             >
-              <div className="shrink-0 w-44 h-56 sm:w-52 sm:h-64 md:w-56 md:h-72 rounded-[18px] sm:rounded-[20px] overflow-hidden bg-brand-green/10 border border-brand-green/20 relative shadow-inner">
+              <div className="shrink-0 w-28 h-36 sm:w-52 sm:h-64 md:w-56 md:h-72 rounded-xl sm:rounded-[20px] overflow-hidden bg-brand-green/10 border border-brand-green/20 relative shadow-inner">
                 {teamLeader.photo ? (
                   <img src={teamLeader.photo} alt={t(teamLeader.nameKey)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
@@ -86,27 +86,27 @@ export function Team() {
                   </div>
                 )}
               </div>
-              <div className="text-center md:text-left flex-1">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-green text-brand-beige text-[11px] font-bold uppercase tracking-wider mb-3">
+              <div className="text-center sm:text-left flex-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-brand-green text-brand-beige text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-2 sm:mb-3">
                   <Shield className="w-3 h-3" />
                   {t(teamLeader.roleKey)}
                 </div>
-                <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-brand-green leading-[1.15] mb-4">
+                <h3 className="text-base sm:text-2xl md:text-4xl font-black uppercase tracking-tight text-brand-green leading-[1.15] mb-2 sm:mb-4">
                   {t(teamLeader.nameKey)}
                 </h3>
                 {teamLeader.bioKey && (
-                  <p className="text-sm md:text-base text-brand-green/85 leading-relaxed max-w-2xl mb-4">
+                  <p className="text-xs sm:text-sm md:text-base text-brand-green/85 leading-relaxed max-w-2xl mb-2 sm:mb-4 line-clamp-3 sm:line-clamp-none">
                     {t(teamLeader.bioKey)}
                   </p>
                 )}
-                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-green group-hover:underline">
+                <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-brand-green group-hover:underline">
                   {t('team_view_details', { defaultValue: 'Подробнее о специалисте →' })}
                 </span>
               </div>
             </motion.div>
 
-            {/* СЕТКА СПЕЦИАЛИСТОВ (4x2) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {/* СЕТКА СПЕЦИАЛИСТОВ (2x4 на мобилке, 4x2 на десктопе) */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
               {teamSpecialists.map((member, index) => (
                 <motion.div
                   key={index}
@@ -117,7 +117,7 @@ export function Team() {
                   onClick={() => setSelectedMember(member)}
                   className="group cursor-pointer"
                 >
-                  <div className="relative aspect-[3/4] rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
+                  <div className="relative aspect-[3/4] rounded-2xl sm:rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
                     {member.photo ? (
                       <img
                         src={member.photo}
@@ -125,35 +125,35 @@ export function Team() {
                         className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-16 transition-all duration-300 group-hover:scale-105">
-                        <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
+                      <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-10 sm:pb-16 transition-all duration-300 group-hover:scale-105">
+                        <svg className="w-1/3 h-1/3 sm:w-1/2 sm:h-1/2" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                       </div>
                     )}
 
-                    <div className="absolute inset-x-3 bottom-3 p-3.5 rounded-2xl bg-brand-green/80 backdrop-blur-md border border-white/15 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none text-left shadow-lg">
-                      <p className="font-bold text-sm md:text-base text-brand-beige leading-snug mb-0.5">
+                    <div className="absolute inset-x-1.5 bottom-1.5 sm:inset-x-3 sm:bottom-3 p-2 sm:p-3.5 rounded-xl sm:rounded-2xl bg-brand-green/85 backdrop-blur-md border border-white/15 transition-opacity duration-300 group-hover:opacity-0 pointer-events-none text-left shadow-lg">
+                      <p className="font-bold text-xs sm:text-base text-brand-beige leading-snug mb-0.5 line-clamp-1">
                         {t(member.nameKey)}
                       </p>
-                      <p className="text-[11px] font-medium uppercase tracking-wider text-brand-beige/80">
+                      <p className="text-[9px] sm:text-[11px] font-medium uppercase tracking-wider text-brand-beige/80 line-clamp-1">
                         {t(member.roleKey)}
                       </p>
                     </div>
 
-                    <div className="absolute inset-0 bg-brand-green/90 backdrop-blur-md p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-brand-beige">
-                      <p className="font-bold text-base md:text-lg text-brand-beige mb-1 leading-snug">
+                    <div className="absolute inset-0 bg-brand-green/90 backdrop-blur-md p-3 sm:p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-brand-beige">
+                      <p className="font-bold text-xs sm:text-lg text-brand-beige mb-1 leading-snug line-clamp-2">
                         {t(member.nameKey)}
                       </p>
-                      <p className="text-xs font-medium uppercase tracking-wider text-brand-beige/80 mb-3 pb-2 border-b border-brand-beige/20 w-3/4">
+                      <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-brand-beige/80 mb-2 sm:mb-3 pb-1 sm:pb-2 border-b border-brand-beige/20 w-3/4 line-clamp-1">
                         {t(member.roleKey)}
                       </p>
                       {member.bioKey && (
-                        <p className="text-xs leading-relaxed text-brand-beige/90 font-normal line-clamp-4 mb-4">
+                        <p className="text-[10px] sm:text-xs leading-relaxed text-brand-beige/90 font-normal line-clamp-3 sm:line-clamp-4 mb-2 sm:mb-4 hidden xs:block">
                           {t(member.bioKey)}
                         </p>
                       )}
-                      <span className="text-[11px] font-bold uppercase tracking-wider bg-brand-beige text-brand-green px-3 py-1.5 rounded-full">
+                      <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider bg-brand-beige text-brand-green px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full">
                         {t('team_more_btn', { defaultValue: 'Открыть профиль' })}
                       </span>
                     </div>
@@ -167,34 +167,34 @@ export function Team() {
         {/* --- VIEW MODE 2: CAROUSEL --- */}
         {viewMode === 'carousel' && (
           <div className="relative">
-            <div className="flex justify-end gap-2 mb-4">
+            <div className="flex justify-end gap-2 mb-3 sm:mb-4">
               <button
                 onClick={() => scrollCarousel('left')}
-                className="w-10 h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
                 aria-label="Previous"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={() => scrollCarousel('right')}
-                className="w-10 h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
                 aria-label="Next"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
             <div
               ref={carouselRef}
-              className="flex gap-6 overflow-x-auto pb-6 scrollbar-none snap-x snap-mandatory"
+              className="flex gap-3 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 scrollbar-none snap-x snap-mandatory"
             >
               {allMembers.map((member, index) => (
                 <div
                   key={index}
                   onClick={() => setSelectedMember(member)}
-                  className="shrink-0 w-72 sm:w-80 snap-start group cursor-pointer"
+                  className="shrink-0 w-44 sm:w-80 snap-start group cursor-pointer"
                 >
-                  <div className="relative aspect-[3/4] rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
+                  <div className="relative aspect-[3/4] rounded-2xl sm:rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
                     {member.photo ? (
                       <img
                         src={member.photo}
@@ -202,18 +202,18 @@ export function Team() {
                         className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-16">
-                        <svg className="w-1/2 h-1/2" fill="currentColor" viewBox="0 0 24 24">
+                      <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-10 sm:pb-16">
+                        <svg className="w-1/3 h-1/3 sm:w-1/2 sm:h-1/2" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                       </div>
                     )}
 
-                    <div className="absolute inset-x-3 bottom-3 p-4 rounded-2xl bg-brand-green/85 backdrop-blur-md border border-white/15 text-left shadow-lg">
-                      <p className="font-bold text-base text-brand-beige leading-snug mb-0.5">
+                    <div className="absolute inset-x-1.5 bottom-1.5 sm:inset-x-3 sm:bottom-3 p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-brand-green/85 backdrop-blur-md border border-white/15 text-left shadow-lg">
+                      <p className="font-bold text-xs sm:text-base text-brand-beige leading-snug mb-0.5 line-clamp-1">
                         {t(member.nameKey)}
                       </p>
-                      <p className="text-xs font-medium uppercase tracking-wider text-brand-beige/80">
+                      <p className="text-[9px] sm:text-xs font-medium uppercase tracking-wider text-brand-beige/80 line-clamp-1">
                         {t(member.roleKey)}
                       </p>
                     </div>
