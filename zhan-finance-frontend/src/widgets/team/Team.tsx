@@ -9,15 +9,9 @@ import { LayoutGrid, Sliders, ChevronLeft, ChevronRight, X, PhoneCall, CheckCirc
 export function Team() {
   const { t } = useTranslation('landing');
   const [viewMode, setViewMode] = useState<'grid' | 'carousel'>('grid');
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    if (carouselRef.current) {
-      const scrollAmount = direction === 'left' ? -320 : 320;
-      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  const touchStartRef = useRef<{ startX: number } | null>(null);
 
   const allMembers = [teamLeader, ...teamSpecialists];
 
@@ -164,65 +158,139 @@ export function Team() {
           </div>
         )}
 
-        {/* --- VIEW MODE 2: CAROUSEL --- */}
-        {viewMode === 'carousel' && (
-          <div className="relative">
-            <div className="flex justify-end gap-2 mb-3 sm:mb-4">
-              <button
-                onClick={() => scrollCarousel('left')}
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
-                aria-label="Previous"
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-              <button
-                onClick={() => scrollCarousel('right')}
-                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/80 transition-all shadow-sm"
-                aria-label="Next"
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-            </div>
+        {/* --- VIEW MODE 2: INFINITE CAROUSEL --- */}
+        {viewMode === 'carousel' && (() => {
+          const total = allMembers.length;
+          const next = () => setCurrentIndex((prev) => (prev + 1) % total);
+          const prev = () => setCurrentIndex((prev) => (prev - 1 + total) % total);
 
-            <div
-              ref={carouselRef}
-              className="flex gap-3 sm:gap-6 overflow-x-auto pb-4 sm:pb-6 scrollbar-none snap-x snap-mandatory"
-            >
-              {allMembers.map((member, index) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedMember(member)}
-                  className="shrink-0 w-44 sm:w-80 snap-start group cursor-pointer"
-                >
-                  <div className="relative aspect-[3/4] rounded-2xl sm:rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
-                    {member.photo ? (
-                      <img
-                        src={member.photo}
-                        alt={t(member.nameKey)}
-                        className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+          // Get 4 consecutive members for desktop, 2 for tablet, 1 for mobile with circular indexing
+          const getCard = (offset: number) => allMembers[(currentIndex + offset + total) % total];
+
+          return (
+            <div className="relative">
+              {/* Carousel Controls */}
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-brand-green/60">
+                    {String(currentIndex + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+                  </span>
+                  <div className="flex gap-1 ml-2">
+                    {allMembers.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentIndex(i)}
+                        className={`h-1.5 rounded-full transition-all ${
+                          i === currentIndex
+                            ? 'w-6 bg-brand-green'
+                            : 'w-1.5 bg-brand-green/20 hover:bg-brand-green/40'
+                        }`}
+                        aria-label={`Go to slide ${i + 1}`}
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-10 sm:pb-16">
-                        <svg className="w-1/3 h-1/3 sm:w-1/2 sm:h-1/2" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </div>
-                    )}
-
-                    <div className="absolute inset-x-1.5 bottom-1.5 sm:inset-x-3 sm:bottom-3 p-2 sm:p-4 rounded-xl sm:rounded-2xl bg-brand-green/85 backdrop-blur-md border border-white/15 text-left shadow-lg">
-                      <p className="font-bold text-xs sm:text-base text-brand-beige leading-snug mb-0.5 line-clamp-1">
-                        {t(member.nameKey)}
-                      </p>
-                      <p className="text-[9px] sm:text-xs font-medium uppercase tracking-wider text-brand-beige/80 line-clamp-1">
-                        {t(member.roleKey)}
-                      </p>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              ))}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={prev}
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/90 active:scale-95 transition-all shadow-sm"
+                    aria-label="Previous specialist"
+                  >
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+                  <button
+                    onClick={next}
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand-green text-brand-beige flex items-center justify-center hover:bg-brand-green/90 active:scale-95 transition-all shadow-sm"
+                    aria-label="Next specialist"
+                  >
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Infinite Sliding Cards Track */}
+              <div
+                className="overflow-hidden touch-pan-y select-none"
+                onTouchStart={(e) => {
+                  const touch = e.touches[0];
+                  touchStartRef.current = { startX: touch.clientX };
+                }}
+                onTouchEnd={(e) => {
+                  const touch = e.changedTouches[0];
+                  const startX = touchStartRef.current?.startX ?? 0;
+                  const diff = touch.clientX - startX;
+                  if (diff > 40) prev();
+                  else if (diff < -40) next();
+                }}
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {[0, 1, 2].map((offset) => {
+                    const member = getCard(offset);
+                    const isExtraCardOnMobile = offset > 0;
+                    const isExtraCardOnTablet = offset > 1;
+
+                    return (
+                      <motion.div
+                        key={`${member.nameKey}-${(currentIndex + offset) % total}`}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                        onClick={() => setSelectedMember(member)}
+                        className={`group cursor-pointer ${
+                          isExtraCardOnMobile ? 'hidden sm:block' : ''
+                        } ${isExtraCardOnTablet ? 'hidden lg:block' : ''}`}
+                      >
+                        <div className="relative aspect-[3/4] rounded-2xl sm:rounded-[24px] overflow-hidden bg-brand-green/[0.08] border border-brand-green/20 shadow-sm group-hover:shadow-xl group-hover:border-brand-green/40 transition-all duration-300">
+                          {member.photo ? (
+                            <img
+                              src={member.photo}
+                              alt={t(member.nameKey)}
+                              className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-brand-green/40 pb-10 sm:pb-16">
+                              <svg className="w-1/3 h-1/3 sm:w-1/2 sm:h-1/2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                              </svg>
+                            </div>
+                          )}
+
+                          <div className="absolute inset-x-2 bottom-2 sm:inset-x-3 sm:bottom-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-brand-green/85 backdrop-blur-md border border-white/15 text-left shadow-lg">
+                            <p className="font-bold text-sm sm:text-base text-brand-beige leading-snug mb-0.5 line-clamp-1">
+                              {t(member.nameKey)}
+                            </p>
+                            <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-brand-beige/80 line-clamp-1">
+                              {t(member.roleKey)}
+                            </p>
+                          </div>
+
+                          <div className="absolute inset-0 bg-brand-green/90 backdrop-blur-md p-4 sm:p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 text-brand-beige">
+                            <p className="font-bold text-sm sm:text-lg text-brand-beige mb-1 leading-snug line-clamp-2">
+                              {t(member.nameKey)}
+                            </p>
+                            <p className="text-xs font-medium uppercase tracking-wider text-brand-beige/80 mb-2 sm:mb-3 pb-1 sm:pb-2 border-b border-brand-beige/20 w-3/4 line-clamp-1">
+                              {t(member.roleKey)}
+                            </p>
+                            {member.bioKey && (
+                              <p className="text-xs leading-relaxed text-brand-beige/90 font-normal line-clamp-3 sm:line-clamp-4 mb-3 sm:mb-4">
+                                {t(member.bioKey)}
+                              </p>
+                            )}
+                            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-brand-beige text-brand-green px-3 py-1.5 rounded-full">
+                              {t('team_more_btn', { defaultValue: 'Открыть профиль' })}
+                            </span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* --- DETAIL MODAL ON CARD SELECTION --- */}
         <AnimatePresence>
