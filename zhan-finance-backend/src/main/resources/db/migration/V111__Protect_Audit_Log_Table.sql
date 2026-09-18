@@ -7,13 +7,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to protect against UPDATE and DELETE
+DROP TRIGGER IF EXISTS trg_protect_audit_logs_row ON audit_logs;
 CREATE TRIGGER trg_protect_audit_logs_row
 BEFORE UPDATE OR DELETE ON audit_logs
 FOR EACH ROW
 EXECUTE FUNCTION block_audit_modification();
 
 -- Trigger to protect against TRUNCATE
+DROP TRIGGER IF EXISTS trg_protect_audit_logs_stmt ON audit_logs;
 CREATE TRIGGER trg_protect_audit_logs_stmt
 BEFORE TRUNCATE ON audit_logs
 FOR EACH STATEMENT
 EXECUTE FUNCTION block_audit_modification();
+

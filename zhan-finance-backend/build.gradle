@@ -30,10 +30,10 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-otlp'
     implementation 'org.springframework.boot:spring-boot-starter-opentelemetry'
     // TODO: Sentry 8.51.0 incompatible with Spring Boot 4.1.0 (NoClassDefFoundError: RestClientCustomizer)
-    // implementation 'io.sentry:sentry-spring-boot-starter-jakarta:8.51.0'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'com.google.api-client:google-api-client:2.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'

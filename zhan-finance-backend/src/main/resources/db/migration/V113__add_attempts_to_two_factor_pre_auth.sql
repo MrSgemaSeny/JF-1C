@@ -1,1 +1,2 @@
-ALTER TABLE two_factor_pre_auth ADD COLUMN attempts INT NOT NULL DEFAULT 0;
+ALTER TABLE two_factor_pre_auth ADD COLUMN IF NOT EXISTS attempts INT NOT NULL DEFAULT 0;
+
