@@ -13,6 +13,7 @@ import { Team } from '@/widgets/team/Team';
 import { Offices } from '@/widgets/offices/Offices';
 import { FaqContact } from '@/widgets/faq-contact';
 import { Footer } from '@/widgets/footer/Footer';
+import { ScrollToBottomButton } from '@/shared/ui/ScrollToBottomButton';
 import { useTranslation } from 'react-i18next';
 
 export function HomePage() {
@@ -47,6 +48,7 @@ export function HomePage() {
         <FaqContact />
       </main>
       <Footer />
+      <ScrollToBottomButton />
     </>
   );
 }
