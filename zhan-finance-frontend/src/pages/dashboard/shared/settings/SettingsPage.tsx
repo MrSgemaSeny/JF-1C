@@ -1,11 +1,24 @@
-import { useState, useEffect, useRef } from 'react';
-import { Camera, Lock, User, Save, Upload, Shield, Building2, Phone, Globe } from 'lucide-react';
+﻿import { useState, useEffect, useRef } from 'react';
+import { Camera, Lock, User, Save, Upload, Shield, Building2, Phone, Globe, MessageCircle, ExternalLink, Unlink, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getMyProfile, updateMyProfile, updateMyPassword, uploadAvatar, UserProfileDto } from '@/entities/user/api/userApi';
 import { Spinner } from '@/shared/ui/Spinner';
-import { API_BASE_URL, getSecureImageUrl } from '@/shared/api/http';
+import { getSecureImageUrl, apiRequest } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+
+interface TelegramStatus {
+  linked: boolean;
+  chatId?: number;
+  telegramUsername?: string;
+  linkedAt?: string;
+}
+
+interface TelegramLinkToken {
+  token: string;
+  deepLink: string;
+  expiresAt: string;
+}
 
 export function SettingsPage() {
   const { user, setUser } = useAuth();
@@ -34,8 +47,16 @@ export function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Telegram
+  const [tgStatus, setTgStatus] = useState<TelegramStatus | null>(null);
+  const [tgLoading, setTgLoading] = useState(true);
+  const [tgLinkData, setTgLinkData] = useState<TelegramLinkToken | null>(null);
+  const [tgGenerating, setTgGenerating] = useState(false);
+  const [tgUnlinking, setTgUnlinking] = useState(false);
+
   useEffect(() => {
     loadProfile();
+    loadTelegramStatus();
   }, []);
 
   async function loadProfile() {
@@ -49,6 +70,44 @@ export function SettingsPage() {
       setProfileError(e.message || t('settings.errors.loadProfile'));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function loadTelegramStatus() {
+    try {
+      const data = await apiRequest<TelegramStatus>('/v1/telegram/link/status');
+      setTgStatus(data);
+    } catch {
+      setTgStatus({ linked: false });
+    } finally {
+      setTgLoading(false);
+    }
+  }
+
+  async function handleGenerateTgLink() {
+    setTgGenerating(true);
+    setTgLinkData(null);
+    try {
+      const data = await apiRequest<TelegramLinkToken>('/v1/telegram/link/generate', { method: 'POST' });
+      setTgLinkData(data);
+    } catch (e: any) {
+      alert(e.message || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С–Р ВµР Р…Р ВµРЎР‚Р В°РЎвЂ Р С‘Р С‘ РЎРѓРЎРѓРЎвЂ№Р В»Р С”Р С‘');
+    } finally {
+      setTgGenerating(false);
+    }
+  }
+
+  async function handleUnlinkTelegram() {
+    if (!confirm('Р С›РЎвЂљР Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ Telegram-Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљ?')) return;
+    setTgUnlinking(true);
+    try {
+      await apiRequest('/v1/telegram/link', { method: 'DELETE' });
+      setTgStatus({ linked: false });
+      setTgLinkData(null);
+    } catch (e: any) {
+      alert(e.message || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С•РЎвЂљР Р†РЎРЏР В·Р С”Р С‘');
+    } finally {
+      setTgUnlinking(false);
     }
   }
 
@@ -366,22 +425,93 @@ export function SettingsPage() {
             </form>
           </div>
         )}
+
         {/* Language Preferences Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <Globe className="w-5 h-5 text-brand-green" />
-                <h3 className="text-xl font-bold text-gray-900">{t('settings.language', 'Язык интерфейса')}</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t('settings.language', 'Р Р‡Р В·РЎвЂ№Р С” Р С‘Р Р…РЎвЂљР ВµРЎР‚РЎвЂћР ВµР в„–РЎРѓР В°')}</h3>
               </div>
-              <p className="text-sm text-gray-500 mt-1">{t('settings.languageDesc', 'Выберите предпочтительный язык для отображения интерфейса')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t('settings.languageDesc', 'Р вЂ™РЎвЂ№Р В±Р ВµРЎР‚Р С‘РЎвЂљР Вµ Р С—РЎР‚Р ВµР Т‘Р С—Р С•РЎвЂЎРЎвЂљР С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р в„– РЎРЏР В·РЎвЂ№Р С” Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р С‘Р Р…РЎвЂљР ВµРЎР‚РЎвЂћР ВµР в„–РЎРѓР В°')}</p>
             </div>
             <div className="pt-2 sm:pt-0">
               <LanguageSwitcher />
             </div>
           </div>
         </div>
+
+        {/* Telegram Link Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="flex items-center gap-2 mb-2">
+            <MessageCircle className="w-5 h-5 text-[#2AABEE]" />
+            <h3 className="text-xl font-bold text-gray-900">Telegram</h3>
+          </div>
+          <p className="text-sm text-gray-500 mb-6">
+            Р СџРЎР‚Р С‘Р Р†РЎРЏР В¶Р С‘РЎвЂљР Вµ Telegram-Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—Р С•Р В»РЎС“РЎвЂЎР В°РЎвЂљРЎРЉ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘РЎРЏ Р С• Р В·Р В°Р Т‘Р В°РЎвЂЎР В°РЎвЂ¦, РЎРѓРЎвЂЎР ВµРЎвЂљР В°РЎвЂ¦ Р С‘ РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘РЎРЏРЎвЂ¦ Р С—РЎР‚РЎРЏР СР С• Р Р† Р В±Р С•РЎвЂљ.
+          </p>
+
+          {tgLoading ? (
+            <div className="flex items-center gap-2 text-gray-400 text-sm"><Spinner className="w-4 h-4" /> Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В°...</div>
+          ) : tgStatus?.linked ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-green-50 border border-green-100 rounded-xl">
+              <div>
+                <p className="text-sm font-semibold text-green-700">Р СџРЎР‚Р С‘Р Р†РЎРЏР В·Р В°Р Р…</p>
+                {tgStatus.telegramUsername && (
+                  <p className="text-sm text-gray-600 mt-0.5">@{tgStatus.telegramUsername}</p>
+                )}
+              </div>
+              <button
+                onClick={handleUnlinkTelegram}
+                disabled={tgUnlinking}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60"
+              >
+                {tgUnlinking ? <Spinner className="w-4 h-4" /> : <Unlink className="w-4 h-4" />}
+                Р С›РЎвЂљР Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {tgLinkData ? (
+                <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl space-y-3">
+                  <p className="text-sm text-gray-600">
+                    Р РЋРЎРѓРЎвЂ№Р В»Р С”Р В° Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р В° 15 Р СР С‘Р Р…РЎС“РЎвЂљ. Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р С”Р Р…Р С•Р С—Р С”РЎС“ Р Р…Р С‘Р В¶Р Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р В±Р С•РЎвЂљР В° Р С‘ Р В·Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р С‘РЎвЂљРЎРЉ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р С”РЎС“.
+                  </p>
+                  <a
+                    href={tgLinkData.deepLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2AABEE] text-white text-sm font-semibold rounded-xl hover:bg-[#1e96d3] transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р Р† Telegram
+                    <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                  </a>
+                  <button
+                    onClick={handleGenerateTgLink}
+                    disabled={tgGenerating}
+                    className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Р С›Р В±Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ РЎРѓРЎРѓРЎвЂ№Р В»Р С”РЎС“
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleGenerateTgLink}
+                  disabled={tgGenerating}
+                  className="flex items-center gap-2 px-6 py-3 bg-[#2AABEE] text-white font-semibold rounded-xl hover:bg-[#1e96d3] hover:shadow-md transition-all disabled:opacity-60"
+                >
+                  {tgGenerating ? <Spinner className="w-4 h-4 text-white" /> : <MessageCircle className="w-4 h-4" />}
+                  Р СџР С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ Telegram
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
+
