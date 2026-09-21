@@ -15,8 +15,8 @@ public class CorsConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.cors.allowed-origins:https://mrsgemaseny.github.io,https://zhanfinance.fly.dev,http://localhost:5173,https://zhanfinance.kz}") String allowedOrigins,
-            @Value("${app.cors.allowed-origin-patterns:http://localhost:*,http://127.0.0.1:*,https://zhanfinance.fly.dev,https://*.zhanfinance.kz}") String allowedOriginPatterns
+            @Value("${app.cors.allowed-origins:https://mrsgemaseny.github.io,https://zhanfinance.fly.dev,http://localhost:5173,https://zhanfinance.kz,capacitor://localhost,http://localhost,https://localhost}") String allowedOrigins,
+            @Value("${app.cors.allowed-origin-patterns:http://localhost:*,http://127.0.0.1:*,https://zhanfinance.fly.dev,https://*.zhanfinance.kz,capacitor://*,ionic://*}") String allowedOriginPatterns
 
     ) {
         CorsConfiguration configuration = new CorsConfiguration();
