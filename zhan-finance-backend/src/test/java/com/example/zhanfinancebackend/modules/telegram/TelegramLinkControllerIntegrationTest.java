@@ -75,8 +75,8 @@ class TelegramLinkControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(user(testPrincipal)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("token-abc-123"))
-                .andExpect(jsonPath("$.deepLink").value("https://t.me/zhanfinancebot?start=token-abc-123"));
+                .andExpect(jsonPath("$.data.token").value("token-abc-123"))
+                .andExpect(jsonPath("$.data.deepLink").value("https://t.me/zhanfinancebot?start=token-abc-123"));
     }
 
     @Test
@@ -95,9 +95,9 @@ class TelegramLinkControllerIntegrationTest {
                         .contextPath("/api")
                         .with(user(testPrincipal)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.linked").value(true))
-                .andExpect(jsonPath("$.chatId").value(987654321))
-                .andExpect(jsonPath("$.telegramUsername").value("client_tg"));
+                .andExpect(jsonPath("$.data.linked").value(true))
+                .andExpect(jsonPath("$.data.chatId").value(987654321))
+                .andExpect(jsonPath("$.data.telegramUsername").value("client_tg"));
     }
 
     @Test
