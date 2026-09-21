@@ -7,10 +7,10 @@ import fs from 'node:fs'
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineConfig(({ mode }) => {
-  const isGitHubPages = mode === 'github' || process.env.GITHUB_PAGES === 'true' || process.env.BUILD_TARGET === 'github'
+  const isMobile = mode === 'mobile' || process.env.BUILD_TARGET === 'mobile' || process.env.CAPACITOR === 'true'
 
   return {
-    base: isGitHubPages ? '/JF-1C/' : '/',
+    base: isMobile ? '/' : '/JF-1C/',
     plugins: [
       react(), 
       tailwindcss(),

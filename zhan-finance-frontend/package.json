@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:web": "cross-env VITE_API_URL=https://zhanfinance.fly.dev tsc && cross-env VITE_API_URL=https://zhanfinance.fly.dev vite build",
+    "build:web": "cross-env BUILD_TARGET=mobile VITE_API_URL=https://zhanfinance.fly.dev tsc && cross-env BUILD_TARGET=mobile VITE_API_URL=https://zhanfinance.fly.dev vite build",
     "cap:sync": "npx cap sync",
     "build:mobile": "npm run build:web && npm run cap:sync",
     "build:github": "cross-env BUILD_TARGET=github tsc && cross-env BUILD_TARGET=github vite build",
