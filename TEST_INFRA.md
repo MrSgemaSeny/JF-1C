@@ -1,229 +1,231 @@
-# JF-1C Test Infrastructure Specification
+# ZhanFinance Telegram Bot Microservice & JF-1C Backend Test Infrastructure Specification
 
 ## 1. Architecture Overview & Dual Track Strategy
 
-The JF-1C testing framework is organized as a Dual Track verification architecture:
-1. **Implementation Track**: Unit, controller slice, and component tests running in isolation (Spring Boot MockMvc, Mockito, Vitest, React Testing Library).
-2. **E2E Testing Track**: Opaque-box, requirement-driven integration and live lifecycle suites verifying contracts, cross-module workflows, security policies, and user journeys against running application environments.
+The verification strategy for the ZhanFinance Telegram Bot Microservice (`zhan-finance-tgbot`) and the JF-1C Monolithic Backend (`zhan-finance-backend`) follows a Dual Track Quality Architecture:
+
+1. **Implementation Track**: Fast, isolated unit and slice tests executing within each service boundary:
+   - Backend: Spring Boot 4.1.0/3.4 MockMvc slice tests, Mockito component mocks, JPA repository tests on in-memory H2 (PostgreSQL dialect mode), and JaCoCo coverage metrics.
+   - Telegram Bot: Headless Spring Boot 3.3.4 unit tests, MockRestServiceServer REST client tests, and mock `TelegramClient` execution verifications.
+2. **E2E Testing Track**: Opaque-box, requirement-driven integration and live lifecycle suites validating cross-service HTTP communication, security boundaries, asynchronous Outbox transactional guarantees, rate-limiting constraints, and real-world failure recovery.
 
 ```
-+-----------------------------------------------------------------------------------+
-|                              QUALITY GATES MATRIX                                 |
-+------------------------------------+----------------------------------------------+
-| Implementation Track (Isolated)    | E2E Testing Track (Opaque-Box & Integration) |
-+------------------------------------+----------------------------------------------+
-| Backend: MockMvc + JUnit 5         | Live API Suites: Node.js ESM Test Harness    |
-| Backend Coverage: JaCoCo >= 70%    | Browser Journeys: Playwright Chromium Headless|
-| Frontend: Vitest + RTL             | Security Audit: RBAC & IDOR Verification     |
-| Frontend Coverage: V8 >= 70%       | Concurrency & Limits: Bucket4j Rate Limiting |
-| Static: ESLint 9 (0 warnings)      | Cross-Module: CRM -> Billing -> LMS -> Chat  |
-| Types: TypeScript Strict (0 errors)| Load & SLA: Artillery p95 < 1s, err < 1%     |
-+------------------------------------+----------------------------------------------+
++---------------------------------------------------------------------------------------------------+
+|                                  DUAL TRACK QUALITY MATRIX                                        |
++-------------------------------------------------+-------------------------------------------------+
+| Implementation Track (Isolated Component Level) | E2E Testing Track (Cross-Service & Opaque-Box)   |
++-------------------------------------------------+-------------------------------------------------+
+| Backend: Spring MockMvc + JUnit 5 + Mockito     | Live Cross-Service Contract Harness (HTTP/JSON) |
+| Backend Coverage Gate: JaCoCo >= 70% on modules | Outbox Lifecycle: Enqueue -> Poll -> ACK -> State|
+| Bot Microservice: SpringBootTest (headless)     | Security Gate: X-Internal-Token constant-time   |
+| Bot Mocks: MockRestServiceServer & TelegramClient| Throttling Gate: 40ms sleep & RateLimit whitelist|
+| Static Verification: Java 17 strict compiler    | Error Recovery: 403 Forbidden, 429, Network Drop|
++-------------------------------------------------+-------------------------------------------------+
 ```
 
 ---
 
 ## 2. Test Execution Environments
 
-The testing infrastructure supports three distinct execution profiles:
+The testing infrastructure defines three deterministic execution environments:
 
-### 2.1 Local In-Memory Environment (Fast Iteration)
-- **Backend Database**: In-memory H2 database (`jdbc:h2:mem:zhan_finance_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH`).
-- **Flyway Status**: `spring.flyway.enabled=false`, schema synthesized via Hibernate `ddl-auto=update` to maximize developer execution speed (<90s for entire backend suite).
-- **Frontend Environment**: Vitest with `jsdom` v29.1, mocking `@/shared/api/http` and WebSocket STOMP transport.
-- **Scope**: Tier 1 and Tier 2 unit and controller slice tests.
+### 2.1 Local In-Memory Fast Suite (Fast Iteration & Local Development)
+- **Backend Setup**:
+  - Database: In-memory H2 database with PostgreSQL compatibility (`jdbc:h2:mem:zhan_finance_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH`).
+  - Flyway: Disabled in local slice tests (`spring.flyway.enabled=false`), JPA Hibernate `ddl-auto=update` for rapid schema synthesis.
+  - Runtime: Sub-90 second execution across the entire test suite.
+- **Bot Microservice Setup**:
+  - Headless profile: `spring.main.web-application-type=none`.
+  - Mocked Telegram Client: In-memory mock capturing outgoing `SendMessage` calls without connecting to Telegram servers.
+  - Mocked REST Server: `MockRestServiceServer` validating request payloads and `X-Internal-Token` headers.
+- **Scope**: Tier 1 and Tier 2 isolated feature and boundary cases.
 
 ### 2.2 CI Service Container Environment (Pre-Merge Quality Gate)
-- **Backend Database**: Dedicated PostgreSQL 16 service container in GitHub Actions (`postgres:16`).
-- **Flyway Status**: `spring.flyway.enabled=true`, validating all 61 migrations (V1 to V121) against real PostgreSQL syntax, triggers, and PL/pgSQL procedures.
-- **Coverage Enforcement**: JaCoCo verification task halting CI if instruction coverage falls below 70.00%.
-- **Frontend Verification**: Sequential execution: ESLint 9 (`--max-warnings 0`), `tsc --noEmit`, Vitest V8 coverage (`>=70%`), and production asset bundling.
+- **Database**: Real PostgreSQL 17 container in GitHub Actions (`postgres:17-alpine`).
+- **Flyway Verification**: `spring.flyway.enabled=true`, validating migration chain strictly through `V124__Telegram_Link_Schema.sql` and `V125__Telegram_Outbox.sql`.
+- **Quality Gate Enforcements**:
+  - Compile-time check on Java 17 for both projects.
+  - JaCoCo line and instruction coverage gate (`jacocoTestCoverageVerification`) bound to `check`.
+  - Checksum validation for all historical Flyway migrations.
+- **Scope**: Migration integrity, full Spring Security filter chain execution, and end-to-end repository queries.
 
-### 2.3 Live & Staging Environment (Full Integration & Browser E2E)
-- **Backend Target**: `https://zhanfinance.fly.dev/api` (or local `http://localhost:8080/api`).
-- **Frontend Target**: `https://mrsgemaseny.github.io/JF-1C` (or local `http://localhost:5173`).
-- **Scope**: Tier 3 Cross-Feature combinations, Tier 4 Real-World scenarios, Playwright browser flows, and Artillery load profiles.
+### 2.3 Staging / Live Dual-Process Mesh Environment (Full E2E Verification)
+- **Networking**: Fly.io 6PN private IPv6 internal mesh.
+- **Backend Host**: `http://zhanfinance.internal:8080/api` (Context-path `/api`).
+- **Bot Host**: Headless standalone daemon running within the same 6PN network.
+- **Isolation**: Zero public internet ingress to `/api/v1/internal/**`. All traffic restricted to internal token authentication.
+- **Scope**: Tier 3 pairwise integration, Tier 4 real-world operational workflows, burst outbox delivery, and failover drills.
 
 ---
 
 ## 3. The 4-Tier Test Methodology
 
-The test inventory is organized into four hierarchical tiers:
+Every feature from the Feature Inventory (F1 to F22) is verified through four structured test tiers:
 
-### Tier 1: Feature Coverage (>=5 tests per feature)
-- **Objective**: Verify isolated happy-path functionality for all endpoints, services, and UI components.
-- **Scope**: Every feature in PROJECT.md must have at least 5 dedicated positive test cases verifying inputs, business calculations, database persistence, and standard responses (200 OK / 201 Created).
-
-### Tier 2: Boundary, Corner & Adversarial Cases (>=5 tests per feature)
-- **Objective**: Stress-test error paths, edge conditions, invalid inputs, and security constraints.
+### Tier 1: Feature Coverage (Isolation & Happy Path, >=5 Tests Per Feature)
+- **Objective**: Validate the primary functional contract for each feature in isolation.
+- **Requirement**: At least 5 distinct positive test cases per feature (110 test specifications total across F1 to F22).
 - **Scope**:
-  - Null, empty, whitespace-only, and excessively large payloads.
-  - Boundary dates (past dates, expired deadlines, overlapping subscription ranges).
-  - Special characters, Cyrillic UTF-8 encoding, and HTML/script injection attempts.
-  - Cross-tenant IDOR attacks: verifying that non-admin actors receive 403 Forbidden or 404 Not Found when accessing resources belonging to other tenants.
-  - Role-Based Access Control (RBAC): verifying `@PreAuthorize` enforcement (e.g. ADVISOR read-only status, CLIENT restricted to self).
-  - Rate limiting: exhausting Bucket4j token buckets and verifying HTTP 429 Too Many Requests responses.
+  - Entity field persistence, table constraints, and foreign key integrity.
+  - Filter authentication and security context establishment.
+  - REST endpoint request/response JSON schema matching.
+  - Bot command parsing and appropriate reply dispatch.
+  - Scheduled worker polling and cleanup invocations.
 
-### Tier 3: Cross-Feature Combinations
-- **Objective**: Validate pairwise interactions across disparate modules.
+### Tier 2: Boundary, Corner & Adversarial Cases (>=5 Tests Per Feature)
+- **Objective**: Stress-test edge conditions, negative inputs, security barriers, and resource limits.
+- **Requirement**: At least 5 distinct negative/adversarial test cases per feature (110 test specifications total across F1 to F22).
 - **Scope**:
-  - CRM Task Stage Transition -> Billing Invoice Auto-Generation -> In-App Notification.
-  - Course Completion -> Certificate Generation -> Public Verification Link -> Learner Profile Badge.
-  - Document Upload -> Storage Service Binary Persistence -> Task Association -> Client Signature Confirmation.
-  - Chat Message Delivery -> STOMP Topic Dispatch -> Unread Count Increment -> Notification Bell Update.
-  - Admin Employee Approval -> Credential Activation -> Task Pool Access -> Task Claiming.
+  - Timing attack resilience via constant-time token comparison.
+  - Expired tokens (TTL > 15 minutes), malformed UUIDs, and replay attempts.
+  - Unlinked chat queries, empty data responses, and non-client roles.
+  - Dangerous HTML payload characters (`&`, `<`, `>`, combined scripts) escaping.
+  - Rate limiting boundaries (40ms inter-message spacing, whitelisting verification).
+  - Outbox max retry limits (`max_attempts = 3`), dead-letter transitions, and user blocking (403 Forbidden).
 
-### Tier 4: Real-World Application Scenarios
-- **Objective**: Complete end-to-end multi-persona operational workflows representing real business journeys.
+### Tier 3: Pairwise Combinations (Cross-Feature & Inter-Module Interaction)
+- **Objective**: Validate cross-system data flows spanning the monolithic backend, CRM state changes, database outbox, internal REST interfaces, and bot dispatching.
+- **Requirement**: Comprehensive integration scenarios combining at least two distinct features.
 - **Scope**:
-  - Multi-tenant client onboarding and billing cycle.
-  - Employee recruitment, approval, and task dispute resolution.
-  - Complete LMS education path from enrollment to public certificate verification.
-  - Security audit walk verifying zero privilege escalation across all 6 roles (ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR).
+  - Account Linking Flow: Generate Token (F8) -> Bot /start Token (F17) -> REST Client (F15) -> Internal Bind (F9) -> Link Entity (F6) -> Status Verification (F8).
+  - Task Status Notification Flow: Task Stage Transition in CRM (F10) -> Outbox Enqueue (F7) -> Poller Fetch (F20) -> Safe HTML Format (F16) -> Telegram Client Dispatch (F14) -> Batch ACK (F9) -> Status Update (F7).
+  - Document Upload Flow: Document Upload (F10) -> Outbox Enqueue (F7) -> Bot Notification Dispatch (F20) -> ACK Processing (F9).
+  - Unlink Flow: Client /unlink (F19) -> Bot Internal DELETE (F9) -> Database Deactivation (F6) -> Subsequent CRM Event Outbox Suppression (F10).
+  - Rate Limit Whitelisting: Internal Bot Poller High Frequency (F20) -> ApiRateLimitFilter (F5) -> Zero HTTP 429 Throttle.
+
+### Tier 4: Real-World Workload Scenarios (Operational Multi-Persona Journeys)
+- **Objective**: Validate end-to-end business operations under realistic production conditions.
+- **Requirement**: Full lifecycle scenarios simulating real-world workloads, concurrent clients, and environmental disruptions.
+- **Scope**:
+  - Multi-Tenant Client Onboarding & Task Lifecycle Journey.
+  - High-Volume Burst Notification Outbox Processing with 40ms Rate Limiter.
+  - Bot Failure, Crash & Restart Resilience with In-Flight Outbox Queue.
+  - Telegram User Blockage (HTTP 403 Forbidden) and Dead-Letter Escalation.
+  - Concurrent Interactive Client Query Workload (/tasks, /docs, /status).
+  - Network Partition & Backend Recovery Drill during Scheduled Polling.
 
 ---
 
-## 4. Concrete Verification Runners & Commands
+## 4. Feature Inventory Mapping
 
-### 4.1 Backend Test Runner (Gradle / JUnit 5 / JaCoCo)
-- **Working Directory**: `./zhan-finance-backend`
-- **Execute Full Test Suite**:
-  ```powershell
-  ./gradlew test
-  ```
-- **Execute Single Test Class**:
-  ```powershell
-  ./gradlew test --tests "com.example.zhanfinancebackend.modules.crm.controller.TaskControllerTest"
-  ```
-- **Generate JaCoCo Coverage Report**:
-  ```powershell
-  ./gradlew test jacocoTestReport
-  ```
-- **Enforce JaCoCo Coverage Gate (>=70% instruction threshold)**:
-  ```powershell
-  ./gradlew jacocoTestCoverageVerification
-  ```
-- **Clean Stale Result Cache (Windows EOF/Buffer Underflow fix)**:
-  ```powershell
-  ./gradlew cleanTest
-  ```
-
-### 4.2 Frontend Quality & Vitest Runner
-- **Working Directory**: `./zhan-finance-frontend`
-- **Install Dependencies**:
-  ```powershell
-  npm ci
-  ```
-- **Static Analysis (ESLint 9 Flat Config - 0 warnings enforced)**:
-  ```powershell
-  npm run lint
-  ```
-- **TypeScript Standalone Strict Typecheck (0 errors enforced)**:
-  ```powershell
-  npm run typecheck
-  ```
-- **Execute All Vitest Suites**:
-  ```powershell
-  npm test
-  ```
-- **Execute Vitest with V8 Coverage Thresholds (>=70%)**:
-  ```powershell
-  npm run test:coverage
-  ```
-- **Production Asset Build Verification**:
-  ```powershell
-  npm run build
-  ```
-
-### 4.3 Integration & Live E2E Harness (Node.js ESM)
-- **Working Directory**: `./tests`
-- **Run Master Live E2E Suite**:
-  ```powershell
-  node run-all-e2e.mjs
-  ```
-- **Run Targeted E2E Lifecycles**:
-  ```powershell
-  node e2e/api-live.mjs                        # API security headers & public endpoints
-  node e2e/crm-lifecycle-live.mjs              # CRM tasks, pipelines & reassignments
-  node e2e/billing-invoices-live.mjs           # Invoices, subscriptions & PDF generation
-  node e2e/lms-lifecycle-live.mjs              # LMS courses, lessons & certificates
-  node e2e/chat-notifications-live.mjs         # Chat messaging & notification lifecycle
-  node e2e/documents-search-live.mjs           # Document uploads & global search
-  node e2e/idor-live.mjs                       # RBAC & IDOR cross-tenant penetration
-  node e2e/rate-limit-lifecycle.mjs            # Bucket4j 429 rate limit enforcement
-  node e2e/advisor-readonly-lifecycle.mjs      # Advisor read-only boundary enforcement
-  node e2e/2fa-lifecycle.mjs                   # TOTP 2FA setup, verify & disable
-  node e2e/search-lifecycle.mjs                # Global search Cyrillic & role isolation
-  ```
-- **Environment Variables for Custom Target**:
-  ```powershell
-  $env:API_BASE_URL="http://localhost:8080/api"
-  $env:ADMIN_EMAIL="admin@zhanfinance.kz"
-  $env:ADMIN_PASSWORD="TestPass123"
-  node run-all-e2e.mjs
-  ```
-
-### 4.4 Browser E2E Runner (Playwright Chromium Headless)
-- **Working Directory**: `./tests`
-- **Run Browser Public Pages Suite**:
-  ```powershell
-  node e2e/frontend-live.mjs
-  ```
-- **Run Browser Authenticated Journeys (Admin, Employee, Client)**:
-  ```powershell
-  node e2e/authenticated-journeys-live.mjs
-  ```
-
-### 4.5 Performance & Load SLA Runner (Artillery)
-- **Working Directory**: `./tests`
-- **Execute Authenticated CRM Load Scenario**:
-  ```powershell
-  npx artillery run artillery/scenarios/authenticated-crm.yml --output artillery-report.json
-  ```
-- **Validate SLA Thresholds**:
-  ```powershell
-  npx artillery report artillery-report.json --ensure
-  ```
+| Feature ID | Feature Name | Component | Scope & Interface |
+|---|---|---|---|
+| F1 | V124 Flyway Migration | Backend | `V124__Telegram_Link_Schema.sql`: `telegram_links`, `telegram_link_tokens` |
+| F2 | V125 Flyway Migration | Backend | `V125__Telegram_Outbox.sql`: `telegram_notifications`, partial & composite indexes |
+| F3 | INTERNAL_BOT Security Role | Backend | `Role.java`: Enum value `INTERNAL_BOT`, registration sanitization checks |
+| F4 | InternalTokenFilter | Backend | `InternalTokenFilter.java`: Constant-time token verification on `/v1/internal/**` |
+| F5 | Rate Limit Whitelisting | Backend | `ApiRateLimitFilter.java`: Exemption for `/v1/internal/**` and `/api/v1/internal/**` |
+| F6 | Telegram Link Entities & Repos | Backend | `TelegramLink`, `TelegramLinkToken` JPA models and Spring Data repositories |
+| F7 | Telegram Outbox Entity & Repo | Backend | `TelegramNotification` entity, pending query, cleanup methods |
+| F8 | User Link Endpoints | Backend | `TelegramLinkController`: POST `/generate`, GET `/status`, DELETE `/link` |
+| F9 | Internal Bot Endpoints | Backend | `InternalTelegramController`: POST `/bind`, GET `/chat/{id}/client`, GET `/tasks`, GET `/docs`, GET `/pending`, POST `/ack` |
+| F10 | CRM Event Outbox Hooking | Backend | `NotificationService` / `TaskService` / `DocumentService` transactional enqueue |
+| F11 | Telegram Cleanup Scheduler | Backend | `TelegramCleanupScheduler`: Expired link tokens (15m) & archived notifications |
+| F12 | Backend Unit & Integration Tests | Backend | Comprehensive JUnit 5, MockMvc, and Spring test suites |
+| F13 | Bot Project Scaffolding | Bot | Headless Spring Boot 3.3.4, Gradle build, YAML configuration |
+| F14 | Telegram Long Polling Setup | Bot | `SpringLongPollingBot`, `TelegramClient`, `LongPollingSingleThreadUpdateConsumer` |
+| F15 | Backend REST Client | Bot | `RestClient` with `X-Internal-Token`, timeouts, and DTO mappings |
+| F16 | HtmlMessageFormatter | Bot | Safe HTML escaping for `&`, `<`, `>`, and financial notification builders |
+| F17 | /start Deeplink Command | Bot | `StartCommandHandler`: Deeplink parsing, token validation, backend binding |
+| F18 | Client Query Commands | Bot | `TasksCommandHandler`, `DocsCommandHandler`, `StatusCommandHandler` |
+| F19 | /unlink and /help Commands | Bot | `UnlinkCommandHandler`, `HelpCommandHandler` with WhatsApp SLA contact |
+| F20 | Outbox Poller & Rate Limiter | Bot | `@Scheduled` poller, 40ms inter-message throttling, batch ACK dispatch |
+| F21 | Bot Unit & Integration Tests | Bot | Bot command, formatter, REST client, and poller unit tests |
+| F22 | E2E Integration Test Suite | Cross-Service | Opaque-box cross-service test harness across all workflows |
 
 ---
 
-## 5. Pass / Fail Semantics & Quality Gate Thresholds
+## 5. Concrete Verification Runners & Commands
 
-A build, test run, or pull request is deemed **PASSED** if and only if all of the following conditions are met:
+### 5.1 JF-1C Backend Verification Commands
+Working Directory: `c:\Users\murat\IdeaProjects\JF-1C\zhan-finance-backend`
 
-| Gate | Tool / Runner | Success Condition | Failure Action |
-|------|---------------|-------------------|----------------|
-| **Backend Tests** | Gradle / JUnit 5 | 100% test methods pass (0 failures, 0 errors) | CI pipeline halts immediately |
-| **Backend Coverage** | JaCoCo | Instruction coverage >= 70.00% (excluding DTOs and Entities) | `jacocoTestCoverageVerification` fails build |
-| **Database Migrations** | Flyway on PostgreSQL 16 | All 61 migrations (V1..V121) apply cleanly; 0 checksum alterations | CI pipeline halts |
-| **Frontend Static** | ESLint 9 | 0 errors, 0 warnings (`--max-warnings 0`) | Pull request rejected |
-| **Frontend Types** | TypeScript `tsc` | 0 type errors under `strict: true` | Build fails |
-| **Frontend Tests** | Vitest | 100% test suites pass | Build fails |
-| **Frontend Coverage**| Vitest V8 | Statements >= 70%, Lines >= 70%, Branches >= 70%, Functions >= 70% | Build fails |
-| **Live Integration** | Node.js E2E | 100% test assertions pass across all 11 lifecycle suites | Release pipeline aborted |
-| **Performance SLA** | Artillery | p95 latency < 1000ms, p99 < 2000ms, error rate < 1.0% | Staging gate fails |
-| **Emoji Prohibition** | Git Pre-commit / CI grep | Zero Unicode emojis in any file, response, or commit | Hard reject |
+1. **Execute Complete Backend Test Suite**:
+   ```powershell
+   ./gradlew test
+   ```
+2. **Execute Telegram Backend Module Tests Only**:
+   ```powershell
+   ./gradlew test --tests "com.example.zhanfinancebackend.modules.telegram.*"
+   ```
+3. **Execute Internal Security Filter Suite**:
+   ```powershell
+   ./gradlew test --tests "com.example.zhanfinancebackend.modules.telegram.InternalTokenFilterTest"
+   ```
+4. **Execute Flyway Migration & Schema Tests**:
+   ```powershell
+   ./gradlew test --tests "com.example.zhanfinancebackend.modules.telegram.TelegramMigrationTest"
+   ```
+5. **Run JaCoCo Coverage Verification Gate**:
+   ```powershell
+   ./gradlew test jacocoTestCoverageVerification
+   ```
+6. **Generate HTML JaCoCo Report**:
+   ```powershell
+   ./gradlew test jacocoTestReport
+   # View at: build/reports/jacoco/test/html/index.html
+   ```
+
+### 5.2 ZhanFinance Telegram Bot Microservice Verification Commands
+Working Directory: `c:\Users\murat\IdeaProjects\zhan-finance-tgbot`
+
+1. **Compile and Verify Build Configuration**:
+   ```powershell
+   ./gradlew check
+   ```
+2. **Execute Full Bot Test Suite**:
+   ```powershell
+   ./gradlew test
+   ```
+3. **Execute HTML Formatter & Escaping Tests**:
+   ```powershell
+   ./gradlew test --tests "kz.zhanfinance.bot.formatter.HtmlMessageFormatterTest"
+   ```
+4. **Execute Command Handler Dispatcher Tests**:
+   ```powershell
+   ./gradlew test --tests "kz.zhanfinance.bot.handler.*"
+   ```
+5. **Execute Outbox Poller & Throttling Tests**:
+   ```powershell
+   ./gradlew test --tests "kz.zhanfinance.bot.poller.OutboxNotificationPollerTest"
+   ```
+6. **Execute REST Client Contract Tests**:
+   ```powershell
+   ./gradlew test --tests "kz.zhanfinance.bot.client.JfInternalApiClientTest"
+   ```
+
+### 5.3 Cross-Service E2E Integration Runner
+Working Directory: `c:\Users\murat\IdeaProjects\JF-1C`
+
+1. **Run Full Opaque-Box E2E Test Suite**:
+   ```powershell
+   ./gradlew :zhan-finance-backend:test --tests "com.example.zhanfinancebackend.modules.telegram.e2e.*"
+   ```
+2. **Execute Cross-Service Integration Verification Script**:
+   ```powershell
+   # Start backend with test profile and run integration runner
+   ./gradlew test --tests "*TelegramE2EIntegrationTest*"
+   ```
 
 ---
 
-## 6. Authentication, Data Isolation & Rate-Limiting Protocol
+## 6. Quality Gates & Thresholds
 
-### 6.1 Ephemeral Test Actors
-To prevent test cross-contamination:
-- Test actors are dynamically provisioned with randomized nonces (e.g. `e2e.client.49281@testmail.com`, `e2e.emp.82914@testmail.com`).
-- Admin actor utilizes pre-seeded or provisioned admin credentials (`admin@zhanfinance.kz`).
-- Employee accounts are created via `POST /api/v1/auth/register` and programmatically approved by Admin via `POST /api/v1/admin/employees/{id}/approve`.
+To guarantee release readiness and zero regression, the following strict criteria are enforced:
 
-### 6.2 Token Caching & Automatic Refresh
-- The shared helper `tests/e2e/auth-helper.mjs` caches valid JWT tokens in `.auth-cache.json` for up to 30 minutes.
-- Before executing requests, the token validity is probed via `GET /api/v1/users/me`.
-- If expired or missing, fresh tokens are negotiated and re-cached.
-
-### 6.3 Bucket4j Rate Limit Resilience
-- Rate limit buckets (10 req/min for login, 5 req/min for email check) can trigger HTTP 429 during rapid test runs.
-- `request()` in `auth-helper.mjs` detects HTTP 429 and performs automatic backoff:
-  - Sleeps 8,000ms to allow token replenishment.
-  - Automatically retries up to 4 attempts before declaring failure.
-
-### 6.4 Cleanup & Teardown
-- Tier 3 and Tier 4 workflows must clean up created resources (invoices, tasks, temporary documents) at the conclusion of test lifecycles to prevent database bloat and query degradation.
+1. **Compilation Gate**:
+   - Zero compilation errors or warnings on Java 17 for both `zhan-finance-backend` and `zhan-finance-tgbot`.
+2. **Pass Rate Gate**:
+   - 100% test pass rate across all test suites (0 failures, 0 errors, 0 flaky tests).
+3. **Coverage Gates**:
+   - JaCoCo Instruction Coverage: >= 70.00% on package `com.example.zhanfinancebackend.modules.telegram.*`.
+   - Bot microservice line coverage: >= 75.00% on packages `kz.zhanfinance.bot.formatter`, `kz.zhanfinance.bot.handler`, `kz.zhanfinance.bot.poller`.
+4. **Security & Boundary Gates**:
+   - Timing Attack Resilience: Constant-time comparison verified via byte array mismatch variance tests.
+   - Unauthorized Access: 100% rejection (HTTP 401/403) on `/api/v1/internal/**` without valid `X-Internal-Token`.
+   - Rate Limit Exemption: Internal bot endpoints confirmed to never receive HTTP 429 under high polling frequencies.
+5. **Formatting & Data Safety Gates**:
+   - 100% of special characters (`&`, `<`, `>`) in client-provided titles escaped prior to Telegram transmission.
+   - Zero MarkdownV2 parsing breaks.
+6. **No Emojis Rule**:
+   - Strict absence of emojis in all test files, code, logs, and documentation per project guidelines.
