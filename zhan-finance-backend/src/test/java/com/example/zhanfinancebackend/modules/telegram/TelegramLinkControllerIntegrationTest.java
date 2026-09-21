@@ -63,7 +63,7 @@ class TelegramLinkControllerIntegrationTest {
         Instant expires = Instant.now().plusSeconds(900);
         TelegramLinkTokenResponse response = new TelegramLinkTokenResponse(
                 "token-abc-123",
-                "https://t.me/zhan_finance_bot?start=token-abc-123",
+                "https://t.me/zhanfinancebot?start=token-abc-123",
                 expires
         );
 
@@ -76,7 +76,7 @@ class TelegramLinkControllerIntegrationTest {
                         .with(user(testPrincipal)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("token-abc-123"))
-                .andExpect(jsonPath("$.deepLink").value("https://t.me/zhan_finance_bot?start=token-abc-123"));
+                .andExpect(jsonPath("$.deepLink").value("https://t.me/zhanfinancebot?start=token-abc-123"));
     }
 
     @Test

@@ -1,5 +1,7 @@
+// zhan-finance-backend/src/main/java/com/example/zhanfinancebackend/modules/telegram/controller/TelegramLinkController.java
 package com.example.zhanfinancebackend.modules.telegram.controller;
 
+import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.telegram.dto.TelegramLinkStatusResponse;
 import com.example.zhanfinancebackend.modules.telegram.dto.TelegramLinkTokenResponse;
@@ -10,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/telegram/link")
@@ -27,24 +27,27 @@ public class TelegramLinkController {
     @PostMapping("/generate")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Generate a 15-minute temporary linking token and Telegram deeplink")
-    public ResponseEntity<TelegramLinkTokenResponse> generateLinkToken(@AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<ApiResponse<TelegramLinkTokenResponse>> generateLinkToken(
+            @AuthenticationPrincipal UserPrincipal principal) {
         TelegramLinkTokenResponse response = telegramLinkService.generateLinkToken(principal.getUser());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/status")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get Telegram account link status for the current authenticated user")
-    public ResponseEntity<TelegramLinkStatusResponse> getLinkStatus(@AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<ApiResponse<TelegramLinkStatusResponse>> getLinkStatus(
+            @AuthenticationPrincipal UserPrincipal principal) {
         TelegramLinkStatusResponse response = telegramLinkService.getLinkStatus(principal.getUser());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @DeleteMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Unlink Telegram account for the current authenticated user")
-    public ResponseEntity<Map<String, Object>> unlinkTelegram(@AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<ApiResponse<Void>> unlinkTelegram(
+            @AuthenticationPrincipal UserPrincipal principal) {
         telegramLinkService.unlinkTelegram(principal.getUser());
-        return ResponseEntity.ok(Map.of("success", true, "message", "Telegram account unlinked successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null, "Telegram account unlinked successfully"));
     }
 }

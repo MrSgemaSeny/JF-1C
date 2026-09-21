@@ -69,7 +69,7 @@ class OutboxAdversarialVerificationTest {
         telegramLinkService = new TelegramLinkService(
                 telegramLinkRepository,
                 telegramLinkTokenRepository,
-                "zhan_finance_bot"
+                "zhanfinancebot"
         );
 
         notificationRepository = mock(NotificationRepository.class);

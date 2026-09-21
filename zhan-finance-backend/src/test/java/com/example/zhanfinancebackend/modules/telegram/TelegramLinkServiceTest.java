@@ -37,7 +37,7 @@ class TelegramLinkServiceTest {
     void setUp() {
         telegramLinkRepository = mock(TelegramLinkRepository.class);
         telegramLinkTokenRepository = mock(TelegramLinkTokenRepository.class);
-        telegramLinkService = new TelegramLinkService(telegramLinkRepository, telegramLinkTokenRepository, "zhan_finance_bot");
+        telegramLinkService = new TelegramLinkService(telegramLinkRepository, telegramLinkTokenRepository, "zhanfinancebot");
 
         testUser = new User();
         testUser.setId(42L);
@@ -53,7 +53,7 @@ class TelegramLinkServiceTest {
 
         assertNotNull(response);
         assertNotNull(response.token());
-        assertTrue(response.deepLink().contains("https://t.me/zhan_finance_bot?start=" + response.token()));
+        assertTrue(response.deepLink().contains("https://t.me/zhanfinancebot?start=" + response.token()));
         assertTrue(response.expiresAt().isAfter(Instant.now().plus(14, ChronoUnit.MINUTES)));
 
         verify(telegramLinkTokenRepository).deleteByUserId(42L);

@@ -30,11 +30,11 @@ public class TelegramLinkService {
     public TelegramLinkService(
             TelegramLinkRepository telegramLinkRepository,
             TelegramLinkTokenRepository telegramLinkTokenRepository,
-            @Value("${app.telegram.bot-username:zhan_finance_bot}") String botUsername
+            @Value("${app.telegram.bot-username:zhanfinancebot}") String botUsername
     ) {
         this.telegramLinkRepository = telegramLinkRepository;
         this.telegramLinkTokenRepository = telegramLinkTokenRepository;
-        this.botUsername = botUsername != null ? botUsername.trim() : "zhan_finance_bot";
+        this.botUsername = botUsername != null ? botUsername.trim() : "zhanfinancebot";
     }
 
     @Transactional
