@@ -130,3 +130,10 @@ tests/e2e/.auth-cache.json
 *.tmp
 *.bak
 
+# ------------------------------------------
+# Agent Orchestration Ephemeral State
+# ------------------------------------------
+.agents/*
+!.agents/AGENTS.md
+!.agents/CONTEXT.md
+
