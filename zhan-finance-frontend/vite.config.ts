@@ -6,20 +6,17 @@ import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs'
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
-export default defineConfig(({ mode }) => {
-  const isMobile = mode === 'mobile' || process.env.BUILD_TARGET === 'mobile' || process.env.CAPACITOR === 'true'
-
-  return {
-    base: isMobile ? '/' : '/JF-1C/',
-    plugins: [
-      react(), 
-      tailwindcss(),
-      sentryVitePlugin({
-        org: process.env.SENTRY_ORG || "zhanfinance",
-        project: process.env.SENTRY_PROJECT || "javascript-react",
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-      })
-    ],
+export default defineConfig({
+  base: '/JF-1C/',
+  plugins: [
+    react(), 
+    tailwindcss(),
+    sentryVitePlugin({
+      org: process.env.SENTRY_ORG || "zhanfinance",
+      project: process.env.SENTRY_PROJECT || "javascript-react",
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    })
+  ],
   server: {
     proxy: {
       '/api': {
@@ -80,5 +77,4 @@ export default defineConfig(({ mode }) => {
     globals: true,
     setupFiles: './src/test/setup.ts'
   }
-}
 })
