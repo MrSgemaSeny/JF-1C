@@ -95,6 +95,26 @@ export function DashboardSidebar({
 
   const navItems = navConfig[user.role] || [];
 
+  const isRootRoleRoute = (href: string) => [
+    ROUTES.ADMIN,
+    ROUTES.CLIENT,
+    ROUTES.EMPLOYEE,
+    ROUTES.ADVISOR,
+    ROUTES.CURATOR,
+    ROUTES.HOME,
+    ROUTES.SETTINGS,
+    ROUTES.NOTIFICATIONS,
+  ].includes(href as any);
+
+  const matchingItems = navItems.filter((item) =>
+    location.pathname === item.href ||
+    (!isRootRoleRoute(item.href) && location.pathname.startsWith(item.href + '/'))
+  );
+
+  const activeItem = matchingItems.length > 0
+    ? matchingItems.reduce((best, current) => current.href.length > best.href.length ? current : best)
+    : null;
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -137,20 +157,7 @@ export function DashboardSidebar({
         {/* Nav */}
         <nav className="flex-1 py-4 space-y-1 overflow-y-auto overflow-x-hidden px-3 relative">
           {navItems.map((item) => {
-            const isRootRoleRoute = (href: string) => [
-              ROUTES.ADMIN,
-              ROUTES.CLIENT,
-              ROUTES.EMPLOYEE,
-              ROUTES.ADVISOR,
-              ROUTES.CURATOR,
-              ROUTES.HOME,
-              ROUTES.SETTINGS,
-              ROUTES.NOTIFICATIONS,
-            ].includes(href as any);
-
-            const isActive =
-              location.pathname === item.href ||
-              (!isRootRoleRoute(item.href) && location.pathname.startsWith(item.href + '/'));
+            const isActive = activeItem?.href === item.href;
             const icon = NAV_ICONS[item.label] ?? <ChevronRight size={16} />;
             
             let i18nKey = '';

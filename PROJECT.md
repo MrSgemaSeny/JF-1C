@@ -72,9 +72,9 @@ The ZhanFinance Telegram integration consists of two decoupled components commun
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| M1 | Backend Outbox & Linking Foundation | Features F1-F12: Flyway V124/V125, Security filter & role, JPA models, services, schedulers, user & internal controllers, CRM event hooks, backend test suite | none | IN_PROGRESS |
-| M2 | Standalone Telegram Bot Microservice | Features F13-F21: Bot Gradle project, Long Polling receiver, REST client, HtmlMessageFormatter, command handlers (/start, /tasks, /docs, /status, /unlink, /help), outbox poller, bot test suite | M1 | PLANNED |
-| M3 | End-to-End Integration & Quality Verification | Feature F22: Dual-track E2E verification, 100% test pass on both backend and bot, adversarial coverage check, final handoff | M1, M2 | PLANNED |
+| M1 | Backend Outbox & Linking Foundation | Features F1-F12: Flyway V124/V125, Security filter & role, JPA models, services, schedulers, user & internal controllers, CRM event hooks, backend test suite (281 tests passing) | none | DONE |
+| M2 | Standalone Telegram Bot Microservice | Features F13-F21: Bot Gradle project, Long Polling receiver, REST client, HtmlMessageFormatter, command handlers (/start, /tasks, /docs, /status, /unlink, /help), outbox poller, bot test suite (89 tests passing) | M1 | DONE |
+| M3 | End-to-End Integration & Quality Verification | Feature F22: Dual-track E2E verification, 100% test pass on both backend (281 tests) and bot (89 tests), adversarial coverage check, final handoff | M1, M2 | DONE |
 
 ---
 

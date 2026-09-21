@@ -162,7 +162,7 @@ public class AuthService {
         if (user.isTwoFactorEnabled()) {
             if (user.getRole() == Role.ADMIN) {
                 telegramNotifierService.sendAdminNotificationAsync(
-                    "🔐 Попытка входа администратора",
+                    "Попытка входа администратора",
                     "Администратор " + user.getEmail() + " проходит авторизацию (ожидается 2FA).",
                     null
                 );

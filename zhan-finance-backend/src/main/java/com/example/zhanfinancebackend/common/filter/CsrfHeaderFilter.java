@@ -31,6 +31,13 @@ public class CsrfHeaderFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
         String method = request.getMethod();
+        String uri = request.getRequestURI();
+
+        // Machine-to-machine internal bot endpoints are secured by X-Internal-Token, not cookies/sessions
+        if (uri != null && (uri.startsWith("/api/v1/internal") || uri.startsWith("/v1/internal"))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         
         // Only block state-changing requests
         if (HttpMethod.POST.name().equalsIgnoreCase(method) ||

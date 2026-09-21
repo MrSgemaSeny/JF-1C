@@ -15,17 +15,17 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager();
         manager.registerCustomCache("dashboard",
-                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).maximumSize(100).build());
+                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).maximumSize(100).recordStats().build());
         manager.registerCustomCache("tasks",
-                Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).maximumSize(500).build());
+                Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).maximumSize(500).recordStats().build());
         manager.registerCustomCache("users",
-                Caffeine.newBuilder().expireAfterWrite(300, TimeUnit.SECONDS).maximumSize(200).build());
+                Caffeine.newBuilder().expireAfterWrite(300, TimeUnit.SECONDS).maximumSize(200).recordStats().build());
         manager.registerCustomCache("courses",
-                Caffeine.newBuilder().expireAfterWrite(120, TimeUnit.SECONDS).maximumSize(100).build());
+                Caffeine.newBuilder().expireAfterWrite(120, TimeUnit.SECONDS).maximumSize(100).recordStats().build());
         manager.registerCustomCache("pipelines",
-                Caffeine.newBuilder().expireAfterWrite(600, TimeUnit.SECONDS).maximumSize(50).build());
+                Caffeine.newBuilder().expireAfterWrite(600, TimeUnit.SECONDS).maximumSize(50).recordStats().build());
         manager.setCaffeine(
-                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).maximumSize(300));
+                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).maximumSize(300).recordStats());
         return manager;
     }
 }

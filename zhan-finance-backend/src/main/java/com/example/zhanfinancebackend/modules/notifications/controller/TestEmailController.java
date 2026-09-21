@@ -22,7 +22,7 @@ public class TestEmailController {
 
     @GetMapping("/api/test-email")
     public String sendTestEmail(@RequestParam String email) {
-        String html = "<h2>Почта работает! 🚀</h2>" +
+        String html = "<h2>Почта работает!</h2>" +
                       "<p>Привет! Это тестовое сообщение от вашего сервера ZhanFinance.</p>";
         
         try {

@@ -42,6 +42,15 @@
 4. **Epic-21 Roadmap (1C Data Gateway & Fiscal Hub)**:
    - Полная архитектурная спецификация и дорожная карта интеграции в `Epics/Plan/Epic-21-1c-data-gateway/epic.md`.
 
+5. **ZhanFinance Telegram Bot & Outbox Integration (Microservice + Backend) [DONE]**:
+   - Flyway миграции V124 (`telegram_links`, `telegram_link_tokens`) и V125 (`telegram_notifications`) со связями к `app_users(id)`.
+   - Машинная авторизация `Role.INTERNAL_BOT` и фильтр постоянного времени `InternalTokenFilter` (`MessageDigest.isEqual`) для `/v1/internal/**`.
+   - Пользовательские эндпоинты `/api/v1/telegram/link/**` и внутренние эндпоинты бота `/api/v1/internal/**` с вайтлистом в `ApiRateLimitFilter` и `CsrfHeaderFilter`.
+   - Изолированная очередь Outbox с `Propagation.REQUIRES_NEW`, автоматически привязанная к `NotificationService.createNotification(...)` на изменения задач и загрузку документов.
+   - Микросервис `zhan-finance-tgbot` (Java 17, Spring Boot 3.3.4, TelegramBots 7.2.1, headless `web-application-type=none`).
+   - Безопасное экранирование HTML (`HtmlMessageFormatter`), обработчики команд `/start`, `/tasks`, `/docs`, `/status`, `/unlink`, `/help`, и поллер Outbox с 40ms rate-limiting (25 сообщ/сек) и пакетным подтверждением.
+   - 100% покрытие тестами: 281 бекенд-тест, 89 тестов микросервиса бота (всего 370 тестов, 0 ошибок, 0 пропусков, 0 эмодзи).
+
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 
 Полный план зафиксирован в `docs/future/future_plan.md`.

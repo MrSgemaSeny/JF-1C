@@ -6,5 +6,6 @@ public enum Role {
     CLIENT,
     LEARNER,
     CURATOR,
-    ADVISOR
+    ADVISOR,
+    INTERNAL_BOT
 }

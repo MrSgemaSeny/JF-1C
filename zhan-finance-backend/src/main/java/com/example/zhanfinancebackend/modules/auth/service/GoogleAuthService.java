@@ -167,7 +167,7 @@ public class GoogleAuthService {
         if (user.isTwoFactorEnabled()) {
             if (user.getRole() == Role.ADMIN) {
                 telegramNotifierService.sendAdminNotificationAsync(
-                    "🔐 Попытка входа администратора",
+                    "Попытка входа администратора",
                     "Администратор " + user.getEmail() + " проходит авторизацию (Google, ожидается 2FA).",
                     null
                 );

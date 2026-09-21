@@ -2,6 +2,7 @@ package com.example.zhanfinancebackend.common.config;
 
 import com.example.zhanfinancebackend.modules.auth.security.ApiRateLimitFilter;
 import com.example.zhanfinancebackend.modules.auth.security.AuthRateLimitFilter;
+import com.example.zhanfinancebackend.modules.auth.security.InternalTokenFilter;
 import com.example.zhanfinancebackend.modules.auth.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
+            InternalTokenFilter internalTokenFilter,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             AuthRateLimitFilter authRateLimitFilter,
             ApiRateLimitFilter apiRateLimitFilter,
@@ -95,11 +97,12 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).hasRole("ADMIN")
-                        .requestMatchers("/v1/internal/**").denyAll()
+                        .requestMatchers("/v1/internal/**").hasRole("INTERNAL_BOT")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(internalTokenFilter, JwtAuthenticationFilter.class)
                 .addFilterAfter(apiRateLimitFilter, JwtAuthenticationFilter.class)
                 .build();
     }

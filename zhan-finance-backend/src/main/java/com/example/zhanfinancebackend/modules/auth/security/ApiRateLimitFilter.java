@@ -110,6 +110,10 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
         if (uri.startsWith("/api/v1/auth") || uri.startsWith("/api/auth") || uri.startsWith("/v1/auth") || uri.startsWith("/auth")) {
             return true;
         }
+        // Internal bot API
+        if (uri.startsWith("/api/v1/internal") || uri.startsWith("/v1/internal")) {
+            return true;
+        }
         // Internal health checks and actuator monitoring
         if (uri.startsWith("/actuator") || uri.startsWith("/api/actuator") || uri.startsWith("/v1/actuator") || uri.startsWith("/api/v1/actuator")
                 || uri.equals("/health") || uri.equals("/api/health") || uri.startsWith("/health/") || uri.startsWith("/api/health/")) {

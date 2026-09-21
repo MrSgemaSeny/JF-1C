@@ -19,14 +19,18 @@ import java.util.stream.Collectors;
 import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
 import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.repository.UserRepository;
+import com.example.zhanfinancebackend.modules.telegram.service.TelegramOutboxService;
 
 @Service
 public class NotificationService {
+
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NotificationService.class);
 
     private final NotificationRepository notificationRepository;
     private final EmailNotificationService emailNotificationService;
     private final UserRepository userRepository;
     private final TelegramNotifierService telegramNotifierService;
+    private final TelegramOutboxService telegramOutboxService;
 
     @org.springframework.beans.factory.annotation.Value("${app.frontend.url}")
     private String frontendUrl;
@@ -34,11 +38,13 @@ public class NotificationService {
     public NotificationService(NotificationRepository notificationRepository, 
                                EmailNotificationService emailNotificationService,
                                UserRepository userRepository,
-                               TelegramNotifierService telegramNotifierService) {
+                               TelegramNotifierService telegramNotifierService,
+                               TelegramOutboxService telegramOutboxService) {
         this.notificationRepository = notificationRepository;
         this.emailNotificationService = emailNotificationService;
         this.userRepository = userRepository;
         this.telegramNotifierService = telegramNotifierService;
+        this.telegramOutboxService = telegramOutboxService;
     }
 
     @Transactional
@@ -46,6 +52,15 @@ public class NotificationService {
         if (user == null) return;
         Notification notification = new Notification(user, title, message, relativeLink);
         notificationRepository.save(notification);
+
+        if (telegramOutboxService != null) {
+            try {
+                telegramOutboxService.enqueue(user, title, message, relativeLink);
+            } catch (Exception e) {
+                // Outbox failure should not fail core notification persistence
+                log.warn("Telegram outbox enqueue failed for user {}: {}", user.getId(), e.getMessage());
+            }
+        }
     }
 
     @Transactional
