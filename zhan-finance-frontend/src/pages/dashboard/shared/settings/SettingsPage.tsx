@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Camera, Lock, User, Save, Upload, Shield, Building2, Phone, Globe, MessageCircle, ExternalLink, Unlink, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getMyProfile, updateMyProfile, updateMyPassword, uploadAvatar, UserProfileDto } from '@/entities/user/api/userApi';
@@ -75,7 +75,7 @@ export function SettingsPage() {
 
   async function loadTelegramStatus() {
     try {
-      const data = await apiRequest<TelegramStatus>('/v1/telegram/link/status');
+      const data = await apiRequest<TelegramStatus>('/api/v1/telegram/link/status');
       setTgStatus(data);
     } catch {
       setTgStatus({ linked: false });
@@ -88,20 +88,20 @@ export function SettingsPage() {
     setTgGenerating(true);
     setTgLinkData(null);
     try {
-      const data = await apiRequest<TelegramLinkToken>('/v1/telegram/link/generate', { method: 'POST' });
+      const data = await apiRequest<TelegramLinkToken>('/api/v1/telegram/link/generate', { method: 'POST' });
       setTgLinkData(data);
     } catch (e: any) {
-      alert(e.message || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С–Р ВµР Р…Р ВµРЎР‚Р В°РЎвЂ Р С‘Р С‘ РЎРѓРЎРѓРЎвЂ№Р В»Р С”Р С‘');
+      alert(e.message || 'Ошибка генерации ссылки');
     } finally {
       setTgGenerating(false);
     }
   }
 
   async function handleUnlinkTelegram() {
-    if (!confirm('Р С›РЎвЂљР Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ Telegram-Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљ?')) return;
+    if (!confirm('Отвязать Telegram-аккаунт?')) return;
     setTgUnlinking(true);
     try {
-      await apiRequest('/v1/telegram/link', { method: 'DELETE' });
+      await apiRequest('/api/v1/telegram/link', { method: 'DELETE' });
       setTgStatus({ linked: false });
       setTgLinkData(null);
     } catch (e: any) {
@@ -432,9 +432,9 @@ export function SettingsPage() {
             <div>
               <div className="flex items-center gap-2">
                 <Globe className="w-5 h-5 text-brand-green" />
-                <h3 className="text-xl font-bold text-gray-900">{t('settings.language', 'Р Р‡Р В·РЎвЂ№Р С” Р С‘Р Р…РЎвЂљР ВµРЎР‚РЎвЂћР ВµР в„–РЎРѓР В°')}</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t('settings.language', 'Язык интерфейса')}</h3>
               </div>
-              <p className="text-sm text-gray-500 mt-1">{t('settings.languageDesc', 'Р вЂ™РЎвЂ№Р В±Р ВµРЎР‚Р С‘РЎвЂљР Вµ Р С—РЎР‚Р ВµР Т‘Р С—Р С•РЎвЂЎРЎвЂљР С‘РЎвЂљР ВµР В»РЎРЉР Р…РЎвЂ№Р в„– РЎРЏР В·РЎвЂ№Р С” Р Т‘Р В»РЎРЏ Р С•РЎвЂљР С•Р В±РЎР‚Р В°Р В¶Р ВµР Р…Р С‘РЎРЏ Р С‘Р Р…РЎвЂљР ВµРЎР‚РЎвЂћР ВµР в„–РЎРѓР В°')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t('settings.languageDesc', 'Выберите предпочтительный язык для отображения интерфейса')}</p>
             </div>
             <div className="pt-2 sm:pt-0">
               <LanguageSwitcher />
