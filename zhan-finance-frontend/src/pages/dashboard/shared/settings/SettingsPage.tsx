@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Camera, Lock, User, Save, Upload, Shield, Building2, Phone, Globe, MessageCircle, ExternalLink, Unlink, RefreshCw } from 'lucide-react';
+import { Camera, Lock, User, Save, Shield, Building2, Phone, Globe, MessageCircle, ExternalLink, Unlink, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getMyProfile, updateMyProfile, updateMyPassword, uploadAvatar, UserProfileDto } from '@/entities/user/api/userApi';
 import { Spinner } from '@/shared/ui/Spinner';
@@ -23,10 +23,10 @@ interface TelegramLinkToken {
 export function SettingsPage() {
   const { user, setUser } = useAuth();
   const { t } = useTranslation(['common']);
-  
+
   const [profile, setProfile] = useState<UserProfileDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Profile Form
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -105,7 +105,7 @@ export function SettingsPage() {
       setTgStatus({ linked: false });
       setTgLinkData(null);
     } catch (e: any) {
-      alert(e.message || 'Р С›РЎв‚¬Р С‘Р В±Р С”Р В° Р С•РЎвЂљР Р†РЎРЏР В·Р С”Р С‘');
+      alert(e.message || 'Ошибка отвязки');
     } finally {
       setTgUnlinking(false);
     }
@@ -206,11 +206,10 @@ export function SettingsPage() {
       </div>
 
       <div className="space-y-8">
-        {/* Profile Card (Avatar + Form) */}
+        {/* Profile Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
           <div className="flex flex-col md:flex-row gap-10 items-start">
-            
-            {/* Left side: Avatar & Identity */}
+            {/* Left: Avatar */}
             <div className="flex-shrink-0 flex flex-col items-center text-center md:w-48">
               <div className="relative group mb-4">
                 <div className="w-32 h-32 rounded-full overflow-hidden bg-white border-4 border-white shadow-lg relative ring-4 ring-brand-green/10">
@@ -225,14 +224,12 @@ export function SettingsPage() {
                       <User className="w-12 h-12" />
                     </div>
                   )}
-                  
                   {isUploading && (
                     <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
                       <Spinner className="w-6 h-6 text-brand-green" />
                     </div>
                   )}
                 </div>
-
                 {!isGoogle && (
                   <>
                     <button
@@ -253,12 +250,10 @@ export function SettingsPage() {
                   </>
                 )}
               </div>
-
               <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-green">
                 <Shield className="w-4 h-4" />
                 {profile.role}
               </div>
-
               {isGoogle && (
                 <p className="mt-4 text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
                   {t('settings.googleSync')}
@@ -266,13 +261,12 @@ export function SettingsPage() {
               )}
             </div>
 
-            {/* Right side: Profile Form */}
+            {/* Right: Profile Form */}
             <div className="flex-grow w-full">
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-gray-900">{t('settings.basicInfo')}</h3>
                 <p className="text-sm text-gray-500 mt-1">{t('settings.basicInfoDesc')}</p>
               </div>
-              
               <form onSubmit={handleProfileSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="md:col-span-2">
@@ -290,7 +284,6 @@ export function SettingsPage() {
                       />
                     </div>
                   </div>
-
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('settings.emailReadonly')}</label>
                     <input
@@ -300,7 +293,6 @@ export function SettingsPage() {
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-400 cursor-not-allowed shadow-inner"
                     />
                   </div>
-
                   {profile.role === 'CLIENT' && (
                     <>
                       <div>
@@ -317,7 +309,6 @@ export function SettingsPage() {
                           />
                         </div>
                       </div>
-
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('settings.companyName')}</label>
                         <div className="relative">
@@ -335,17 +326,15 @@ export function SettingsPage() {
                     </>
                   )}
                 </div>
-
                 {profileError && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">{profileError}</div>}
                 {profileSuccess && <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-100">{t('settings.success.profile')}</div>}
-
                 <div className="flex justify-end pt-4 border-t border-gray-100 mt-6">
                   <button
                     type="submit"
                     disabled={isSavingProfile}
                     className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-brand-green to-emerald-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-brand-green/30 hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
                   >
-                    {isSavingProfile ? <Spinner className="w-4 h-4 text-white" /> : <Save className="w-4 h-4" />}
+                    {isSavingProfile ? <Spinner className="w-4 h-4 text-white" /> : <Shield className="w-4 h-4" />}
                     {t('settings.saveChanges')}
                   </button>
                 </div>
@@ -361,7 +350,6 @@ export function SettingsPage() {
               <h3 className="text-xl font-bold text-gray-900">{t('settings.securityTitle')}</h3>
               <p className="text-sm text-gray-500 mt-1">{t('settings.changePasswordDesc')}</p>
             </div>
-            
             <form onSubmit={handlePasswordSubmit} className="space-y-5">
               <div className="max-w-2xl">
                 <div className="mb-5">
@@ -380,7 +368,6 @@ export function SettingsPage() {
                     />
                   </div>
                 </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('settings.newPassword')}</label>
@@ -394,7 +381,6 @@ export function SettingsPage() {
                       className="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-brand-green/10 focus:border-brand-green shadow-sm transition-all"
                     />
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('settings.confirmPassword')}</label>
                     <input
@@ -408,10 +394,8 @@ export function SettingsPage() {
                     />
                   </div>
                 </div>
-
                 {passwordError && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg mt-5">{passwordError}</div>}
                 {passwordSuccess && <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-100 mt-5">{t('settings.success.password')}</div>}
-
                 <div className="flex justify-start pt-6 border-t border-gray-100 mt-6">
                   <button
                     type="submit"
@@ -426,7 +410,7 @@ export function SettingsPage() {
           </div>
         )}
 
-        {/* Language Preferences Card */}
+        {/* Language Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -449,15 +433,17 @@ export function SettingsPage() {
             <h3 className="text-xl font-bold text-gray-900">Telegram</h3>
           </div>
           <p className="text-sm text-gray-500 mb-6">
-            Р СџРЎР‚Р С‘Р Р†РЎРЏР В¶Р С‘РЎвЂљР Вµ Telegram-Р В°Р С”Р С”Р В°РЎС“Р Р…РЎвЂљ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С—Р С•Р В»РЎС“РЎвЂЎР В°РЎвЂљРЎРЉ РЎС“Р Р†Р ВµР Т‘Р С•Р СР В»Р ВµР Р…Р С‘РЎРЏ Р С• Р В·Р В°Р Т‘Р В°РЎвЂЎР В°РЎвЂ¦, РЎРѓРЎвЂЎР ВµРЎвЂљР В°РЎвЂ¦ Р С‘ РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘РЎРЏРЎвЂ¦ Р С—РЎР‚РЎРЏР СР С• Р Р† Р В±Р С•РЎвЂљ.
+            Привяжите Telegram-аккаунт, чтобы получать уведомления о задачах, счетах и сообщениях прямо в бот.
           </p>
 
           {tgLoading ? (
-            <div className="flex items-center gap-2 text-gray-400 text-sm"><Spinner className="w-4 h-4" /> Р вЂ”Р В°Р С–РЎР‚РЎС“Р В·Р С”Р В°...</div>
+            <div className="flex items-center gap-2 text-gray-400 text-sm">
+              <Spinner className="w-4 h-4" /> Загрузка...
+            </div>
           ) : tgStatus?.linked ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-green-50 border border-green-100 rounded-xl">
               <div>
-                <p className="text-sm font-semibold text-green-700">Р СџРЎР‚Р С‘Р Р†РЎРЏР В·Р В°Р Р…</p>
+                <p className="text-sm font-semibold text-green-700">Привязан</p>
                 {tgStatus.telegramUsername && (
                   <p className="text-sm text-gray-600 mt-0.5">@{tgStatus.telegramUsername}</p>
                 )}
@@ -468,7 +454,7 @@ export function SettingsPage() {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60"
               >
                 {tgUnlinking ? <Spinner className="w-4 h-4" /> : <Unlink className="w-4 h-4" />}
-                Р С›РЎвЂљР Р†РЎРЏР В·Р В°РЎвЂљРЎРЉ
+                Отвязать
               </button>
             </div>
           ) : (
@@ -476,7 +462,7 @@ export function SettingsPage() {
               {tgLinkData ? (
                 <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl space-y-3">
                   <p className="text-sm text-gray-600">
-                    Р РЋРЎРѓРЎвЂ№Р В»Р С”Р В° Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎвЂљР ВµР В»РЎРЉР Р…Р В° 15 Р СР С‘Р Р…РЎС“РЎвЂљ. Р СњР В°Р В¶Р СР С‘РЎвЂљР Вµ Р С”Р Р…Р С•Р С—Р С”РЎС“ Р Р…Р С‘Р В¶Р Вµ, РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р В±Р С•РЎвЂљР В° Р С‘ Р В·Р В°Р Р†Р ВµРЎР‚РЎв‚¬Р С‘РЎвЂљРЎРЉ Р С—РЎР‚Р С‘Р Р†РЎРЏР В·Р С”РЎС“.
+                    Ссылка действительна 15 минут. Нажмите кнопку ниже, чтобы открыть бота и завершить привязку.
                   </p>
                   <a
                     href={tgLinkData.deepLink}
@@ -485,7 +471,7 @@ export function SettingsPage() {
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2AABEE] text-white text-sm font-semibold rounded-xl hover:bg-[#1e96d3] transition-colors"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    Р С›РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ Р Р† Telegram
+                    Открыть в Telegram
                     <ExternalLink className="w-3.5 h-3.5 opacity-70" />
                   </a>
                   <button
@@ -494,7 +480,7 @@ export function SettingsPage() {
                     className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
-                    Р С›Р В±Р Р…Р С•Р Р†Р С‘РЎвЂљРЎРЉ РЎРѓРЎРѓРЎвЂ№Р В»Р С”РЎС“
+                    Обновить ссылку
                   </button>
                 </div>
               ) : (
@@ -504,7 +490,7 @@ export function SettingsPage() {
                   className="flex items-center gap-2 px-6 py-3 bg-[#2AABEE] text-white font-semibold rounded-xl hover:bg-[#1e96d3] hover:shadow-md transition-all disabled:opacity-60"
                 >
                   {tgGenerating ? <Spinner className="w-4 h-4 text-white" /> : <MessageCircle className="w-4 h-4" />}
-                  Р СџР С•Р Т‘Р С”Р В»РЎР‹РЎвЂЎР С‘РЎвЂљРЎРЉ Telegram
+                  Подключить Telegram
                 </button>
               )}
             </div>
@@ -514,4 +500,3 @@ export function SettingsPage() {
     </div>
   );
 }
-
