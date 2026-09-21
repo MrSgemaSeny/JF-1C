@@ -1,0 +1,106 @@
+name: Build Android
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'debug-apk'
+        type: choice
+        options:
+          - debug-apk
+          - release-aab
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: zhan-finance-frontend/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        working-directory: zhan-finance-frontend
+        run: npm ci
+
+      - name: Build web
+        working-directory: zhan-finance-frontend
+        run: npm run build:web
+
+      - name: Capacitor sync
+        working-directory: zhan-finance-frontend
+        run: npx cap sync android
+
+      - name: Make gradlew executable
+        working-directory: zhan-finance-frontend/android
+        run: chmod +x gradlew
+
+      - name: Build debug APK
+        if: ${{ github.event.inputs.build_type == 'debug-apk' || github.event_name == 'push' }}
+        working-directory: zhan-finance-frontend/android
+        run: ./gradlew assembleDebug
+
+      - name: Build release AAB
+        if: ${{ github.event.inputs.build_type == 'release-aab' }}
+        working-directory: zhan-finance-frontend/android
+        run: ./gradlew bundleRelease
+
+      - name: Sign release AAB
+        if: ${{ github.event.inputs.build_type == 'release-aab' }}
+        run: |
+          echo "${{ secrets.SIGNING_KEY }}" | base64 -d > release.keystore
+          jarsigner \
+            -verbose \
+            -sigalg SHA256withRSA \
+            -digestalg SHA-256 \
+            -keystore release.keystore \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.KEY_PASSWORD }}" \
+            zhan-finance-frontend/android/app/build/outputs/bundle/release/app-release.aab \
+            "${{ secrets.KEY_ALIAS }}"
+          rm release.keystore
+
+      - name: Upload debug APK
+        if: ${{ github.event.inputs.build_type == 'debug-apk' || github.event_name == 'push' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: zhanfinance-debug-${{ github.sha }}
+          path: zhan-finance-frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Upload release AAB
+        if: ${{ github.event.inputs.build_type == 'release-aab' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: zhanfinance-release-${{ github.sha }}
+          path: zhan-finance-frontend/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            zhan-finance-frontend/android/app/build/outputs/apk/debug/app-debug.apk
