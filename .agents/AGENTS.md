@@ -7,6 +7,7 @@ Explain WHY, not just WHAT (Senior Tech Lead mentoring approach: architect think
 ## Project Stack
 - **Backend**: Spring Boot 3, Java 17, PostgreSQL, Flyway, Gradle, Caffeine cache per-region
 - **Frontend**: React 19, Vite, TypeScript, Tailwind v4, FSD architecture
+- **Telegram Bot Microservice**: Отдельный микросервис `zhan-finance-tgbot` (`C:\Users\murat\IdeaProjects\zhan-finance-tgbot`, Spring Boot 3, Java 17, порт 8081). Взаимодействие с монолитом через защищенный `/api/v1/internal/**` по `X-Internal-Token` (`Role.INTERNAL_BOT`)
 - **Auth**: JWT (access + refresh), singleton refresh in http.ts
 - **WebSocket**: STOMP/SockJS
 - **Deploy**: Fly.io (backend) + GitHub Pages (frontend)
@@ -19,7 +20,8 @@ Explain WHY, not just WHAT (Senior Tech Lead mentoring approach: architect think
 
 ## Architecture
 - **API Routing**: context-path=/api, controllers on /v1/**, final routes: /api/v1/**
-- **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR
+- **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR (плюс служебная роль INTERNAL_BOT для микросервиса бота)
+- **Microservices**: Отдельный микросервис Telegram-бота (`zhan-finance-tgbot`, порт 8081) общается с бэкендом через `/api/v1/internal/**`
 - **FSD Layers**: shared -> entities -> features -> widgets -> pages
 - **State/Data Fetching**: React Query for all CRM data, structured keys: ['tasks', 'list', filter]
 - **Global Error Handling**: Global exception handler with requestId
@@ -31,7 +33,7 @@ Explain WHY, not just WHAT (Senior Tech Lead mentoring approach: architect think
 ## Modules
 CRM (Task, Stage, Pipeline, CrmAccessService), Billing (Invoice, Subscription),
 LMS (Course -> Chapter -> Lesson -> LessonBlock, Certificate),
-Documents, Chat, Notifications, Audit, Search, Calendar, Landing
+Documents, Chat, Notifications, Telegram (микросервис zhan-finance-tgbot + outbox/link API), Audit, Search, Calendar, Landing
 
 ## 🛑 CRITICAL INITIALIZATION SEQUENCE (MUST DO FIRST)
 1. **Brain's Protocol (Second Brain)**: Ты ОБЯЗАН неукоснительно следовать протоколам из `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`. **В самом начале каждой новой сессии ты ДОЛЖЕН прочитать файлы в папке `context/` (например, `me.md`, `projects.md`, `rules.md`). Это твой Second Brain.**

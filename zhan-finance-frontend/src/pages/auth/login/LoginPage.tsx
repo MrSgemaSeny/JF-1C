@@ -6,7 +6,6 @@ import { ApiError, extractValidationErrors } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
 import { AuthResponse } from '@/features/auth/authApi';
 import { TotpVerifyForm } from '@/features/auth/ui/TotpVerifyForm';
-import { GmailOtpVerifyForm } from '@/features/auth/ui/GmailOtpVerifyForm';
 import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
@@ -25,9 +24,8 @@ export function LoginPage() {
   const location = useLocation();
   const state = location.state as { preAuthToken?: string } | null;
 
-  const [step, setStep] = useState<'CREDENTIALS' | 'TOTP' | 'GMAIL_OTP'>('CREDENTIALS');
+  const [step, setStep] = useState<'CREDENTIALS' | 'TOTP'>('CREDENTIALS');
   const [preAuthToken, setPreAuthToken] = useState<string>('');
-  const [emailOtpToken, setEmailOtpToken] = useState<string>('');
 
   useEffect(() => {
     if (state?.preAuthToken) {
@@ -105,11 +103,6 @@ export function LoginPage() {
     setIsSubmitting(true);
     try {
       const res = await login(email.trim(), password);
-      if (res && res.requiresEmailOtp && res.preAuthToken) {
-        setEmailOtpToken(res.preAuthToken);
-        setStep('GMAIL_OTP');
-        return;
-      }
       if (res && res.requires2FA && res.preAuthToken) {
         setPreAuthToken(res.preAuthToken);
         setStep('TOTP');
@@ -178,17 +171,6 @@ export function LoginPage() {
               setPreAuthToken('');
             }}
           />
-        ) : step === 'GMAIL_OTP' ? (
-          <GmailOtpVerifyForm
-            preAuthToken={emailOtpToken}
-            email={email.trim()}
-            onSuccess={handleTotpSuccess}
-            onGoogleSuccess={handleGoogleSuccess}
-            onBack={() => {
-              setStep('CREDENTIALS');
-              setEmailOtpToken('');
-            }}
-          />
         ) : (
           <>
             <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">{t('login.title')}</h1>
@@ -220,13 +202,6 @@ export function LoginPage() {
                 ))}
               </div>
             </div>
-
-            {email.trim().toLowerCase().endsWith('@gmail.com') && (
-              <div className="mb-4 p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-900 text-xs sm:text-sm leading-relaxed">
-                <strong className="block font-bold text-amber-950 mb-0.5">Похоже, вы используете Google-аккаунт</strong>
-                Для безопасности подтвердите, что это вы (код на Gmail), либо войдите в 1 клик через Google.
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <Input
@@ -277,11 +252,7 @@ export function LoginPage() {
                 disabled={isSubmitting}
                 className="w-full flex items-center justify-center gap-2 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-colors shadow-lg shadow-brand-green/15 disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base"
               >
-                {isSubmitting
-                  ? t('login.loggingIn')
-                  : email.trim().toLowerCase().endsWith('@gmail.com')
-                  ? 'Подтвердить, что это вы (код на Gmail)'
-                  : t('login.loginBtn')}
+                {isSubmitting ? t('login.loggingIn') : t('login.loginBtn')}
                 {!isSubmitting && <ArrowRight className="w-4 h-4" />}
               </button>
             </form>

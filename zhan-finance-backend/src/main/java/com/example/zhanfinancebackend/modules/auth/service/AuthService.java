@@ -182,12 +182,6 @@ public class AuthService {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         User user = principal.getUser();
 
-        // Если почта @gmail.com — перенаправляем на OTP подтверждение
-        if (user.getEmail().toLowerCase().endsWith("@gmail.com")) {
-            String preAuthToken = emailOtpService.createLoginOtp(user);
-            return AuthResponse.requiresEmailOtp(preAuthToken, user.getEmail());
-        }
-
         if (user.isTwoFactorEnabled()) {
             if (user.getRole() == Role.ADMIN) {
                 telegramNotifierService.sendAdminNotificationAsync(

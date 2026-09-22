@@ -9,10 +9,11 @@
 ## Infrastructure & Test State
 - **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`: 295/295 tests PASS) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL, EmailOtp, GoogleAuth). JaCoCo configured for coverage tracking.
 - **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (19 test files, 169 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
+- **Telegram Bot Microservice**: Отдельный микросервис `zhan-finance-tgbot` (`C:\Users\murat\IdeaProjects\zhan-finance-tgbot`, Spring Boot 3 / Java 17, порт 8081, 89 тестов PASS). Общается с монолитом через защищенные внутренние эндпоинты `/api/v1/internal/**` по `X-Internal-Token` (`Role.INTERNAL_BOT`).
 - **CI/CD (.github/workflows/ci.yml)**: Continuous quality gate enforcing backend test execution, frontend linting, typechecking, Vitest execution, and GitHub Pages deployment.
 - **Storage (Cloudflare R2)**: Provisioned bucket `jf1c-documents` for Epic-15/Epic-21 ($0 egress).
 - **Auth & Security**: JWT Bearer, refresh token rotation, TOTP 2FA, Bucket4j rate limiting, row-level CRM access controls, Google Account Linking (OAuth 2.0 / GIS), Gmail OTP Protection Flow (Flyway V127).
-- **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
+- **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR (плюс INTERNAL_BOT для бота).
 
 ## Key Completed Features & Milestones
 1. **Full Automated Test Coverage Across Backend, Frontend & CI/CD**:
@@ -56,12 +57,12 @@
    - Сохранение явных сообщений `ApiException` без затирания общими фразами из словаря.
    - Синхронизированы словари локализации ошибок `messages.properties`, `messages_ru.properties`, `messages_en.properties`.
 
-7. **Google Account Linking & Gmail OTP Protection Flow (Flyway V127) [DONE]**:
+7. **Google Account Linking & Gmail OTP Registration Protection (Flyway V127) [DONE]**:
    - `google_sub`, `google_email`, `password_set` добавлены в `app_users` с частичным уникальным индексом.
    - Таблица `email_verification_otps` с индексами и `last_sent_at` для персистентного кулдауна (60 сек).
-   - Защита от угона через регистрацию с чужим @gmail.com: вход/регистрация с паролем для `@gmail.com` требуют подтверждения через 6-значный OTP код на почту. Любые другие домены входят мгновенно.
+   - Защита регистрации: регистрация с адресом `@gmail.com` требует обязательного подтверждения владения почтой через 6-значный OTP код (защита от захвата чужих адресов) либо регистрацию в 1 клик через Google. Для других почтовых доменов регистрация прямая.
+   - Вход в систему: прямой и мгновенный по email + паролю (без задержек и OTP), либо через Google в 1 клик.
    - Пароли в registration payload надежно хешируются (BCrypt) до сохранения в БД.
-   - Google GIS 1-click fallback кнопка на экране ввода OTP для мгновенного пропуска.
    - Привязка и отвязка Google-аккаунта в Настройках пользователя (с защитой от отвязки единственного метода входа при `!password_set`).
    - 100% покрытие: 295 backend тестов, 169 frontend тестов, 0 ошибок.
 
