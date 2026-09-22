@@ -22,7 +22,7 @@ interface RegisterPageProps {
 
 export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   const { t } = useTranslation('auth');
-  const { register, loginWithGoogle } = useAuth();
+  const { register, loginWithGoogle, completeAuth } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -43,6 +43,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
 
   const handleOtpSuccess = (res: AuthResponse) => {
+    completeAuth(res);
     if (res.isPendingApproval) {
       setSuccessMessage(t('register.pendingApproval'));
     } else if (res.isNewUser && role === 'CLIENT') {
