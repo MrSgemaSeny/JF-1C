@@ -139,6 +139,17 @@ class InternalTelegramControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("GET /api/v1/internal/telegram/chat/{chatId}/client returns 404 when link not found")
+    void getClientByChatId_notFound_returns404() throws Exception {
+        when(telegramLinkRepository.findByChatIdAndIsActiveTrue(999999L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/v1/internal/telegram/chat/999999/client")
+                        .contextPath("/api")
+                        .header(InternalTokenFilter.INTERNAL_TOKEN_HEADER, INTERNAL_TOKEN))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @DisplayName("GET /api/v1/internal/clients/{clientId}/tasks returns task list")
     void getClientTasks_returnsTasks() throws Exception {
         Task task = new Task();

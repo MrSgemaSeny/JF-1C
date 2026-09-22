@@ -47,9 +47,11 @@
    - Flyway миграции V124 (`telegram_links`, `telegram_link_tokens`) и V125 (`telegram_notifications`) со связями к `app_users(id)`.
    - Машинная авторизация `Role.INTERNAL_BOT` и фильтр постоянного времени `InternalTokenFilter` (`MessageDigest.isEqual`) для `/v1/internal/**`.
    - Пользовательские эндпоинты `/api/v1/telegram/link/**` и внутренние эндпоинты бота `/api/v1/internal/**` с вайтлистом в `ApiRateLimitFilter` и `CsrfHeaderFilter`.
+   - `TelegramLinkRepository`: явные `JOIN FETCH tl.user` для исключения `LazyInitializationException` при резолве клиента.
+   - `InternalTelegramController`: `@Transactional(readOnly = true)` на контроллере и `@Transactional` на мутирующих методах.
    - Микросервис `zhan-finance-tgbot` на порту 8081 с автозагрузкой `.env` в `bootRun`.
    - Полная санитизация ошибок Telegram: клиентам отдаются чистые человечные подсказки без утечек JSON, кодов ошибок или стеков (все технические данные фиксируются в серверных логах).
-   - 100% покрытие тестами: 289 бекенд-тестов, 89 тестов микросервиса бота (всего 378 тестов, 0 ошибок, 0 пропусков, 0 эмодзи).
+   - 100% покрытие тестами: 295 бекенд-тестов, 89 тестов микросервиса бота (всего 384 теста, 0 ошибок, 0 пропусков, 0 эмодзи).
 
 6. **Global Exception Hardening & Error Sanitization [DONE]**:
    - `GlobalExceptionHandler.java`: перехват `DataIntegrityViolationException` (HTTP 409 `DATA_CONFLICT` вместо 500 ошибки при дубликатах/ограничениях БД).

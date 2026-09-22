@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZoneId;
@@ -30,6 +31,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/v1/internal")
 @Tag(name = "Internal Telegram API", description = "Endpoints exclusively for ZhanFinance Telegram Bot microservice")
+@Transactional(readOnly = true)
 public class InternalTelegramController {
 
     private final TelegramLinkService telegramLinkService;
@@ -57,6 +59,7 @@ public class InternalTelegramController {
 
     @PostMapping("/telegram/bind")
     @PreAuthorize("hasRole('INTERNAL_BOT')")
+    @Transactional
     @Operation(summary = "Bind Telegram chat to user account via deeplink token")
     public ResponseEntity<TelegramBindResponse> bindTelegram(@Valid @RequestBody TelegramBindRequest request) {
         TelegramBindResponse response = telegramLinkService.bindTelegram(request);
@@ -71,6 +74,10 @@ public class InternalTelegramController {
                 .orElseThrow(() -> new ResourceNotFoundException("Telegram link not found for chat ID: " + chatId));
 
         User user = link.getUser();
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found for Telegram link: " + chatId);
+        }
+
         Optional<ClientProfile> profileOpt = clientProfileRepository.findByUser(user);
 
         TelegramClientSummaryDto dto = new TelegramClientSummaryDto(
@@ -88,6 +95,7 @@ public class InternalTelegramController {
 
     @DeleteMapping("/telegram/chat/{chatId}")
     @PreAuthorize("hasRole('INTERNAL_BOT')")
+    @Transactional
     @Operation(summary = "Unlink Telegram account by chat ID")
     public ResponseEntity<Map<String, Object>> unlinkByChatId(@PathVariable Long chatId) {
         telegramLinkService.unlinkByChatId(chatId);
@@ -156,6 +164,7 @@ public class InternalTelegramController {
 
     @PostMapping("/telegram/ack")
     @PreAuthorize("hasRole('INTERNAL_BOT')")
+    @Transactional
     @Operation(summary = "Acknowledge transmission status of a batch of notifications")
     public ResponseEntity<TelegramAckResponse> acknowledgeNotifications(@RequestBody TelegramAckRequest request) {
         TelegramAckResponse response = telegramOutboxService.acknowledgeBatch(request);
