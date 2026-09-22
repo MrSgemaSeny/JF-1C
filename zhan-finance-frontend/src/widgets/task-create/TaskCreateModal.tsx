@@ -9,6 +9,7 @@ import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { translateServiceName } from '@/shared/i18n/taskTranslator';
 import { DatePicker } from '@/shared/ui/DatePicker';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { Input } from '@/shared/ui/Input/Input';
 interface TaskCreateModalProps {
   onClose: () => void;
   onCreated: () => void;
@@ -82,7 +83,11 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !user) return;
+    if (!title.trim()) {
+      setError(t('taskCreate.subjectRequired', { defaultValue: 'Введите суть обращения' }));
+      return;
+    }
+    if (!user) return;
     setIsSubmitting(true);
     setError('');
 
@@ -156,24 +161,22 @@ export function TaskCreateModal({ onClose, onCreated, initialServiceId }: TaskCr
             </div>
           )}
 
-          <form id="create-task-form" onSubmit={handleSubmit} className="space-y-6">
+          <form id="create-task-form" onSubmit={handleSubmit} noValidate className="space-y-6">
             
             {/* Main Info */}
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  {t('taskCreate.subject', { defaultValue: 'Суть обращения' })} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  autoFocus
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all"
-                  placeholder={t('taskCreate.subjectPlaceholder', { defaultValue: 'Например: Справка о доходах, Бухгалтерское сопровождение...' })}
-                  required
-                />
-              </div>
+              <Input
+                label={`${t('taskCreate.subject', { defaultValue: 'Суть обращения' })} *`}
+                type="text"
+                value={title}
+                onChange={e => {
+                  setTitle(e.target.value);
+                  if (error) setError('');
+                }}
+                autoFocus
+                placeholder={t('taskCreate.subjectPlaceholder', { defaultValue: 'Например: Справка о доходах, Бухгалтерское сопровождение...' })}
+                error={error && !title.trim() ? error : undefined}
+              />
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">{t('taskCreate.details', { defaultValue: 'Детали (необязательно)' })}</label>

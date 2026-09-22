@@ -40,7 +40,10 @@ export function TaskEditModal({ task, isOpen, onClose, onSaved }: TaskEditModalP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setError(t('tasks:editModal.taskTitlePlaceholder', { defaultValue: 'Введите название задачи' }));
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);
@@ -71,23 +74,22 @@ export function TaskEditModal({ task, isOpen, onClose, onSaved }: TaskEditModalP
               <Edit3 size={20} />
             </div>
             <div>
-              <h3 className="font-bold text-xl text-gray-900">
+              <h3 className="font-bold text-gray-900 text-lg">
                 {t('tasks:editModal.title', { defaultValue: 'Редактирование задачи' })}
               </h3>
-              <p className="text-xs text-gray-400 font-medium">#{task.id} • {task.title}</p>
+              <p className="text-xs text-gray-400 font-mono">ID: {task.id}</p>
             </div>
           </div>
           <button
-            type="button"
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200/50 rounded-xl transition-colors cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Modal Content / Form */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto flex-1">
+        <form onSubmit={handleSubmit} noValidate className="p-8 space-y-6 overflow-y-auto flex-1">
           {error && (
             <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-xs rounded-2xl font-medium leading-relaxed">
               {error}
@@ -95,19 +97,17 @@ export function TaskEditModal({ task, isOpen, onClose, onSaved }: TaskEditModalP
           )}
 
           {/* Title Field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide">
-              {t('tasks:editModal.taskTitle', { defaultValue: 'Название задачи' })} *
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder={t('tasks:editModal.taskTitlePlaceholder', { defaultValue: 'Введите название задачи' })}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none"
-              required
-            />
-          </div>
+          <Input
+            label={`${t('tasks:editModal.taskTitle', { defaultValue: 'Название задачи' })} *`}
+            type="text"
+            value={title}
+            onChange={e => {
+              setTitle(e.target.value);
+              if (error) setError(null);
+            }}
+            placeholder={t('tasks:editModal.taskTitlePlaceholder', { defaultValue: 'Введите название задачи' })}
+            error={error && !title.trim() ? error : undefined}
+          />
 
           {/* Description Field */}
           <div className="space-y-2">
