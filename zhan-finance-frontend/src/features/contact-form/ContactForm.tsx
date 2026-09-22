@@ -14,7 +14,7 @@ interface ContactFormProps {
 
 export function ContactForm({ title, className = '', showMessage = false }: ContactFormProps) {
   const { t } = useTranslation('common');
-  const { name, setName, phone, setPhone, email, setEmail, emailError, message, setMessage, submitted, waUrl, loading, error, handleSubmit } = useContactForm();
+  const { name, setName, nameError, phone, setPhone, phoneError, email, setEmail, validateEmail, emailError, message, setMessage, submitted, waUrl, loading, error, handleSubmit } = useContactForm();
 
   const displayTitle = title || t('contactForm.title', { defaultValue: 'Связаться с нами' });
 
@@ -76,10 +76,14 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-brand-green/5 border-b-2 border-brand-green/20 px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium"
+              className={`w-full bg-brand-green/5 border-b-2 ${
+                nameError ? 'border-red-500' : 'border-brand-green/20'
+              } px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium`}
               placeholder={t('contactForm.fields.name.placeholder', { defaultValue: 'Имя Фамилия' })}
-              required
             />
+            {nameError && (
+              <p className="text-xs font-semibold text-red-600 mt-1.5">{nameError}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-bold mb-2 uppercase tracking-wider opacity-70">
@@ -89,10 +93,14 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
               type="tel"
               value={phone}
               onChange={handlePhoneChange}
-              className="w-full bg-brand-green/5 border-b-2 border-brand-green/20 px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium"
+              className={`w-full bg-brand-green/5 border-b-2 ${
+                phoneError ? 'border-red-500' : 'border-brand-green/20'
+              } px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium`}
               placeholder="+7 (___) ___-__-__"
-              required
             />
+            {phoneError && (
+              <p className="text-xs font-semibold text-red-600 mt-1.5">{phoneError}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-bold mb-2 uppercase tracking-wider opacity-70">
@@ -102,6 +110,7 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => validateEmail(email)}
               className={`w-full bg-brand-green/5 border-b-2 ${
                 emailError ? 'border-red-500' : 'border-brand-green/20'
               } px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium`}

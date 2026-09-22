@@ -7,7 +7,9 @@ export function useContactForm() {
   const { user } = useAuth();
   const { t } = useTranslation('common');
   const [name, setName] = useState('');
+  const [nameError, setNameError] = useState<string | null>(null);
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
   const [message, setMessage] = useState('');
@@ -48,13 +50,60 @@ export function useContactForm() {
     return true;
   }
 
+  function handleEmailChange(val: string) {
+    setEmail(val);
+    const trimmed = val.trim();
+    if (!trimmed) {
+      setEmailError(null);
+      return;
+    }
+    // Если введены нелатинские символы — показываем ошибку мгновенно
+    if (/[^\x00-\x7F]/.test(trimmed)) {
+      setEmailError(t('contactForm.errors.latinOnly', {
+        defaultValue: 'Пожалуйста, укажите email латинскими буквами (например, name@example.com). Кириллические адреса не поддерживаются.'
+      }));
+      return;
+    }
+    // Если уже есть знак @, проверяем валидность формата домена
+    if (trimmed.includes('@')) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(trimmed)) {
+        setEmailError(t('contactForm.errors.invalidEmail', {
+          defaultValue: 'Некорректный формат email. Пример: name@example.com'
+        }));
+        return;
+      }
+    }
+    setEmailError(null);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
     setError(null);
 
+    let hasError = false;
+    if (!name.trim()) {
+      setNameError(t('common:required', { defaultValue: 'Введите ваше имя' }));
+      hasError = true;
+    } else {
+      setNameError(null);
+    }
+
+    const cleanPhone = phone.replace(/\D/g, '');
+    if (!phone.trim() || cleanPhone.length < 11) {
+      setPhoneError(t('contactForm.errors.invalidPhone', { defaultValue: 'Введите корректный номер' }));
+      hasError = true;
+    } else {
+      setPhoneError(null);
+    }
+
     const isEmailValid = validateEmail(email);
     if (!isEmailValid) {
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
 
@@ -102,16 +151,20 @@ export function useContactForm() {
 
   return {
     name,
-    setName,
-    phone,
-    setPhone,
-    email,
-    setEmail: (val: string) => {
-      setEmail(val);
-      if (emailError) {
-        validateEmail(val);
-      }
+    setName: (val: string) => {
+      setName(val);
+      if (nameError) setNameError(null);
     },
+    nameError,
+    phone,
+    setPhone: (val: string) => {
+      setPhone(val);
+      if (phoneError) setPhoneError(null);
+    },
+    phoneError,
+    email,
+    setEmail: handleEmailChange,
+    validateEmail,
     emailError,
     message,
     setMessage,

@@ -177,7 +177,7 @@ export function AdminSecurityPage() {
               </div>
             </div>
 
-            <form onSubmit={handleConfirmSetup} className="space-y-4 pt-4 border-t border-emerald-100">
+            <form onSubmit={handleConfirmSetup} noValidate className="space-y-4 pt-4 border-t border-emerald-100">
               <label className="block text-sm font-semibold text-gray-900">
                 {t('adminSecurity.enterCodePrompt', { defaultValue: 'Введите 6-значный код из приложения для активации:' })}
               </label>
@@ -204,7 +204,7 @@ export function AdminSecurityPage() {
 
         {/* Disable Modal / Inline */}
         {phase === 'disable' && (
-          <form onSubmit={handleDisable2FA} className="p-6 border border-red-100 bg-red-50/30 rounded-2xl space-y-4">
+          <form onSubmit={handleDisable2FA} noValidate className="p-6 border border-red-100 bg-red-50/30 rounded-2xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-red-900 flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-red-600" />

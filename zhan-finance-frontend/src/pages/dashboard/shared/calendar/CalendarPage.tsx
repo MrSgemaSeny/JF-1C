@@ -5,6 +5,7 @@ import { useCalendarEventsQuery, useCreateCalendarEventMutation, useDeleteCalend
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Spinner } from '@/shared/ui/Spinner';
+import { Input } from '@/shared/ui/Input/Input';
 
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
@@ -43,6 +44,7 @@ export function CalendarPage() {
   const [color, setColor] = useState('BLUE');
   const [isSaving, setIsSaving] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [titleError, setTitleError] = useState('');
 
   // Auto-scroll to current month on mobile
   useEffect(() => {
@@ -71,6 +73,7 @@ export function CalendarPage() {
 
     setSelectedDate(dateStr);
     setTitle('');
+    setTitleError('');
     setDescription('');
     setTime('09:00');
     setColor('BLUE');
@@ -80,7 +83,11 @@ export function CalendarPage() {
 
   const handleSaveEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedDate || !title.trim()) return;
+    if (!title.trim()) {
+      setTitleError(t('common:required', { defaultValue: 'Обязательное поле' }));
+      return;
+    }
+    if (!selectedDate) return;
     setIsSaving(true);
     try {
       if (editingEventId) {
@@ -335,7 +342,7 @@ export function CalendarPage() {
                     ? t('calendarWidget.editEvent', { defaultValue: 'Редактировать событие' }) 
                     : t('calendarWidget.addEvent', { defaultValue: 'Добавить событие' })}
                 </h4>
-                <form onSubmit={handleSaveEvent} className="space-y-4">
+                <form onSubmit={handleSaveEvent} noValidate className="space-y-4">
                   {editingEventId && (
                     <div className="flex justify-end mb-2">
                       <button 
@@ -343,6 +350,7 @@ export function CalendarPage() {
                         onClick={() => {
                           setEditingEventId(null);
                           setTitle('');
+                          setTitleError('');
                           setDescription('');
                         }}
                         className="text-xs text-brand-green hover:underline"
@@ -351,29 +359,26 @@ export function CalendarPage() {
                       </button>
                     </div>
                   )}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1">{t('calendarWidget.eventTitle', { defaultValue: 'Название события' })}</label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={e => setTitle(e.target.value)}
-                      placeholder={t('calendarWidget.eventTitlePlaceholder', { defaultValue: 'Напр. Оплата ИПН' })}
-                      className="w-full text-base font-medium border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none placeholder-gray-400"
-                      required
-                    />
-                  </div>
+                  <Input
+                    label={t('calendarWidget.eventTitle', { defaultValue: 'Название события' })}
+                    type="text"
+                    value={title}
+                    onChange={e => {
+                      setTitle(e.target.value);
+                      if (titleError) setTitleError('');
+                    }}
+                    placeholder={t('calendarWidget.eventTitlePlaceholder', { defaultValue: 'Напр. Оплата ИПН' })}
+                    error={titleError || undefined}
+                  />
                   
                   <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {t('calendarWidget.time', { defaultValue: 'Время' })}</label>
-                      <input
-                        type="time"
-                        value={time}
-                        onChange={e => setTime(e.target.value)}
-                        className="w-full text-base font-medium border border-gray-200 bg-gray-50 px-4 py-3 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all outline-none"
-                        required
-                      />
-                    </div>
+                    <Input
+                      label={t('calendarWidget.time', { defaultValue: 'Время' })}
+                      type="time"
+                      value={time}
+                      onChange={e => setTime(e.target.value)}
+                      icon={<Clock className="w-3.5 h-3.5" />}
+                    />
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide ml-1 flex items-center gap-1.5"><Tag className="w-3.5 h-3.5" /> {t('calendarWidget.color', { defaultValue: 'Цвет метки' })}</label>
                       <select

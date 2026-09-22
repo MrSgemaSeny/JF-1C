@@ -327,7 +327,7 @@ export function MiniCalendarWidget() {
                     ? t('calendarWidget.editEvent', { defaultValue: 'Редактировать событие' }) 
                     : t('calendarWidget.addEvent', { defaultValue: 'Добавить событие' })}
                 </h4>
-                <form onSubmit={handleSaveEvent} className="space-y-4">
+                <form onSubmit={handleSaveEvent} noValidate className="space-y-4">
                   {editingEventId && (
                     <div className="flex justify-end mb-2">
                       <button 
@@ -350,7 +350,6 @@ export function MiniCalendarWidget() {
                       onChange={e => setTitle(e.target.value)}
                       placeholder={t('calendarWidget.eventTitlePlaceholder', { defaultValue: 'Название события (напр. Оплата ИПН)' })}
                       className="w-full text-sm font-medium border-0 border-b-2 border-gray-100 focus:border-brand-green focus:ring-0 px-0 py-2 transition-colors bg-transparent placeholder-gray-400"
-                      required
                     />
                   </div>
                   

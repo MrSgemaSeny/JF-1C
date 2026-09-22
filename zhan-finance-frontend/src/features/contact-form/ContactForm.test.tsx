@@ -105,5 +105,15 @@ describe('ContactForm Component', () => {
     expect(await screen.findByText(/Некорректный формат email/i)).toBeInTheDocument();
     expect(screen.queryByText(/Заявка сформирована!/i)).not.toBeInTheDocument();
   });
+
+  it('displays live error immediately while typing Cyrillic characters without submitting', async () => {
+    renderComponent();
+    await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
+
+    const emailInput = screen.getByPlaceholderText(/name@example.com/i);
+    fireEvent.change(emailInput, { target: { value: 'asda@хуй' } });
+
+    expect(screen.getByText(/латинскими буквами/i)).toBeInTheDocument();
+  });
 });
 
