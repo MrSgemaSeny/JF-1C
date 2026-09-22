@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { Input } from '@/shared/ui/Input/Input';
 
 export function AdminInvoicesPage() {
   const { t } = useTranslation(['common']);
@@ -20,16 +21,36 @@ export function AdminInvoicesPage() {
   const [dueDate, setDueDate] = useState('');
   const [clientId, setClientId] = useState('1');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ title?: string; amount?: string; clientId?: string; dueDate?: string }>({});
 
   useEscapeKey(() => setIsModalOpen(false), isModalOpen);
 
+  const validate = () => {
+    const errs: typeof formErrors = {};
+    if (!title.trim()) {
+      errs.title = t('common:required', { defaultValue: 'Введите назначение счёта' });
+    }
+    if (!amount || Number(amount) < 1) {
+      errs.amount = t('adminInvoices.errors.amountPositive', { defaultValue: 'Сумма должна быть больше 0' });
+    }
+    if (!clientId || Number(clientId) < 1) {
+      errs.clientId = t('adminInvoices.errors.clientIdRequired', { defaultValue: 'Укажите корректный ID клиента' });
+    }
+    if (!dueDate) {
+      errs.dueDate = t('common:required', { defaultValue: 'Укажите срок оплаты' });
+    }
+    setFormErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleCreateInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     try {
       setIsSubmitting(true);
       await billingApi.createInvoice({
         clientId: Number(clientId),
-        title,
+        title: title.trim(),
         amount: Number(amount),
         status: 'ISSUED',
         dueDate: dueDate || new Date().toISOString().split('T')[0]
@@ -39,6 +60,7 @@ export function AdminInvoicesPage() {
       setTitle('');
       setAmount('');
       setDueDate('');
+      setFormErrors({});
       refetch();
     } catch (err) {
       console.error(err);
@@ -114,52 +136,50 @@ export function AdminInvoicesPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
             <h2 className="text-xl font-bold text-gray-900">{t('adminInvoices.newInvoiceTitle')}</h2>
-            <form onSubmit={handleCreateInvoice} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminInvoices.purpose')}</label>
-                <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder={t('adminInvoices.purposePlaceholder')}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminInvoices.amountKzt')}</label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder="50000"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminInvoices.clientIdLabel')}</label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={clientId}
-                  onChange={(e) => setClientId(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder="1"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminInvoices.dueDateLabel')}</label>
-                <input
-                  type="date"
-                  required
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                />
-              </div>
+            <form onSubmit={handleCreateInvoice} noValidate className="space-y-4">
+              <Input
+                label={t('adminInvoices.purpose')}
+                type="text"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (formErrors.title) setFormErrors(prev => ({ ...prev, title: undefined }));
+                }}
+                placeholder={t('adminInvoices.purposePlaceholder')}
+                error={formErrors.title}
+              />
+              <Input
+                label={t('adminInvoices.amountKzt')}
+                type="number"
+                value={amount}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                  if (formErrors.amount) setFormErrors(prev => ({ ...prev, amount: undefined }));
+                }}
+                placeholder="50000"
+                error={formErrors.amount}
+              />
+              <Input
+                label={t('adminInvoices.clientIdLabel')}
+                type="number"
+                value={clientId}
+                onChange={(e) => {
+                  setClientId(e.target.value);
+                  if (formErrors.clientId) setFormErrors(prev => ({ ...prev, clientId: undefined }));
+                }}
+                placeholder="1"
+                error={formErrors.clientId}
+              />
+              <Input
+                label={t('adminInvoices.dueDateLabel')}
+                type="date"
+                value={dueDate}
+                onChange={(e) => {
+                  setDueDate(e.target.value);
+                  if (formErrors.dueDate) setFormErrors(prev => ({ ...prev, dueDate: undefined }));
+                }}
+                error={formErrors.dueDate}
+              />
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
                   {t('common.cancel')}

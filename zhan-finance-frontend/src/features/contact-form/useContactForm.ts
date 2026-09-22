@@ -33,6 +33,7 @@ export function useContactForm() {
       setEmailError(null);
       return true;
     }
+    // eslint-disable-next-line no-control-regex
     if (/[^\x00-\x7F]/.test(trimmed)) {
       setEmailError(t('contactForm.errors.latinOnly', {
         defaultValue: 'Пожалуйста, укажите email латинскими буквами (например, name@example.com). Кириллические адреса не поддерживаются.'
@@ -58,6 +59,7 @@ export function useContactForm() {
       return;
     }
     // Если введены нелатинские символы — показываем ошибку мгновенно
+    // eslint-disable-next-line no-control-regex
     if (/[^\x00-\x7F]/.test(trimmed)) {
       setEmailError(t('contactForm.errors.latinOnly', {
         defaultValue: 'Пожалуйста, укажите email латинскими буквами (например, name@example.com). Кириллические адреса не поддерживаются.'
@@ -91,7 +93,7 @@ export function useContactForm() {
     }
 
     const cleanPhone = phone.replace(/\D/g, '');
-    if (!phone.trim() || cleanPhone.length < 11) {
+    if (!phone.trim() || cleanPhone.length < 10) {
       setPhoneError(t('contactForm.errors.invalidPhone', { defaultValue: 'Введите корректный номер' }));
       hasError = true;
     } else {

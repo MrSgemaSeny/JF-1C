@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
 import { toast } from '@/shared/ui/Toast/ToastContext';
+import { Input } from '@/shared/ui/Input/Input';
 
 export function AdminSubscriptionsPage() {
   const { t } = useTranslation(['common']);
@@ -20,15 +21,32 @@ export function AdminSubscriptionsPage() {
   const [startsAt, setStartsAt] = useState('');
   const [endsAt, setEndsAt] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ planName?: string; monthlyPrice?: string; startsAt?: string }>({});
 
   useEscapeKey(() => setIsModalOpen(false), isModalOpen);
 
+  const validate = () => {
+    const errs: typeof formErrors = {};
+    if (!planName.trim()) {
+      errs.planName = t('common:required', { defaultValue: 'Введите название плана' });
+    }
+    if (!monthlyPrice || Number(monthlyPrice) < 1) {
+      errs.monthlyPrice = t('adminSubscriptions.errors.pricePositive', { defaultValue: 'Цена должна быть больше 0' });
+    }
+    if (!startsAt) {
+      errs.startsAt = t('common:required', { defaultValue: 'Укажите дату начала' });
+    }
+    setFormErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleCreateSubscription = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     try {
       setIsSubmitting(true);
       await billingApi.createSubscription({
-        planName,
+        planName: planName.trim(),
         monthlyPrice: Number(monthlyPrice),
         status: 'ACTIVE',
         startsAt: startsAt || new Date().toISOString().split('T')[0],
@@ -38,6 +56,7 @@ export function AdminSubscriptionsPage() {
       setIsModalOpen(false);
       setStartsAt('');
       setEndsAt('');
+      setFormErrors({});
       refetch();
     } catch (err) {
       console.error(err);
@@ -115,49 +134,45 @@ export function AdminSubscriptionsPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
             <h2 className="text-xl font-bold text-gray-900">{t('adminSubscriptions.newSubscriptionTitle')}</h2>
-            <form onSubmit={handleCreateSubscription} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminSubscriptions.planNameLabel')}</label>
-                <input
-                  type="text"
-                  required
-                  value={planName}
-                  onChange={(e) => setPlanName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder={t('adminSubscriptions.planNamePlaceholder')}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminSubscriptions.monthlyPriceLabel')}</label>
-                <input
-                  type="number"
-                  required
-                  min={1}
-                  value={monthlyPrice}
-                  onChange={(e) => setMonthlyPrice(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder="45000"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminSubscriptions.startsAtLabel')}</label>
-                <input
-                  type="date"
-                  required
-                  value={startsAt}
-                  onChange={(e) => setStartsAt(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminSubscriptions.endsAtLabel')}</label>
-                <input
-                  type="date"
-                  value={endsAt}
-                  onChange={(e) => setEndsAt(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                />
-              </div>
+            <form onSubmit={handleCreateSubscription} noValidate className="space-y-4">
+              <Input
+                label={t('adminSubscriptions.planNameLabel')}
+                type="text"
+                value={planName}
+                onChange={(e) => {
+                  setPlanName(e.target.value);
+                  if (formErrors.planName) setFormErrors(prev => ({ ...prev, planName: undefined }));
+                }}
+                placeholder={t('adminSubscriptions.planNamePlaceholder')}
+                error={formErrors.planName}
+              />
+              <Input
+                label={t('adminSubscriptions.monthlyPriceLabel')}
+                type="number"
+                value={monthlyPrice}
+                onChange={(e) => {
+                  setMonthlyPrice(e.target.value);
+                  if (formErrors.monthlyPrice) setFormErrors(prev => ({ ...prev, monthlyPrice: undefined }));
+                }}
+                placeholder="45000"
+                error={formErrors.monthlyPrice}
+              />
+              <Input
+                label={t('adminSubscriptions.startsAtLabel')}
+                type="date"
+                value={startsAt}
+                onChange={(e) => {
+                  setStartsAt(e.target.value);
+                  if (formErrors.startsAt) setFormErrors(prev => ({ ...prev, startsAt: undefined }));
+                }}
+                error={formErrors.startsAt}
+              />
+              <Input
+                label={t('adminSubscriptions.endsAtLabel')}
+                type="date"
+                value={endsAt}
+                onChange={(e) => setEndsAt(e.target.value)}
+              />
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
                   {t('common.cancel')}

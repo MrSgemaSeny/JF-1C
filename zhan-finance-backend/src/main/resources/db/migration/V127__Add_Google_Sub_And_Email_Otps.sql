@@ -20,7 +20,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_app_users_google_sub
 CREATE TABLE IF NOT EXISTS email_verification_otps (
     id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email                VARCHAR(255) NOT NULL,
-    user_id              UUID REFERENCES app_users(id) ON DELETE CASCADE,
+    user_id              BIGINT REFERENCES app_users(id) ON DELETE CASCADE,
     otp_code             VARCHAR(10) NOT NULL,
     pre_auth_token       VARCHAR(64) NOT NULL UNIQUE,
     purpose              VARCHAR(32) NOT NULL, -- 'LOGIN', 'REGISTER'
