@@ -41,7 +41,7 @@ Documents, Chat, Notifications, Telegram (микросервис zhan-finance-tg
 *Do NOT execute any code or write any plans until you have completed these two reads.*
 
 ## Critical Rules — NEVER violate
-1. **Workflow (Журнал)**: ТЕСТЫ ПРОШЛИ -> ЗАПИСЬ В ЖУРНАЛ (`journal/YYYY-MM-DD/jf-1c.md`) -> GIT PUSH. Никогда наоборот.
+1. **Workflow (Журнал)**: ТЕСТЫ ПРОШЛИ -> ЗАПИСЬ В ЖУРНАЛ (`journal/YYYY-MM-DD/jf-1c.md`) -> GIT PUSH. Выполняется СТРОГО в самом конце сессии/задачи перед завершением, а не посреди работы. Никогда наоборот.
 2. **Brain's Protocol (Second Brain)**: You MUST strictly obey and read the global Second Brain context before making major architectural decisions. It is located at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`. Update it if necessary.
 3. **Flyway Migrations**: NEVER modify files in db/migration/ — existing Flyway migrations are immutable. New changes require V109+.
 4. **Secrets**: Secrets and passwords belong strictly in env vars and GitHub Secrets, never hardcoded in source files.
@@ -50,10 +50,10 @@ Documents, Chat, Notifications, Telegram (микросервис zhan-finance-tg
 7. **Flyway Clean**: flywayClean only on local throwaway DB, never on production.
 8. **Checksum Integrity**: Modifying applied Flyway migrations breaks checksums and breaks deployment.
 9. **Docker**: Do not suggest or configure Docker unless explicitly requested.
-10. **Communication**: NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
+10. **Communication**: Язык - русский. Тон - Senior Architect (прямо, без воды). NEVER use emojis in any responses, artifacts, or code. The user strictly forbids emojis.
 11. **Tests before pushing**: Never push to branches if there are errors or failing tests.
-12. **Git Workflow**: Automatically git commit and git push to main after completing any feature/fix update without asking (always verify tests pass first).
-13. **Extreme Token Efficiency**: DO NOT spam tools unnecessarily. If something is already known or obvious, act on it immediately. Avoid reading entire files or running excessive commands when not needed. Every tool call burns tokens. Do not waste the user's weekly token quota! Minimize tool calls and be precise.
+12. **Git Workflow & Commit Frequency (STRICT)**: Коммиты и пуши выполняются СТРОГО один раз в конце сессии после полного завершения работы над задачей. СТРОГО ЗАПРЕЩЕНО коммитить каждую строку, файл или промежуточный шаг. Не спамить `git status`, `git diff`, `git log` по сотне раз.
+13. **Extreme Token Efficiency & Anti-Polling (STRICT)**: DO NOT spam tools unnecessarily. КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО циклично проверять статус задач (`manage_task status`) или опрашивать процессы каждые полсекунды. Antigravity присылает реактивные уведомления автоматически по завершении процесса. Запускай задачу и жди уведомления. Береги недельный лимит токенов пользователя.
 14. **Contact Form & Backend API Status**: The backend API POST `/api/v1/contact-requests` call in `useContactForm.ts` is intentionally commented out in favor of the direct WhatsApp flow (+77750584021 / wa.me). AI agents MUST ALWAYS verify and inform the user about this status before modifying contact form logic.
 ## Current Status
 - Flyway migration chain V1->V108 verified on clean DB [DONE]
