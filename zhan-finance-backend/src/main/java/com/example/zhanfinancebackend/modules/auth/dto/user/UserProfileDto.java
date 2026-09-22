@@ -14,5 +14,24 @@ public record UserProfileDto(
         AuthProvider authProvider,
         Long assignedEmployeeId,
         String assignedEmployeeName,
-        String locale
-) {}
+        String locale,
+        boolean googleLinked,
+        String googleEmail,
+        boolean passwordSet
+) {
+    public UserProfileDto(
+            Long id,
+            String email,
+            String fullName,
+            Role role,
+            String phone,
+            String companyName,
+            String avatarUrl,
+            AuthProvider authProvider,
+            Long assignedEmployeeId,
+            String assignedEmployeeName,
+            String locale
+    ) {
+        this(id, email, fullName, role, phone, companyName, avatarUrl, authProvider, assignedEmployeeId, assignedEmployeeName, locale, false, null, false);
+    }
+}

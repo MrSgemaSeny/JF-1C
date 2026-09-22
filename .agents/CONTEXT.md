@@ -7,11 +7,11 @@
 - **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure & Test State
-- **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL). JaCoCo configured for coverage tracking.
+- **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`: 295/295 tests PASS) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL, EmailOtp, GoogleAuth). JaCoCo configured for coverage tracking.
 - **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (19 test files, 169 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
 - **CI/CD (.github/workflows/ci.yml)**: Continuous quality gate enforcing backend test execution, frontend linting, typechecking, Vitest execution, and GitHub Pages deployment.
 - **Storage (Cloudflare R2)**: Provisioned bucket `jf1c-documents` for Epic-15/Epic-21 ($0 egress).
-- **Auth & Security**: JWT Bearer, refresh token rotation, TOTP 2FA, Bucket4j rate limiting, row-level CRM access controls.
+- **Auth & Security**: JWT Bearer, refresh token rotation, TOTP 2FA, Bucket4j rate limiting, row-level CRM access controls, Google Account Linking (OAuth 2.0 / GIS), Gmail OTP Protection Flow (Flyway V127).
 - **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR.
 
 ## Key Completed Features & Milestones
@@ -55,6 +55,15 @@
    - Перехват `MaxUploadSizeExceededException` (HTTP 400 `FILE_TOO_LARGE`), `MethodArgumentTypeMismatchException` (HTTP 400 `INVALID_PARAMETER`), `MissingServletRequestParameterException` (HTTP 400 `MISSING_PARAMETER`), `IllegalArgumentException` (HTTP 400 `BAD_REQUEST`), `ConstraintViolationException` (HTTP 400 `VALIDATION_ERROR`).
    - Сохранение явных сообщений `ApiException` без затирания общими фразами из словаря.
    - Синхронизированы словари локализации ошибок `messages.properties`, `messages_ru.properties`, `messages_en.properties`.
+
+7. **Google Account Linking & Gmail OTP Protection Flow (Flyway V127) [DONE]**:
+   - `google_sub`, `google_email`, `password_set` добавлены в `app_users` с частичным уникальным индексом.
+   - Таблица `email_verification_otps` с индексами и `last_sent_at` для персистентного кулдауна (60 сек).
+   - Защита от угона через регистрацию с чужим @gmail.com: вход/регистрация с паролем для `@gmail.com` требуют подтверждения через 6-значный OTP код на почту. Любые другие домены входят мгновенно.
+   - Пароли в registration payload надежно хешируются (BCrypt) до сохранения в БД.
+   - Google GIS 1-click fallback кнопка на экране ввода OTP для мгновенного пропуска.
+   - Привязка и отвязка Google-аккаунта в Настройках пользователя (с защитой от отвязки единственного метода входа при `!password_set`).
+   - 100% покрытие: 295 backend тестов, 169 frontend тестов, 0 ошибок.
 
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 

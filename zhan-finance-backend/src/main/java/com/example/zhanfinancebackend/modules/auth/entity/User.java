@@ -60,6 +60,15 @@ public class User extends BaseEntity {
     @Column(name = "two_factor_enabled", nullable = false)
     private boolean twoFactorEnabled = false;
 
+    @Column(name = "google_sub", length = 64)
+    private String googleSub;
+
+    @Column(name = "google_email", length = 160)
+    private String googleEmail;
+
+    @Column(name = "password_set", nullable = false)
+    private boolean passwordSet = false;
+
     public User() {
     }
 
@@ -68,6 +77,7 @@ public class User extends BaseEntity {
         this.email = email;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.passwordSet = (passwordHash != null && !passwordHash.isBlank());
     }
 
     public String getFullName() {
@@ -176,6 +186,34 @@ public class User extends BaseEntity {
 
     public void setRegistrationStatus(RegistrationStatus registrationStatus) {
         this.registrationStatus = registrationStatus;
+    }
+
+    public String getGoogleSub() {
+        return googleSub;
+    }
+
+    public void setGoogleSub(String googleSub) {
+        this.googleSub = googleSub;
+    }
+
+    public String getGoogleEmail() {
+        return googleEmail;
+    }
+
+    public void setGoogleEmail(String googleEmail) {
+        this.googleEmail = googleEmail;
+    }
+
+    public boolean isPasswordSet() {
+        return passwordSet;
+    }
+
+    public void setPasswordSet(boolean passwordSet) {
+        this.passwordSet = passwordSet;
+    }
+
+    public boolean hasUsablePassword() {
+        return passwordSet;
     }
 
 }

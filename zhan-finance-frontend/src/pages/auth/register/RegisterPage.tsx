@@ -4,6 +4,8 @@ import { ArrowRight, CheckCircle2, User, Mail, Lock, Phone, Building2 } from 'lu
 import { ROUTES } from '@/shared/config/routes';
 import { ApiError, extractValidationErrors } from '@/shared/api/http';
 import { useAuth } from '@/features/auth/AuthContext';
+import { AuthResponse } from '@/features/auth/authApi';
+import { GmailOtpVerifyForm } from '@/features/auth/ui/GmailOtpVerifyForm';
 import { GoogleLogin } from '@react-oauth/google';
 import { Input } from '@/shared/ui/Input/Input';
 import { toast } from '@/shared/ui/Toast/ToastContext';
@@ -37,6 +39,20 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [emailOtpToken, setEmailOtpToken] = useState<string | null>(null);
+
+  const handleOtpSuccess = (res: AuthResponse) => {
+    if (res.isPendingApproval) {
+      setSuccessMessage(t('register.pendingApproval'));
+    } else if (res.isNewUser && role === 'CLIENT') {
+      toast.success(t('register.loginSuccess'));
+      navigate(ROUTES.COMPLETE_PROFILE);
+    } else {
+      toast.success(t('register.loginSuccess'));
+      const returnUrl = searchParams.get('from') || ROUTES.PROFILE;
+      navigate(returnUrl, { replace: true });
+    }
+  };
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     if (!credentialResponse.credential || isSubmitting || submittingRef.current) return;
@@ -111,7 +127,12 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
         companyName: role === 'CLIENT' ? companyName.trim() : undefined,
       });
 
-      if (result.isPendingApproval) {
+      if (result && result.requiresEmailOtp && result.preAuthToken) {
+        setEmailOtpToken(result.preAuthToken);
+        return;
+      }
+
+      if (result && result.isPendingApproval) {
         setSuccessMessage(t('register.pendingApproval'));
       } else {
         toast.success(t('register.loginSuccess'));
@@ -164,43 +185,59 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           <LanguageSwitcher />
         </div>
 
-        <div className="animate-in fade-in duration-300">
-          {/* Role Selector */}
-          <div className="grid grid-cols-2 p-1 bg-brand-green/5 border border-brand-green/10 rounded-2xl mb-6">
-            <button
-              type="button"
-              onClick={() => {
-                if (isEmployeeRoute) navigate(ROUTES.REGISTER);
-              }}
-              className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
-                !isEmployeeRoute
-                  ? 'bg-brand-green text-brand-beige shadow-sm'
-                  : 'text-brand-green/60 hover:text-brand-green'
-              }`}
-            >
-              {t('register.roleClient', { defaultValue: 'Клиент' })}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!isEmployeeRoute) navigate(ROUTES.REGISTER_EMPLOYEE);
-              }}
-              className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
-                isEmployeeRoute
-                  ? 'bg-brand-green text-brand-beige shadow-sm'
-                  : 'text-brand-green/60 hover:text-brand-green'
-              }`}
-            >
-              {t('register.roleEmployee', { defaultValue: 'Сотрудник' })}
-            </button>
-          </div>
+        {emailOtpToken ? (
+          <GmailOtpVerifyForm
+            preAuthToken={emailOtpToken}
+            email={email.trim()}
+            onSuccess={handleOtpSuccess}
+            onGoogleSuccess={handleGoogleSuccess}
+            onBack={() => setEmailOtpToken(null)}
+          />
+        ) : (
+          <div className="animate-in fade-in duration-300">
+            {/* Role Selector */}
+            <div className="grid grid-cols-2 p-1 bg-brand-green/5 border border-brand-green/10 rounded-2xl mb-6">
+              <button
+                type="button"
+                onClick={() => {
+                  if (isEmployeeRoute) navigate(ROUTES.REGISTER);
+                }}
+                className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
+                  !isEmployeeRoute
+                    ? 'bg-brand-green text-brand-beige shadow-sm'
+                    : 'text-brand-green/60 hover:text-brand-green'
+                }`}
+              >
+                {t('register.roleClient', { defaultValue: 'Клиент' })}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isEmployeeRoute) navigate(ROUTES.REGISTER_EMPLOYEE);
+                }}
+                className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
+                  isEmployeeRoute
+                    ? 'bg-brand-green text-brand-beige shadow-sm'
+                    : 'text-brand-green/60 hover:text-brand-green'
+                }`}
+              >
+                {t('register.roleEmployee', { defaultValue: 'Сотрудник' })}
+              </button>
+            </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">{t('register.title')}</h1>
-          <p className="text-brand-green/70 text-sm mb-6 leading-relaxed">
-            {isEmployeeRoute ? t('register.employeeSubtitle') : t('register.subtitle')}
-          </p>
+            <h1 className="text-2xl sm:text-3xl font-black uppercase text-brand-green mb-2">{t('register.title')}</h1>
+            <p className="text-brand-green/70 text-sm mb-6 leading-relaxed">
+              {isEmployeeRoute ? t('register.employeeSubtitle') : t('register.subtitle')}
+            </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            {email.trim().toLowerCase().endsWith('@gmail.com') && (
+              <div className="mb-4 p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-900 text-xs sm:text-sm leading-relaxed">
+                <strong className="block font-bold text-amber-950 mb-0.5">Похоже, вы используете Google-аккаунт</strong>
+                Для безопасности потребуется подтвердить владение почтой (код на Gmail), либо завершить регистрацию в 1 клик через Google.
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             <Input
               id="fullName"
               type="text"
@@ -285,7 +322,11 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
               disabled={isSubmitting}
               className="w-full flex items-center justify-center gap-2 py-4 bg-brand-green text-brand-beige rounded-2xl font-bold uppercase tracking-wider hover:bg-brand-green/90 transition-all shadow-lg shadow-brand-green/15 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
-              {isSubmitting ? t('register.registering') : t('register.registerBtn')}
+              {isSubmitting
+                ? t('register.registering')
+                : email.trim().toLowerCase().endsWith('@gmail.com')
+                ? 'Зарегистрироваться (подтвердить почту)'
+                : t('register.registerBtn')}
               {!isSubmitting && <ArrowRight className="w-4 h-4" />}
             </button>
           </form>
@@ -327,6 +368,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
             </Link>
           </p>
         </div>
+      )}
       </div>
     </div>
   );

@@ -57,6 +57,43 @@ public class AuthController {
         return ApiResponse.success(response);
     }
 
+    @PostMapping("/google/link")
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
+    public ApiResponse<Void> linkGoogle(
+            @Valid @RequestBody com.example.zhanfinancebackend.modules.auth.dto.GoogleLinkRequest request,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.example.zhanfinancebackend.modules.auth.security.UserPrincipal principal
+    ) {
+        googleAuthService.linkGoogleAccount(principal.getUser(), request.credential());
+        return ApiResponse.success(null, "Google-аккаунт успешно привязан.");
+    }
+
+    @PostMapping("/google/unlink")
+    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
+    public ApiResponse<Void> unlinkGoogle(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal com.example.zhanfinancebackend.modules.auth.security.UserPrincipal principal
+    ) {
+        googleAuthService.unlinkGoogleAccount(principal.getUser());
+        return ApiResponse.success(null, "Google-аккаунт отвязан.");
+    }
+
+    @PostMapping("/confirm-email-otp")
+    public ApiResponse<AuthResponse> confirmEmailOtp(
+            @Valid @RequestBody com.example.zhanfinancebackend.modules.auth.dto.ConfirmEmailOtpRequest request,
+            HttpServletResponse httpServletResponse
+    ) {
+        AuthResponse response = authService.confirmEmailOtp(request);
+        authCookieHelper.setTokenCookies(httpServletResponse, response);
+        return ApiResponse.success(response);
+    }
+
+    @PostMapping("/resend-email-otp")
+    public ApiResponse<Void> resendEmailOtp(
+            @Valid @RequestBody com.example.zhanfinancebackend.modules.auth.dto.ResendEmailOtpRequest request
+    ) {
+        authService.resendEmailOtp(request);
+        return ApiResponse.success(null, "Новый код подтверждения отправлен на почту.");
+    }
+
     @PostMapping("/register")
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse httpServletResponse) {
         Role requestedRole = request.role();

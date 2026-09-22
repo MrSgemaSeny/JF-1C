@@ -52,7 +52,10 @@ public class UserMapper {
                 user.getAuthProvider(),
                 assignedEmployeeId,
                 assignedEmployeeName,
-                user.getLocale()
+                user.getLocale(),
+                user.getGoogleSub() != null,
+                user.getGoogleEmail(),
+                user.isPasswordSet()
         );
     }
 }

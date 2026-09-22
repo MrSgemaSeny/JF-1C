@@ -17,6 +17,9 @@ export interface AuthResponse {
   preAuthToken?: string;
   twoFactorEnabled?: boolean;
   isPendingApproval?: boolean;
+  requiresEmailOtp?: boolean;
+  googleLinked?: boolean;
+  googleEmail?: string;
 }
 
 export interface LoginRequest {
@@ -167,4 +170,32 @@ export function resetPassword(request: ResetPasswordRequest): Promise<{ message:
     body: JSON.stringify(request)
   });
 }
+
+export function confirmEmailOtp(preAuthToken: string, otpCode: string): Promise<AuthResponse> {
+  return apiRequest<AuthResponse>('/api/v1/auth/confirm-email-otp', {
+    method: 'POST',
+    body: JSON.stringify({ preAuthToken, otpCode })
+  });
+}
+
+export function resendEmailOtp(preAuthToken: string): Promise<void> {
+  return apiRequest<void>('/api/v1/auth/resend-email-otp', {
+    method: 'POST',
+    body: JSON.stringify({ preAuthToken })
+  });
+}
+
+export function linkGoogle(credential: string): Promise<void> {
+  return apiRequest<void>('/api/v1/auth/google/link', {
+    method: 'POST',
+    body: JSON.stringify({ credential })
+  });
+}
+
+export function unlinkGoogle(): Promise<void> {
+  return apiRequest<void>('/api/v1/auth/google/unlink', {
+    method: 'POST'
+  });
+}
+
 

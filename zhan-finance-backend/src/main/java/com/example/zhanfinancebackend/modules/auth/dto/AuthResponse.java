@@ -19,7 +19,10 @@ public record AuthResponse(
         Boolean requires2FA,
         String preAuthToken,
         Boolean twoFactorEnabled,
-        Boolean isPendingApproval
+        Boolean isPendingApproval,
+        Boolean requiresEmailOtp,
+        Boolean googleLinked,
+        String googleEmail
 ) {
     public AuthResponse(
             String accessToken,
@@ -34,10 +37,14 @@ public record AuthResponse(
             AuthProvider authProvider,
             String locale
     ) {
-        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null, false, false);
+        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null, false, false, false, false, null);
     }
 
     public static AuthResponse requires2FA(String preAuthToken) {
-        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false, false);
+        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false, false, false, false, null);
+    }
+
+    public static AuthResponse requiresEmailOtp(String preAuthToken, String email) {
+        return new AuthResponse(null, null, null, null, email, null, null, false, null, null, null, false, preAuthToken, false, false, true, false, null);
     }
 }

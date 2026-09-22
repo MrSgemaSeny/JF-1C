@@ -359,4 +359,42 @@ public class EmailNotificationService {
         String html = buildFormalEmailHtml("Сброс пароля", user.getFullName(), contentHtml, "Задать новый пароль", resetUrl);
         sendHtmlEmail(user.getEmail(), subject, html);
     }
+
+    public void sendLoginOtpEmail(String email, String fullName, String code) {
+        if (email == null || email.isBlank()) return;
+
+        String subject = "Код подтверждения входа — ZhanFinance";
+        String contentHtml =
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Обнаружена попытка входа в аккаунт ZhanFinance с адреса Google.</p>" +
+            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 24px;\">" +
+            "  <tr><td style=\"padding: 24px; text-align: center;\">" +
+            "    <p style=\"color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px 0;\">Ваш проверочный код</p>" +
+            "    <p style=\"font-size: 32px; font-weight: 700; color: #0f172a; letter-spacing: 6px; margin: 0; font-family: monospace;\">" + code + "</p>" +
+            "  </td></tr>" +
+            "</table>" +
+            "<p style=\"color: #64748b; font-size: 13px; line-height: 20px; margin: 0;\">Код действителен в течение 10 минут. Если это были не вы, срочно защитите свой аккаунт или измените пароль.</p>";
+
+        String name = (fullName != null && !fullName.isBlank()) ? fullName : "Пользователь";
+        String html = buildFormalEmailHtml("Подтверждение входа", name, contentHtml, null, null);
+        sendHtmlEmail(email, subject, html);
+    }
+
+    public void sendRegisterOtpEmail(String email, String fullName, String code) {
+        if (email == null || email.isBlank()) return;
+
+        String subject = "Подтверждение регистрации — ZhanFinance";
+        String contentHtml =
+            "<p style=\"color: #4b5563; font-size: 16px; line-height: 24px; margin-top: 0; margin-bottom: 24px;\">Благодарим за регистрацию в платформе ZhanFinance.</p>" +
+            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 24px;\">" +
+            "  <tr><td style=\"padding: 24px; text-align: center;\">" +
+            "    <p style=\"color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px 0;\">Ваш код подтверждения почты</p>" +
+            "    <p style=\"font-size: 32px; font-weight: 700; color: #0f172a; letter-spacing: 6px; margin: 0; font-family: monospace;\">" + code + "</p>" +
+            "  </td></tr>" +
+            "</table>" +
+            "<p style=\"color: #64748b; font-size: 13px; line-height: 20px; margin: 0;\">Введите этот 6-значный код на сайте для завершения регистрации. Срок действия кода: 10 минут.</p>";
+
+        String name = (fullName != null && !fullName.isBlank()) ? fullName : "Пользователь";
+        String html = buildFormalEmailHtml("Подтверждение почты", name, contentHtml, null, null);
+        sendHtmlEmail(email, subject, html);
+    }
 }

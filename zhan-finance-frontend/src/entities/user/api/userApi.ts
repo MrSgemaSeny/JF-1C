@@ -11,6 +11,9 @@ export interface UserProfileDto {
   authProvider: 'LOCAL' | 'GOOGLE';
   assignedEmployeeId?: number;
   assignedEmployeeName?: string;
+  googleLinked?: boolean;
+  googleEmail?: string;
+  passwordSet?: boolean;
 }
 
 export interface UpdateProfileRequest {

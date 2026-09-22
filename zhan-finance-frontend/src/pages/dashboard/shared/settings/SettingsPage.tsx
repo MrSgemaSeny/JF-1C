@@ -7,6 +7,9 @@ import { getSecureImageUrl, apiRequest } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { QRCodeSVG } from 'qrcode.react';
+import { linkGoogle, unlinkGoogle } from '@/features/auth/authApi';
+import { GoogleLogin } from '@react-oauth/google';
+import { toast } from '@/shared/ui/Toast/ToastContext';
 
 const TELEGRAM_PLANE_ICON = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232AABEE'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z'/></svg>";
 
@@ -56,6 +59,33 @@ export function SettingsPage() {
   const [tgLinkData, setTgLinkData] = useState<TelegramLinkToken | null>(null);
   const [tgGenerating, setTgGenerating] = useState(false);
   const [tgUnlinking, setTgUnlinking] = useState(false);
+
+  // Google
+  const [googleUnlinking, setGoogleUnlinking] = useState(false);
+
+  async function handleLinkGoogle(credential: string) {
+    try {
+      await linkGoogle(credential);
+      toast.success('Google-аккаунт успешно привязан!');
+      loadProfile();
+    } catch (err: any) {
+      toast.error(err?.message || 'Ошибка привязки Google-аккаунта');
+    }
+  }
+
+  async function handleUnlinkGoogle() {
+    if (!confirm('Вы уверены, что хотите отвязать Google-аккаунт?')) return;
+    setGoogleUnlinking(true);
+    try {
+      await unlinkGoogle();
+      toast.success('Google-аккаунт успешно отвязан');
+      loadProfile();
+    } catch (err: any) {
+      toast.error(err?.message || 'Не удалось отвязать Google-аккаунт');
+    } finally {
+      setGoogleUnlinking(false);
+    }
+  }
 
   useEffect(() => {
     loadProfile();
@@ -435,6 +465,54 @@ export function SettingsPage() {
               <LanguageSwitcher />
             </div>
           </div>
+        </div>
+
+        {/* Google Account Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="flex items-center gap-3 mb-2">
+            <svg width="22" height="22" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <h3 className="text-xl font-bold text-gray-900">Google Аккаунт</h3>
+          </div>
+          <p className="text-sm text-gray-500 mb-6">
+            Привяжите ваш аккаунт Google для быстрого и безопасного входа в систему в один клик.
+          </p>
+
+          {profile?.googleLinked ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+              <div>
+                <p className="text-sm font-semibold text-emerald-800">Google привязан</p>
+                {profile.googleEmail && (
+                  <p className="text-sm text-gray-600 mt-0.5">{profile.googleEmail}</p>
+                )}
+              </div>
+              <button
+                onClick={handleUnlinkGoogle}
+                disabled={googleUnlinking}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60"
+              >
+                {googleUnlinking ? <Spinner className="w-4 h-4" /> : <Unlink className="w-4 h-4" />}
+                Отвязать
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-gray-50 border border-gray-100 rounded-xl">
+              <div>
+                <p className="text-sm font-semibold text-gray-800">Google не привязан</p>
+                <p className="text-xs text-gray-500 mt-0.5">Вход доступен по логину и паролю</p>
+              </div>
+              <GoogleLogin
+                onSuccess={(r) => { if (r.credential) handleLinkGoogle(r.credential); }}
+                onError={() => toast.error('Ошибка Google Identity Services')}
+                text="continue_with"
+                useOneTap={false}
+              />
+            </div>
+          )}
         </div>
 
         {/* Telegram Link Card */}
