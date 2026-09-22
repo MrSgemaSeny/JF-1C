@@ -46,10 +46,15 @@
    - Flyway миграции V124 (`telegram_links`, `telegram_link_tokens`) и V125 (`telegram_notifications`) со связями к `app_users(id)`.
    - Машинная авторизация `Role.INTERNAL_BOT` и фильтр постоянного времени `InternalTokenFilter` (`MessageDigest.isEqual`) для `/v1/internal/**`.
    - Пользовательские эндпоинты `/api/v1/telegram/link/**` и внутренние эндпоинты бота `/api/v1/internal/**` с вайтлистом в `ApiRateLimitFilter` и `CsrfHeaderFilter`.
-   - Изолированная очередь Outbox с `Propagation.REQUIRES_NEW`, автоматически привязанная к `NotificationService.createNotification(...)` на изменения задач и загрузку документов.
-   - Микросервис `zhan-finance-tgbot` (Java 17, Spring Boot 3.3.4, TelegramBots 7.2.1, headless `web-application-type=none`).
-   - Безопасное экранирование HTML (`HtmlMessageFormatter`), обработчики команд `/start`, `/tasks`, `/docs`, `/status`, `/unlink`, `/help`, и поллер Outbox с 40ms rate-limiting (25 сообщ/сек) и пакетным подтверждением.
-   - 100% покрытие тестами: 281 бекенд-тест, 89 тестов микросервиса бота (всего 370 тестов, 0 ошибок, 0 пропусков, 0 эмодзи).
+   - Микросервис `zhan-finance-tgbot` на порту 8081 с автозагрузкой `.env` в `bootRun`.
+   - Полная санитизация ошибок Telegram: клиентам отдаются чистые человечные подсказки без утечек JSON, кодов ошибок или стеков (все технические данные фиксируются в серверных логах).
+   - 100% покрытие тестами: 289 бекенд-тестов, 89 тестов микросервиса бота (всего 378 тестов, 0 ошибок, 0 пропусков, 0 эмодзи).
+
+6. **Global Exception Hardening & Error Sanitization [DONE]**:
+   - `GlobalExceptionHandler.java`: перехват `DataIntegrityViolationException` (HTTP 409 `DATA_CONFLICT` вместо 500 ошибки при дубликатах/ограничениях БД).
+   - Перехват `MaxUploadSizeExceededException` (HTTP 400 `FILE_TOO_LARGE`), `MethodArgumentTypeMismatchException` (HTTP 400 `INVALID_PARAMETER`), `MissingServletRequestParameterException` (HTTP 400 `MISSING_PARAMETER`), `IllegalArgumentException` (HTTP 400 `BAD_REQUEST`), `ConstraintViolationException` (HTTP 400 `VALIDATION_ERROR`).
+   - Сохранение явных сообщений `ApiException` без затирания общими фразами из словаря.
+   - Синхронизированы словари локализации ошибок `messages.properties`, `messages_ru.properties`, `messages_en.properties`.
 
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 

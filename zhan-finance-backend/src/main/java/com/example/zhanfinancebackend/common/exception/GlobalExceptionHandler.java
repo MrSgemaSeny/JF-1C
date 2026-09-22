@@ -117,6 +117,121 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, "BAD_REQUEST", exception, request, locale);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(
+            IllegalArgumentException exception,
+            HttpServletRequest request,
+            Locale locale
+    ) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Illegal argument at {}: {}", requestId, request.getRequestURI(), exception.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD_REQUEST",
+                exception.getMessage() != null ? exception.getMessage() : "Неверные параметры запроса",
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException exception,
+            HttpServletRequest request,
+            Locale locale
+    ) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Type mismatch for parameter '{}' at {}: {}", requestId, exception.getName(), request.getRequestURI(), exception.getMessage());
+
+        String message = "Неверный формат параметра запроса";
+        try {
+            message = messageSource.getMessage("error.invalid_parameter", null, message, locale);
+        } catch (Exception ignored) {}
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "INVALID_PARAMETER",
+                message + (exception.getName() != null ? ": " + exception.getName() : ""),
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameter(
+            org.springframework.web.bind.MissingServletRequestParameterException exception,
+            HttpServletRequest request,
+            Locale locale
+    ) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Missing request parameter '{}' at {}", requestId, exception.getParameterName(), request.getRequestURI());
+
+        String message = "Отсутствует обязательный параметр";
+        try {
+            message = messageSource.getMessage("error.missing_parameter", null, message, locale);
+        } catch (Exception ignored) {}
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "MISSING_PARAMETER",
+                message + (exception.getParameterName() != null ? ": " + exception.getParameterName() : ""),
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceeded(
+            org.springframework.web.multipart.MaxUploadSizeExceededException exception,
+            HttpServletRequest request,
+            Locale locale
+    ) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] File upload size exceeded at {}: {}", requestId, request.getRequestURI(), exception.getMessage());
+
+        String message = "Размер файла превышает допустимый лимит (20 МБ)";
+        try {
+            message = messageSource.getMessage("error.file_too_large", null, message, locale);
+        } catch (Exception ignored) {}
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "FILE_TOO_LARGE",
+                message,
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            jakarta.validation.ConstraintViolationException exception,
+            HttpServletRequest request,
+            Locale locale
+    ) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Constraint violation at {}: {}", requestId, request.getRequestURI(), exception.getMessage());
+
+        List<ErrorResponse.ErrorDetail> details = exception.getConstraintViolations().stream()
+                .map(cv -> new ErrorResponse.ErrorDetail(cv.getPropertyPath().toString(), cv.getMessage()))
+                .collect(Collectors.toList());
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "VALIDATION_ERROR",
+                "Ошибка валидации параметров запроса",
+                details,
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     // --- 401 Unauthorized ---
     
     @ExceptionHandler({UnauthorizedException.class, org.springframework.security.core.AuthenticationException.class})
@@ -181,6 +296,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(ConflictException exception, HttpServletRequest request, Locale locale) {
         return buildResponse(HttpStatus.CONFLICT, "CONFLICT", exception, request, locale);
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            org.springframework.dao.DataIntegrityViolationException exception,
+            HttpServletRequest request,
+            Locale locale
+    ) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Data integrity violation at {}: {}", requestId, request.getRequestURI(), exception.getMessage());
+
+        String message = "Запись с такими данными уже существует или нарушена целостность данных";
+        try {
+            message = messageSource.getMessage("error.data_integrity_violation", null, message, locale);
+        } catch (Exception ignored) {}
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "DATA_CONFLICT",
+                message,
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
     @ExceptionHandler({OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
@@ -290,7 +429,12 @@ public class GlobalExceptionHandler {
                 }
             }
             else if (exception instanceof ApiException apiEx) {
-                messageKey = "error." + apiEx.getErrorCode().name().toLowerCase();
+                String msg = exception.getMessage();
+                if (msg == null || msg.equals(apiEx.getErrorCode().name()) || msg.equals(apiEx.getErrorCode().getMessage())) {
+                    messageKey = "error." + apiEx.getErrorCode().name().toLowerCase();
+                } else {
+                    messageKey = null;
+                }
             }
             
             if (messageKey != null) {

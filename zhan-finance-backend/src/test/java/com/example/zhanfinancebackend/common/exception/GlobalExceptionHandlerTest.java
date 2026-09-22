@@ -157,4 +157,79 @@ class GlobalExceptionHandlerTest {
         assertEquals(1, response.getBody().getDetails().size());
         assertEquals("status", response.getBody().getDetails().get(0).getField());
     }
+
+    @Test
+    void testHandleDataIntegrityViolation() {
+        org.springframework.dao.DataIntegrityViolationException ex =
+                new org.springframework.dao.DataIntegrityViolationException("duplicate key value violates unique constraint");
+        when(messageSource.getMessage(eq("error.data_integrity_violation"), any(), anyString(), any()))
+                .thenReturn("Duplicate record or integrity violation");
+
+        ResponseEntity<ErrorResponse> response = handler.handleDataIntegrityViolation(ex, request, Locale.ENGLISH);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("DATA_CONFLICT", response.getBody().getCode());
+        assertEquals("Duplicate record or integrity violation", response.getBody().getMessage());
+        assertNotNull(response.getBody().getRequestId());
+    }
+
+    @Test
+    void testHandleIllegalArgument() {
+        IllegalArgumentException ex = new IllegalArgumentException("Invalid status argument");
+
+        ResponseEntity<ErrorResponse> response = handler.handleIllegalArgument(ex, request, Locale.ENGLISH);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("BAD_REQUEST", response.getBody().getCode());
+        assertEquals("Invalid status argument", response.getBody().getMessage());
+    }
+
+    @Test
+    void testHandleMethodArgumentTypeMismatch() {
+        org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex =
+                mock(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class);
+        when(ex.getName()).thenReturn("taskId");
+        when(ex.getMessage()).thenReturn("Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'");
+        when(messageSource.getMessage(eq("error.invalid_parameter"), any(), anyString(), any()))
+                .thenReturn("Invalid parameter format");
+
+        ResponseEntity<ErrorResponse> response = handler.handleMethodArgumentTypeMismatch(ex, request, Locale.ENGLISH);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("INVALID_PARAMETER", response.getBody().getCode());
+        assertTrue(response.getBody().getMessage().contains("taskId"));
+    }
+
+    @Test
+    void testHandleMissingServletRequestParameter() {
+        org.springframework.web.bind.MissingServletRequestParameterException ex =
+                new org.springframework.web.bind.MissingServletRequestParameterException("page", "int");
+        when(messageSource.getMessage(eq("error.missing_parameter"), any(), anyString(), any()))
+                .thenReturn("Missing parameter");
+
+        ResponseEntity<ErrorResponse> response = handler.handleMissingServletRequestParameter(ex, request, Locale.ENGLISH);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("MISSING_PARAMETER", response.getBody().getCode());
+        assertTrue(response.getBody().getMessage().contains("page"));
+    }
+
+    @Test
+    void testHandleMaxUploadSizeExceeded() {
+        org.springframework.web.multipart.MaxUploadSizeExceededException ex =
+                new org.springframework.web.multipart.MaxUploadSizeExceededException(20 * 1024 * 1024L);
+        when(messageSource.getMessage(eq("error.file_too_large"), any(), anyString(), any()))
+                .thenReturn("File size exceeds 20MB limit");
+
+        ResponseEntity<ErrorResponse> response = handler.handleMaxUploadSizeExceeded(ex, request, Locale.ENGLISH);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("FILE_TOO_LARGE", response.getBody().getCode());
+        assertEquals("File size exceeds 20MB limit", response.getBody().getMessage());
+    }
 }
