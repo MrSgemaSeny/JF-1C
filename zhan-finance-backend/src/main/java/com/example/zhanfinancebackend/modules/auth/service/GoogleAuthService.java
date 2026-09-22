@@ -252,6 +252,15 @@ public class GoogleAuthService {
 
     @Transactional
     public void unlinkGoogleAccount(User currentUser) {
-        throw new BadRequestException("Отвязка Google-аккаунта запрещена: привязанный аккаунт Google не подлежит отвязке.");
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new BadRequestException("Пользователь не найден"));
+
+        if (!user.isPasswordSet() && user.getAuthProvider() == AuthProvider.GOOGLE) {
+            throw new BadRequestException("Нельзя отвязать Google: это единственный способ входа в ваш аккаунт. Сначала установите пароль в настройках.");
+        }
+
+        user.setGoogleSub(null);
+        user.setGoogleEmail(null);
+        userRepository.save(user);
     }
 }

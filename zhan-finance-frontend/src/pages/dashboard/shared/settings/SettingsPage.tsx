@@ -455,18 +455,10 @@ export function SettingsPage() {
           {profile?.googleLinked ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-emerald-800">Google привязан</p>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    Активен
-                  </span>
-                </div>
+                <p className="text-sm font-semibold text-emerald-800">Google привязан</p>
                 {profile.googleEmail && (
                   <p className="text-xs sm:text-sm text-gray-600 mt-0.5 truncate">{profile.googleEmail}</p>
                 )}
-              </div>
-              <div className="text-xs font-medium text-emerald-700 bg-white/80 px-3 py-1.5 rounded-lg border border-emerald-200 self-start sm:self-auto shrink-0">
-                Отвязка не предусмотрена
               </div>
             </div>
           ) : (
