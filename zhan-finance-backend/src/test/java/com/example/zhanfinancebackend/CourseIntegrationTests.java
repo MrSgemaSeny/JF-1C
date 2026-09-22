@@ -122,6 +122,7 @@ class CourseIntegrationTests {
         // 4. Learner fetches specific course
         mockMvc.perform(get("/api/v1/courses/" + courseId).contextPath("/api")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + learnerToken))
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.chapters[0].lessons[0].id").value(lessonId));
 

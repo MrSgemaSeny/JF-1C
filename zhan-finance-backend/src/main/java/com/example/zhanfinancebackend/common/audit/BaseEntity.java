@@ -10,12 +10,18 @@ import jakarta.persistence.PreUpdate;
 
 import java.time.Instant;
 
+import jakarta.persistence.Version;
+
 @MappedSuperclass
 public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Version
+    @Column(nullable = false)
+    private Long version = 0L;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -41,6 +47,14 @@ public abstract class BaseEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public Instant getCreatedAt() {

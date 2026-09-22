@@ -84,8 +84,11 @@ public class LessonService {
 
         lesson.setDurationMinutes(durationMinutes != null ? durationMinutes : 0);
 
-        chapter.getLessons().add(lesson);
-        return lessonRepository.save(lesson);
+        Lesson savedLesson = lessonRepository.save(lesson);
+        if (!chapter.getLessons().contains(savedLesson)) {
+            chapter.getLessons().add(savedLesson);
+        }
+        return savedLesson;
     }
 
     @Transactional

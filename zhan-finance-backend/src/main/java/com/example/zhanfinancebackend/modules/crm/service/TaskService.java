@@ -38,6 +38,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.example.zhanfinancebackend.common.exception.ConflictException;
 import com.example.zhanfinancebackend.common.exception.ResourceNotFoundException;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskBatchOperationRequest;
 import com.example.zhanfinancebackend.modules.crm.dto.TaskUpdateRequest;
@@ -608,6 +609,42 @@ public class TaskService {
         notificationService.notifyAdmins(
                 "Смена исполнителя",
                 "Исполнитель задачи '" + task.getTitle() + "' изменен на: " + assignee.getFullName(),
+                "/admin/tasks"
+        );
+
+        return taskMapper.mapToDto(savedTask);
+    }
+
+    /**
+     * Атомарный захват задачи из пула (только для EMPLOYEE, ADVISOR или ADMIN, только незанятые задачи).
+     */
+    @CacheEvict(value = {"dashboard_admin", "dashboard_employee", "dashboard_client"}, allEntries = true)
+    @Transactional
+    public TaskDto claimTaskFromPool(Long taskId, User user) {
+        if (user.getRole() != Role.EMPLOYEE && user.getRole() != Role.ADVISOR && user.getRole() != Role.ADMIN) {
+            throw new ApiException(ErrorCode.FORBIDDEN, "Только сотрудник, эдвайзер или администратор может взять задачу из пула.");
+        }
+
+        int updated = taskRepository.claimTask(taskId, user.getId());
+
+        if (updated == 0) {
+            Task task = taskRepository.findById(taskId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Task not found: " + taskId));
+
+            if (task.getAssignedTo() != null) {
+                throw new ConflictException("Задача уже назначена на " + task.getAssignedTo().getFullName() + ". Обновите список.");
+            }
+            throw new ConflictException("Не удалось захватить задачу. Попробуйте ещё раз.");
+        }
+
+        Task savedTask = getTaskEntity(taskId);
+
+        logActivity(savedTask, user, "Взял задачу из пула");
+        auditService.logAction("CLAIM_TASK", "Task", taskId, "Claimed by " + user.getFullName());
+
+        notificationService.notifyAdmins(
+                "Задача взята из пула",
+                "Сотрудник " + user.getFullName() + " взял задачу: " + savedTask.getTitle(),
                 "/admin/tasks"
         );
 

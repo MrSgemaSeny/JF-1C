@@ -285,4 +285,14 @@ public class TaskController {
         taskService.batchUpdateTasks(request, principal.getUser());
         return ApiResponse.success(null);
     }
+
+    @PostMapping("/{id}/claim")
+    @Operation(summary = "Атомарный захват задачи из пула")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'ADVISOR')")
+    public ApiResponse<TaskDto> claimTask(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id
+    ) {
+        return ApiResponse.success(taskService.claimTaskFromPool(id, principal.getUser()));
+    }
 }

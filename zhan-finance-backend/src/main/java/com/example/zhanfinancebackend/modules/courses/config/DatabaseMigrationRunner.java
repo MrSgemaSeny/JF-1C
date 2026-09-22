@@ -20,15 +20,15 @@ public class DatabaseMigrationRunner {
     public void runMigration() {
         try {
             jdbcTemplate.execute("""
-                INSERT INTO app_users (full_name, email, password_hash, role, auth_provider, enabled, locale, created_at, updated_at)
+                INSERT INTO app_users (full_name, email, password_hash, role, auth_provider, enabled, locale, created_at, updated_at, version)
                 SELECT 'Виктор Сергеевич (Куратор 1С)', 'curator1c@zhanfinance.kz',
                        '$2a$10$y1/xsqpoLRTwGMuopoLSROiC4VXrd88lZcvaTD.gz8nFuN7k6kYmy',
-                       'CURATOR', 'LOCAL', true, 'ru', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                       'CURATOR', 'LOCAL', true, 'ru', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0
                 WHERE NOT EXISTS (SELECT 1 FROM app_users WHERE email = 'curator1c@zhanfinance.kz')
             """);
 
             jdbcTemplate.execute("""
-                INSERT INTO courses (title, description, thumbnail, status, created_by, created_at, updated_at)
+                INSERT INTO courses (title, description, thumbnail, status, created_by, created_at, updated_at, version)
                 SELECT
                     '1С:Бухгалтерия 8.3 — Полный практический курс',
                     'Практический обучающий курс по ведению комплексного учёта в 1С:Бухгалтерия 8.3.',
@@ -36,7 +36,8 @@ public class DatabaseMigrationRunner {
                     'PUBLISHED',
                     (SELECT id FROM app_users WHERE role = 'ADMIN' ORDER BY id ASC LIMIT 1),
                     CURRENT_TIMESTAMP,
-                    CURRENT_TIMESTAMP
+                    CURRENT_TIMESTAMP,
+                    0
                 WHERE NOT EXISTS (
                     SELECT 1 FROM courses WHERE title = '1С:Бухгалтерия 8.3 — Полный практический курс'
                 )

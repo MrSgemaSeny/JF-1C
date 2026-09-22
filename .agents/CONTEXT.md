@@ -74,13 +74,10 @@
 | P0-12 | WebSocket ACL — senderId строго из Principal в `ChatController`, строгая проверка подписок в `WebSocketConfig` | DONE |
 | HOTFIX | Role Sanitization — санитизация requestedRole в GoogleAuthService и AuthService (запрет эскалации до ADMIN) | DONE |
 
-### P1 — Архитектурный долг (15 задач, ~65-100ч)
-Task state machine, Optimistic locking (@Version), Race condition Task Pool pickup, Outbox pattern, Cloudflare R2 интеграция, Idempotency для webhooks, ArchUnit, OpenAPI→TS codegen, ShedLock, Unified error contract, Monetary fields audit, Distributed rate limiting, 2FA mandatory для ADMIN, Auto-reopen audit trail, Business invariant tests.
+### P1 — Архитектурный долг (15 задач)
+- **P1-01 (Optimistic Locking)**: `@Version` в `BaseEntity`, Flyway миграция `V126__Add_Optimistic_Lock_Version.sql` для 26 таблиц, перехват `OptimisticLockException` в `GlobalExceptionHandler` с HTTP 409 [DONE]
+- **P1-02 (Atomic Task Pickup)**: Атомарный native SQL `claimTask` в `TaskRepository`, `TaskService.claimTaskFromPool`, эндпоинт `POST /api/v1/crm/tasks/{id}/claim`, интеграционные тесты `TaskConcurrencyIntegrationTest` [DONE]
+- Остальные задачи P1 (Outbox pattern, Cloudflare R2 интеграция, Idempotency для webhooks, ArchUnit, ShedLock, Distributed rate limiting, 2FA mandatory для ADMIN, Task state machine) — в процессе/запланированы.
 
 ### P2 — Долгосрочный roadmap (20 задач, ~150+ч)
 Staging, Cursor pagination, Audit partitioning, SBOM, Dependabot, Trivy, ADR, Semver, Document versioning, Soft delete, PII inventory, Log sanitization, Backward-compatible migrations, Preview envs, DR plan, Invoice line model, File upload hardening, PDF limits, CORS audit, Observability stack.
-
-### Открытые вопросы (решить перед стартом P1)
-1. Redis в docker-compose — оставить или удалить?
-2. Outbox — Spring Events + polling или Spring Modulith?
-3. Distributed rate limiting — Bucket4j + PG или Redis?

@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
 import java.util.Locale;
+import jakarta.persistence.OptimisticLockException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -179,6 +181,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(ConflictException exception, HttpServletRequest request, Locale locale) {
         return buildResponse(HttpStatus.CONFLICT, "CONFLICT", exception, request, locale);
+    }
+
+    @ExceptionHandler({OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
+    public ResponseEntity<ErrorResponse> handleOptimisticLock(Exception exception, HttpServletRequest request) {
+        String requestId = UUID.randomUUID().toString();
+        log.warn("[{}] Optimistic lock conflict at {}: {}", requestId, request.getRequestURI(), exception.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "OPTIMISTIC_LOCK_CONFLICT",
+                "Запись была изменена другим пользователем. Обновите страницу и повторите.",
+                request.getRequestURI(),
+                requestId
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
     // --- 422 Unprocessable Entity ---

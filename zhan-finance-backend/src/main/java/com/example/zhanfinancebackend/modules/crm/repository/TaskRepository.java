@@ -4,6 +4,7 @@ import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.crm.entity.Task;
 import com.example.zhanfinancebackend.modules.crm.entity.StageType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -97,4 +98,19 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     @Query("select t from Task t where t.client.id = :clientId and t.archived = false")
     List<Task> findByClientIdAndArchivedFalse(@Param("clientId") Long clientId);
+
+    /**
+     * Атомарно назначает исполнителя только если задача ещё не назначена.
+     * Возвращает количество обновлённых строк (0 = уже занято, 1 = успех).
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = """
+        UPDATE tasks
+        SET assigned_to_id = :assigneeId,
+            updated_at     = NOW(),
+            version        = version + 1
+        WHERE id = :taskId
+          AND assigned_to_id IS NULL
+        """, nativeQuery = true)
+    int claimTask(@Param("taskId") Long taskId, @Param("assigneeId") Long assigneeId);
 }
