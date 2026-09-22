@@ -79,7 +79,10 @@ export function TaskPoolPage() {
     user?.role === 'ADMIN' ? undefined : { unassigned: true },
     !!user // Only run the query when user object is loaded
   );
-  const tasks = tasksData || [];
+  const tasks = React.useMemo(() => {
+    if (!tasksData) return [];
+    return tasksData.filter(t => t.stage?.type !== 'WON' && t.stage?.type !== 'LOST');
+  }, [tasksData]);
   const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
   const [employees, setEmployees] = React.useState<EmployeeDto[]>([]);
   const [assigningTaskId, setAssigningTaskId] = React.useState<number | null>(null);

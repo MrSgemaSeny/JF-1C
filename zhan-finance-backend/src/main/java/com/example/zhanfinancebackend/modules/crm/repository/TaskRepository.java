@@ -93,7 +93,7 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     List<java.util.Map<String, Object>> countTasksByStatusForEmployee(@Param("employee") User employee);
 
     @Query("select t from Task t join fetch t.client c left join fetch c.assignedEmployee left join fetch t.assignedTo left join fetch t.createdBy left join fetch t.stage s " +
-           "where t.archived = true and s.type = :stageType")
+           "where s.type = :stageType order by t.id desc")
     List<Task> findArchivedByStageType(@Param("stageType") StageType stageType);
 
     @Query("select t from Task t where t.client.id = :clientId and t.archived = false")
