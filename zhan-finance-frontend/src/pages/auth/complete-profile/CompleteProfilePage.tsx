@@ -57,7 +57,7 @@ export function CompleteProfilePage() {
           {t('completeProfile.subtitle')}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
             <label htmlFor="phone" className="block text-sm font-bold text-brand-green mb-1.5 flex items-center gap-1.5">
               <Phone className="w-3.5 h-3.5" />

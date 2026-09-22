@@ -14,7 +14,7 @@ interface ContactFormProps {
 
 export function ContactForm({ title, className = '', showMessage = false }: ContactFormProps) {
   const { t } = useTranslation('common');
-  const { name, setName, phone, setPhone, email, setEmail, message, setMessage, submitted, waUrl, loading, error, handleSubmit } = useContactForm();
+  const { name, setName, phone, setPhone, email, setEmail, emailError, message, setMessage, submitted, waUrl, loading, error, handleSubmit } = useContactForm();
 
   const displayTitle = title || t('contactForm.title', { defaultValue: 'Связаться с нами' });
 
@@ -67,7 +67,7 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
           </a>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
           <div>
             <label className="block text-sm font-bold mb-2 uppercase tracking-wider opacity-70">
               {t('contactForm.fields.name.label', { defaultValue: 'Ваше имя' })}
@@ -102,9 +102,14 @@ export function ContactForm({ title, className = '', showMessage = false }: Cont
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-brand-green/5 border-b-2 border-brand-green/20 px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium"
+              className={`w-full bg-brand-green/5 border-b-2 ${
+                emailError ? 'border-red-500' : 'border-brand-green/20'
+              } px-4 py-3 focus:outline-none focus:border-brand-green transition-colors rounded-t-xl font-medium`}
               placeholder={t('contactForm.fields.email.placeholder', { defaultValue: 'name@example.com' })}
             />
+            {emailError && (
+              <p className="text-xs font-semibold text-red-600 mt-1.5">{emailError}</p>
+            )}
           </div>
           {showMessage && (
             <div>

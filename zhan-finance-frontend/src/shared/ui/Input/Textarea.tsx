@@ -49,7 +49,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           value={value}
           disabled={disabled}
-          required={required}
+          aria-required={required}
           maxLength={maxLength}
           className={`
             w-full rounded-2xl border px-4 py-3 text-brand-green transition-all min-h-[100px] resize-y

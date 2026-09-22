@@ -122,7 +122,7 @@ export function ResetPasswordPage() {
               {t('resetPassword.subtitle')}
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <Input
                 id="new-password"
                 type="password"

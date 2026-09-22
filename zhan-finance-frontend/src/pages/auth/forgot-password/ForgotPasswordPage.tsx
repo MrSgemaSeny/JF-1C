@@ -78,7 +78,7 @@ export function ForgotPasswordPage() {
               {t('forgotPassword.subtitle')}
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <Input
                 id="reset-email"
                 type="email"

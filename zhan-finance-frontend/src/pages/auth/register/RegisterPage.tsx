@@ -237,7 +237,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4" autoComplete="off">
             <Input
               id="fullName"
               type="text"

@@ -1560,6 +1560,8 @@
   "contactForm.buttons.submitting": "Отправляем...",
   "contactForm.buttons.submit": "Отправить заявку",
   "contactForm.error.default": "Не удалось отправить заявку",
+  "contactForm.errors.latinOnly": "Email-ді латын әріптерімен енгізіңіз (мысалы, name@example.com). Кириллицалық мекенжайларға қолдау көрсетілмейді.",
+  "contactForm.errors.invalidEmail": "Email пішімі қате. Мысалы: name@example.com",
   "serviceModal.validation.fillContacts": "Пожалуйста, заполните имя и телефон",
   "serviceModal.service": "Услуга",
   "serviceModal.close": "Закрыть",

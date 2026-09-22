@@ -67,4 +67,43 @@ describe('ContactForm Component', () => {
     expect(openWhatsAppBtn).toHaveAttribute('href', expect.stringContaining('https://wa.me/77750584021'));
     expect(openWhatsAppBtn).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('Ivan Ivanov')));
   });
+
+  it('rejects email containing Cyrillic characters and prevents submission', async () => {
+    renderComponent();
+    await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
+
+    const nameInput = screen.getByPlaceholderText(/Имя Фамилия/i);
+    const phoneInput = screen.getByPlaceholderText(/\+7/i);
+    const emailInput = screen.getByPlaceholderText(/name@example.com/i);
+
+    fireEvent.change(nameInput, { target: { value: 'Ivan Ivanov' } });
+    fireEvent.change(phoneInput, { target: { value: '7771234567' } });
+    fireEvent.change(emailInput, { target: { value: 'asda@хуй' } });
+
+    const submitButton = screen.getByRole('button', { name: /Отправить заявку/i });
+    fireEvent.click(submitButton);
+
+    expect(await screen.findByText(/латинскими буквами/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Заявка сформирована!/i)).not.toBeInTheDocument();
+  });
+
+  it('rejects invalid email format and prevents submission', async () => {
+    renderComponent();
+    await waitForElementToBeRemoved(() => screen.queryByText('Loading...'));
+
+    const nameInput = screen.getByPlaceholderText(/Имя Фамилия/i);
+    const phoneInput = screen.getByPlaceholderText(/\+7/i);
+    const emailInput = screen.getByPlaceholderText(/name@example.com/i);
+
+    fireEvent.change(nameInput, { target: { value: 'Ivan Ivanov' } });
+    fireEvent.change(phoneInput, { target: { value: '7771234567' } });
+    fireEvent.change(emailInput, { target: { value: 'not-an-email' } });
+
+    const submitButton = screen.getByRole('button', { name: /Отправить заявку/i });
+    fireEvent.click(submitButton);
+
+    expect(await screen.findByText(/Некорректный формат email/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Заявка сформирована!/i)).not.toBeInTheDocument();
+  });
 });
+

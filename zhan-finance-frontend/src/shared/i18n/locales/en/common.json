@@ -1564,6 +1564,8 @@
   "contactForm.buttons.submitting": "Submitting...",
   "contactForm.buttons.submit": "Send request",
   "contactForm.error.default": "Failed to send request",
+  "contactForm.errors.latinOnly": "Please enter an email using Latin characters (e.g. name@example.com). Cyrillic addresses are not supported.",
+  "contactForm.errors.invalidEmail": "Invalid email format. Example: name@example.com",
   "serviceModal.validation.fillContacts": "Please fill in name and phone",
   "serviceModal.service": "Service",
   "serviceModal.close": "Close",

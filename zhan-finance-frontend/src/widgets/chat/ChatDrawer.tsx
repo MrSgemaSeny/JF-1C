@@ -290,6 +290,7 @@ export function ChatDrawer({ isOpen, onClose, otherUserId, otherUserName, otherU
         {/* Input Form */}
         <div className="p-4 bg-white border-t border-gray-100">
           <form 
+            noValidate
             onSubmit={handleSend}
             className="flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-2xl p-2 focus-within:border-brand-green focus-within:ring-1 focus-within:ring-brand-green transition-all"
           >

@@ -1560,6 +1560,8 @@
   "contactForm.buttons.submitting": "正在发送...",
   "contactForm.buttons.submit": "提交咨询申请",
   "contactForm.error.default": "发送申请失败，请稍后重试",
+  "contactForm.errors.latinOnly": "请输入英文字符的电子邮箱（例如 name@example.com）。不支持西里尔字符地址。",
+  "contactForm.errors.invalidEmail": "电子邮箱格式不正确。示例：name@example.com",
   "serviceModal.validation.fillContacts": "请完整填写您的姓名与联系电话",
   "serviceModal.service": "服务项目",
   "serviceModal.close": "关闭",

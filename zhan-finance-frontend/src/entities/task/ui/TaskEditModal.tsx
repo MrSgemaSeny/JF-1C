@@ -6,6 +6,7 @@ import { updateTaskDetails } from '../api/taskApi';
 import { DatePicker } from '@/shared/ui/DatePicker';
 import { Spinner } from '@/shared/ui/Spinner';
 import { useEscapeKey } from '@/shared/lib/hooks/useEscapeKey';
+import { Input } from '@/shared/ui/Input/Input';
 
 interface TaskEditModalProps {
   task: TaskDto;

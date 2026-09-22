@@ -9,6 +9,7 @@ export function useContactForm() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [waUrl, setWaUrl] = useState<string | null>(null);
@@ -24,11 +25,40 @@ export function useContactForm() {
     }
   }, [user, name, email]);
 
+  function validateEmail(val: string): boolean {
+    const trimmed = val.trim();
+    if (!trimmed) {
+      setEmailError(null);
+      return true;
+    }
+    if (/[^\x00-\x7F]/.test(trimmed)) {
+      setEmailError(t('contactForm.errors.latinOnly', {
+        defaultValue: 'Пожалуйста, укажите email латинскими буквами (например, name@example.com). Кириллические адреса не поддерживаются.'
+      }));
+      return false;
+    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmed)) {
+      setEmailError(t('contactForm.errors.invalidEmail', {
+        defaultValue: 'Некорректный формат email. Пример: name@example.com'
+      }));
+      return false;
+    }
+    setEmailError(null);
+    return true;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
-    setLoading(true);
     setError(null);
+
+    const isEmailValid = validateEmail(email);
+    if (!isEmailValid) {
+      return;
+    }
+
+    setLoading(true);
 
     try {
       // ============================================================
@@ -51,11 +81,12 @@ export function useContactForm() {
       */
 
       const WA_NUMBER = '77750584021';
+      const trimmedEmail = email.trim();
       const textLines = [
-        `Имя: ${name}`,
-        `Телефон: ${phone}`,
-        email ? `Email: ${email}` : null,
-        message ? `Описание: ${message}` : null,
+        `Имя: ${name.trim()}`,
+        `Телефон: ${phone.trim()}`,
+        trimmedEmail ? `Email: ${trimmedEmail}` : null,
+        message.trim() ? `Описание: ${message.trim()}` : null,
         `Источник: zhanfinance.kz`
       ].filter(Boolean);
 
@@ -75,7 +106,13 @@ export function useContactForm() {
     phone,
     setPhone,
     email,
-    setEmail,
+    setEmail: (val: string) => {
+      setEmail(val);
+      if (emailError) {
+        validateEmail(val);
+      }
+    },
+    emailError,
     message,
     setMessage,
     submitted,
