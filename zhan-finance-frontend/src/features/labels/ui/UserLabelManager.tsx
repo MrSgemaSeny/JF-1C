@@ -46,7 +46,10 @@ export const UserLabelManager: React.FC<UserLabelManagerProps> = ({
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      setError('Название метки не может быть пустым');
+      return;
+    }
     try {
       await labelsApi.createLabel({ name: name.trim(), color });
       setName('');
@@ -131,18 +134,20 @@ export const UserLabelManager: React.FC<UserLabelManagerProps> = ({
               </div>
             )}
 
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleCreate} noValidate className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Название метки
                 </label>
                 <input
                   type="text"
-                  required
                   maxLength={30}
                   placeholder="Например: Срочно, Отчет..."
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (error) setError(null);
+                  }}
                   className="w-full text-xs px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>

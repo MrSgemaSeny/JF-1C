@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { UserProfileDto, getAllLearners, createLearner } from '@/entities/user/api/userApi';
 import { Plus, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Input } from '@/shared/ui/Input/Input';
 
 export function AdminLearnersPage() {
   const { t } = useTranslation(['common']);
@@ -11,6 +12,7 @@ export function AdminLearnersPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [formErrors, setFormErrors] = useState<{ fullName?: string; email?: string; password?: string }>({});
 
   const loadLearners = () => {
     getAllLearners().then(setLearners).catch(console.error);
@@ -20,14 +22,29 @@ export function AdminLearnersPage() {
     loadLearners();
   }, []);
 
+  const validate = () => {
+    const errs: typeof formErrors = {};
+    if (!fullName.trim()) errs.fullName = t('adminLearners.errors.fullName', { defaultValue: 'Введите ФИО' });
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      errs.email = t('adminLearners.errors.email', { defaultValue: 'Некорректный email' });
+    }
+    if (password.length < 8) {
+      errs.password = t('adminLearners.errors.password', { defaultValue: 'Минимум 8 символов' });
+    }
+    setFormErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     try {
-      await createLearner({ fullName, email, password });
+      await createLearner({ fullName: fullName.trim(), email: email.trim(), password });
       setShowModal(false);
       setFullName('');
       setEmail('');
       setPassword('');
+      setFormErrors({});
       loadLearners();
     } catch (err: any) {
       alert(err.message || t('adminLearners.createError'));
@@ -82,20 +99,38 @@ export function AdminLearnersPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-w-lg w-full p-6">
             <h2 className="text-xl font-bold mb-4">{t('adminLearners.newLearnerModalTitle')}</h2>
-            <form onSubmit={handleCreate} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminLearners.fullName')}</label>
-                <input required type="text" value={fullName} onChange={e => setFullName(e.target.value)} className="w-full px-4 py-2 border rounded-lg" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminLearners.email')}</label>
-                <input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-2 border rounded-lg" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t('adminLearners.password')}</label>
-                <input required minLength={8} type="text" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-4 py-2 border rounded-lg" />
-                <p className="text-xs text-gray-500 mt-1">{t('adminLearners.passwordHint')}</p>
-              </div>
+            <form onSubmit={handleCreate} noValidate className="space-y-4">
+              <Input
+                label={t('adminLearners.fullName')}
+                type="text"
+                value={fullName}
+                onChange={e => {
+                  setFullName(e.target.value);
+                  if (formErrors.fullName) setFormErrors(prev => ({ ...prev, fullName: undefined }));
+                }}
+                error={formErrors.fullName}
+              />
+              <Input
+                label={t('adminLearners.email')}
+                type="email"
+                value={email}
+                onChange={e => {
+                  setEmail(e.target.value);
+                  if (formErrors.email) setFormErrors(prev => ({ ...prev, email: undefined }));
+                }}
+                error={formErrors.email}
+              />
+              <Input
+                label={t('adminLearners.password')}
+                type="password"
+                value={password}
+                onChange={e => {
+                  setPassword(e.target.value);
+                  if (formErrors.password) setFormErrors(prev => ({ ...prev, password: undefined }));
+                }}
+                hint={t('adminLearners.passwordHint')}
+                error={formErrors.password}
+              />
               <div className="flex gap-3 justify-end mt-6">
                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">{t('adminLearners.cancel')}</button>
                 <button type="submit" className="px-4 py-2 bg-brand-green text-white rounded-lg hover:bg-brand-green/90">{t('adminLearners.create')}</button>
