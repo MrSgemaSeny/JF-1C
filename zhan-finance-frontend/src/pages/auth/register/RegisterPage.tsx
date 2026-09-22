@@ -40,6 +40,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
   const submittingRef = useRef(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [emailOtpToken, setEmailOtpToken] = useState<string | null>(null);
+  const [devOtpCode, setDevOtpCode] = useState<string | null>(null);
 
   const handleOtpSuccess = (res: AuthResponse) => {
     if (res.isPendingApproval) {
@@ -129,6 +130,7 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
 
       if (result && result.requiresEmailOtp && result.preAuthToken) {
         setEmailOtpToken(result.preAuthToken);
+        setDevOtpCode(result.devOtpCode || null);
         return;
       }
 
@@ -189,9 +191,14 @@ export function RegisterPage({ isEmployeeRoute = false }: RegisterPageProps) {
           <GmailOtpVerifyForm
             preAuthToken={emailOtpToken}
             email={email.trim()}
+            devOtpCode={devOtpCode || undefined}
+            submitButtonText="Подтвердить и завершить регистрацию"
             onSuccess={handleOtpSuccess}
             onGoogleSuccess={handleGoogleSuccess}
-            onBack={() => setEmailOtpToken(null)}
+            onBack={() => {
+              setEmailOtpToken(null);
+              setDevOtpCode(null);
+            }}
           />
         ) : (
           <div className="animate-in fade-in duration-300">

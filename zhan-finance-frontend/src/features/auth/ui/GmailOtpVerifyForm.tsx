@@ -7,12 +7,22 @@ import { GoogleLogin } from '@react-oauth/google';
 interface Props {
   preAuthToken: string;
   email: string;
+  devOtpCode?: string;
+  submitButtonText?: string;
   onSuccess: (response: AuthResponse) => void;
   onGoogleSuccess: (credentialResponse: any) => void;
   onBack: () => void;
 }
 
-export function GmailOtpVerifyForm({ preAuthToken, email, onSuccess, onGoogleSuccess, onBack }: Props) {
+export function GmailOtpVerifyForm({
+  preAuthToken,
+  email,
+  devOtpCode,
+  submitButtonText,
+  onSuccess,
+  onGoogleSuccess,
+  onBack
+}: Props) {
   const { t } = useTranslation(['auth', 'common']);
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   const [error, setError] = useState<string | null>(null);
@@ -117,6 +127,29 @@ export function GmailOtpVerifyForm({ preAuthToken, email, onSuccess, onGoogleSuc
         </p>
       </div>
 
+      {devOtpCode && (
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between text-amber-900 text-xs shadow-sm">
+          <div>
+            <span className="font-bold">Тестовый режим (SMTP не настроен):</span> Ваш проверочный код:{' '}
+            <code className="font-mono font-bold text-sm bg-white px-2 py-0.5 rounded border border-amber-300 text-brand-green">
+              {devOtpCode}
+            </code>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const digits = devOtpCode.split('');
+              setCode(digits);
+              inputRefs.current[5]?.focus();
+              submitCode(devOtpCode);
+            }}
+            className="text-brand-green hover:underline font-bold ml-2 shrink-0 cursor-pointer"
+          >
+            Вставить код
+          </button>
+        </div>
+      )}
+
       {error && (
         <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700 text-sm">
           <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
@@ -147,7 +180,7 @@ export function GmailOtpVerifyForm({ preAuthToken, email, onSuccess, onGoogleSuc
           type="button"
           onClick={() => submitCode(fullCode)}
           disabled={fullCode.length !== 6 || isSubmitting}
-          className="w-full py-3.5 bg-brand-green hover:bg-brand-green/90 text-white font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3.5 bg-brand-green hover:bg-brand-green/90 text-white font-bold rounded-xl transition-all shadow-md shadow-brand-green/20 flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isSubmitting ? (
             <>
@@ -155,7 +188,7 @@ export function GmailOtpVerifyForm({ preAuthToken, email, onSuccess, onGoogleSuc
               <span>Проверка кода...</span>
             </>
           ) : (
-            'Подтвердить и завершить вход'
+            submitButtonText || 'Подтвердить и завершить регистрацию'
           )}
         </button>
 

@@ -20,6 +20,7 @@ export interface AuthResponse {
   requiresEmailOtp?: boolean;
   googleLinked?: boolean;
   googleEmail?: string;
+  devOtpCode?: string;
 }
 
 export interface LoginRequest {

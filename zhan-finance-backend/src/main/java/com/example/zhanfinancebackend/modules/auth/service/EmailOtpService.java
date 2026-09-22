@@ -37,6 +37,14 @@ public class EmailOtpService {
     private final ObjectMapper objectMapper;
     private final SecureRandom secureRandom = new SecureRandom();
 
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.host:smtp.example.com}")
+    private String smtpHost;
+
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.username:}")
+    private String smtpUsername;
+
+    public record RegisterOtpResult(String preAuthToken, String devOtpCode) {}
+
     public EmailOtpService(
             EmailVerificationOtpRepository otpRepository,
             EmailNotificationService emailNotificationService,
@@ -74,7 +82,7 @@ public class EmailOtpService {
     }
 
     @Transactional
-    public String createRegisterOtp(RegisterRequest request, String passwordHash) {
+    public RegisterOtpResult createRegisterOtpWithDevCode(RegisterRequest request, String passwordHash) {
         otpRepository.deleteByEmailIgnoreCase(request.email());
 
         String otpCode = generateNumericOtp();
@@ -107,10 +115,23 @@ public class EmailOtpService {
 
         otpRepository.save(otp);
 
+        boolean isDevOtp = smtpUsername == null || smtpUsername.isBlank() || "smtp.example.com".equalsIgnoreCase(smtpHost);
+        if (isDevOtp) {
+            log.warn("=================================================================");
+            log.warn(">>> [DEV EMAIL OTP] Email: {} | Code: {} <<<", request.email(), otpCode);
+            log.warn(">>> SMTP credentials are not configured (host={}). <<<", smtpHost);
+            log.warn("=================================================================");
+        }
+
         emailNotificationService.sendRegisterOtpEmail(request.email(), request.fullName(), otpCode);
         log.info("Issued Gmail register OTP for email {}", request.email());
 
-        return preAuthToken;
+        return new RegisterOtpResult(preAuthToken, isDevOtp ? otpCode : null);
+    }
+
+    @Transactional
+    public String createRegisterOtp(RegisterRequest request, String passwordHash) {
+        return createRegisterOtpWithDevCode(request, passwordHash).preAuthToken();
     }
 
     @Transactional
@@ -132,6 +153,13 @@ public class EmailOtpService {
         otp.setLastSentAt(now);
         otp.setExpiresAt(now.plusMinutes(OTP_VALIDITY_MINUTES));
         otpRepository.save(otp);
+
+        boolean isDevOtp = smtpUsername == null || smtpUsername.isBlank() || "smtp.example.com".equalsIgnoreCase(smtpHost);
+        if (isDevOtp) {
+            log.warn("=================================================================");
+            log.warn(">>> [DEV RESEND OTP] Email: {} | Code: {} <<<", otp.getEmail(), newOtpCode);
+            log.warn("=================================================================");
+        }
 
         if ("LOGIN".equals(otp.getPurpose())) {
             String name = otp.getUser() != null ? otp.getUser().getFullName() : null;

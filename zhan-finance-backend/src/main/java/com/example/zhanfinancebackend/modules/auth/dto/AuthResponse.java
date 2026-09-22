@@ -22,7 +22,8 @@ public record AuthResponse(
         Boolean isPendingApproval,
         Boolean requiresEmailOtp,
         Boolean googleLinked,
-        String googleEmail
+        String googleEmail,
+        String devOtpCode
 ) {
     public AuthResponse(
             String accessToken,
@@ -37,14 +38,41 @@ public record AuthResponse(
             AuthProvider authProvider,
             String locale
     ) {
-        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null, false, false, false, false, null);
+        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, false, null, false, false, false, false, null, null);
+    }
+
+    public AuthResponse(
+            String accessToken,
+            String refreshToken,
+            String tokenType,
+            Long id,
+            String email,
+            String fullName,
+            Role role,
+            boolean isNewUser,
+            String avatarUrl,
+            AuthProvider authProvider,
+            String locale,
+            Boolean requires2FA,
+            String preAuthToken,
+            Boolean twoFactorEnabled,
+            Boolean isPendingApproval,
+            Boolean requiresEmailOtp,
+            Boolean googleLinked,
+            String googleEmail
+    ) {
+        this(accessToken, refreshToken, tokenType, id, email, fullName, role, isNewUser, avatarUrl, authProvider, locale, requires2FA, preAuthToken, twoFactorEnabled, isPendingApproval, requiresEmailOtp, googleLinked, googleEmail, null);
     }
 
     public static AuthResponse requires2FA(String preAuthToken) {
-        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false, false, false, false, null);
+        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false, false, false, false, null, null);
     }
 
     public static AuthResponse requiresEmailOtp(String preAuthToken, String email) {
-        return new AuthResponse(null, null, null, null, email, null, null, false, null, null, null, false, preAuthToken, false, false, true, false, null);
+        return new AuthResponse(null, null, null, null, email, null, null, false, null, null, null, false, preAuthToken, false, false, true, false, null, null);
+    }
+
+    public static AuthResponse requiresEmailOtp(String preAuthToken, String email, String devOtpCode) {
+        return new AuthResponse(null, null, null, null, email, null, null, false, null, null, null, false, preAuthToken, false, false, true, false, null, devOtpCode);
     }
 }

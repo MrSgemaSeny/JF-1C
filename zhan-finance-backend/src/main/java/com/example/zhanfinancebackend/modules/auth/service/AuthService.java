@@ -90,8 +90,8 @@ public class AuthService {
 
         // Если почта @gmail.com — перенаправляем на OTP подтверждение
         if (request.email().trim().toLowerCase().endsWith("@gmail.com")) {
-            String preAuthToken = emailOtpService.createRegisterOtp(request, passwordHash);
-            return AuthResponse.requiresEmailOtp(preAuthToken, request.email().toLowerCase());
+            EmailOtpService.RegisterOtpResult otpResult = emailOtpService.createRegisterOtpWithDevCode(request, passwordHash);
+            return AuthResponse.requiresEmailOtp(otpResult.preAuthToken(), request.email().toLowerCase(), otpResult.devOtpCode());
         }
 
         Role assignedRole = (request.role() == Role.EMPLOYEE ||

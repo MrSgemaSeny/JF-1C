@@ -26,7 +26,7 @@ export interface AuthContextValue {
   login: (email: string, password: string) => Promise<{ requires2FA?: boolean; requiresEmailOtp?: boolean; preAuthToken?: string } | void>;
   completeAuth: (response: authApi.AuthResponse) => void;
   loginWithGoogle: (credential: string, role?: 'CLIENT' | 'EMPLOYEE') => Promise<{ requires2FA?: boolean; preAuthToken?: string; isPendingApproval?: boolean; isNewUser?: boolean }>;
-  register: (req: authApi.RegisterRequest) => Promise<{ isPendingApproval: boolean; requiresEmailOtp?: boolean; preAuthToken?: string }>;
+  register: (req: authApi.RegisterRequest) => Promise<{ isPendingApproval: boolean; requiresEmailOtp?: boolean; preAuthToken?: string; devOtpCode?: string }>;
   logout: () => void;
 }
 
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const response = await authApi.register(req);
         if (response && response.requiresEmailOtp && response.preAuthToken) {
-          return { isPendingApproval: false, requiresEmailOtp: true, preAuthToken: response.preAuthToken };
+          return { isPendingApproval: false, requiresEmailOtp: true, preAuthToken: response.preAuthToken, devOtpCode: response.devOtpCode };
         }
         if (response && response.isPendingApproval) {
           return { isPendingApproval: true };
