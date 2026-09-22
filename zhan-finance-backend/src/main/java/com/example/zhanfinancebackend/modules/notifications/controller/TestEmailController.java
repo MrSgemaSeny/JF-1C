@@ -16,6 +16,9 @@ public class TestEmailController {
 
     private final JavaMailSender mailSender;
 
+    @org.springframework.beans.factory.annotation.Value("${app.mail.from-address:orkathebestt@gmail.com}")
+    private String fromAddress;
+
     public TestEmailController(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -29,7 +32,7 @@ public class TestEmailController {
             jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom("muratorynbasar0@gmail.com");
+            helper.setFrom(fromAddress);
             helper.setTo(email);
             helper.setSubject("Тестовое письмо от ZhanFinance");
             helper.setText(html, true);
