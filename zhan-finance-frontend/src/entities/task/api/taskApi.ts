@@ -71,6 +71,12 @@ export async function assignTask(id: number, assigneeId?: number): Promise<TaskD
   });
 }
 
+export async function claimTask(id: number): Promise<TaskDto> {
+  return apiRequest<TaskDto>(`/api/v1/crm/tasks/${id}/claim`, {
+    method: 'POST',
+  });
+}
+
 export async function deleteTask(id: number): Promise<void> {
   return apiRequest<void>(`/api/v1/crm/tasks/${id}`, {
     method: 'DELETE',

@@ -6,6 +6,9 @@ import { Spinner } from '@/shared/ui/Spinner';
 import { getSecureImageUrl, apiRequest } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+import { QRCodeSVG } from 'qrcode.react';
+
+const TELEGRAM_PLANE_ICON = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232AABEE'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z'/></svg>";
 
 interface TelegramStatus {
   linked: boolean;
@@ -58,6 +61,14 @@ export function SettingsPage() {
     loadProfile();
     loadTelegramStatus();
   }, []);
+
+  useEffect(() => {
+    if (!tgLinkData || tgStatus?.linked) return;
+    const interval = setInterval(() => {
+      loadTelegramStatus();
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [tgLinkData, tgStatus?.linked]);
 
   async function loadProfile() {
     try {
@@ -460,28 +471,98 @@ export function SettingsPage() {
           ) : (
             <div className="space-y-4">
               {tgLinkData ? (
-                <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl space-y-3">
-                  <p className="text-sm text-gray-600">
-                    Ссылка действительна 15 минут. Нажмите кнопку ниже, чтобы открыть бота и завершить привязку.
-                  </p>
-                  <a
-                    href={tgLinkData.deepLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2AABEE] text-white text-sm font-semibold rounded-xl hover:bg-[#1e96d3] transition-colors"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Открыть в Telegram
-                    <ExternalLink className="w-3.5 h-3.5 opacity-70" />
-                  </a>
-                  <button
-                    onClick={handleGenerateTgLink}
-                    disabled={tgGenerating}
-                    className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    Обновить ссылку
-                  </button>
+                <div className="bg-gradient-to-br from-blue-50/70 via-white to-sky-50/40 border border-blue-100/80 rounded-2xl p-6 sm:p-8 shadow-sm">
+                  <div className="flex flex-col md:flex-row items-center md:items-stretch gap-8">
+                    
+                    {/* Вариант 1 (С телефона): Фирменная карточка QR в оригинальном стиле Telegram */}
+                    <div className="flex flex-col items-center flex-shrink-0">
+                      <div className="relative pt-5">
+                        {/* Верхний бейдж с логотипом ЖАН FINANCE */}
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10 bg-white border border-gray-200/80 px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5 whitespace-nowrap">
+                          <span className="text-[11px] font-black text-brand-green tracking-wider uppercase">ЖАН FINANCE</span>
+                        </div>
+
+                        {/* Белая карточка с закругленными углами */}
+                        <div className="bg-white p-5 pt-7 rounded-3xl border border-blue-100 shadow-md flex flex-col items-center text-center">
+                          <div className="p-3 bg-white rounded-2xl shadow-inner border border-gray-100 flex items-center justify-center">
+                            <QRCodeSVG
+                              value={tgLinkData.deepLink}
+                              size={180}
+                              level="H"
+                              fgColor="#2481CC"
+                              imageSettings={{
+                                src: TELEGRAM_PLANE_ICON,
+                                height: 38,
+                                width: 38,
+                                excavate: true,
+                              }}
+                            />
+                          </div>
+                          <span className="mt-4 text-sm font-black text-[#2AABEE] tracking-wide uppercase">
+                            @{tgLinkData.deepLink.match(/t\.me\/([^?]+)/)?.[1]?.toUpperCase() || 'ZHANFINANCEBOT'}
+                          </span>
+                          <span className="text-xs text-gray-400 mt-1 font-medium">
+                            Сканируйте камерой телефона
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Вариант 2 (С компьютера): Прямая кнопка и пошаговая инструкция */}
+                    <div className="flex flex-col justify-between flex-1 text-center md:text-left space-y-5">
+                      <div>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-100/80 text-[#1e96d3] rounded-full text-xs font-bold mb-3">
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          Два способа подключения
+                        </div>
+                        <h4 className="text-lg font-bold text-gray-900 mb-2">
+                          Подключение Telegram-уведомлений
+                        </h4>
+                        <ul className="text-sm text-gray-600 space-y-2.5 mb-4 text-left max-w-md mx-auto md:mx-0">
+                          <li className="flex items-start gap-2.5">
+                            <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                            <span><strong>Со смартфона:</strong> наведите камеру телефона на QR-код и откройте ссылку в Telegram.</span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                            <span><strong>С компьютера:</strong> нажмите кнопку «Открыть в Telegram» ниже.</span>
+                          </li>
+                          <li className="flex items-start gap-2.5">
+                            <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                            <span>В открывшемся диалоге с ботом нажмите <strong>Запустить (Start)</strong>. Аккаунт привяжется мгновенно.</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="space-y-3 pt-2 border-t border-blue-100/60">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 justify-center md:justify-start">
+                          <a
+                            href={tgLinkData.deepLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2AABEE] text-white text-sm font-bold rounded-xl hover:bg-[#1e96d3] shadow-sm hover:shadow-md transition-all active:scale-95"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                            Открыть в Telegram
+                            <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                          </a>
+
+                          <button
+                            onClick={handleGenerateTgLink}
+                            disabled={tgGenerating}
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-3 border border-gray-200 bg-white text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-60"
+                          >
+                            <RefreshCw className={`w-3.5 h-3.5 ${tgGenerating ? 'animate-spin' : ''}`} />
+                            Обновить QR-код
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-400">
+                          QR-код и ссылка действительны 15 минут. Статус обновится автоматически сразу после нажатия Start в боте.
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
               ) : (
                 <button
