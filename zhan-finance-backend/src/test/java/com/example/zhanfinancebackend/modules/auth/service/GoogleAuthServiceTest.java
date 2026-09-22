@@ -79,29 +79,9 @@ class GoogleAuthServiceTest {
     }
 
     @Test
-    void unlinkGoogleAccount_ThrowsWhenNoPasswordSetAndProviderGoogle() {
-        User googleUser = new User("Google User", "g@gmail.com", "uuid", Role.CLIENT);
-        googleUser.setId(2L);
-        googleUser.setAuthProvider(AuthProvider.GOOGLE);
-        googleUser.setPasswordSet(false);
-        googleUser.setGoogleSub("sub-123");
-
-        when(userRepository.findById(2L)).thenReturn(Optional.of(googleUser));
-
-        assertThrows(BadRequestException.class, () -> googleAuthService.unlinkGoogleAccount(googleUser));
-    }
-
-    @Test
-    void unlinkGoogleAccount_SuccessWhenPasswordSet() {
-        currentUser.setGoogleSub("sub-123");
-        currentUser.setGoogleEmail("murat@gmail.com");
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(currentUser));
-
-        googleAuthService.unlinkGoogleAccount(currentUser);
-
-        assertNull(currentUser.getGoogleSub());
-        assertNull(currentUser.getGoogleEmail());
-        verify(userRepository).save(currentUser);
+    void unlinkGoogleAccount_AlwaysThrowsBadRequestException() {
+        BadRequestException ex = assertThrows(BadRequestException.class,
+                () -> googleAuthService.unlinkGoogleAccount(currentUser));
+        org.junit.jupiter.api.Assertions.assertTrue(ex.getMessage().contains("Отвязка Google-аккаунта запрещена"));
     }
 }

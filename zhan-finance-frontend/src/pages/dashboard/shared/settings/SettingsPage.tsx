@@ -7,7 +7,7 @@ import { getSecureImageUrl, apiRequest } from '@/shared/api/http';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { QRCodeSVG } from 'qrcode.react';
-import { linkGoogle, unlinkGoogle } from '@/features/auth/authApi';
+import { linkGoogle } from '@/features/auth/authApi';
 import { GoogleLogin } from '@react-oauth/google';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { Input } from '@/shared/ui/Input/Input';
@@ -61,9 +61,6 @@ export function SettingsPage() {
   const [tgGenerating, setTgGenerating] = useState(false);
   const [tgUnlinking, setTgUnlinking] = useState(false);
 
-  // Google
-  const [googleUnlinking, setGoogleUnlinking] = useState(false);
-
   async function handleLinkGoogle(credential: string) {
     try {
       await linkGoogle(credential);
@@ -71,20 +68,6 @@ export function SettingsPage() {
       loadProfile();
     } catch (err: any) {
       toast.error(err?.message || 'Ошибка привязки Google-аккаунта');
-    }
-  }
-
-  async function handleUnlinkGoogle() {
-    if (!confirm('Вы уверены, что хотите отвязать Google-аккаунт?')) return;
-    setGoogleUnlinking(true);
-    try {
-      await unlinkGoogle();
-      toast.success('Google-аккаунт успешно отвязан');
-      loadProfile();
-    } catch (err: any) {
-      toast.error(err?.message || 'Не удалось отвязать Google-аккаунт');
-    } finally {
-      setGoogleUnlinking(false);
     }
   }
 
@@ -472,19 +455,19 @@ export function SettingsPage() {
           {profile?.googleLinked ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-emerald-800">Google привязан</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-emerald-800">Google привязан</p>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Активен
+                  </span>
+                </div>
                 {profile.googleEmail && (
                   <p className="text-xs sm:text-sm text-gray-600 mt-0.5 truncate">{profile.googleEmail}</p>
                 )}
               </div>
-              <button
-                onClick={handleUnlinkGoogle}
-                disabled={googleUnlinking}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60 shrink-0"
-              >
-                {googleUnlinking ? <Spinner className="w-4 h-4" /> : <Unlink className="w-4 h-4" />}
-                Отвязать
-              </button>
+              <div className="text-xs font-medium text-emerald-700 bg-white/80 px-3 py-1.5 rounded-lg border border-emerald-200 self-start sm:self-auto shrink-0">
+                Отвязка не предусмотрена
+              </div>
             </div>
           ) : (
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3.5 sm:p-4 bg-gray-50 border border-gray-100 rounded-xl">
