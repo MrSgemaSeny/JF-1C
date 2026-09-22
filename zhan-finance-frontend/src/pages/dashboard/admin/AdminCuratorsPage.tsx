@@ -4,6 +4,7 @@ import { UserCheck, UserX, Plus, BookOpen, ShieldAlert, CheckCircle, MoreVertica
 import { Spinner } from '@/shared/ui/Spinner';
 import { toast } from '@/shared/ui/Toast/ToastContext';
 import { useTranslation } from 'react-i18next';
+import { Input } from '@/shared/ui/Input/Input';
 
 interface Curator {
   id: number;
@@ -30,6 +31,7 @@ export function AdminCuratorsPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ fullName?: string; email?: string; password?: string }>({});
 
   // Assign Modal
   const [selectedCurator, setSelectedCurator] = useState<Curator | null>(null);
@@ -57,20 +59,34 @@ export function AdminCuratorsPage() {
     fetchData();
   }, []);
 
+  const validate = () => {
+    const errs: typeof formErrors = {};
+    if (!fullName.trim()) errs.fullName = t('adminCurators.errors.fullName', { defaultValue: 'Введите ФИО' });
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      errs.email = t('adminCurators.errors.email', { defaultValue: 'Некорректный email' });
+    }
+    if (password.length < 6) {
+      errs.password = t('adminCurators.errors.password', { defaultValue: 'Минимум 6 символов' });
+    }
+    setFormErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleCreateCurator = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !email || !password) return;
+    if (!validate()) return;
     try {
       setSubmitting(true);
       await apiRequest('/api/v1/admin/curators', {
         method: 'POST',
-        body: JSON.stringify({ fullName, email, password })
+        body: JSON.stringify({ fullName: fullName.trim(), email: email.trim(), password })
       });
       toast.success(t('adminCurators.createdSuccess', { defaultValue: 'Куратор успешно создан' }));
       setIsModalOpen(false);
       setFullName('');
       setEmail('');
       setPassword('');
+      setFormErrors({});
       fetchData();
     } catch (err: any) {
       toast.error(err?.message || t('adminCurators.createError', { defaultValue: 'Не удалось создать куратора' }));
@@ -199,41 +215,40 @@ export function AdminCuratorsPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-200">
             <h2 className="text-xl font-bold text-gray-900">{t('adminCurators.modalTitle', 'Новый куратор')}</h2>
-            <form onSubmit={handleCreateCurator} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('auth.register.fullName', 'ФИО')}</label>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder="Иванов Иван Иванович"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder="curator@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">{t('adminLearners.password', 'Начальный пароль')}</label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-brand-green"
-                  placeholder="••••••••"
-                />
-              </div>
+            <form onSubmit={handleCreateCurator} noValidate className="space-y-4">
+              <Input
+                label={t('auth.register.fullName', 'ФИО')}
+                type="text"
+                value={fullName}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  if (formErrors.fullName) setFormErrors(prev => ({ ...prev, fullName: undefined }));
+                }}
+                placeholder="Иванов Иван Иванович"
+                error={formErrors.fullName}
+              />
+              <Input
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (formErrors.email) setFormErrors(prev => ({ ...prev, email: undefined }));
+                }}
+                placeholder="curator@example.com"
+                error={formErrors.email}
+              />
+              <Input
+                label={t('adminLearners.password', 'Начальный пароль')}
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (formErrors.password) setFormErrors(prev => ({ ...prev, password: undefined }));
+                }}
+                placeholder="••••••••"
+                error={formErrors.password}
+              />
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
