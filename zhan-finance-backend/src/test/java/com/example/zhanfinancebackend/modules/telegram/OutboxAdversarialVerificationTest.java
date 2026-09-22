@@ -63,7 +63,7 @@ class OutboxAdversarialVerificationTest {
         telegramOutboxService = new TelegramOutboxService(
                 telegramNotificationRepository,
                 telegramLinkRepository,
-                "https://zhanfinance.kz"
+                "https://mrsgemaseny.github.io/JF-1C"
         );
 
         telegramLinkService = new TelegramLinkService(

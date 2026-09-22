@@ -61,7 +61,7 @@ class TelegramOutboxAdversarialTest {
         telegramOutboxService = new TelegramOutboxService(
                 telegramNotificationRepository,
                 telegramLinkRepository,
-                "https://zhanfinance.kz"
+                "https://mrsgemaseny.github.io/JF-1C"
         );
 
         notificationRepository = mock(NotificationRepository.class);
@@ -137,7 +137,7 @@ class TelegramOutboxAdversarialTest {
             // Check HTML sanitization to prevent Telegram parse break
             assertTrue(enqueued.getMessage().contains("&lt;Сдача 100.00&gt; &amp; Проверка"));
             assertTrue(enqueued.getMessage().contains("&lt;акт сверки&gt; &amp; подтвердите"));
-            assertTrue(enqueued.getMessage().contains("<a href=\"https://zhanfinance.kz/client/tasks/101\">Открыть в кабинете</a>"));
+            assertTrue(enqueued.getMessage().contains("<a href=\"https://mrsgemaseny.github.io/JF-1C/client/tasks/101\">Открыть в кабинете</a>"));
         }
 
         @Test

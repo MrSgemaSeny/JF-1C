@@ -38,7 +38,7 @@ class TelegramOutboxServiceTest {
         telegramOutboxService = new TelegramOutboxService(
                 telegramNotificationRepository,
                 telegramLinkRepository,
-                "https://zhanfinance.kz"
+                "https://mrsgemaseny.github.io/JF-1C"
         );
 
         testUser = new User();
@@ -64,7 +64,7 @@ class TelegramOutboxServiceTest {
         assertEquals(0, saved.getAttempts());
         assertTrue(saved.getMessage().contains("<b>Задача обновлена</b>"));
         assertTrue(saved.getMessage().contains("Статус: В работе"));
-        assertTrue(saved.getMessage().contains("<a href=\"https://zhanfinance.kz/client/tasks/101\">Открыть в кабинете</a>"));
+        assertTrue(saved.getMessage().contains("<a href=\"https://mrsgemaseny.github.io/JF-1C/client/tasks/101\">Открыть в кабинете</a>"));
     }
 
     @Test

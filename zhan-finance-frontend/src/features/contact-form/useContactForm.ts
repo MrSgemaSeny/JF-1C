@@ -138,7 +138,7 @@ export function useContactForm() {
         `Телефон: ${phone.trim()}`,
         trimmedEmail ? `Email: ${trimmedEmail}` : null,
         message.trim() ? `Описание: ${message.trim()}` : null,
-        `Источник: zhanfinance.kz`
+        `Источник: https://mrsgemaseny.github.io/JF-1C/`
       ].filter(Boolean);
 
       const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(textLines.join('\n'))}`;

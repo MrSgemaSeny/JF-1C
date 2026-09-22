@@ -49,7 +49,7 @@ class CrmTelegramEventIntegrationTest {
         telegramOutboxService = new TelegramOutboxService(
                 telegramNotificationRepository,
                 telegramLinkRepository,
-                "https://zhanfinance.kz"
+                "https://mrsgemaseny.github.io/JF-1C"
         );
 
         notificationService = new NotificationService(
@@ -94,7 +94,7 @@ class CrmTelegramEventIntegrationTest {
         assertTrue(notification.getMessage().contains("<b>Статус задачи изменен</b>"));
         assertTrue(notification.getMessage().contains("Сдача налоговой отчетности"));
         assertTrue(notification.getMessage().contains("Готово"));
-        assertTrue(notification.getMessage().contains("https://zhanfinance.kz/client"));
+        assertTrue(notification.getMessage().contains("https://mrsgemaseny.github.io/JF-1C/client"));
     }
 
     @Test
