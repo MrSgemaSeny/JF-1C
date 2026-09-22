@@ -57,7 +57,7 @@ function HeaderProfile() {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-4 bg-gray-50 px-4 py-1.5 rounded-full border border-gray-100 hover:bg-gray-100 transition-colors focus:outline-none"
+        className="flex items-center gap-2 sm:gap-4 bg-gray-50 p-1 sm:px-4 sm:py-1.5 rounded-full border border-gray-100 hover:bg-gray-100 transition-colors focus:outline-none"
       >
         <div className="hidden sm:flex flex-col text-right">
           <span className="text-sm font-bold text-gray-900 capitalize">{dateStr}</span>
@@ -77,7 +77,7 @@ function HeaderProfile() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-[300px] sm:w-[340px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute right-0 top-full mt-2 max-w-[calc(100vw-32px)] w-[290px] sm:w-[340px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
           <div className="p-4 border-b border-gray-100 flex items-center gap-3 bg-gray-50/50">
             {user?.avatarUrl ? (
               <img src={getSecureImageUrl(user.avatarUrl)} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
@@ -179,7 +179,7 @@ export function DashboardLayout() {
             </div>
           </div>
           
-          <div className="flex-1 flex flex-col min-h-0 p-4 md:p-8">
+          <div className="flex-1 flex flex-col min-h-0 p-3 sm:p-6 md:p-8">
             <ErrorBoundary>
               <Outlet />
             </ErrorBoundary>

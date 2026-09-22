@@ -8,7 +8,7 @@
 
 ## Infrastructure & Test State
 - **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`: 295/295 tests PASS) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL, EmailOtp, GoogleAuth). JaCoCo configured for coverage tracking.
-- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (19 test files, 169 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
+- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (19 test files, 172 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
 - **Telegram Bot Microservice**: Отдельный микросервис `zhan-finance-tgbot` (`C:\Users\murat\IdeaProjects\zhan-finance-tgbot`, Spring Boot 3 / Java 17, порт 8081, 89 тестов PASS). Общается с монолитом через защищенные внутренние эндпоинты `/api/v1/internal/**` по `X-Internal-Token` (`Role.INTERNAL_BOT`).
 - **CI/CD (.github/workflows/ci.yml)**: Continuous quality gate enforcing backend test execution, frontend linting, typechecking, Vitest execution, and GitHub Pages deployment.
 - **Storage (Cloudflare R2)**: Provisioned bucket `jf1c-documents` for Epic-15/Epic-21 ($0 egress).
