@@ -31,6 +31,7 @@ export const ROUTES = {
   ADMIN_LEARNERS: '/admin/learners',
   ADMIN_INVOICES: '/admin/invoices',
   ADMIN_SUBSCRIPTIONS: '/admin/subscriptions',
+  ADMIN_PAYMENT_RECEIPTS: '/admin/billing/receipts',
   ADMIN_AUDIT_LOGS: '/admin/audit-logs',
   ADMIN_TEMPLATES: '/admin/templates',
   ADMIN_CURATORS: '/admin/curators',
@@ -70,6 +71,7 @@ export const ROUTES = {
   CLIENT_CALENDAR: '/client/calendar',
   CLIENT_TASK_DETAILS: '/client/tasks/:id',
   CLIENT_SERVICES: '/client/services',
+  CLIENT_BILLING: '/client/billing',
   CLIENT_1C_REPORTS: '/client/reports/1c',
   CLIENT_REPORTS: '/client/reports',
   

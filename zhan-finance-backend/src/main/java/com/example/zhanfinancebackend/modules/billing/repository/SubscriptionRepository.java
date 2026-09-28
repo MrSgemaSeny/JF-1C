@@ -27,4 +27,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
             @org.springframework.data.repository.query.Param("excludeId") Long excludeId, 
             @org.springframework.data.repository.query.Param("startsAt") java.time.LocalDate startsAt, 
             @org.springframework.data.repository.query.Param("endsAt") java.time.LocalDate endsAt);
+
+    List<Subscription> findByStatusAndEndsAt(Subscription.SubscriptionStatus status, java.time.LocalDate endsAt);
 }

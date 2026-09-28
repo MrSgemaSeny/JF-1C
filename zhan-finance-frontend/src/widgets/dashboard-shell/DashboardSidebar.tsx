@@ -26,6 +26,7 @@ import {
   FileSpreadsheet,
   ShieldCheck,
   BarChart2,
+  FileCheck,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/NotificationContext';
 import { useChatNotifications } from '@/features/chat/ChatNotificationContext';
@@ -59,6 +60,8 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   'Curators':            <UserCheck size={16} />,
   'Invoices':            <CreditCard size={16} />,
   'Subscriptions':       <RefreshCw size={16} />,
+  'Payment Receipts':    <FileCheck size={16} />,
+  'Billing & Plans':     <CreditCard size={16} />,
   'Audit Logs':          <History size={16} />,
   'Templates':           <FileText size={16} />,
   '2FA Security':        <ShieldCheck size={16} />,
@@ -181,6 +184,8 @@ export function DashboardSidebar({
               case 'Archive (Cancelled)': i18nKey = 'nav.archiveCancelled'; break;
               case 'Invoices': i18nKey = 'nav.invoices'; break;
               case 'Subscriptions': i18nKey = 'nav.subscriptions'; break;
+              case 'Payment Receipts': i18nKey = 'nav.paymentReceipts'; break;
+              case 'Billing & Plans': i18nKey = 'nav.billing'; break;
               case 'Audit Logs': i18nKey = 'nav.auditLogs'; break;
               case '2FA Security': i18nKey = 'nav.security'; break;
               case 'Team Workload': i18nKey = 'nav.teamWorkload'; break;

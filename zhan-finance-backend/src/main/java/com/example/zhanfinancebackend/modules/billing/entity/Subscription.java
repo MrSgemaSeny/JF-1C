@@ -109,6 +109,7 @@ public class Subscription extends BaseEntity {
     }
 
     public enum SubscriptionStatus {
+        PENDING,
         ACTIVE,
         PAUSED,
         CANCELED

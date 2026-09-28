@@ -7,12 +7,12 @@
 - **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure & Test State
-- **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`: 295/295 tests PASS) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL, EmailOtp, GoogleAuth). JaCoCo configured for coverage tracking.
-- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (19 test files, 172 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
+- **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`: 309+ tests PASS) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL, EmailOtp, GoogleAuth, PaymentReceipts). JaCoCo configured for coverage tracking.
+- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (21 test files, 182 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
 - **Telegram Bot Microservice**: Отдельный микросервис `zhan-finance-tgbot` (`C:\Users\murat\IdeaProjects\zhan-finance-tgbot`, Spring Boot 3 / Java 17, порт 8081, 89 тестов PASS). Общается с монолитом через защищенные внутренние эндпоинты `/api/v1/internal/**` по `X-Internal-Token` (`Role.INTERNAL_BOT`).
 - **CI/CD (.github/workflows/ci.yml)**: Continuous quality gate enforcing backend test execution, frontend linting, typechecking, Vitest execution, and GitHub Pages deployment.
-- **Storage (Cloudflare R2)**: Provisioned bucket `jf1c-documents` for Epic-15/Epic-21 ($0 egress).
-- **Auth & Security**: JWT Bearer, refresh token rotation, TOTP 2FA, Bucket4j rate limiting, row-level CRM access controls, Google Account Linking (OAuth 2.0 / GIS), Gmail OTP Protection Flow (Flyway V127).
+- **Storage (Cloudflare R2)**: Presigned URLs (15 мин) для `payment_receipts` с fallback на PostgreSQL `StoredFileRepository`.
+- **Auth & Security**: JWT Bearer, refresh token rotation, TOTP 2FA, Bucket4j rate limiting, row-level CRM and Billing access controls, Google Account Linking (OAuth 2.0 / GIS), Gmail OTP Protection Flow (Flyway V127).
 - **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR (плюс INTERNAL_BOT для бота).
 
 ## Key Completed Features & Milestones
@@ -67,6 +67,14 @@
    - Пароли в registration payload надежно хешируются (BCrypt) до сохранения в БД.
    - Привязка и отвязка Google-аккаунта в Настройках пользователя (с защитой от отвязки единственного метода входа при `!password_set`).
    - 100% покрытие: 295 backend тестов, 169 frontend тестов, 0 ошибок.
+
+8. **Billing v1: Manual Kaspi / Bank Transfer & Cloudflare R2 Receipts [DONE]**:
+   - Flyway миграции V128 (`payment_receipts`, RLS, optimistic locking `version`) и V129 (`subscriptions_status_check` с поддержкой `PENDING`).
+   - Безопасное хранилище `DefaultPaymentReceiptStorageService`: валидация MIME через Apache Tika (строго `application/pdf`, лимит 10 МБ), upload в Cloudflare R2 с 15-минутными Presigned URLs, локальный fallback на PostgreSQL `StoredFileRepository`.
+   - Сервисный слой и безопасность: `PaymentReceiptAccessService` (RLS проверки), `PaymentReceiptService` (транзакционный перевод receipt -> `CONFIRMED`, sub -> `ACTIVE` +30 дней, invoice -> `PAID`), шедулер `SubscriptionRenewalReminderScheduler` (09:00 Asia/Almaty за 3 дня до конца).
+   - Гарантированные уведомления через Telegram Outbox микросервиса `zhan-finance-tgbot` (события загрузки, одобрения, отклонения и напоминания).
+   - Frontend: `PaymentModal`, `PaymentHistoryTable`, `RejectReceiptModal`, `ClientBillingPage` (`/client/billing`), `AdminPaymentReceiptsPage` (`/admin/billing/receipts`), 100% паритет 4 локалей (`ru`, `kk`, `en`, `zh`).
+   - 100% покрытие тестами: 309+ backend тестов, 182 frontend теста (включая 97 i18n parity тестов), 0 ошибок, 0 ворнингов, 0 эмодзи.
 
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 

@@ -11,7 +11,7 @@ export interface InvoiceDto {
   dueDate: string;
 }
 
-export type SubscriptionStatus = 'ACTIVE' | 'PAUSED' | 'CANCELLED' | 'EXPIRED';
+export type SubscriptionStatus = 'PENDING' | 'ACTIVE' | 'PAUSED' | 'CANCELLED' | 'CANCELED' | 'EXPIRED';
 
 export interface SubscriptionDto {
   id: number;

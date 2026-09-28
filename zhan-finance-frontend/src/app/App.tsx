@@ -43,6 +43,7 @@ const AdminLessonEditPage = lazy(() => import('@/pages/dashboard/admin/AdminLess
 const AdminLearnersPage = lazy(() => import('@/pages/dashboard/admin/AdminLearnersPage').then(m => ({ default: m.AdminLearnersPage })));
 const AdminInvoicesPage = lazy(() => import('@/pages/dashboard/admin/billing/AdminInvoicesPage').then(m => ({ default: m.AdminInvoicesPage })));
 const AdminSubscriptionsPage = lazy(() => import('@/pages/dashboard/admin/billing/AdminSubscriptionsPage').then(m => ({ default: m.AdminSubscriptionsPage })));
+const AdminPaymentReceiptsPage = lazy(() => import('@/pages/dashboard/admin/billing/AdminPaymentReceiptsPage').then(m => ({ default: m.AdminPaymentReceiptsPage })));
 const AdminAuditLogPage = lazy(() => import('@/pages/dashboard/admin/AdminAuditLogPage').then(m => ({ default: m.AdminAuditLogPage })));
 const AdminTemplatesPage = lazy(() => import('@/pages/dashboard/admin/AdminTemplatesPage').then(m => ({ default: m.AdminTemplatesPage })));
 const AdminCuratorsPage = lazy(() => import('@/pages/dashboard/admin/AdminCuratorsPage').then(m => ({ default: m.AdminCuratorsPage })));
@@ -78,6 +79,7 @@ const ClientTaskDetailsPage = lazy(() => import('@/pages/dashboard/client/Client
 const ClientDocumentsPage = lazy(() => import('@/pages/dashboard/client/ClientDocumentsPage').then(m => ({ default: m.ClientDocumentsPage })));
 const ClientChatPage = lazy(() => import('@/pages/dashboard/client/ClientChatPage').then(m => ({ default: m.ClientChatPage })));
 const ClientServicesPage = lazy(() => import('@/pages/dashboard/client/ClientServicesPage').then(m => ({ default: m.ClientServicesPage })));
+const ClientBillingPage = lazy(() => import('@/pages/dashboard/client/billing/ClientBillingPage').then(m => ({ default: m.ClientBillingPage })));
 const ClientOneCReportsPage = lazy(() => import('@/pages/dashboard/client/ClientOneCReportsPage').then(m => ({ default: m.ClientOneCReportsPage })));
 const CompleteProfilePage = lazy(() => import('@/pages/auth/complete-profile/CompleteProfilePage').then(m => ({ default: m.CompleteProfilePage })));
 const CalendarPage = lazy(() => import('@/pages/dashboard/shared/calendar/CalendarPage').then(m => ({ default: m.CalendarPage })));
@@ -176,6 +178,7 @@ export function App() {
                 <Route path={ROUTES.ADMIN_LEARNERS} element={<AdminLearnersPage />} />
                 <Route path={ROUTES.ADMIN_INVOICES} element={<AdminInvoicesPage />} />
                 <Route path={ROUTES.ADMIN_SUBSCRIPTIONS} element={<AdminSubscriptionsPage />} />
+                <Route path={ROUTES.ADMIN_PAYMENT_RECEIPTS} element={<AdminPaymentReceiptsPage />} />
                 <Route path={ROUTES.ADMIN_AUDIT_LOGS} element={<AdminAuditLogPage />} />
                 <Route path={ROUTES.ADMIN_TEMPLATES} element={<AdminTemplatesPage />} />
                 <Route path={ROUTES.ADMIN_CURATORS} element={<AdminCuratorsPage />} />
@@ -216,6 +219,7 @@ export function App() {
               {/* Client Routes */}
               <Route element={<RoleProtectedRoute allow={['CLIENT']} />}>
                 <Route path={ROUTES.CLIENT} element={<ClientOverviewPage />} />
+                <Route path={ROUTES.CLIENT_BILLING} element={<ClientBillingPage />} />
                 <Route path={ROUTES.CLIENT_TASK_DETAILS} element={<ClientTaskDetailsPage />} />
                 <Route path={ROUTES.CLIENT_CHAT} element={<ClientChatPage />} />
                 <Route path={ROUTES.CLIENT_DOCUMENTS} element={<ClientDocumentsPage />} />

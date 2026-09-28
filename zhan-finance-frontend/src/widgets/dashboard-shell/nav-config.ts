@@ -20,6 +20,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
     { label: 'Task Pool', href: ROUTES.ADMIN_TASK_POOL },
     { label: 'Invoices', href: ROUTES.ADMIN_INVOICES },
     { label: 'Subscriptions', href: ROUTES.ADMIN_SUBSCRIPTIONS },
+    { label: 'Payment Receipts', href: ROUTES.ADMIN_PAYMENT_RECEIPTS },
     { label: 'Audit Logs', href: ROUTES.ADMIN_AUDIT_LOGS },
     { label: 'Templates', href: ROUTES.ADMIN_TEMPLATES },
     { label: '2FA Security', href: ROUTES.ADMIN_SECURITY },
@@ -47,6 +48,7 @@ export const navConfig: Record<UserRole, NavItem[]> = {
   ],
   CLIENT: [
     { label: 'Overview', href: ROUTES.CLIENT },
+    { label: 'Billing & Plans', href: ROUTES.CLIENT_BILLING },
     { label: '1C Reports', href: ROUTES.CLIENT_1C },
     { label: 'Services', href: ROUTES.CLIENT_SERVICES },
     { label: 'Calendar', href: ROUTES.CLIENT_CALENDAR },
