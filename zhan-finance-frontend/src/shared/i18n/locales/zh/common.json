@@ -1896,6 +1896,42 @@
     "currentPlan": "当前套餐",
     "defaultPlanName": "财务代理记账服务",
     "planDescription": "全套账务处理、税费核算、统计报表申报及1C系统集成",
+    "availablePlans": "可选服务方案",
+    "availablePlansDesc": "根据您的企业规模选择合适的服务方案，或升级至更高规格配置",
+    "choosePlan": "选择此方案",
+    "currentActivePlanBadge": "当前生效方案",
+    "perMonth": "/ 月",
+    "outOfDays": "/ {{total}} 天",
+    "paymentMethods": "Kaspi / 银行转账",
+    "kaspiTransfer": "Kaspi 转账 / QR 码",
+    "bankTransfer": "银行转账",
+    "companyCountry": "Zhan Finance • 哈萨克斯坦",
+    "copyBin": "复制商业识别号",
+    "copyIban": "复制银行账号",
+    "selectPlanLabel": "选择服务方案",
+    "customAmount": "其他金额",
+    "plans": {
+      "start": {
+        "name": "初创版",
+        "desc": "适合无雇员的简化税制个体户 (IE)",
+        "price": "30,000 ₸"
+      },
+      "standard": {
+        "name": "标准版",
+        "desc": "适合5人以下团队的中小微企业 (LLP/IE)",
+        "price": "100,000 ₸"
+      },
+      "pro": {
+        "name": "专业版",
+        "desc": "适合一般纳税人增值税企业、跨境贸易与电商",
+        "price": "200,000 ₸"
+      },
+      "corporate": {
+        "name": "企业尊享版",
+        "desc": "全维度综合财税闭环与咨询支持",
+        "price": "400,000 ₸"
+      }
+    },
     "price": "费用",
     "activeUntil": "有效期至",
     "daysRemaining": "剩余天数",

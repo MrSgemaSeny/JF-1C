@@ -68,14 +68,15 @@
    - Привязка и отвязка Google-аккаунта в Настройках пользователя (с защитой от отвязки единственного метода входа при `!password_set`).
    - 100% покрытие: 295 backend тестов, 169 frontend тестов, 0 ошибок.
 
-8. **Billing v1: Manual Kaspi / Bank Transfer & Cloudflare R2 Receipts [DONE]**:
+8. **Billing v1: Manual Kaspi / Bank Transfer, Cloudflare R2 Receipts, 4 Tariffs & Full i18n [DONE]**:
    - Flyway миграции V128 (`payment_receipts`, RLS, optimistic locking `version`) и V129 (`subscriptions_status_check` с поддержкой `PENDING`) применены и верифицированы в БД.
    - Безопасное хранилище `DefaultPaymentReceiptStorageService`: валидация MIME через Apache Tika (строго `application/pdf`, лимит 10 МБ), upload в Cloudflare R2 с 15-минутными Presigned URLs, локальный fallback на PostgreSQL `StoredFileRepository`.
    - Сервисный слой и безопасность: `PaymentReceiptAccessService` (RLS проверки), `PaymentReceiptService` (транзакционный перевод receipt -> `CONFIRMED`, sub -> `ACTIVE` +30 дней, invoice -> `PAID`), шедулер `SubscriptionRenewalReminderScheduler` (09:00 Asia/Almaty за 3 дня до конца).
    - Оптимизация JPA: явные `LEFT JOIN FETCH r.reviewedBy rev` во всех запросах `PaymentReceiptRepository` для устранения N+1 и обеспечения стабильности при `spring.jpa.open-in-view=false`.
-   - Гарантированные уведомления через Telegram Outbox микросервиса `zhan-finance-tgbot` (события загрузки, одобрения, отклонения и напоминания).
+   - Защита от параллелизма и дубликатов: превентивная проверка `AWAITING_REVIEW` чеков для подписки/инвойса/клиента и блокировка повторной отправки (HTTP 409 Conflict).
+   - 4 тарифа и полная локализация (i18n): в `ClientBillingPage` и `PaymentModal` внедрены 4 актуальных тарифа (Старт, Стандарт, Про, Корпоративный) с паритетом словарей на 4 языках (`ru`, `kk`, `en`, `zh`), динамическим переводом, форматированием цен и дат.
    - Frontend UI & Redesign: полный переход на светлую корпоративную палитру JF-1C (`bg-white`, `border-gray-200`, `text-gray-900`, `bg-emerald-600`, без чужеродных `dark/zinc-900` блоков) в `AdminPaymentReceiptsPage`, `ClientBillingPage`, `PaymentModal`, `PaymentHistoryTable`, `RejectReceiptModal`.
-   - 100% покрытие тестами: 315+ backend тестов (включая MockMvc админских эндпоинтов), 196 frontend тестов (25 файлов, 100% PASS), 0 ошибок linter/typecheck, 0 эмодзи.
+   - 100% покрытие тестами: 315+ backend тестов, 197 frontend тестов (25 файлов, 100% PASS), 0 ошибок linter/typecheck, 0 эмодзи.
 
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 

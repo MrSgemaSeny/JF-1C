@@ -1896,6 +1896,42 @@
     "currentPlan": "Ағымдағы тариф",
     "defaultPlanName": "Бухгалтерлік қызмет көрсету",
     "planDescription": "Кешенді есеп, салықтарды есептеу, статистикалық есептерді тапсыру және 1С интеграциясы",
+    "availablePlans": "Қолжетімді тарифтер",
+    "availablePlansDesc": "Бизнесіңіздің ауқымына сәйкес тарифті таңдаңыз немесе жазылымды жаңартыңыз",
+    "choosePlan": "Тарифті таңдау",
+    "currentActivePlanBadge": "Ағымдағы тариф",
+    "perMonth": "/ ай",
+    "outOfDays": "/ {{total}}",
+    "paymentMethods": "Kaspi / Банктік аударым",
+    "kaspiTransfer": "Kaspi Аударым / QR",
+    "bankTransfer": "Банктік аударым",
+    "companyCountry": "«ЖАН FINANCE» ЖШС • Қазақстан",
+    "copyBin": "БСН көшіру",
+    "copyIban": "IBAN көшіру",
+    "selectPlanLabel": "Тарифті таңдаңыз",
+    "customAmount": "Басқа сома",
+    "plans": {
+      "start": {
+        "name": "Бастау",
+        "desc": "Қызметкері жоқ оңайлатылған режимдегі ЖК үшін",
+        "price": "30 000 ₸"
+      },
+      "standard": {
+        "name": "Стандарт",
+        "desc": "5 қызметкерге дейінгі ЖК және ЖШС үшін",
+        "price": "100 000 ₸"
+      },
+      "pro": {
+        "name": "Про",
+        "desc": "ҚҚС бар ЖШС, СЭҚ және маркетплейстер үшін",
+        "price": "200 000 ₸"
+      },
+      "corporate": {
+        "name": "Корпоративтік",
+        "desc": "Кешенді қаржылық және салықтық контур",
+        "price": "400 000 ₸"
+      }
+    },
     "price": "Құны",
     "activeUntil": "Әрекет ету мерзімі",
     "daysRemaining": "Қалған күндер",

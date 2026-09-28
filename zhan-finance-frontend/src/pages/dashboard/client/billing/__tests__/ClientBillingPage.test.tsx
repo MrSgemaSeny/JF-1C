@@ -123,4 +123,17 @@ describe('ClientBillingPage Component', () => {
       expect(screen.getByText('Оплата тарифа')).toBeInTheDocument();
     });
   });
+
+  it('renders all 4 available tariffs (Start, Standard, Pro, Corporate)', async () => {
+    vi.mocked(billingApi.getSubscriptions).mockResolvedValueOnce([]);
+    vi.mocked(paymentReceiptApi.getMyReceipts).mockResolvedValueOnce([]);
+
+    render(<ClientBillingPage />);
+
+    expect(screen.getByText('Доступные тарифы')).toBeInTheDocument();
+    expect(screen.getByText('Старт')).toBeInTheDocument();
+    expect(screen.getByText('Стандарт')).toBeInTheDocument();
+    expect(screen.getByText('Про')).toBeInTheDocument();
+    expect(screen.getByText('Корпоративный')).toBeInTheDocument();
+  });
 });

@@ -1896,6 +1896,42 @@
     "currentPlan": "Текущий тариф",
     "defaultPlanName": "Бухгалтерское обслуживание",
     "planDescription": "Комплексный учет, расчет налогов, сдача статотчетов и интеграция с 1С",
+    "availablePlans": "Доступные тарифы",
+    "availablePlansDesc": "Выберите подходящий тариф под масштаб вашего бизнеса или обновите подписку",
+    "choosePlan": "Выбрать тариф",
+    "currentActivePlanBadge": "Текущий тариф",
+    "perMonth": "/ месяц",
+    "outOfDays": "из {{total}}",
+    "paymentMethods": "Kaspi / Банковский перевод",
+    "kaspiTransfer": "Kaspi Перевод / QR",
+    "bankTransfer": "Банковский перевод",
+    "companyCountry": "ТОО «ЖАН FINANCE» • Казахстан",
+    "copyBin": "Копировать БИН",
+    "copyIban": "Копировать IBAN",
+    "selectPlanLabel": "Выберите тариф",
+    "customAmount": "Другая сумма",
+    "plans": {
+      "start": {
+        "name": "Старт",
+        "desc": "Для ИП на упрощенке без сотрудников",
+        "price": "30 000 ₸"
+      },
+      "standard": {
+        "name": "Стандарт",
+        "desc": "Для ТОО и ИП со штатом до 5 человек",
+        "price": "100 000 ₸"
+      },
+      "pro": {
+        "name": "Про",
+        "desc": "Для ТОО на ОУР с НДС, ВЭД и маркетплейсов",
+        "price": "200 000 ₸"
+      },
+      "corporate": {
+        "name": "Корпоративный",
+        "desc": "Комплексный финансовый и налоговый контур",
+        "price": "400 000 ₸"
+      }
+    },
     "price": "Стоимость",
     "activeUntil": "Действует до",
     "daysRemaining": "Осталось дней",

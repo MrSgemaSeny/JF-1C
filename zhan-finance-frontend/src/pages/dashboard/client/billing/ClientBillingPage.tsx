@@ -18,9 +18,10 @@ import { billingApi, SubscriptionDto } from '@/entities/billing/api/billingApi';
 import { paymentReceiptApi, PaymentReceiptDto, PaymentRequisitesDto } from '@/entities/billing/api/paymentReceiptApi';
 import { PaymentModal } from '@/features/billing/ui/PaymentModal';
 import { PaymentHistoryTable } from '@/features/billing/ui/PaymentHistoryTable';
+import { BILLING_PLANS, getLocalizedPlanName, getPlanIdBySubscription } from '@/entities/billing/model/billingPlans';
 
 export const ClientBillingPage: React.FC = () => {
-  const { t } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common', 'landing']);
   const [subscriptions, setSubscriptions] = useState<SubscriptionDto[]>([]);
   const [receipts, setReceipts] = useState<PaymentReceiptDto[]>([]);
   const [requisites, setRequisites] = useState<PaymentRequisitesDto | null>(null);
@@ -28,6 +29,8 @@ export const ClientBillingPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPlanForModal, setSelectedPlanForModal] = useState<'start' | 'standard' | 'pro' | 'corporate' | undefined>(undefined);
+  const [modalAmount, setModalAmount] = useState<number | undefined>(undefined);
 
   const loadData = async (refreshOnly = false) => {
     if (refreshOnly) {
@@ -69,6 +72,8 @@ export const ClientBillingPage: React.FC = () => {
   };
 
   const currentSubscription = subscriptions.length > 0 ? subscriptions[0] : null;
+  const activePlanId = getPlanIdBySubscription(currentSubscription?.planName, currentSubscription?.monthlyPrice);
+  const activePlanItem = BILLING_PLANS.find((p) => p.id === activePlanId);
 
   const calculateDaysLeft = (endsAt: string | null): number | null => {
     if (!endsAt) return null;
@@ -91,7 +96,8 @@ export const ClientBillingPage: React.FC = () => {
   const formatDate = (isoString: string | null) => {
     if (!isoString) return '—';
     try {
-      return new Intl.DateTimeFormat('ru-RU', {
+      const locale = i18n.language === 'en' ? 'en-US' : (i18n.language === 'zh' ? 'zh-CN' : (i18n.language === 'kk' ? 'kk-KZ' : 'ru-RU'));
+      return new Intl.DateTimeFormat(locale, {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -99,6 +105,12 @@ export const ClientBillingPage: React.FC = () => {
     } catch {
       return isoString;
     }
+  };
+
+  const openPaymentForPlan = (planId?: 'start' | 'standard' | 'pro' | 'corporate', amount?: number) => {
+    setSelectedPlanForModal(planId);
+    setModalAmount(amount);
+    setIsPaymentModalOpen(true);
   };
 
   return (
@@ -128,7 +140,7 @@ export const ClientBillingPage: React.FC = () => {
           </button>
           <button
             type="button"
-            onClick={() => setIsPaymentModalOpen(true)}
+            onClick={() => openPaymentForPlan(activePlanId || undefined, currentSubscription?.monthlyPrice || undefined)}
             className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs transition-colors cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
@@ -200,18 +212,18 @@ export const ClientBillingPage: React.FC = () => {
 
             <div className="mt-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                {currentSubscription?.planName || t('billing.defaultPlanName', 'Бухгалтерское обслуживание')}
+                {getLocalizedPlanName(currentSubscription?.planName, t)}
               </h2>
               <div className="text-2xl font-bold font-mono text-gray-900">
                 {currentSubscription?.monthlyPrice
-                  ? `${Number(currentSubscription.monthlyPrice).toLocaleString('ru-RU')} ₸`
-                  : '45 000 ₸'}
-                <span className="text-xs font-normal text-gray-500 ml-1">/ месяц</span>
+                  ? `${Number(currentSubscription.monthlyPrice).toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸`
+                  : (activePlanItem ? `${activePlanItem.price.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸` : '100 000 ₸')}
+                <span className="text-xs font-normal text-gray-500 ml-1 font-sans">{t('billing.perMonth', '/ месяц')}</span>
               </div>
             </div>
 
             <p className="text-sm text-gray-500 mt-1">
-              {t('billing.planDescription', 'Комплексный учет, расчет налогов, сдача статотчетов и интеграция с 1С')}
+              {activePlanItem ? t(activePlanItem.descKey, activePlanItem.defaultDesc) : t('billing.planDescription', 'Комплексный учет, расчет налогов, сдача статотчетов и интеграция с 1С')}
             </p>
 
             {/* Days Remaining Progress Bar */}
@@ -219,7 +231,7 @@ export const ClientBillingPage: React.FC = () => {
               <div className="mt-6 p-4 rounded-xl bg-gray-50 border border-gray-100">
                 <div className="flex items-center justify-between text-xs font-medium mb-2">
                   <span className="text-gray-700">
-                    {t('billing.daysRemaining', 'Осталось дней')}: <span className="font-bold text-gray-900">{daysLeft ?? 0}</span> из 30
+                    {t('billing.daysRemaining', 'Осталось дней')}: <span className="font-bold text-gray-900">{daysLeft ?? 0}</span> {t('billing.outOfDays', 'из {{total}}', { total: 30 })}
                   </span>
                   <span className="text-gray-500">
                     {t('billing.activeUntil', 'Действует до')} {formatDate(currentSubscription.endsAt)}
@@ -240,7 +252,7 @@ export const ClientBillingPage: React.FC = () => {
           <div className="mt-6 pt-4 flex flex-wrap items-center gap-3 border-t border-gray-100">
             <button
               type="button"
-              onClick={() => setIsPaymentModalOpen(true)}
+              onClick={() => openPaymentForPlan(activePlanId || undefined, currentSubscription?.monthlyPrice || undefined)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-xs cursor-pointer"
             >
               <CreditCard className="w-4 h-4" />
@@ -285,9 +297,94 @@ export const ClientBillingPage: React.FC = () => {
 
           <div className="mt-6 pt-4 border-t border-gray-200">
             <span className="text-xs text-gray-500 block">
-              ТОО «ЖАН FINANCE» • Казахстан
+              {t('billing.companyCountry', 'ТОО «ЖАН FINANCE» • Казахстан')}
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Available Plans (4 Tariffs) */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-emerald-600" />
+            {t('billing.availablePlans', 'Доступные тарифы')}
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            {t('billing.availablePlansDesc', 'Выберите подходящий тариф под масштаб вашего бизнеса или обновите подписку')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
+          {BILLING_PLANS.map((plan) => {
+            const isCurrent = activePlanId === plan.id;
+            return (
+              <div
+                key={plan.id}
+                className={`p-5 rounded-xl border flex flex-col justify-between transition-all bg-white shadow-xs ${
+                  isCurrent
+                    ? 'border-emerald-600 ring-2 ring-emerald-600/20'
+                    : plan.highlighted
+                    ? 'border-emerald-600/40 hover:border-emerald-600'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-1 mb-1.5">
+                    <h3 className="text-base font-bold text-gray-900 uppercase tracking-tight truncate">
+                      {t(plan.nameKey, plan.defaultName)}
+                    </h3>
+                    {isCurrent ? (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0 flex items-center gap-1">
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        {t('billing.currentActivePlanBadge', 'Текущий')}
+                      </span>
+                    ) : plan.highlighted ? (
+                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-600 text-white shrink-0">
+                        {t('landing:pricing_hit', 'Хит')}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <p className="text-xs text-gray-500 min-h-[32px] leading-snug line-clamp-2 mb-3">
+                    {t(plan.descKey, plan.defaultDesc)}
+                  </p>
+
+                  <div className="text-xl font-bold font-mono text-gray-900 pb-3 mb-4 border-b border-gray-100 flex items-baseline">
+                    {plan.price.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸
+                    <span className="text-xs font-normal text-gray-500 ml-1 font-sans">
+                      {t('billing.perMonth', '/ месяц')}
+                    </span>
+                  </div>
+
+                  <ul className="space-y-2 mb-6 text-xs text-gray-600">
+                    {plan.featuresKeys.map((fKey) => (
+                      <li key={fKey} className="flex items-start gap-2 leading-snug">
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                        <span className="line-clamp-2">{t(fKey)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => openPaymentForPlan(plan.id, plan.price)}
+                  className={`w-full py-2.5 px-4 rounded-lg font-semibold text-xs transition-colors shadow-xs cursor-pointer ${
+                    isCurrent
+                      ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                      : plan.highlighted
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  {isCurrent
+                    ? t('billing.renewSubscription', 'Продлить подписку')
+                    : t('billing.choosePlan', 'Выбрать тариф')}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -301,7 +398,7 @@ export const ClientBillingPage: React.FC = () => {
                 {t('billing.requisitesTitle', 'Реквизиты для оплаты')}
               </h3>
             </div>
-            <span className="text-xs text-gray-500">Kaspi / Банковский перевод</span>
+            <span className="text-xs text-gray-500">{t('billing.paymentMethods', 'Kaspi / Банковский перевод')}</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
@@ -325,7 +422,7 @@ export const ClientBillingPage: React.FC = () => {
                 type="button"
                 onClick={() => handleCopy(requisites.bin, 'bin')}
                 className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors cursor-pointer"
-                title="Копировать БИН"
+                title={t('billing.copyBin', 'Копировать БИН')}
               >
                 {copiedKey === 'bin' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
@@ -343,7 +440,7 @@ export const ClientBillingPage: React.FC = () => {
                 type="button"
                 onClick={() => handleCopy(requisites.iban, 'iban')}
                 className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors shrink-0 cursor-pointer"
-                title="Копировать IBAN"
+                title={t('billing.copyIban', 'Копировать IBAN')}
               >
                 {copiedKey === 'iban' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
@@ -381,8 +478,9 @@ export const ClientBillingPage: React.FC = () => {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         subscriptionId={currentSubscription?.id}
-        planName={currentSubscription?.planName}
-        defaultAmount={currentSubscription?.monthlyPrice || 45000}
+        planName={selectedPlanForModal ? BILLING_PLANS.find(p => p.id === selectedPlanForModal)?.nameKey : currentSubscription?.planName}
+        initialPlanId={selectedPlanForModal}
+        defaultAmount={modalAmount || currentSubscription?.monthlyPrice || 100000}
         onSuccess={() => {
           loadData(true);
         }}

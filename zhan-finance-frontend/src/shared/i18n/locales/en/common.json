@@ -1899,6 +1899,42 @@
     "currentPlan": "Current Plan",
     "defaultPlanName": "Bookkeeping Services",
     "planDescription": "Comprehensive accounting, tax calculation, statistical reports, and 1C integration",
+    "availablePlans": "Available Plans",
+    "availablePlansDesc": "Choose a suitable plan for your business scale or upgrade your subscription",
+    "choosePlan": "Choose Plan",
+    "currentActivePlanBadge": "Current Plan",
+    "perMonth": "/ month",
+    "outOfDays": "of {{total}}",
+    "paymentMethods": "Kaspi / Bank transfer",
+    "kaspiTransfer": "Kaspi Transfer / QR",
+    "bankTransfer": "Bank transfer",
+    "companyCountry": "LLP ЖАН FINANCE • Kazakhstan",
+    "copyBin": "Copy BIN",
+    "copyIban": "Copy IBAN",
+    "selectPlanLabel": "Select a plan",
+    "customAmount": "Custom amount",
+    "plans": {
+      "start": {
+        "name": "Start",
+        "desc": "For sole proprietors on simplified regime with no staff",
+        "price": "30,000 ₸"
+      },
+      "standard": {
+        "name": "Standard",
+        "desc": "For IE and LLP with up to 5 employees",
+        "price": "100,000 ₸"
+      },
+      "pro": {
+        "name": "Pro",
+        "desc": "For VAT-registered LLP with active operations",
+        "price": "200,000 ₸"
+      },
+      "corporate": {
+        "name": "Corporate",
+        "desc": "Turnkey comprehensive financial outsourcing",
+        "price": "400,000 ₸"
+      }
+    },
     "price": "Price",
     "activeUntil": "Active until",
     "daysRemaining": "Days remaining",

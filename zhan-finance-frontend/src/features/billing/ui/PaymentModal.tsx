@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Check, UploadCloud, FileText, X, AlertCircle, Building, QrCode, CheckCircle2, Loader2 } from 'lucide-react';
+import { Copy, Check, UploadCloud, FileText, X, AlertCircle, Building, QrCode, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 import { paymentReceiptApi, PaymentRequisitesDto } from '@/entities/billing/api/paymentReceiptApi';
+import { BILLING_PLANS, getLocalizedPlanName, getPlanIdBySubscription, BillingPlanItem } from '@/entities/billing/model/billingPlans';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface PaymentModalProps {
   subscriptionId?: number;
   planName?: string;
   defaultAmount?: number;
+  initialPlanId?: 'start' | 'standard' | 'pro' | 'corporate';
   onSuccess: () => void;
 }
 
@@ -18,13 +20,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   subscriptionId,
   planName,
   defaultAmount,
+  initialPlanId,
   onSuccess,
 }) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'landing']);
   const [requisites, setRequisites] = useState<PaymentRequisitesDto | null>(null);
   const [activePaymentMethod, setActivePaymentMethod] = useState<'kaspi' | 'bank'>('kaspi');
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [amount, setAmount] = useState<string>(defaultAmount ? String(defaultAmount) : '');
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [amount, setAmount] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,16 +48,37 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             bankName: 'АО Каспий Банк',
           });
         });
-      if (defaultAmount) {
+
+      // Priority: 1. initialPlanId, 2. planId detected from planName or defaultAmount, 3. standard plan
+      const detectedPlanId = initialPlanId || getPlanIdBySubscription(planName, defaultAmount);
+      if (detectedPlanId) {
+        setSelectedPlanId(detectedPlanId);
+        const plan = BILLING_PLANS.find((p) => p.id === detectedPlanId);
+        setAmount(plan ? String(plan.price) : (defaultAmount ? String(defaultAmount) : '100000'));
+      } else if (defaultAmount) {
+        setSelectedPlanId('custom');
         setAmount(String(defaultAmount));
+      } else {
+        setSelectedPlanId('standard');
+        setAmount('100000');
       }
+
       setFile(null);
       setError(null);
       setIsSuccess(false);
     }
-  }, [isOpen, defaultAmount]);
+  }, [isOpen, defaultAmount, initialPlanId, planName]);
 
   if (!isOpen) return null;
+
+  const handleSelectPlan = (plan: BillingPlanItem) => {
+    setSelectedPlanId(plan.id);
+    setAmount(String(plan.price));
+  };
+
+  const handleSelectCustom = () => {
+    setSelectedPlanId('custom');
+  };
 
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -148,7 +173,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </h3>
             {planName && (
               <p className="text-xs text-emerald-700 font-semibold mt-0.5">
-                {planName}
+                {getLocalizedPlanName(planName, t)}
               </p>
             )}
           </div>
@@ -205,7 +230,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 }`}
               >
                 <QrCode className="w-3.5 h-3.5 text-rose-500" />
-                <span>Kaspi Перевод / QR</span>
+                <span>{t('billing.kaspiTransfer', { defaultValue: 'Kaspi Перевод / QR' })}</span>
               </button>
               <button
                 type="button"
@@ -217,8 +242,46 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 }`}
               >
                 <Building className="w-3.5 h-3.5 text-blue-500" />
-                <span>Банковский перевод</span>
+                <span>{t('billing.bankTransfer', { defaultValue: 'Банковский перевод' })}</span>
               </button>
+            </div>
+
+            {/* Plan Selection Buttons */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                {t('billing.selectPlanLabel', { defaultValue: 'Выберите тариф' })}
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {BILLING_PLANS.map((plan) => {
+                  const isSelected = selectedPlanId === plan.id;
+                  return (
+                    <button
+                      key={plan.id}
+                      type="button"
+                      onClick={() => handleSelectPlan(plan)}
+                      className={`p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600'
+                          : 'border-gray-200 bg-gray-50/50 hover:bg-gray-100/70 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-gray-900 truncate">
+                          {t(plan.nameKey, plan.defaultName)}
+                        </span>
+                        {plan.highlighted && (
+                          <span className="text-[8px] font-black uppercase px-1 py-0.2 bg-emerald-600 text-white rounded">
+                            HIT
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] font-mono font-bold text-emerald-700 mt-1">
+                        {plan.price.toLocaleString('ru-RU')} ₸
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Step 1: Requisites */}
@@ -236,7 +299,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       type="button"
                       onClick={() => handleCopy(requisites.bin, 'bin')}
                       className="p-1 text-gray-400 hover:text-gray-700 transition cursor-pointer"
-                      title="Копировать БИН"
+                      title={t('billing.copyBin', { defaultValue: 'Копировать БИН' })}
                     >
                       {copiedField === 'bin' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
@@ -250,7 +313,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       type="button"
                       onClick={() => handleCopy(requisites.iban, 'iban')}
                       className="p-1 text-gray-400 hover:text-gray-700 transition cursor-pointer"
-                      title="Копировать IBAN"
+                      title={t('billing.copyIban', { defaultValue: 'Копировать IBAN' })}
                     >
                       {copiedField === 'iban' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
@@ -265,9 +328,20 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
             {/* Step 2: Amount input */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
-                {t('billing.amountToPay', { defaultValue: 'Сумма перевода (KZT)' })}
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  {t('billing.amountToPay', { defaultValue: 'Сумма перевода (KZT)' })}
+                </label>
+                {selectedPlanId !== 'custom' && (
+                  <button
+                    type="button"
+                    onClick={handleSelectCustom}
+                    className="text-[11px] text-emerald-700 hover:underline cursor-pointer"
+                  >
+                    {t('billing.customAmount', { defaultValue: 'Другая сумма' })}
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <input
                   type="number"
@@ -275,8 +349,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   step="any"
                   required
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="45000"
+                  onChange={(e) => {
+                    setAmount(e.target.value);
+                    setSelectedPlanId('custom');
+                  }}
+                  placeholder="100000"
                   className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-mono text-gray-900 focus:outline-hidden focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition"
                 />
                 <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
