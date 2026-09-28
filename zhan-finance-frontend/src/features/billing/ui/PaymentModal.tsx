@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Check, UploadCloud, FileText, X, AlertCircle } from 'lucide-react';
+import { Copy, Check, UploadCloud, FileText, X, AlertCircle, Building, QrCode, CheckCircle2, Loader2 } from 'lucide-react';
 import { paymentReceiptApi, PaymentRequisitesDto } from '@/entities/billing/api/paymentReceiptApi';
 
 interface PaymentModalProps {
@@ -22,9 +22,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   const { t } = useTranslation(['common']);
   const [requisites, setRequisites] = useState<PaymentRequisitesDto | null>(null);
+  const [activePaymentMethod, setActivePaymentMethod] = useState<'kaspi' | 'bank'>('kaspi');
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [amount, setAmount] = useState<string>(defaultAmount ? String(defaultAmount) : '');
   const [file, setFile] = useState<File | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -59,10 +61,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
-
+  const validateAndSetFile = (selected: File) => {
     if (!selected.name.toLowerCase().endsWith('.pdf') && selected.type !== 'application/pdf') {
       setError(t('billing.errors.pdfOnly', { defaultValue: 'Разрешены только файлы формата PDF' }));
       return;
@@ -75,6 +74,28 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
     setError(null);
     setFile(selected);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      validateAndSetFile(selected);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const droppedFile = e.dataTransfer.files?.[0];
+    if (droppedFile) {
+      validateAndSetFile(droppedFile);
+    }
+  };
+
+  const handleRemoveFile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFile(null);
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,44 +135,51 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div 
+        className="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800">
           <div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
               {t('billing.modalTitle', { defaultValue: 'Оплата тарифа' })}
             </h3>
             {planName && (
-              <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
                 {planName}
               </p>
             )}
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {isSuccess ? (
-          <div className="p-8 text-center">
-            <div className="w-14 h-14 mx-auto mb-4 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center">
-              <Check className="w-8 h-8" />
+          <div className="p-8 text-center space-y-4">
+            <div className="w-14 h-14 mx-auto bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              {t('billing.successTitle', { defaultValue: 'Чек успешно отправлен' })}
-            </h4>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-              {t('billing.successDesc', {
-                defaultValue: 'Чек передан администратору на проверку. После подтверждения подписка будет активирована автоматически.',
-              })}
-            </p>
+            <div>
+              <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                {t('billing.successTitle', { defaultValue: 'Чек успешно отправлен' })}
+              </h4>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
+                {t('billing.successDesc', {
+                  defaultValue: 'Чек передан администратору на проверку. После подтверждения подписка будет активирована автоматически.',
+                })}
+              </p>
+            </div>
             <button
+              type="button"
               onClick={onClose}
-              className="w-full py-2.5 px-4 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white font-medium rounded-xl transition shadow-sm"
+              className="w-full py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-900 text-white font-semibold text-xs rounded-xl transition shadow-xs"
             >
               {t('common.close', { defaultValue: 'Закрыть' })}
             </button>
@@ -165,94 +193,153 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
             )}
 
+            {/* Payment Method Selector */}
+            <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => setActivePaymentMethod('kaspi')}
+                className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                  activePaymentMethod === 'kaspi'
+                    ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+                }`}
+              >
+                <QrCode className="w-3.5 h-3.5 text-rose-500" />
+                <span>Kaspi Перевод / QR</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActivePaymentMethod('bank')}
+                className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+                  activePaymentMethod === 'bank'
+                    ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+                }`}
+              >
+                <Building className="w-3.5 h-3.5 text-blue-500" />
+                <span>Банковский перевод</span>
+              </button>
+            </div>
+
             {/* Step 1: Requisites */}
             {requisites && (
-              <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800 space-y-2 text-xs">
-                <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                  {t('billing.requisitesTitle', { defaultValue: 'Реквизиты для оплаты:' })}
-                </div>
-                <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200/80 dark:border-zinc-800 space-y-2 text-xs">
+                <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
                   <span>{t('billing.recipient', { defaultValue: 'Получатель' })}:</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{requisites.recipientName}</span>
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-100">{requisites.recipientName}</span>
                 </div>
-                <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
                   <span>{t('billing.bin', { defaultValue: 'БИН' })}:</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono font-medium text-gray-900 dark:text-gray-100">{requisites.bin}</span>
+                    <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100">{requisites.bin}</span>
                     <button
                       type="button"
                       onClick={() => handleCopy(requisites.bin, 'bin')}
-                      className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                      className="p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition"
                       title="Копировать БИН"
                     >
                       {copiedField === 'bin' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
                   <span>{t('billing.iban', { defaultValue: 'IBAN (счет)' })}:</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono font-medium text-gray-900 dark:text-gray-100">{requisites.iban}</span>
+                    <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100">{requisites.iban}</span>
                     <button
                       type="button"
                       onClick={() => handleCopy(requisites.iban, 'iban')}
-                      className="p-1 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                      className="p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition"
                       title="Копировать IBAN"
                     >
                       {copiedField === 'iban' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
                   <span>{t('billing.bank', { defaultValue: 'Банк' })}:</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{requisites.bankName} (КБе {requisites.kbe})</span>
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-100">{requisites.bankName} (КБе {requisites.kbe})</span>
                 </div>
               </div>
             )}
 
             {/* Step 2: Amount input */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                 {t('billing.amountToPay', { defaultValue: 'Сумма перевода (KZT)' })}
               </label>
-              <input
-                type="number"
-                min="1"
-                step="any"
-                required
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="50000"
-                className="w-full px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition font-mono"
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  min="1"
+                  step="any"
+                  required
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="45000"
+                  className="w-full pl-3.5 pr-10 py-2.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-mono text-zinc-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white transition"
+                />
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-400">
+                  ₸
+                </span>
+              </div>
             </div>
 
             {/* Step 3: File dropzone */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+              <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                 {t('billing.uploadReceipt', { defaultValue: 'Чек об оплате (PDF)' })}
               </label>
-              <div className="relative border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 rounded-xl p-4 text-center transition bg-gray-50/50 dark:bg-gray-800/30">
+              <div 
+                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={handleDrop}
+                className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all ${
+                  isDragOver
+                    ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20'
+                    : file
+                    ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/20 dark:bg-emerald-950/10'
+                    : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 bg-zinc-50/50 dark:bg-zinc-800/30'
+                }`}
+              >
                 <input
                   type="file"
                   accept="application/pdf,.pdf"
-                  required
+                  required={!file}
                   onChange={handleFileChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 {file ? (
-                  <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400 font-medium">
-                    <FileText className="w-5 h-5 shrink-0" />
-                    <span className="truncate max-w-[260px]">{file.name}</span>
-                    <span className="text-xs text-gray-400">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="text-left min-w-0">
+                        <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate max-w-[220px]">
+                          {file.name}
+                        </p>
+                        <p className="text-[10px] text-zinc-400">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveFile}
+                      className="p-1 text-zinc-400 hover:text-rose-500 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition"
+                      title="Удалить файл"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    <UploadCloud className="w-7 h-7 mx-auto text-gray-400 dark:text-gray-500" />
-                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                    <UploadCloud className="w-7 h-7 mx-auto text-zinc-400 dark:text-zinc-500" />
+                    <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
                       {t('billing.dragFile', { defaultValue: 'Выберите PDF-файл чека или перетащите сюда' })}
                     </p>
-                    <p className="text-[11px] text-gray-400">
+                    <p className="text-[10px] text-zinc-400">
                       {t('billing.maxSize', { defaultValue: 'Максимальный размер: 10 МБ' })}
                     </p>
                   </div>
@@ -261,20 +348,21 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition"
+                className="px-4 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition"
               >
                 {t('common.cancel', { defaultValue: 'Отмена' })}
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xl transition shadow-sm"
+                disabled={isSubmitting || !file}
+                className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-900 disabled:opacity-50 rounded-xl transition shadow-xs"
               >
+                {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {isSubmitting
                   ? t('billing.submitting', { defaultValue: 'Отправка...' })
                   : t('billing.submitReceiptBtn', { defaultValue: 'Отправить чек на проверку' })}

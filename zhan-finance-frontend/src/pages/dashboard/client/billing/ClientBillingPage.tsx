@@ -7,12 +7,16 @@ import {
   AlertTriangle, 
   Clock, 
   ShieldCheck, 
-  Zap, 
   RefreshCw,
-  Sparkles
+  Sparkles,
+  Copy,
+  Check,
+  Building2,
+  FileCheck,
+  Layers
 } from 'lucide-react';
 import { billingApi, SubscriptionDto } from '@/entities/billing/api/billingApi';
-import { paymentReceiptApi, PaymentReceiptDto } from '@/entities/billing/api/paymentReceiptApi';
+import { paymentReceiptApi, PaymentReceiptDto, PaymentRequisitesDto } from '@/entities/billing/api/paymentReceiptApi';
 import { PaymentModal } from '@/features/billing/ui/PaymentModal';
 import { PaymentHistoryTable } from '@/features/billing/ui/PaymentHistoryTable';
 
@@ -20,6 +24,8 @@ export const ClientBillingPage: React.FC = () => {
   const { t } = useTranslation(['common']);
   const [subscriptions, setSubscriptions] = useState<SubscriptionDto[]>([]);
   const [receipts, setReceipts] = useState<PaymentReceiptDto[]>([]);
+  const [requisites, setRequisites] = useState<PaymentRequisitesDto | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -32,9 +38,10 @@ export const ClientBillingPage: React.FC = () => {
     }
 
     try {
-      const [subsRes, receiptsRes] = await Promise.allSettled([
+      const [subsRes, receiptsRes, reqRes] = await Promise.allSettled([
         billingApi.getSubscriptions(),
         paymentReceiptApi.getMyReceipts(),
+        paymentReceiptApi.getRequisites(),
       ]);
 
       if (subsRes.status === 'fulfilled') {
@@ -42,6 +49,9 @@ export const ClientBillingPage: React.FC = () => {
       }
       if (receiptsRes.status === 'fulfilled') {
         setReceipts(receiptsRes.value || []);
+      }
+      if (reqRes.status === 'fulfilled') {
+        setRequisites(reqRes.value);
       }
     } finally {
       setIsLoading(false);
@@ -52,6 +62,12 @@ export const ClientBillingPage: React.FC = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleCopy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
 
   const currentSubscription = subscriptions.length > 0 ? subscriptions[0] : null;
 
@@ -67,6 +83,11 @@ export const ClientBillingPage: React.FC = () => {
   const isExpiringSoon = daysLeft !== null && daysLeft <= 7 && daysLeft > 0;
   const isExpired = daysLeft !== null && daysLeft <= 0;
   const isPendingReview = receipts.some((r) => r.status === 'AWAITING_REVIEW') || currentSubscription?.status === 'PENDING';
+
+  // Progress percentage (out of 30 days)
+  const progressPercent = daysLeft !== null && daysLeft > 0
+    ? Math.min(100, Math.max(0, Math.round((daysLeft / 30) * 100)))
+    : 0;
 
   const formatDate = (isoString: string | null) => {
     if (!isoString) return '—';
@@ -86,20 +107,22 @@ export const ClientBillingPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2.5">
-            <CreditCard className="w-6 h-6 text-zinc-700 dark:text-zinc-300" />
-            {t('billing.title', 'Тариф и оплата')}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2.5">
+              <CreditCard className="w-6 h-6 text-zinc-700 dark:text-zinc-300" />
+              {t('billing.title', 'Тариф и оплата')}
+            </h1>
+          </div>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             {t('billing.subtitle', 'Управление подпиской на бухгалтерское сопровождение и история платежей')}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => loadData(true)}
             disabled={isLoading || isRefreshing}
-            className="p-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50"
+            className="p-2.5 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 shadow-xs"
             title={t('common.refresh', 'Обновить')}
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -107,7 +130,7 @@ export const ClientBillingPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsPaymentModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-sm transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-sm transition-all active:scale-[0.98]"
           >
             <Sparkles className="w-4 h-4" />
             {currentSubscription?.status === 'ACTIVE'
@@ -119,7 +142,7 @@ export const ClientBillingPage: React.FC = () => {
 
       {/* Expiring Soon Banner */}
       {isExpiringSoon && (
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 flex items-start gap-3">
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 flex items-start gap-3 shadow-xs">
           <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <div className="text-sm">
             <p className="font-semibold">
@@ -134,7 +157,7 @@ export const ClientBillingPage: React.FC = () => {
 
       {/* Pending Review Banner */}
       {isPendingReview && (
-        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-800 dark:text-blue-200 flex items-start gap-3">
+        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-800 dark:text-blue-200 flex items-start gap-3 shadow-xs">
           <Clock className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
           <div className="text-sm">
             <p className="font-semibold">
@@ -148,79 +171,85 @@ export const ClientBillingPage: React.FC = () => {
       )}
 
       {/* Active Subscription Card & Plan Details */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Status Card */}
-        <div className="md:col-span-2 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs flex flex-col justify-between relative overflow-hidden">
           <div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-zinc-400" />
                 {t('billing.currentPlan', 'Текущий тариф')}
               </span>
               {currentSubscription?.status === 'ACTIVE' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <CheckCircle className="w-3.5 h-3.5" />
                   {t('billing.status.active', 'Активна')}
                 </span>
               )}
               {currentSubscription?.status === 'PENDING' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                   <Clock className="w-3.5 h-3.5" />
                   {t('billing.status.pending', 'На модерации')}
                 </span>
               )}
               {(!currentSubscription || currentSubscription.status === 'CANCELLED' || isExpired) && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border border-zinc-500/20">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border border-zinc-500/20">
                   {t('billing.status.inactive', 'Неактивна')}
                 </span>
               )}
             </div>
 
-            <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mt-2">
-              {currentSubscription?.planName || t('billing.defaultPlanName', 'Бухгалтерское обслуживание')}
-            </h2>
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+              <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                {currentSubscription?.planName || t('billing.defaultPlanName', 'Бухгалтерское обслуживание')}
+              </h2>
+              <div className="text-xl font-bold font-mono text-zinc-900 dark:text-zinc-100">
+                {currentSubscription?.monthlyPrice
+                  ? `${Number(currentSubscription.monthlyPrice).toLocaleString('ru-RU')} ₸`
+                  : '45 000 ₸'}
+                <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400 ml-1">/ месяц</span>
+              </div>
+            </div>
+
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
               {t('billing.planDescription', 'Комплексный учет, расчет налогов, сдача статотчетов и интеграция с 1С')}
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-              <div>
-                <span className="block text-xs text-zinc-400 dark:text-zinc-500">
-                  {t('billing.price', 'Стоимость')}
-                </span>
-                <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">
-                  {currentSubscription?.monthlyPrice
-                    ? `${Number(currentSubscription.monthlyPrice).toLocaleString('ru-RU')} ₸ / мес`
-                    : '45 000 ₸ / мес'}
-                </span>
+            {/* Days Remaining Progress Bar */}
+            {currentSubscription?.status === 'ACTIVE' && (
+              <div className="mt-6 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/80">
+                <div className="flex items-center justify-between text-xs font-medium mb-2">
+                  <span className="text-zinc-600 dark:text-zinc-300">
+                    {t('billing.daysRemaining', 'Осталось дней')}: <span className="font-bold text-zinc-900 dark:text-zinc-100">{daysLeft ?? 0}</span> из 30
+                  </span>
+                  <span className="text-zinc-500 dark:text-zinc-400">
+                    {t('billing.activeUntil', 'Действует до')} {formatDate(currentSubscription.endsAt)}
+                  </span>
+                </div>
+                <div className="w-full h-2 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      isExpiringSoon ? 'bg-amber-500' : 'bg-emerald-500'
+                    }`}
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
               </div>
-              <div>
-                <span className="block text-xs text-zinc-400 dark:text-zinc-500">
-                  {t('billing.activeUntil', 'Действует до')}
-                </span>
-                <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">
-                  {formatDate(currentSubscription?.endsAt || null)}
-                </span>
-              </div>
-              <div>
-                <span className="block text-xs text-zinc-400 dark:text-zinc-500">
-                  {t('billing.daysRemaining', 'Осталось дней')}
-                </span>
-                <span className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">
-                  {daysLeft !== null && daysLeft > 0 ? daysLeft : 0}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
 
-          <div className="mt-6 pt-4 flex flex-wrap items-center gap-3">
+          <div className="mt-6 pt-4 flex flex-wrap items-center gap-3 border-t border-zinc-100 dark:border-zinc-800">
             <button
               type="button"
               onClick={() => setIsPaymentModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shadow-xs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shadow-xs active:scale-[0.98]"
             >
               <CreditCard className="w-4 h-4" />
               {t('billing.payViaKaspi', 'Оплатить через Kaspi / Банк')}
             </button>
+            <span className="text-xs text-zinc-400 dark:text-zinc-500">
+              {t('billing.supportNotice', 'Нужен индивидуальный расчет тарифа? Напишите куратору в чат.')}
+            </span>
           </div>
         </div>
 
@@ -255,19 +284,88 @@ export const ClientBillingPage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              {t('billing.supportNotice', 'Нужен индивидуальный расчет тарифа? Напишите куратору в чат.')}
+          <div className="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700/60">
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block">
+              ТОО «ЖАН FINANCE» • Казахстан
             </span>
           </div>
         </div>
       </div>
 
+      {/* Quick Requisites Widget */}
+      {requisites && (
+        <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-zinc-500" />
+              <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+                {t('billing.requisitesTitle', 'Реквизиты для оплаты')}
+              </h3>
+            </div>
+            <span className="text-xs text-zinc-400">Kaspi / Банковский перевод</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            {/* Recipient */}
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-[11px] text-zinc-400 block">{t('billing.recipient', 'Получатель')}</span>
+              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block truncate" title={requisites.recipientName}>
+                {requisites.recipientName}
+              </span>
+            </div>
+
+            {/* BIN */}
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+              <div>
+                <span className="text-[11px] text-zinc-400 block">{t('billing.bin', 'БИН')}</span>
+                <span className="text-xs font-mono font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block">
+                  {requisites.bin}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(requisites.bin, 'bin')}
+                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                title="Копировать БИН"
+              >
+                {copiedKey === 'bin' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+
+            {/* IBAN */}
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+              <div className="min-w-0 pr-2">
+                <span className="text-[11px] text-zinc-400 block">{t('billing.iban', 'IBAN (счет)')}</span>
+                <span className="text-xs font-mono font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block truncate" title={requisites.iban}>
+                  {requisites.iban}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopy(requisites.iban, 'iban')}
+                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors shrink-0"
+                title="Копировать IBAN"
+              >
+                {copiedKey === 'iban' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+
+            {/* Bank */}
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-[11px] text-zinc-400 block">{t('billing.bank', 'Банк')} (КБе {requisites.kbe})</span>
+              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block truncate" title={requisites.bankName}>
+                {requisites.bankName}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Payment History Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-zinc-500" />
+            <FileCheck className="w-5 h-5 text-zinc-500" />
             {t('billing.historyTitle', 'История платежей и чеков')}
           </h2>
         </div>
