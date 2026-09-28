@@ -204,7 +204,7 @@ export function AdminPaymentReceiptsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {/* Awaiting Review */}
+        {/* 1. Awaiting Review */}
         <div 
           onClick={() => handleTabChange('AWAITING_REVIEW')}
           className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
@@ -226,29 +226,7 @@ export function AdminPaymentReceiptsPage() {
           </p>
         </div>
 
-        {/* Confirmed */}
-        <div 
-          onClick={() => handleTabChange('CONFIRMED')}
-          className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
-            activeTab === 'CONFIRMED'
-              ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Подтверждено
-            </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-bold font-mono text-gray-900 mt-3">
-            {stats.confirmed}
-          </p>
-        </div>
-
-        {/* Rejected */}
+        {/* 2. Rejected */}
         <div 
           onClick={() => handleTabChange('REJECTED')}
           className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
@@ -270,7 +248,29 @@ export function AdminPaymentReceiptsPage() {
           </p>
         </div>
 
-        {/* Total Confirmed Amount */}
+        {/* 3. Confirmed */}
+        <div 
+          onClick={() => handleTabChange('CONFIRMED')}
+          className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
+            activeTab === 'CONFIRMED'
+              ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20'
+              : 'border-gray-200 hover:border-gray-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              Подтверждено
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-3xl font-bold font-mono text-gray-900 mt-3">
+            {stats.confirmed}
+          </p>
+        </div>
+
+        {/* 4. Total Confirmed Amount */}
         <div className="p-5 rounded-xl border border-gray-200 bg-white shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
@@ -288,7 +288,7 @@ export function AdminPaymentReceiptsPage() {
 
       {/* Tabs and Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-3 rounded-xl border border-gray-200 shadow-xs">
-        {/* Tabs */}
+        {/* Tabs: На проверке -> Отклоненные -> Подтвержденные -> Все */}
         <div className="flex items-center gap-1.5 overflow-x-auto">
           <button
             type="button"
@@ -314,14 +314,14 @@ export function AdminPaymentReceiptsPage() {
 
           <button
             type="button"
-            onClick={() => handleTabChange('ALL')}
+            onClick={() => handleTabChange('REJECTED')}
             className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer ${
-              activeTab === 'ALL'
+              activeTab === 'REJECTED'
                 ? 'bg-emerald-700 text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
           >
-            {t('billing.admin.tabAll', 'Все')} ({stats.total})
+            {t('billing.admin.tabRejected', 'Отклоненные')} ({stats.rejected})
           </button>
 
           <button
@@ -338,14 +338,14 @@ export function AdminPaymentReceiptsPage() {
 
           <button
             type="button"
-            onClick={() => handleTabChange('REJECTED')}
+            onClick={() => handleTabChange('ALL')}
             className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer ${
-              activeTab === 'REJECTED'
+              activeTab === 'ALL'
                 ? 'bg-emerald-700 text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
             }`}
           >
-            {t('billing.admin.tabRejected', 'Отклоненные')} ({stats.rejected})
+            {t('billing.admin.tabAll', 'Все')} ({stats.total})
           </button>
         </div>
 
