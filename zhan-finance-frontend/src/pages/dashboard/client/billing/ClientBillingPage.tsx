@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   CreditCard, 
-  Calendar, 
   CheckCircle, 
   AlertTriangle, 
   Clock, 
@@ -103,17 +102,17 @@ export const ClientBillingPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2.5">
-              <CreditCard className="w-6 h-6 text-zinc-700 dark:text-zinc-300" />
-              {t('billing.title', 'Тариф и оплата')}
-            </h1>
-          </div>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+              <CreditCard className="w-5 h-5" />
+            </div>
+            {t('billing.title', 'Тариф и оплата')}
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
             {t('billing.subtitle', 'Управление подпиской на бухгалтерское сопровождение и история платежей')}
           </p>
         </div>
@@ -122,7 +121,7 @@ export const ClientBillingPage: React.FC = () => {
             type="button"
             onClick={() => loadData(true)}
             disabled={isLoading || isRefreshing}
-            className="p-2.5 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 shadow-xs"
+            className="p-2.5 text-gray-500 hover:text-gray-700 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
             title={t('common.refresh', 'Обновить')}
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -130,7 +129,7 @@ export const ClientBillingPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsPaymentModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-100 shadow-sm transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs transition-colors cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             {currentSubscription?.status === 'ACTIVE'
@@ -142,13 +141,13 @@ export const ClientBillingPage: React.FC = () => {
 
       {/* Expiring Soon Banner */}
       {isExpiringSoon && (
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 flex items-start gap-3 shadow-xs">
-          <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-3 shadow-xs">
+          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm">
             <p className="font-semibold">
               {t('billing.expiringWarningTitle', 'Ваша подписка скоро истекает')}
             </p>
-            <p className="text-xs opacity-90 mt-0.5">
+            <p className="text-xs text-amber-700 mt-0.5">
               {t('billing.expiringWarningDesc', 'Осталось дней: {{days}}. Рекомендуем заблаговременно отправить платеж, чтобы бухгалтерское сопровождение не прерывалось.', { days: daysLeft })}
             </p>
           </div>
@@ -157,13 +156,13 @@ export const ClientBillingPage: React.FC = () => {
 
       {/* Pending Review Banner */}
       {isPendingReview && (
-        <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-800 dark:text-blue-200 flex items-start gap-3 shadow-xs">
-          <Clock className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 flex items-start gap-3 shadow-xs">
+          <Clock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm">
             <p className="font-semibold">
               {t('billing.pendingReviewTitle', 'Чек находится на проверке')}
             </p>
-            <p className="text-xs opacity-90 mt-0.5">
+            <p className="text-xs text-blue-700 mt-0.5">
               {t('billing.pendingReviewDesc', 'Мы получили вашу квитанцию. Администратор сверит поступление средств и активирует подписку в ближайшее время.')}
             </p>
           </div>
@@ -173,63 +172,63 @@ export const ClientBillingPage: React.FC = () => {
       {/* Active Subscription Card & Plan Details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Status Card */}
-        <div className="lg:col-span-2 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs flex flex-col justify-between relative overflow-hidden">
+        <div className="lg:col-span-2 p-6 rounded-xl border border-gray-200 bg-white shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
-              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-zinc-400" />
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-gray-400" />
                 {t('billing.currentPlan', 'Текущий тариф')}
               </span>
               {currentSubscription?.status === 'ACTIVE' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  <CheckCircle className="w-3.5 h-3.5" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
                   {t('billing.status.active', 'Активна')}
                 </span>
               )}
               {currentSubscription?.status === 'PENDING' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                  <Clock className="w-3.5 h-3.5" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                  <Clock className="w-3.5 h-3.5 text-amber-600" />
                   {t('billing.status.pending', 'На модерации')}
                 </span>
               )}
               {(!currentSubscription || currentSubscription.status === 'CANCELLED' || isExpired) && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border border-zinc-500/20">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
                   {t('billing.status.inactive', 'Неактивна')}
                 </span>
               )}
             </div>
 
             <div className="mt-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-              <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+              <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
                 {currentSubscription?.planName || t('billing.defaultPlanName', 'Бухгалтерское обслуживание')}
               </h2>
-              <div className="text-xl font-bold font-mono text-zinc-900 dark:text-zinc-100">
+              <div className="text-2xl font-bold font-mono text-gray-900">
                 {currentSubscription?.monthlyPrice
                   ? `${Number(currentSubscription.monthlyPrice).toLocaleString('ru-RU')} ₸`
                   : '45 000 ₸'}
-                <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400 ml-1">/ месяц</span>
+                <span className="text-xs font-normal text-gray-500 ml-1">/ месяц</span>
               </div>
             </div>
 
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-sm text-gray-500 mt-1">
               {t('billing.planDescription', 'Комплексный учет, расчет налогов, сдача статотчетов и интеграция с 1С')}
             </p>
 
             {/* Days Remaining Progress Bar */}
             {currentSubscription?.status === 'ACTIVE' && (
-              <div className="mt-6 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/80">
+              <div className="mt-6 p-4 rounded-xl bg-gray-50 border border-gray-100">
                 <div className="flex items-center justify-between text-xs font-medium mb-2">
-                  <span className="text-zinc-600 dark:text-zinc-300">
-                    {t('billing.daysRemaining', 'Осталось дней')}: <span className="font-bold text-zinc-900 dark:text-zinc-100">{daysLeft ?? 0}</span> из 30
+                  <span className="text-gray-700">
+                    {t('billing.daysRemaining', 'Осталось дней')}: <span className="font-bold text-gray-900">{daysLeft ?? 0}</span> из 30
                   </span>
-                  <span className="text-zinc-500 dark:text-zinc-400">
+                  <span className="text-gray-500">
                     {t('billing.activeUntil', 'Действует до')} {formatDate(currentSubscription.endsAt)}
                   </span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
-                      isExpiringSoon ? 'bg-amber-500' : 'bg-emerald-500'
+                      isExpiringSoon ? 'bg-amber-500' : 'bg-emerald-600'
                     }`}
                     style={{ width: `${progressPercent}%` }}
                   />
@@ -238,54 +237,54 @@ export const ClientBillingPage: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-6 pt-4 flex flex-wrap items-center gap-3 border-t border-zinc-100 dark:border-zinc-800">
+          <div className="mt-6 pt-4 flex flex-wrap items-center gap-3 border-t border-gray-100">
             <button
               type="button"
               onClick={() => setIsPaymentModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shadow-xs active:scale-[0.98]"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-xs cursor-pointer"
             >
               <CreditCard className="w-4 h-4" />
               {t('billing.payViaKaspi', 'Оплатить через Kaspi / Банк')}
             </button>
-            <span className="text-xs text-zinc-400 dark:text-zinc-500">
+            <span className="text-xs text-gray-400">
               {t('billing.supportNotice', 'Нужен индивидуальный расчет тарифа? Напишите куратору в чат.')}
             </span>
           </div>
         </div>
 
         {/* Feature List Card */}
-        <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30 flex flex-col justify-between">
+        <div className="p-6 rounded-xl border border-gray-200 bg-gray-50 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               {t('billing.whatsIncluded', 'Что входит в тариф')}
             </h3>
-            <ul className="mt-4 space-y-3 text-xs text-zinc-600 dark:text-zinc-400">
+            <ul className="mt-4 space-y-3 text-xs text-gray-600">
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <span>{t('billing.feature1', 'Полное ведение бухгалтерии ТОО / ИП')}</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <span>{t('billing.feature2', 'Выписка и обработка ЭСФ, СНТ и актов')}</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <span>{t('billing.feature3', 'Расчет зарплаты, налогов и отчислений')}</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <span>{t('billing.feature4', 'Своевременная сдача 910, 200, 300 форм')}</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <span>{t('billing.feature5', 'Личный куратор и онлайн-чат с бухгалтером')}</span>
               </li>
             </ul>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700/60">
-            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block">
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <span className="text-xs text-gray-500 block">
               ТОО «ЖАН FINANCE» • Казахстан
             </span>
           </div>
@@ -294,66 +293,66 @@ export const ClientBillingPage: React.FC = () => {
 
       {/* Quick Requisites Widget */}
       {requisites && (
-        <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+        <div className="p-5 rounded-xl border border-gray-200 bg-white shadow-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
             <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-zinc-500" />
-              <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+              <Building2 className="w-4 h-4 text-gray-500" />
+              <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
                 {t('billing.requisitesTitle', 'Реквизиты для оплаты')}
               </h3>
             </div>
-            <span className="text-xs text-zinc-400">Kaspi / Банковский перевод</span>
+            <span className="text-xs text-gray-500">Kaspi / Банковский перевод</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             {/* Recipient */}
-            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800">
-              <span className="text-[11px] text-zinc-400 block">{t('billing.recipient', 'Получатель')}</span>
-              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block truncate" title={requisites.recipientName}>
+            <div className="p-3 rounded-lg bg-gray-50 border border-gray-100">
+              <span className="text-[11px] text-gray-500 block">{t('billing.recipient', 'Получатель')}</span>
+              <span className="text-xs font-semibold text-gray-900 mt-0.5 block truncate" title={requisites.recipientName}>
                 {requisites.recipientName}
               </span>
             </div>
 
             {/* BIN */}
-            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-between">
               <div>
-                <span className="text-[11px] text-zinc-400 block">{t('billing.bin', 'БИН')}</span>
-                <span className="text-xs font-mono font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block">
+                <span className="text-[11px] text-gray-500 block">{t('billing.bin', 'БИН')}</span>
+                <span className="text-xs font-mono font-semibold text-gray-900 mt-0.5 block">
                   {requisites.bin}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => handleCopy(requisites.bin, 'bin')}
-                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors cursor-pointer"
                 title="Копировать БИН"
               >
-                {copiedKey === 'bin' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedKey === 'bin' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
 
             {/* IBAN */}
-            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-between">
               <div className="min-w-0 pr-2">
-                <span className="text-[11px] text-zinc-400 block">{t('billing.iban', 'IBAN (счет)')}</span>
-                <span className="text-xs font-mono font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block truncate" title={requisites.iban}>
+                <span className="text-[11px] text-gray-500 block">{t('billing.iban', 'IBAN (счет)')}</span>
+                <span className="text-xs font-mono font-semibold text-gray-900 mt-0.5 block truncate" title={requisites.iban}>
                   {requisites.iban}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => handleCopy(requisites.iban, 'iban')}
-                className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors shrink-0"
+                className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors shrink-0 cursor-pointer"
                 title="Копировать IBAN"
               >
-                {copiedKey === 'iban' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedKey === 'iban' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
 
             {/* Bank */}
-            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800">
-              <span className="text-[11px] text-zinc-400 block">{t('billing.bank', 'Банк')} (КБе {requisites.kbe})</span>
-              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5 block truncate" title={requisites.bankName}>
+            <div className="p-3 rounded-lg bg-gray-50 border border-gray-100">
+              <span className="text-[11px] text-gray-500 block">{t('billing.bank', 'Банк')} (КБе {requisites.kbe})</span>
+              <span className="text-xs font-semibold text-gray-900 mt-0.5 block truncate" title={requisites.bankName}>
                 {requisites.bankName}
               </span>
             </div>
@@ -364,8 +363,8 @@ export const ClientBillingPage: React.FC = () => {
       {/* Payment History Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <FileCheck className="w-5 h-5 text-zinc-500" />
+          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <FileCheck className="w-5 h-5 text-gray-500" />
             {t('billing.historyTitle', 'История платежей и чеков')}
           </h2>
         </div>

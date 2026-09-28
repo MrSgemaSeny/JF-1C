@@ -210,4 +210,53 @@ class PaymentReceiptControllerTest {
                 .andExpect(jsonPath("$.data.status").value("REJECTED"))
                 .andExpect(jsonPath("$.data.rejectNote").value("Неверная сумма платежа"));
     }
+
+    @Test
+    @DisplayName("GET /api/v1/admin/billing/receipts: admin gets all receipts")
+    void adminGetAllReceipts_returns200() throws Exception {
+        PaymentReceiptDto mockDto = new PaymentReceiptDto(
+                100L, 10L, "Client User", "client@test.com",
+                null, null, null, null,
+                BigDecimal.valueOf(50000), "KZT", "receipts/test.pdf",
+                PaymentReceiptStatus.AWAITING_REVIEW,
+                null, null, null, null,
+                Instant.now(), Instant.now()
+        );
+
+        when(paymentReceiptService.getAllReceipts(org.mockito.ArgumentMatchers.argThat(u -> u != null && u.getId().equals(1L)), eq(null)))
+                .thenReturn(List.of(mockDto));
+
+        mockMvc.perform(get("/api/v1/admin/billing/receipts")
+                        .contextPath("/api")
+                        .with(user(adminPrincipal))
+                        .header("X-Requested-With", "XMLHttpRequest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].id").value(100));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/admin/billing/receipts?status=AWAITING_REVIEW: admin gets filtered receipts")
+    void adminGetReceiptsWithStatus_returns200() throws Exception {
+        PaymentReceiptDto mockDto = new PaymentReceiptDto(
+                100L, 10L, "Client User", "client@test.com",
+                null, null, null, null,
+                BigDecimal.valueOf(50000), "KZT", "receipts/test.pdf",
+                PaymentReceiptStatus.AWAITING_REVIEW,
+                null, null, null, null,
+                Instant.now(), Instant.now()
+        );
+
+        when(paymentReceiptService.getAllReceipts(org.mockito.ArgumentMatchers.argThat(u -> u != null && u.getId().equals(1L)), eq(PaymentReceiptStatus.AWAITING_REVIEW)))
+                .thenReturn(List.of(mockDto));
+
+        mockMvc.perform(get("/api/v1/admin/billing/receipts")
+                        .param("status", "AWAITING_REVIEW")
+                        .contextPath("/api")
+                        .with(user(adminPrincipal))
+                        .header("X-Requested-With", "XMLHttpRequest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].id").value(100));
+    }
 }

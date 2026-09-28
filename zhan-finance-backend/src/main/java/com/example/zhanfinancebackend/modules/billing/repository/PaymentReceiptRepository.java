@@ -13,15 +13,15 @@ import java.util.Optional;
 @Repository
 public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, Long> {
 
-    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i WHERE r.client.id = :clientId ORDER BY r.createdAt DESC")
+    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i LEFT JOIN FETCH r.reviewedBy rev WHERE r.client.id = :clientId ORDER BY r.createdAt DESC")
     List<PaymentReceipt> findByClientIdOrderByCreatedAtDesc(@Param("clientId") Long clientId);
 
-    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i WHERE r.status = :status ORDER BY r.createdAt DESC")
+    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i LEFT JOIN FETCH r.reviewedBy rev WHERE r.status = :status ORDER BY r.createdAt DESC")
     List<PaymentReceipt> findByStatusOrderByCreatedAtDesc(@Param("status") PaymentReceiptStatus status);
 
-    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i ORDER BY r.createdAt DESC")
+    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i LEFT JOIN FETCH r.reviewedBy rev ORDER BY r.createdAt DESC")
     List<PaymentReceipt> findAllWithDetailsOrderByCreatedAtDesc();
 
-    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i WHERE r.id = :id AND r.client.id = :clientId")
+    @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i LEFT JOIN FETCH r.reviewedBy rev WHERE r.id = :id AND r.client.id = :clientId")
     Optional<PaymentReceipt> findByIdAndClientId(@Param("id") Long id, @Param("clientId") Long clientId);
 }

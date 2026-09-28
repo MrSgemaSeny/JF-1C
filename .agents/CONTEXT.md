@@ -69,12 +69,13 @@
    - 100% покрытие: 295 backend тестов, 169 frontend тестов, 0 ошибок.
 
 8. **Billing v1: Manual Kaspi / Bank Transfer & Cloudflare R2 Receipts [DONE]**:
-   - Flyway миграции V128 (`payment_receipts`, RLS, optimistic locking `version`) и V129 (`subscriptions_status_check` с поддержкой `PENDING`).
+   - Flyway миграции V128 (`payment_receipts`, RLS, optimistic locking `version`) и V129 (`subscriptions_status_check` с поддержкой `PENDING`) применены и верифицированы в БД.
    - Безопасное хранилище `DefaultPaymentReceiptStorageService`: валидация MIME через Apache Tika (строго `application/pdf`, лимит 10 МБ), upload в Cloudflare R2 с 15-минутными Presigned URLs, локальный fallback на PostgreSQL `StoredFileRepository`.
    - Сервисный слой и безопасность: `PaymentReceiptAccessService` (RLS проверки), `PaymentReceiptService` (транзакционный перевод receipt -> `CONFIRMED`, sub -> `ACTIVE` +30 дней, invoice -> `PAID`), шедулер `SubscriptionRenewalReminderScheduler` (09:00 Asia/Almaty за 3 дня до конца).
+   - Оптимизация JPA: явные `LEFT JOIN FETCH r.reviewedBy rev` во всех запросах `PaymentReceiptRepository` для устранения N+1 и обеспечения стабильности при `spring.jpa.open-in-view=false`.
    - Гарантированные уведомления через Telegram Outbox микросервиса `zhan-finance-tgbot` (события загрузки, одобрения, отклонения и напоминания).
-   - Frontend & Redesign: `PaymentModal`, `PaymentHistoryTable`, `RejectReceiptModal`, `ClientBillingPage` (`/client/billing`), `AdminPaymentReceiptsPage` (`/admin/billing/receipts`), 100% паритет 4 локалей (`ru`, `kk`, `en`, `zh`).
-   - 100% покрытие тестами: 309+ backend тестов (включая MockMvc и сервисные проверки), 196 frontend тестов (25 тестовых файлов, включая 97 i18n parity тестов), live E2E скрипт `billing-payment-receipts-live.mjs`, 0 ошибок, 0 ворнингов, 0 эмодзи.
+   - Frontend UI & Redesign: полный переход на светлую корпоративную палитру JF-1C (`bg-white`, `border-gray-200`, `text-gray-900`, `bg-emerald-600`, без чужеродных `dark/zinc-900` блоков) в `AdminPaymentReceiptsPage`, `ClientBillingPage`, `PaymentModal`, `PaymentHistoryTable`, `RejectReceiptModal`.
+   - 100% покрытие тестами: 315+ backend тестов (включая MockMvc админских эндпоинтов), 196 frontend тестов (25 файлов, 100% PASS), 0 ошибок linter/typecheck, 0 эмодзи.
 
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 

@@ -45,20 +45,20 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
     switch (status) {
       case 'CONFIRMED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             {t('billing.status.confirmed', 'Подтвержден')}
           </span>
         );
       case 'REJECTED':
         return (
-          <div className="flex flex-col gap-1 items-start">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-              <XCircle className="w-3.5 h-3.5" />
+          <div className="flex flex-col gap-0.5 items-start">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+              <XCircle className="w-3.5 h-3.5 text-rose-600" />
               {t('billing.status.rejected', 'Отклонен')}
             </span>
             {rejectNote && (
-              <span className="text-xs text-rose-500 dark:text-rose-400 flex items-center gap-1">
+              <span className="text-xs text-rose-600 flex items-center gap-1 mt-0.5">
                 <AlertCircle className="w-3 h-3 flex-shrink-0" />
                 {rejectNote}
               </span>
@@ -68,8 +68,8 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
       case 'AWAITING_REVIEW':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-            <Clock className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+            <Clock className="w-3.5 h-3.5 text-amber-600" />
             {t('billing.status.awaitingReview', 'На проверке')}
           </span>
         );
@@ -97,21 +97,23 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-zinc-500 dark:text-zinc-400">
-        <Loader2 className="w-6 h-6 animate-spin mb-2" />
-        <span className="text-sm">{t('billing.loading', 'Загрузка истории платежей...')}</span>
+      <div className="flex flex-col items-center justify-center p-12 text-gray-500 bg-white rounded-xl border border-gray-200 shadow-xs">
+        <Loader2 className="w-6 h-6 animate-spin mb-2 text-emerald-600" />
+        <span className="text-sm font-medium">{t('billing.loading', 'Загрузка истории платежей...')}</span>
       </div>
     );
   }
 
   if (receipts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/50">
-        <FileText className="w-10 h-10 text-zinc-400 dark:text-zinc-600 mb-3" />
-        <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+      <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-gray-300 rounded-xl bg-white shadow-xs">
+        <div className="w-12 h-12 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mb-3">
+          <FileText className="w-6 h-6" />
+        </div>
+        <p className="text-sm font-bold text-gray-800">
           {t('billing.noReceipts', 'История оплат пока пуста')}
         </p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm">
+        <p className="text-xs text-gray-500 mt-1 max-w-sm">
           {t('billing.noReceiptsDesc', 'После отправки чека об оплате он появится здесь со статусом проверки.')}
         </p>
       </div>
@@ -119,27 +121,27 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
   }
 
   return (
-    <div className="overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 shadow-sm">
+    <div className="overflow-hidden border border-gray-200 rounded-xl bg-white shadow-xs">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-sm">
           <thead>
-            <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/75 dark:bg-zinc-800/50 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <tr className="border-b border-gray-200 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <th className="py-3.5 px-4">{t('billing.table.date', 'Дата')}</th>
               <th className="py-3.5 px-4">{t('billing.table.amount', 'Сумма')}</th>
               <th className="py-3.5 px-4">{t('billing.table.status', 'Статус')}</th>
               <th className="py-3.5 px-4">{t('billing.table.receipt', 'Чек')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+          <tbody className="divide-y divide-gray-100">
             {receipts.map((receipt) => (
               <tr
                 key={receipt.id}
-                className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
+                className="hover:bg-gray-50/80 transition-colors"
               >
-                <td className="py-3.5 px-4 font-medium text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
+                <td className="py-3.5 px-4 text-xs font-mono text-gray-700 whitespace-nowrap">
                   {formatDate(receipt.createdAt)}
                 </td>
-                <td className="py-3.5 px-4 font-semibold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
+                <td className="py-3.5 px-4 font-bold font-mono text-gray-900 text-base whitespace-nowrap">
                   {formatCurrency(receipt.amount, receipt.currency)}
                 </td>
                 <td className="py-3.5 px-4">
@@ -150,12 +152,12 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
                     type="button"
                     onClick={() => handleOpenFile(receipt.id)}
                     disabled={openingId === receipt.id}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-colors disabled:opacity-50 cursor-pointer"
                   >
                     {openingId === receipt.id ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-3.5 h-3.5 text-gray-500" />
                     )}
                     {t('billing.viewReceipt', 'Открыть чек')}
                   </button>
