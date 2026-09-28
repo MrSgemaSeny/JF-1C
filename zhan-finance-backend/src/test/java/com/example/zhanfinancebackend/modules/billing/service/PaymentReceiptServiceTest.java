@@ -136,6 +136,73 @@ class PaymentReceiptServiceTest {
     }
 
     @Test
+    @DisplayName("Submit receipt: already pending receipt for subscription throws ConflictException")
+    void submitReceipt_alreadyPendingForSubscription_throwsConflict() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "%PDF".getBytes());
+        when(subscriptionRepository.findById(100L)).thenReturn(Optional.of(subscription));
+        when(paymentReceiptRepository.existsBySubscriptionIdAndStatus(100L, PaymentReceiptStatus.AWAITING_REVIEW))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> paymentReceiptService.submitReceipt(
+                client, 100L, null, BigDecimal.valueOf(50000), "KZT", file
+        )).isInstanceOf(ConflictException.class)
+          .hasMessageContaining("subscription is already awaiting review");
+    }
+
+    @Test
+    @DisplayName("Submit receipt: already pending receipt for invoice throws ConflictException")
+    void submitReceipt_alreadyPendingForInvoice_throwsConflict() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "%PDF".getBytes());
+        when(invoiceRepository.findById(200L)).thenReturn(Optional.of(invoice));
+        when(paymentReceiptRepository.existsByInvoiceIdAndStatus(200L, PaymentReceiptStatus.AWAITING_REVIEW))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> paymentReceiptService.submitReceipt(
+                client, null, 200L, BigDecimal.valueOf(50000), "KZT", file
+        )).isInstanceOf(ConflictException.class)
+          .hasMessageContaining("invoice is already awaiting review");
+    }
+
+    @Test
+    @DisplayName("Submit receipt: paid invoice throws ConflictException")
+    void submitReceipt_paidInvoice_throwsConflict() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "%PDF".getBytes());
+        invoice.setStatus(Invoice.InvoiceStatus.PAID);
+        when(invoiceRepository.findById(200L)).thenReturn(Optional.of(invoice));
+
+        assertThatThrownBy(() -> paymentReceiptService.submitReceipt(
+                client, null, 200L, BigDecimal.valueOf(50000), "KZT", file
+        )).isInstanceOf(ConflictException.class)
+          .hasMessageContaining("already been paid");
+    }
+
+    @Test
+    @DisplayName("Submit receipt: canceled invoice throws ConflictException")
+    void submitReceipt_canceledInvoice_throwsConflict() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "%PDF".getBytes());
+        invoice.setStatus(Invoice.InvoiceStatus.CANCELED);
+        when(invoiceRepository.findById(200L)).thenReturn(Optional.of(invoice));
+
+        assertThatThrownBy(() -> paymentReceiptService.submitReceipt(
+                client, null, 200L, BigDecimal.valueOf(50000), "KZT", file
+        )).isInstanceOf(ConflictException.class)
+          .hasMessageContaining("canceled");
+    }
+
+    @Test
+    @DisplayName("Submit receipt: client already has general pending receipt throws ConflictException")
+    void submitReceipt_alreadyPendingGeneralReceipt_throwsConflict() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "%PDF".getBytes());
+        when(paymentReceiptRepository.existsByClientIdAndStatus(10L, PaymentReceiptStatus.AWAITING_REVIEW))
+                .thenReturn(true);
+
+        assertThatThrownBy(() -> paymentReceiptService.submitReceipt(
+                client, null, null, BigDecimal.valueOf(50000), "KZT", file
+        )).isInstanceOf(ConflictException.class)
+          .hasMessageContaining("already have a payment receipt awaiting review");
+    }
+
+    @Test
     @DisplayName("Confirm receipt: activates subscription, marks invoice PAID and notifies client")
     void confirmReceipt_success() {
         PaymentReceipt receipt = new PaymentReceipt(

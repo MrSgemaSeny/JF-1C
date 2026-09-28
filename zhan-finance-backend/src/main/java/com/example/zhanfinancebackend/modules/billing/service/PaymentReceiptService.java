@@ -96,6 +96,9 @@ public class PaymentReceiptService {
             if (!subscription.getUser().getId().equals(client.getId()) && client.getRole() != Role.ADMIN) {
                 throw new BadRequestException("Subscription does not belong to this user.");
             }
+            if (paymentReceiptRepository.existsBySubscriptionIdAndStatus(subscription.getId(), PaymentReceiptStatus.AWAITING_REVIEW)) {
+                throw new ConflictException("A receipt for this subscription is already awaiting review.");
+            }
         }
 
         Invoice invoice = null;
@@ -104,6 +107,21 @@ public class PaymentReceiptService {
                     .orElseThrow(() -> new ResourceNotFoundException("Invoice not found: " + invoiceId));
             if (!invoice.getUser().getId().equals(client.getId()) && client.getRole() != Role.ADMIN) {
                 throw new BadRequestException("Invoice does not belong to this user.");
+            }
+            if (invoice.getStatus() == Invoice.InvoiceStatus.PAID) {
+                throw new ConflictException("Invoice has already been paid.");
+            }
+            if (invoice.getStatus() == Invoice.InvoiceStatus.CANCELED) {
+                throw new ConflictException("Invoice has been canceled.");
+            }
+            if (paymentReceiptRepository.existsByInvoiceIdAndStatus(invoice.getId(), PaymentReceiptStatus.AWAITING_REVIEW)) {
+                throw new ConflictException("A receipt for this invoice is already awaiting review.");
+            }
+        }
+
+        if (subscriptionId == null && invoiceId == null) {
+            if (paymentReceiptRepository.existsByClientIdAndStatus(client.getId(), PaymentReceiptStatus.AWAITING_REVIEW)) {
+                throw new ConflictException("You already have a payment receipt awaiting review.");
             }
         }
 

@@ -24,4 +24,13 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
 
     @Query("SELECT r FROM PaymentReceipt r JOIN FETCH r.client c LEFT JOIN FETCH r.subscription s LEFT JOIN FETCH r.invoice i LEFT JOIN FETCH r.reviewedBy rev WHERE r.id = :id AND r.client.id = :clientId")
     Optional<PaymentReceipt> findByIdAndClientId(@Param("id") Long id, @Param("clientId") Long clientId);
+
+    @Query("SELECT COUNT(r) > 0 FROM PaymentReceipt r WHERE r.invoice.id = :invoiceId AND r.status = :status")
+    boolean existsByInvoiceIdAndStatus(@Param("invoiceId") Long invoiceId, @Param("status") PaymentReceiptStatus status);
+
+    @Query("SELECT COUNT(r) > 0 FROM PaymentReceipt r WHERE r.subscription.id = :subscriptionId AND r.status = :status")
+    boolean existsBySubscriptionIdAndStatus(@Param("subscriptionId") Long subscriptionId, @Param("status") PaymentReceiptStatus status);
+
+    @Query("SELECT COUNT(r) > 0 FROM PaymentReceipt r WHERE r.client.id = :clientId AND r.status = :status")
+    boolean existsByClientIdAndStatus(@Param("clientId") Long clientId, @Param("status") PaymentReceiptStatus status);
 }
