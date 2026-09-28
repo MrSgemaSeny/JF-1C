@@ -28,7 +28,7 @@ export function AdminPaymentReceiptsPage() {
   const [allReceiptsForStats, setAllReceiptsForStats] = useState<PaymentReceiptDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState<FilterTab>('AWAITING_REVIEW');
+  const [activeTab, setActiveTab] = useState<FilterTab>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [actionInProgressId, setActionInProgressId] = useState<number | null>(null);
 
@@ -202,9 +202,31 @@ export function AdminPaymentReceiptsPage() {
         </button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards: Все -> Ожидают проверки -> Отклонено -> Подтверждено */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {/* 1. Awaiting Review */}
+        {/* 1. All */}
+        <div 
+          onClick={() => handleTabChange('ALL')}
+          className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
+            activeTab === 'ALL'
+              ? 'border-emerald-600 ring-2 ring-emerald-600/20 bg-emerald-50/20'
+              : 'border-gray-200 hover:border-gray-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              Всего чеков
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center border border-gray-200">
+              <FileCheck className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-3xl font-bold font-mono text-gray-900 mt-3">
+            {stats.total}
+          </p>
+        </div>
+
+        {/* 2. Awaiting Review */}
         <div 
           onClick={() => handleTabChange('AWAITING_REVIEW')}
           className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
@@ -226,7 +248,7 @@ export function AdminPaymentReceiptsPage() {
           </p>
         </div>
 
-        {/* 2. Rejected */}
+        {/* 3. Rejected */}
         <div 
           onClick={() => handleTabChange('REJECTED')}
           className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
@@ -248,7 +270,7 @@ export function AdminPaymentReceiptsPage() {
           </p>
         </div>
 
-        {/* 3. Confirmed */}
+        {/* 4. Confirmed */}
         <div 
           onClick={() => handleTabChange('CONFIRMED')}
           className={`p-5 rounded-xl border transition-all cursor-pointer bg-white shadow-xs ${
@@ -265,31 +287,33 @@ export function AdminPaymentReceiptsPage() {
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-3xl font-bold font-mono text-gray-900 mt-3">
-            {stats.confirmed}
-          </p>
-        </div>
-
-        {/* 4. Total Confirmed Amount */}
-        <div className="p-5 rounded-xl border border-gray-200 bg-white shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Сумма оплат (KZT)
-            </span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
-              <TrendingUp className="w-4 h-4" />
-            </div>
+          <div className="flex items-baseline justify-between mt-3">
+            <p className="text-3xl font-bold font-mono text-gray-900">
+              {stats.confirmed}
+            </p>
+            <p className="text-sm font-bold font-mono text-emerald-700">
+              {stats.totalConfirmedAmount.toLocaleString('ru-RU')} ₸
+            </p>
           </div>
-          <p className="text-2xl font-bold font-mono text-gray-900 mt-3 truncate">
-            {stats.totalConfirmedAmount.toLocaleString('ru-RU')} ₸
-          </p>
         </div>
       </div>
 
-      {/* Tabs and Search Bar */}
+      {/* Tabs and Search Bar: Сначала ВСЕ -> затем фильтры (На проверке -> Отклоненные -> Подтвержденные) */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-3 rounded-xl border border-gray-200 shadow-xs">
-        {/* Tabs: На проверке -> Отклоненные -> Подтвержденные -> Все */}
+        {/* Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => handleTabChange('ALL')}
+            className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer ${
+              activeTab === 'ALL'
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            }`}
+          >
+            {t('billing.admin.tabAll', 'Все')} ({stats.total})
+          </button>
+
           <button
             type="button"
             onClick={() => handleTabChange('AWAITING_REVIEW')}
@@ -334,18 +358,6 @@ export function AdminPaymentReceiptsPage() {
             }`}
           >
             {t('billing.admin.tabConfirmed', 'Подтвержденные')} ({stats.confirmed})
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleTabChange('ALL')}
-            className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer ${
-              activeTab === 'ALL'
-                ? 'bg-emerald-700 text-white shadow-xs'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-            }`}
-          >
-            {t('billing.admin.tabAll', 'Все')} ({stats.total})
           </button>
         </div>
 
