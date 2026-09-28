@@ -19,6 +19,7 @@ vi.mock('react-i18next', () => ({
     },
     i18n: { language: 'ru' },
   }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 vi.mock('@/entities/billing/api/billingApi', () => ({
@@ -33,6 +34,7 @@ vi.mock('@/entities/billing/api/paymentReceiptApi', () => ({
     getRequisites: vi.fn(),
     getReceiptFileUrl: vi.fn(),
     submitReceipt: vi.fn(),
+    downloadReceiptFile: vi.fn().mockResolvedValue(new Blob(['pdf'])),
   },
 }));
 

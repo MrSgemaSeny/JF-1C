@@ -12,11 +12,13 @@ vi.mock('react-i18next', () => ({
     t: (key: string, defaultVal?: string) => defaultVal || key,
     i18n: { language: 'ru' },
   }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 vi.mock('@/entities/billing/api/paymentReceiptApi', () => ({
   paymentReceiptApi: {
     getReceiptFileUrl: vi.fn().mockResolvedValue({ url: 'https://test-presigned-url.com/receipt.pdf' }),
+    downloadReceiptFile: vi.fn().mockResolvedValue(new Blob(['pdf'])),
   },
 }));
 

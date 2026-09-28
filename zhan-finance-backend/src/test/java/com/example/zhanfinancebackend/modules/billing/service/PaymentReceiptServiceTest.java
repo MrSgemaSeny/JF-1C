@@ -227,6 +227,52 @@ class PaymentReceiptServiceTest {
     }
 
     @Test
+    @DisplayName("Confirm receipt: early renewal extends existing active subscription by 30 days")
+    void confirmReceipt_earlyRenewal_extendsCurrentEndsAt() {
+        LocalDate currentEndsAt = LocalDate.now().plusDays(10);
+        subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
+        subscription.setEndsAt(currentEndsAt);
+
+        PaymentReceipt receipt = new PaymentReceipt(
+                client, subscription, invoice, BigDecimal.valueOf(50000), "KZT", "receipts/test.pdf"
+        );
+        receipt.setId(501L);
+
+        when(paymentReceiptRepository.findById(501L)).thenReturn(Optional.of(receipt));
+        when(paymentReceiptRepository.save(any(PaymentReceipt.class))).thenReturn(receipt);
+
+        paymentReceiptService.confirmReceipt(admin, 501L);
+
+        assertThat(subscription.getStatus()).isEqualTo(Subscription.SubscriptionStatus.ACTIVE);
+        assertThat(subscription.getEndsAt()).isEqualTo(currentEndsAt.plusDays(30));
+    }
+
+    @Test
+    @DisplayName("Confirm receipt: auto-creates new subscription if client has none")
+    void confirmReceipt_autoCreatesSubscription() {
+        PaymentReceipt receipt = new PaymentReceipt(
+                client, null, null, BigDecimal.valueOf(45000), "KZT", "receipts/new.pdf"
+        );
+        receipt.setId(502L);
+
+        when(paymentReceiptRepository.findById(502L)).thenReturn(Optional.of(receipt));
+        when(paymentReceiptRepository.save(any(PaymentReceipt.class))).thenReturn(receipt);
+        when(subscriptionRepository.findAllByUser(client)).thenReturn(List.of());
+        when(subscriptionRepository.save(any(Subscription.class))).thenAnswer(inv -> {
+            Subscription s = inv.getArgument(0);
+            s.setId(999L);
+            return s;
+        });
+
+        PaymentReceiptDto result = paymentReceiptService.confirmReceipt(admin, 502L);
+
+        assertThat(result.status()).isEqualTo(PaymentReceiptStatus.CONFIRMED);
+        assertThat(receipt.getSubscription()).isNotNull();
+        assertThat(receipt.getSubscription().getStatus()).isEqualTo(Subscription.SubscriptionStatus.ACTIVE);
+        assertThat(receipt.getSubscription().getEndsAt()).isEqualTo(LocalDate.now().plusDays(30));
+    }
+
+    @Test
     @DisplayName("Get company requisites returns configured values")
     void getRequisites_success() {
         PaymentRequisitesDto requisites = paymentReceiptService.getRequisites();

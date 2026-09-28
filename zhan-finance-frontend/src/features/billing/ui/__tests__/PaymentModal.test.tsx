@@ -12,6 +12,7 @@ vi.mock('react-i18next', () => ({
     t: (key: string, options?: any) => options?.defaultValue || key,
     i18n: { language: 'ru' },
   }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 vi.mock('@/entities/billing/api/paymentReceiptApi', () => ({
@@ -75,6 +76,10 @@ describe('PaymentModal Component', () => {
         defaultAmount={45000}
       />
     );
+
+    await waitFor(() => {
+      expect(screen.getByText('ТОО ЖАН FINANCE')).toBeInTheDocument();
+    });
 
     const bankTab = screen.getByText('Банковский перевод');
     fireEvent.click(bankTab);

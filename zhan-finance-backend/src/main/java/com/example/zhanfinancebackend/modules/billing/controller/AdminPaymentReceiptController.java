@@ -2,6 +2,7 @@ package com.example.zhanfinancebackend.modules.billing.controller;
 
 import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.billing.dto.PaymentReceiptDto;
 import com.example.zhanfinancebackend.modules.billing.dto.PaymentReceiptReviewRequest;
 import com.example.zhanfinancebackend.modules.billing.entity.PaymentReceiptStatus;
@@ -33,28 +34,31 @@ public class AdminPaymentReceiptController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<PaymentReceiptDto>>> getAllReceipts(
-            @AuthenticationPrincipal User admin,
+            @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(value = "status", required = false) PaymentReceiptStatus status
     ) {
+        User admin = principal != null ? principal.getUser() : null;
         List<PaymentReceiptDto> receipts = paymentReceiptService.getAllReceipts(admin, status);
         return ResponseEntity.ok(ApiResponse.success(receipts));
     }
 
     @PostMapping("/{id}/confirm")
     public ResponseEntity<ApiResponse<PaymentReceiptDto>> confirmReceipt(
-            @AuthenticationPrincipal User admin,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("id") Long id
     ) {
+        User admin = principal != null ? principal.getUser() : null;
         PaymentReceiptDto result = paymentReceiptService.confirmReceipt(admin, id);
         return ResponseEntity.ok(ApiResponse.success(result, "Payment receipt confirmed successfully"));
     }
 
     @PostMapping("/{id}/reject")
     public ResponseEntity<ApiResponse<PaymentReceiptDto>> rejectReceipt(
-            @AuthenticationPrincipal User admin,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("id") Long id,
             @Valid @RequestBody(required = false) PaymentReceiptReviewRequest request
     ) {
+        User admin = principal != null ? principal.getUser() : null;
         String note = request != null ? request.note() : null;
         PaymentReceiptDto result = paymentReceiptService.rejectReceipt(admin, id, note);
         return ResponseEntity.ok(ApiResponse.success(result, "Payment receipt rejected successfully"));

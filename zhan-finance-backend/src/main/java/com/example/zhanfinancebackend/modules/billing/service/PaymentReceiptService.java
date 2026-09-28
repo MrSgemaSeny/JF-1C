@@ -158,15 +158,39 @@ public class PaymentReceiptService {
         receipt.setReviewedBy(admin);
         receipt.setReviewedAt(Instant.now());
 
-        // Activate subscription if present
+        // Activate subscription if present or auto-create for client
         Subscription subscription = receipt.getSubscription();
+        if (subscription == null && receipt.getClient() != null) {
+            List<Subscription> userSubs = subscriptionRepository.findAllByUser(receipt.getClient());
+            if (!userSubs.isEmpty()) {
+                subscription = userSubs.get(0);
+                receipt.setSubscription(subscription);
+            }
+        }
+
+        LocalDate today = LocalDate.now();
         if (subscription != null) {
             subscription.setStatus(Subscription.SubscriptionStatus.ACTIVE);
-            LocalDate today = LocalDate.now();
-            subscription.setStartsAt(today);
-            subscription.setEndsAt(today.plusDays(30));
+            if (subscription.getEndsAt() != null && subscription.getEndsAt().isAfter(today)) {
+                subscription.setEndsAt(subscription.getEndsAt().plusDays(30));
+            } else {
+                subscription.setStartsAt(today);
+                subscription.setEndsAt(today.plusDays(30));
+            }
             subscriptionRepository.save(subscription);
             log.info("Subscription {} activated for client {} until {}", subscription.getId(), receipt.getClient().getId(), subscription.getEndsAt());
+        } else if (receipt.getClient() != null) {
+            Subscription newSub = new Subscription(
+                    receipt.getClient(),
+                    "Бухгалтерское обслуживание",
+                    receipt.getAmount(),
+                    today,
+                    today.plusDays(30)
+            );
+            newSub.setStatus(Subscription.SubscriptionStatus.ACTIVE);
+            Subscription savedSub = subscriptionRepository.save(newSub);
+            receipt.setSubscription(savedSub);
+            log.info("New Subscription {} created and activated for client {} until {}", savedSub.getId(), receipt.getClient().getId(), savedSub.getEndsAt());
         }
 
         // Close invoice if present

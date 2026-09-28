@@ -1,4 +1,4 @@
-import { apiRequest } from '@/shared/api/http';
+import { apiRequest, apiDownload } from '@/shared/api/http';
 
 export type PaymentReceiptStatus = 'AWAITING_REVIEW' | 'CONFIRMED' | 'REJECTED';
 
@@ -67,4 +67,7 @@ export const paymentReceiptApi = {
       method: 'POST',
       body: JSON.stringify({ note }),
     }),
+
+  downloadReceiptFile: (urlOrPath: string) =>
+    apiDownload(urlOrPath),
 };

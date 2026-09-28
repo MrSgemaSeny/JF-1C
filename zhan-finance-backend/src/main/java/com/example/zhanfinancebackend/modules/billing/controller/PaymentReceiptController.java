@@ -1,7 +1,9 @@
 package com.example.zhanfinancebackend.modules.billing.controller;
 
+import com.example.zhanfinancebackend.common.exception.BadRequestException;
 import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
+import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
 import com.example.zhanfinancebackend.modules.billing.dto.PaymentReceiptDto;
 import com.example.zhanfinancebackend.modules.billing.dto.PaymentReceiptUrlResponse;
 import com.example.zhanfinancebackend.modules.billing.dto.PaymentRequisitesDto;
@@ -36,13 +38,14 @@ public class PaymentReceiptController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<ApiResponse<PaymentReceiptDto>> submitReceipt(
-            @AuthenticationPrincipal User currentUser,
+            @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam("amount") BigDecimal amount,
             @RequestParam(value = "currency", defaultValue = "KZT") String currency,
             @RequestParam(value = "subscriptionId", required = false) Long subscriptionId,
             @RequestParam(value = "invoiceId", required = false) Long invoiceId,
             @RequestParam("file") MultipartFile file
     ) {
+        User currentUser = principal != null ? principal.getUser() : null;
         PaymentReceiptDto result = paymentReceiptService.submitReceipt(
                 currentUser, subscriptionId, invoiceId, amount, currency, file
         );
@@ -52,8 +55,9 @@ public class PaymentReceiptController {
     @GetMapping
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<PaymentReceiptDto>>> getMyReceipts(
-            @AuthenticationPrincipal User currentUser
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
+        User currentUser = principal != null ? principal.getUser() : null;
         List<PaymentReceiptDto> receipts = paymentReceiptService.getClientReceipts(currentUser);
         return ResponseEntity.ok(ApiResponse.success(receipts));
     }
@@ -61,9 +65,10 @@ public class PaymentReceiptController {
     @GetMapping("/{id}/file")
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<ApiResponse<PaymentReceiptUrlResponse>> getReceiptFileUrl(
-            @AuthenticationPrincipal User currentUser,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("id") Long id
     ) {
+        User currentUser = principal != null ? principal.getUser() : null;
         PaymentReceiptUrlResponse response = paymentReceiptService.getReceiptFileUrl(currentUser, id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -71,9 +76,10 @@ public class PaymentReceiptController {
     @GetMapping("/{id}/download")
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<ByteArrayResource> downloadReceipt(
-            @AuthenticationPrincipal User currentUser,
+            @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("id") Long id
     ) {
+        User currentUser = principal != null ? principal.getUser() : null;
         byte[] data = paymentReceiptService.loadReceiptFile(currentUser, id);
         ByteArrayResource resource = new ByteArrayResource(data);
 
@@ -94,6 +100,9 @@ public class PaymentReceiptController {
     public ResponseEntity<ByteArrayResource> downloadFallbackFile(
             @RequestParam("key") String fileKey
     ) {
+        if (fileKey == null || !fileKey.startsWith("receipts/")) {
+            throw new BadRequestException("Invalid or unauthorized receipt file key.");
+        }
         byte[] data = paymentReceiptService.loadReceiptFileByKey(fileKey);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)

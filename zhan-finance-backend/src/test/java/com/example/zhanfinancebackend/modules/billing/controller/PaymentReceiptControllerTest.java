@@ -79,7 +79,7 @@ class PaymentReceiptControllerTest {
                 Instant.now(), Instant.now()
         );
 
-        when(paymentReceiptService.submitReceipt(any(), any(), any(), any(), any(), any()))
+        when(paymentReceiptService.submitReceipt(org.mockito.ArgumentMatchers.argThat(u -> u != null && u.getId().equals(10L)), any(), any(), any(), any(), any()))
                 .thenReturn(mockDto);
 
         mockMvc.perform(multipart("/api/v1/billing/receipts")
@@ -109,7 +109,7 @@ class PaymentReceiptControllerTest {
                 Instant.now(), Instant.now()
         );
 
-        when(paymentReceiptService.getClientReceipts(any()))
+        when(paymentReceiptService.getClientReceipts(org.mockito.ArgumentMatchers.argThat(u -> u != null && u.getId().equals(10L))))
                 .thenReturn(List.of(mockDto));
 
         mockMvc.perform(get("/api/v1/billing/receipts")
@@ -170,7 +170,7 @@ class PaymentReceiptControllerTest {
                 Instant.now(), Instant.now()
         );
 
-        when(paymentReceiptService.confirmReceipt(any(), eq(100L))).thenReturn(mockDto);
+        when(paymentReceiptService.confirmReceipt(org.mockito.ArgumentMatchers.argThat(u -> u != null && u.getId().equals(1L)), eq(100L))).thenReturn(mockDto);
 
         mockMvc.perform(post("/api/v1/admin/billing/receipts/100/confirm")
                         .contextPath("/api")
@@ -195,7 +195,7 @@ class PaymentReceiptControllerTest {
                 Instant.now(), Instant.now()
         );
 
-        when(paymentReceiptService.rejectReceipt(any(), eq(100L), eq("Неверная сумма платежа")))
+        when(paymentReceiptService.rejectReceipt(org.mockito.ArgumentMatchers.argThat(u -> u != null && u.getId().equals(1L)), eq(100L), eq("Неверная сумма платежа")))
                 .thenReturn(mockDto);
 
         mockMvc.perform(post("/api/v1/admin/billing/receipts/100/reject")

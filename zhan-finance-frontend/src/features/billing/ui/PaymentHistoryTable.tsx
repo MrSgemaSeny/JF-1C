@@ -20,11 +20,22 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
     try {
       setOpeningId(receiptId);
       const res = await paymentReceiptApi.getReceiptFileUrl(receiptId);
-      if (res && res.url) {
+      if (res && res.url && (res.url.startsWith('http://') || res.url.startsWith('https://'))) {
         window.open(res.url, '_blank', 'noopener,noreferrer');
+      } else {
+        const downloadPath = res?.url || `/api/v1/billing/receipts/${receiptId}/download`;
+        const blob = await paymentReceiptApi.downloadReceiptFile(downloadPath);
+        const objectUrl = URL.createObjectURL(blob);
+        window.open(objectUrl, '_blank', 'noopener,noreferrer');
       }
     } catch {
-      window.open(`/api/v1/billing/receipts/${receiptId}/download`, '_blank', 'noopener,noreferrer');
+      try {
+        const blob = await paymentReceiptApi.downloadReceiptFile(`/api/v1/billing/receipts/${receiptId}/download`);
+        const objectUrl = URL.createObjectURL(blob);
+        window.open(objectUrl, '_blank', 'noopener,noreferrer');
+      } catch (err) {
+        console.error('Failed to open receipt:', err);
+      }
     } finally {
       setOpeningId(null);
     }

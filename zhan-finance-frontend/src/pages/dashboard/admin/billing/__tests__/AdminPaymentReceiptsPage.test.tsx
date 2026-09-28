@@ -18,6 +18,7 @@ vi.mock('react-i18next', () => ({
     },
     i18n: { language: 'ru' },
   }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 vi.mock('@/shared/ui/Toast/ToastContext', () => ({
@@ -34,6 +35,7 @@ vi.mock('@/entities/billing/api/paymentReceiptApi', () => ({
     confirmReceipt: vi.fn(),
     rejectReceipt: vi.fn(),
     getReceiptFileUrl: vi.fn(),
+    downloadReceiptFile: vi.fn().mockResolvedValue(new Blob(['pdf'])),
   },
 }));
 
