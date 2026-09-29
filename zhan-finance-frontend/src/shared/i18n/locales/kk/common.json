@@ -1900,6 +1900,7 @@
     "availablePlansDesc": "Бизнесіңіздің ауқымына сәйкес тарифті таңдаңыз немесе жазылымды жаңартыңыз",
     "choosePlan": "Тарифті таңдау",
     "currentActivePlanBadge": "Ағымдағы тариф",
+    "discountBadge": "10% жеңілдікпен арнайы баға",
     "perMonth": "/ ай",
     "outOfDays": "/ {{total}}",
     "paymentMethods": "Kaspi / Банктік аударым",

@@ -54,13 +54,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       if (detectedPlanId) {
         setSelectedPlanId(detectedPlanId);
         const plan = BILLING_PLANS.find((p) => p.id === detectedPlanId);
-        setAmount(plan ? String(plan.price) : (defaultAmount ? String(defaultAmount) : '100000'));
+        const planPrice = plan ? (plan.discountPrice ?? plan.price) : defaultAmount;
+        setAmount(planPrice ? String(planPrice) : '90000');
       } else if (defaultAmount) {
         setSelectedPlanId('custom');
         setAmount(String(defaultAmount));
       } else {
         setSelectedPlanId('standard');
-        setAmount('100000');
+        setAmount('90000');
       }
 
       setFile(null);
@@ -73,7 +74,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const handleSelectPlan = (plan: BillingPlanItem) => {
     setSelectedPlanId(plan.id);
-    setAmount(String(plan.price));
+    const effectivePrice = plan.discountPrice ?? plan.price;
+    setAmount(String(effectivePrice));
   };
 
   const handleSelectCustom = () => {
@@ -275,8 +277,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] font-mono font-bold text-emerald-700 mt-1">
-                        {plan.price.toLocaleString('ru-RU')} ₸
+                      <div className="text-[11px] font-mono font-bold text-emerald-700 mt-1 flex items-baseline gap-1">
+                        {plan.discountPrice && (
+                          <span className="text-[10px] text-gray-400 line-through font-normal">
+                            {plan.price.toLocaleString('ru-RU')} ₸
+                          </span>
+                        )}
+                        <span>
+                          {(plan.discountPrice ?? plan.price).toLocaleString('ru-RU')} ₸
+                        </span>
                       </div>
                     </button>
                   );

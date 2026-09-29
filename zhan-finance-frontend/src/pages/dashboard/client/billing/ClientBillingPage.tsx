@@ -75,6 +75,10 @@ export const ClientBillingPage: React.FC = () => {
   const activePlanId = getPlanIdBySubscription(currentSubscription?.planName, currentSubscription?.monthlyPrice);
   const activePlanItem = BILLING_PLANS.find((p) => p.id === activePlanId);
 
+  const isStandard = !activePlanId || activePlanId === 'standard' || currentSubscription?.monthlyPrice === 45000 || currentSubscription?.monthlyPrice === 90000 || currentSubscription?.monthlyPrice === 100000;
+  const originalPriceNumber = isStandard ? 100000 : (activePlanItem?.discountPrice ? activePlanItem.price : null);
+  const currentPriceNumber = isStandard ? 90000 : (activePlanItem?.discountPrice || activePlanItem?.price || 100000);
+
   const calculateDaysLeft = (endsAt: string | null): number | null => {
     if (!endsAt) return null;
     const now = new Date();
@@ -214,11 +218,23 @@ export const ClientBillingPage: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
                 {getLocalizedPlanName(currentSubscription?.planName, t)}
               </h2>
-              <div className="text-2xl font-bold font-mono text-gray-900">
-                {currentSubscription?.monthlyPrice
-                  ? `${Number(currentSubscription.monthlyPrice).toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸`
-                  : (activePlanItem ? `${activePlanItem.price.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸` : '100 000 ₸')}
-                <span className="text-xs font-normal text-gray-500 ml-1 font-sans">{t('billing.perMonth', '/ месяц')}</span>
+              <div className="flex flex-col sm:items-end">
+                <div className="flex items-baseline gap-2">
+                  {originalPriceNumber && (
+                    <span className="text-sm font-semibold font-mono text-gray-400 line-through">
+                      {originalPriceNumber.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸
+                    </span>
+                  )}
+                  <span className="text-2xl font-bold font-mono text-gray-900">
+                    {currentPriceNumber.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸
+                  </span>
+                  <span className="text-xs font-normal text-gray-500 font-sans">{t('billing.perMonth', '/ месяц')}</span>
+                </div>
+                {originalPriceNumber && (
+                  <span className="inline-flex items-center text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded mt-0.5">
+                    {t('billing.discountBadge', 'Спеццена со скидкой 10%')}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -252,7 +268,7 @@ export const ClientBillingPage: React.FC = () => {
           <div className="mt-6 pt-4 flex flex-wrap items-center gap-3 border-t border-gray-100">
             <button
               type="button"
-              onClick={() => openPaymentForPlan(activePlanId || undefined, currentSubscription?.monthlyPrice || undefined)}
+              onClick={() => openPaymentForPlan(activePlanId || 'standard', currentPriceNumber)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-xs cursor-pointer"
             >
               <CreditCard className="w-4 h-4" />
@@ -350,8 +366,19 @@ export const ClientBillingPage: React.FC = () => {
                     {t(plan.descKey, plan.defaultDesc)}
                   </p>
 
-                  <div className="text-xl font-bold font-mono text-gray-900 pb-3 mb-4 border-b border-gray-100 flex items-baseline">
-                    {plan.price.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸
+                  <div className="text-xl font-bold font-mono text-gray-900 pb-3 mb-4 border-b border-gray-100 flex items-baseline gap-2">
+                    {plan.discountPrice ? (
+                      <>
+                        <span className="text-sm font-semibold text-gray-400 line-through font-mono">
+                          {plan.price.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸
+                        </span>
+                        <span className="text-xl font-bold text-gray-900 font-mono">
+                          {plan.discountPrice.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸
+                        </span>
+                      </>
+                    ) : (
+                      <span>{plan.price.toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU')} ₸</span>
+                    )}
                     <span className="text-xs font-normal text-gray-500 ml-1 font-sans">
                       {t('billing.perMonth', '/ месяц')}
                     </span>
@@ -369,7 +396,7 @@ export const ClientBillingPage: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => openPaymentForPlan(plan.id, plan.price)}
+                  onClick={() => openPaymentForPlan(plan.id, plan.discountPrice ?? plan.price)}
                   className={`w-full py-2.5 px-4 rounded-lg font-semibold text-xs transition-colors shadow-xs cursor-pointer ${
                     isCurrent
                       ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'

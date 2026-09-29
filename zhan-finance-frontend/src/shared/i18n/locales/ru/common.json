@@ -1900,6 +1900,7 @@
     "availablePlansDesc": "Выберите подходящий тариф под масштаб вашего бизнеса или обновите подписку",
     "choosePlan": "Выбрать тариф",
     "currentActivePlanBadge": "Текущий тариф",
+    "discountBadge": "Спеццена со скидкой 10%",
     "perMonth": "/ месяц",
     "outOfDays": "из {{total}}",
     "paymentMethods": "Kaspi / Банковский перевод",

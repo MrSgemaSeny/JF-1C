@@ -1900,6 +1900,7 @@
     "availablePlansDesc": "根据您的企业规模选择合适的服务方案，或升级至更高规格配置",
     "choosePlan": "选择此方案",
     "currentActivePlanBadge": "当前生效方案",
+    "discountBadge": "老客户专属特惠：立减 10%",
     "perMonth": "/ 月",
     "outOfDays": "/ {{total}} 天",
     "paymentMethods": "Kaspi / 银行转账",

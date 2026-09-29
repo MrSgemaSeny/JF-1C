@@ -69,7 +69,8 @@ describe('ClientBillingPage Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Бухгалтерское обслуживание (Стандарт)')).toBeInTheDocument();
-      expect(screen.getByText(/45.*000/)).toBeInTheDocument();
+      expect(screen.getAllByText(/90.*000/).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(/100.*000/).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText('Активна')).toBeInTheDocument();
       expect(screen.getByText('ТОО ЖАН FINANCE')).toBeInTheDocument();
     });
@@ -114,10 +115,10 @@ describe('ClientBillingPage Component', () => {
     render(<ClientBillingPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Продлить подписку')).toBeInTheDocument();
+      expect(screen.getAllByText('Продлить подписку').length).toBeGreaterThanOrEqual(1);
     });
 
-    fireEvent.click(screen.getByText('Продлить подписку'));
+    fireEvent.click(screen.getAllByText('Продлить подписку')[0]);
 
     await waitFor(() => {
       expect(screen.getByText('Оплата тарифа')).toBeInTheDocument();

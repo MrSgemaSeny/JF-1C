@@ -5,6 +5,7 @@ export interface BillingPlanItem {
   descKey: string;
   defaultDesc: string;
   price: number;
+  discountPrice?: number;
   featuresKeys: string[];
   highlighted?: boolean;
 }
@@ -32,6 +33,7 @@ export const BILLING_PLANS: BillingPlanItem[] = [
     descKey: 'billing.plans.standard.desc',
     defaultDesc: 'Для ТОО и ИП со штатом до 5 человек',
     price: 100000,
+    discountPrice: 90000,
     featuresKeys: [
       'landing:pricing.1.f0',
       'landing:pricing.1.f1',
@@ -97,7 +99,7 @@ export function getLocalizedPlanName(rawName: string | null | undefined, t: any)
 
 export function getPlanIdBySubscription(planName?: string | null, monthlyPrice?: number | null): 'start' | 'standard' | 'pro' | 'corporate' | null {
   if (monthlyPrice === 30000) return 'start';
-  if (monthlyPrice === 100000) return 'standard';
+  if (monthlyPrice === 100000 || monthlyPrice === 90000 || monthlyPrice === 45000) return 'standard';
   if (monthlyPrice === 200000) return 'pro';
   if (monthlyPrice === 400000) return 'corporate';
   if (planName) {
@@ -106,6 +108,7 @@ export function getPlanIdBySubscription(planName?: string | null, monthlyPrice?:
     if (lower.includes('стандарт') || lower.includes('standard') || lower.includes('标准')) return 'standard';
     if (lower.includes('про') || lower.includes('pro') || lower.includes('专业')) return 'pro';
     if (lower.includes('корпор') || lower.includes('corporate') || lower.includes('business') || lower.includes('корпоратив') || lower.includes('企业')) return 'corporate';
+    if (lower.includes('бухгалтер') || lower.includes('bookkeeping')) return 'standard';
   }
-  return null;
+  return 'standard';
 }
