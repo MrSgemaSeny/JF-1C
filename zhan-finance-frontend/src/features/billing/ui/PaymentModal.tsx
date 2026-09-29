@@ -282,11 +282,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                         <span className="text-base font-bold text-gray-900">
                           {t(selectedPlanItem.nameKey, selectedPlanItem.defaultName)}
                         </span>
-                        {selectedPlanItem.highlighted && (
-                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 bg-emerald-600 text-white rounded tracking-wide">
-                            HIT
-                          </span>
-                        )}
                         {selectedPlanItem.discountPrice && (
                           <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100/90 border border-emerald-200 px-2 py-0.5 rounded-full">
                             {t('billing.discountBadge', { defaultValue: 'Спеццена со скидкой 10%' })}
