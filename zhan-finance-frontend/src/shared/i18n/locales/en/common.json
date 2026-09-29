@@ -1913,6 +1913,10 @@
     "copyBin": "Copy BIN",
     "copyIban": "Copy IBAN",
     "selectPlanLabel": "Select a plan",
+    "selectedPlanLabel": "Selected plan",
+    "changePlan": "Change",
+    "cancelChange": "Collapse",
+    "monthShort": "mo",
     "customAmount": "Custom amount",
     "plans": {
       "start": {

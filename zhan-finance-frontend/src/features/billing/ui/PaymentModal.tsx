@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Check, UploadCloud, FileText, X, AlertCircle, Building, QrCode, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import { Copy, Check, UploadCloud, FileText, X, AlertCircle, Building, QrCode, CheckCircle2, Loader2 } from 'lucide-react';
 import { paymentReceiptApi, PaymentRequisitesDto } from '@/entities/billing/api/paymentReceiptApi';
 import { BILLING_PLANS, getLocalizedPlanName, getPlanIdBySubscription, BillingPlanItem } from '@/entities/billing/model/billingPlans';
 
@@ -28,6 +28,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [activePaymentMethod, setActivePaymentMethod] = useState<'kaspi' | 'bank'>('kaspi');
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [isChangingPlan, setIsChangingPlan] = useState(false);
   const [amount, setAmount] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -67,6 +68,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       setFile(null);
       setError(null);
       setIsSuccess(false);
+      setIsChangingPlan(false);
     }
   }, [isOpen, defaultAmount, initialPlanId, planName]);
 
@@ -253,50 +255,115 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </button>
             </div>
 
-            {/* Plan Selection Buttons */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                {t('billing.selectPlanLabel', { defaultValue: 'Выберите тариф' })}
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {BILLING_PLANS.map((plan) => {
-                  const isSelected = selectedPlanId === plan.id;
-                  return (
-                    <button
-                      key={plan.id}
-                      type="button"
-                      onClick={() => handleSelectPlan(plan)}
-                      className={`p-2 rounded-lg border text-left transition-all cursor-pointer ${
-                        isSelected
-                          ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600'
-                          : 'border-gray-200 bg-gray-50/50 hover:bg-gray-100/70 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-gray-900 truncate">
-                          {t(plan.nameKey, plan.defaultName)}
+            {/* Plan Display / Selection */}
+            {selectedPlanItem && !isChangingPlan ? (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    {t('billing.selectedPlanLabel', { defaultValue: 'Выбранный тариф' })}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsChangingPlan(true)}
+                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer"
+                  >
+                    {t('billing.changePlan', { defaultValue: 'Сменить' })}
+                  </button>
+                </div>
+                <div className="p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-xl flex items-center justify-between shadow-2xs">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                      {selectedPlanItem.defaultName.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-gray-900">
+                          {t(selectedPlanItem.nameKey, selectedPlanItem.defaultName)}
                         </span>
-                        {plan.highlighted && (
-                          <span className="text-[8px] font-black uppercase px-1 py-0.2 bg-emerald-600 text-white rounded">
+                        {selectedPlanItem.highlighted && (
+                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 bg-emerald-600 text-white rounded">
                             HIT
                           </span>
                         )}
+                        {selectedPlanItem.discountPrice && (
+                          <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">
+                            {t('billing.discountBadge', { defaultValue: 'Спеццена со скидкой 10%' })}
+                          </span>
+                        )}
                       </div>
-                      <div className="text-[11px] font-mono font-bold text-emerald-700 mt-1 flex items-baseline gap-1">
-                        {plan.discountPrice && (
-                          <span className="text-[10px] text-gray-400 line-through font-normal">
-                            {plan.price.toLocaleString('ru-RU')} ₸
+                      <div className="text-xs font-mono font-bold text-emerald-800 flex items-baseline gap-1.5 mt-0.5">
+                        {selectedPlanItem.discountPrice && (
+                          <span className="text-[11px] text-gray-400 line-through font-normal">
+                            {selectedPlanItem.price.toLocaleString('ru-RU')} ₸
                           </span>
                         )}
                         <span>
-                          {(plan.discountPrice ?? plan.price).toLocaleString('ru-RU')} ₸
+                          {(selectedPlanItem.discountPrice ?? selectedPlanItem.price).toLocaleString('ru-RU')} ₸ / {t('billing.monthShort', { defaultValue: 'мес' })}
                         </span>
                       </div>
-                    </button>
-                  );
-                })}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    {t('billing.selectPlanLabel', { defaultValue: 'Выберите тариф' })}
+                  </label>
+                  {selectedPlanItem && (
+                    <button
+                      type="button"
+                      onClick={() => setIsChangingPlan(false)}
+                      className="text-xs text-gray-500 hover:text-gray-700 hover:underline cursor-pointer"
+                    >
+                      {t('billing.cancelChange', { defaultValue: 'Свернуть' })}
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {BILLING_PLANS.map((plan) => {
+                    const isSelected = selectedPlanId === plan.id;
+                    return (
+                      <button
+                        key={plan.id}
+                        type="button"
+                        onClick={() => {
+                          handleSelectPlan(plan);
+                          setIsChangingPlan(false);
+                        }}
+                        className={`p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600'
+                            : 'border-gray-200 bg-gray-50/50 hover:bg-gray-100/70 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-gray-900 truncate">
+                            {t(plan.nameKey, plan.defaultName)}
+                          </span>
+                          {plan.highlighted && (
+                            <span className="text-[8px] font-black uppercase px-1 py-0.2 bg-emerald-600 text-white rounded">
+                              HIT
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] font-mono font-bold text-emerald-700 mt-1 flex items-baseline gap-1">
+                          {plan.discountPrice && (
+                            <span className="text-[10px] text-gray-400 line-through font-normal">
+                              {plan.price.toLocaleString('ru-RU')} ₸
+                            </span>
+                          )}
+                          <span>
+                            {(plan.discountPrice ?? plan.price).toLocaleString('ru-RU')} ₸
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Step 1: Requisites */}
             {requisites && (

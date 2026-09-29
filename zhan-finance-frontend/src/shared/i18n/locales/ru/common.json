@@ -1910,6 +1910,10 @@
     "copyBin": "Копировать БИН",
     "copyIban": "Копировать IBAN",
     "selectPlanLabel": "Выберите тариф",
+    "selectedPlanLabel": "Выбранный тариф",
+    "changePlan": "Сменить",
+    "cancelChange": "Свернуть",
+    "monthShort": "мес",
     "customAmount": "Другая сумма",
     "plans": {
       "start": {

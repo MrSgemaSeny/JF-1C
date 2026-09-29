@@ -9,7 +9,13 @@ import { paymentReceiptApi } from '@/entities/billing/api/paymentReceiptApi';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, options?: any) => options?.defaultValue || key,
+    t: (key: string, defaultValOrOptions?: any) => {
+      if (typeof defaultValOrOptions === 'string') return defaultValOrOptions;
+      if (defaultValOrOptions && typeof defaultValOrOptions === 'object' && defaultValOrOptions.defaultValue) {
+        return defaultValOrOptions.defaultValue;
+      }
+      return key;
+    },
     i18n: { language: 'ru' },
   }),
   initReactI18next: { type: '3rdParty', init: vi.fn() },
@@ -134,5 +140,33 @@ describe('PaymentModal Component', () => {
       expect(onSuccess).toHaveBeenCalledTimes(1);
       expect(screen.getByText('Чек успешно отправлен')).toBeInTheDocument();
     });
+  });
+
+  it('displays only selected plan card when a plan is selected and allows changing plan', async () => {
+    render(
+      <PaymentModal
+        isOpen={true}
+        onClose={onClose}
+        onSuccess={onSuccess}
+        initialPlanId="pro"
+      />
+    );
+
+    // Shows single selected plan card
+    expect(screen.getByText('Выбранный тариф')).toBeInTheDocument();
+    expect(screen.getAllByText('Про').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Сменить')).toBeInTheDocument();
+    // Tariffs grid is not shown initially
+    expect(screen.queryByText('Выберите тариф')).not.toBeInTheDocument();
+
+    // Clicking 'Сменить' shows all tariffs
+    fireEvent.click(screen.getByText('Сменить'));
+    expect(screen.getByText('Выберите тариф')).toBeInTheDocument();
+    expect(screen.getByText('Свернуть')).toBeInTheDocument();
+
+    // Selecting 'Стандарт' updates selected plan and collapses back to single card
+    fireEvent.click(screen.getByText('Стандарт'));
+    expect(screen.getByText('Выбранный тариф')).toBeInTheDocument();
+    expect(screen.getAllByText('Стандарт').length).toBeGreaterThanOrEqual(1);
   });
 });

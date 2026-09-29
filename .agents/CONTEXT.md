@@ -75,8 +75,8 @@
    - Оптимизация JPA: явные `LEFT JOIN FETCH r.reviewedBy rev` во всех запросах `PaymentReceiptRepository` для устранения N+1 и обеспечения стабильности при `spring.jpa.open-in-view=false`.
    - Защита от параллелизма и дубликатов: превентивная проверка `AWAITING_REVIEW` чеков для подписки/инвойса/клиента и блокировка повторной отправки (HTTP 409 Conflict).
    - 4 тарифа и полная локализация (i18n): в `ClientBillingPage` и `PaymentModal` внедрены 4 актуальных тарифа (Старт, Стандарт, Про, Корпоративный) с паритетом словарей на 4 языках (`ru`, `kk`, `en`, `zh`), динамическим переводом, форматированием цен и дат.
-   - Frontend UI & Redesign: полный переход на светлую корпоративную палитру JF-1C (`bg-white`, `border-gray-200`, `text-gray-900`, `bg-emerald-600`, без чужеродных `dark/zinc-900` блоков) в `AdminPaymentReceiptsPage`, `ClientBillingPage`, `PaymentModal`, `PaymentHistoryTable`, `RejectReceiptModal`.
-   - 100% покрытие тестами: 315+ backend тестов, 197 frontend тестов (25 файлов, 100% PASS), 0 ошибок linter/typecheck, 0 эмодзи.
+   - Frontend UI & Redesign: полный переход на светлую корпоративную палитру JF-1C (`bg-white`, `border-gray-200`, `text-gray-900`, `bg-emerald-600`, без чужеродных `dark/zinc-900` блоков) в `AdminPaymentReceiptsPage`, `ClientBillingPage`, `PaymentModal`, `PaymentHistoryTable`, `RejectReceiptModal`. Удалены декоративные звезды, `PaymentModal` сфокусирован на выбранном тарифе с возможностью смены тарифа.
+   - 100% покрытие тестами: 315+ backend тестов, 198 frontend тестов (25 файлов, 100% PASS), 0 ошибок linter/typecheck, 0 эмодзи.
 
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 

@@ -1910,6 +1910,10 @@
     "copyBin": "БСН көшіру",
     "copyIban": "IBAN көшіру",
     "selectPlanLabel": "Тарифті таңдаңыз",
+    "selectedPlanLabel": "Таңдалған тариф",
+    "changePlan": "Өзгерту",
+    "cancelChange": "Жию",
+    "monthShort": "ай",
     "customAmount": "Басқа сома",
     "plans": {
       "start": {

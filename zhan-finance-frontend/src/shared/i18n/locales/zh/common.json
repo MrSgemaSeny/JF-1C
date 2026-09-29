@@ -1910,6 +1910,10 @@
     "copyBin": "复制商业识别号",
     "copyIban": "复制银行账号",
     "selectPlanLabel": "选择服务方案",
+    "selectedPlanLabel": "已选方案",
+    "changePlan": "更改",
+    "cancelChange": "收起",
+    "monthShort": "月",
     "customAmount": "其他金额",
     "plans": {
       "start": {

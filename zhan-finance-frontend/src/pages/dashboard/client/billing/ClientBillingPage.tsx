@@ -7,7 +7,6 @@ import {
   Clock, 
   ShieldCheck, 
   RefreshCw,
-  Sparkles,
   Copy,
   Check,
   Building2,
@@ -147,7 +146,7 @@ export const ClientBillingPage: React.FC = () => {
             onClick={() => openPaymentForPlan(activePlanId || undefined, currentSubscription?.monthlyPrice || undefined)}
             className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs transition-colors cursor-pointer"
           >
-            <Sparkles className="w-4 h-4" />
+            <CreditCard className="w-4 h-4" />
             {currentSubscription?.status === 'ACTIVE'
               ? t('billing.renewSubscription', 'Продлить подписку')
               : t('billing.paySubscription', 'Оплатить подписку')}
@@ -322,8 +321,7 @@ export const ClientBillingPage: React.FC = () => {
       {/* Available Plans (4 Tariffs) */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-emerald-600" />
+          <h2 className="text-lg font-bold text-gray-900">
             {t('billing.availablePlans', 'Доступные тарифы')}
           </h2>
           <p className="text-xs text-gray-500 mt-1">
