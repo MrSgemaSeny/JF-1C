@@ -505,7 +505,7 @@ export const ClientBillingPage: React.FC = () => {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         subscriptionId={currentSubscription?.id}
-        planName={selectedPlanForModal ? BILLING_PLANS.find(p => p.id === selectedPlanForModal)?.nameKey : currentSubscription?.planName}
+        planName={selectedPlanForModal ? BILLING_PLANS.find(p => p.id === selectedPlanForModal)?.defaultName : currentSubscription?.planName}
         initialPlanId={selectedPlanForModal}
         defaultAmount={modalAmount || currentSubscription?.monthlyPrice || 100000}
         onSuccess={() => {

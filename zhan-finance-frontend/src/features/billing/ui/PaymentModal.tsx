@@ -161,6 +161,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
+  const selectedPlanItem = BILLING_PLANS.find((p) => p.id === selectedPlanId);
+  const planSubtitle = planName
+    ? getLocalizedPlanName(planName, t)
+    : (selectedPlanItem ? t(selectedPlanItem.nameKey, { defaultValue: selectedPlanItem.defaultName }) : null);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
       <div 
@@ -173,9 +178,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <h3 className="text-lg font-bold text-gray-900">
               {t('billing.modalTitle', { defaultValue: 'Оплата тарифа' })}
             </h3>
-            {planName && (
+            {planSubtitle && (
               <p className="text-xs text-emerald-700 font-semibold mt-0.5">
-                {getLocalizedPlanName(planName, t)}
+                {planSubtitle}
               </p>
             )}
           </div>

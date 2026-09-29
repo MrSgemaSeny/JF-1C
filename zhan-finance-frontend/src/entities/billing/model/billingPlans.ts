@@ -79,36 +79,40 @@ export function getLocalizedPlanName(rawName: string | null | undefined, t: any)
   const trimmed = rawName.trim();
   const lower = trimmed.toLowerCase();
 
-  if (lower === 'старт' || lower === 'start' || lower === 'бастау' || lower === '初创版' || lower === '初创') {
+  if (lower === 'старт' || lower === 'start' || lower === 'бастау' || lower === '初创版' || lower === '初创' || lower === 'billing.plans.start.name') {
     return t('billing.plans.start.name', 'Старт');
   }
-  if (lower === 'стандарт' || lower === 'standard' || lower === '标准版' || lower === '标准') {
+  if (lower === 'стандарт' || lower === 'standard' || lower === '标准版' || lower === '标准' || lower === 'billing.plans.standard.name') {
     return t('billing.plans.standard.name', 'Стандарт');
   }
-  if (lower === 'про' || lower === 'pro' || lower === '专业版' || lower === '专业') {
+  if (lower === 'про' || lower === 'pro' || lower === '专业版' || lower === '专业' || lower === 'billing.plans.pro.name') {
     return t('billing.plans.pro.name', 'Про');
   }
-  if (lower === 'корпоративный' || lower === 'corporate' || lower === 'business' || lower === 'корпоративтік' || lower === '企业尊享版' || lower === '企业') {
+  if (lower === 'корпоративный' || lower === 'corporate' || lower === 'business' || lower === 'корпоративтік' || lower === '企业尊享版' || lower === '企业' || lower === 'billing.plans.corporate.name') {
     return t('billing.plans.corporate.name', 'Корпоративный');
   }
-  if (lower === 'бухгалтерское обслуживание' || lower === 'bookkeeping services' || lower === 'бухгалтерлік қызмет көрсету' || lower === '财务代理记账服务') {
+  if (lower === 'бухгалтерское обслуживание' || lower === 'bookkeeping services' || lower === 'бухгалтерлік қызмет көрсету' || lower === '财务代理记账服务' || lower === 'billing.defaultplanname') {
     return t('billing.defaultPlanName', 'Бухгалтерское обслуживание');
+  }
+  if (lower.startsWith('billing.')) {
+    return t(rawName, rawName);
   }
   return rawName;
 }
 
 export function getPlanIdBySubscription(planName?: string | null, monthlyPrice?: number | null): 'start' | 'standard' | 'pro' | 'corporate' | null {
+  if (planName) {
+    const lower = planName.toLowerCase();
+    if (lower.includes('старт') || lower.includes('start') || lower.includes('бастау') || lower.includes('初创')) return 'start';
+    if (lower.includes('стандарт') || lower.includes('standard') || lower.includes('标准') || lower.includes('billing.plans.standard')) return 'standard';
+    if (lower.includes('про') || lower.includes('pro') || lower.includes('专业')) return 'pro';
+    if (lower.includes('корпор') || lower.includes('corporate') || lower.includes('business') || lower.includes('корпоратив') || lower.includes('企业')) return 'corporate';
+    if (lower.includes('бухгалтер') || lower.includes('bookkeeping')) return 'standard';
+    if (lower === 'базовый' || lower === 'basic') return null;
+  }
   if (monthlyPrice === 30000) return 'start';
   if (monthlyPrice === 100000 || monthlyPrice === 90000 || monthlyPrice === 45000) return 'standard';
   if (monthlyPrice === 200000) return 'pro';
   if (monthlyPrice === 400000) return 'corporate';
-  if (planName) {
-    const lower = planName.toLowerCase();
-    if (lower.includes('старт') || lower.includes('start') || lower.includes('бастау') || lower.includes('初创')) return 'start';
-    if (lower.includes('стандарт') || lower.includes('standard') || lower.includes('标准')) return 'standard';
-    if (lower.includes('про') || lower.includes('pro') || lower.includes('专业')) return 'pro';
-    if (lower.includes('корпор') || lower.includes('corporate') || lower.includes('business') || lower.includes('корпоратив') || lower.includes('企业')) return 'corporate';
-    if (lower.includes('бухгалтер') || lower.includes('bookkeeping')) return 'standard';
-  }
-  return 'standard';
+  return null;
 }
