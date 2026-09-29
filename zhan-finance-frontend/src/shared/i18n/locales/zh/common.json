@@ -1960,6 +1960,7 @@
     "noReceiptsDesc": "提交付款凭证后，此处将显示审核状态及详细记录。",
     "viewReceipt": "查看凭证",
     "modalTitle": "支付套餐费用",
+    "modalSubtitle": "公对公银行转账或 Kaspi 二维码支付",
     "successTitle": "凭证提交成功",
     "successDesc": "凭证已提交给管理员审核。审核确认后系统将自动激活您的订阅。",
     "requisitesTitle": "汇款银行账户信息：",

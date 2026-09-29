@@ -1963,6 +1963,7 @@
     "noReceiptsDesc": "Once you upload a payment receipt, it will appear here along with its verification status.",
     "viewReceipt": "View receipt",
     "modalTitle": "Pay Subscription",
+    "modalSubtitle": "Bank transfer by requisites or Kaspi QR",
     "successTitle": "Receipt submitted successfully",
     "successDesc": "Receipt has been submitted for administrator review. Your subscription will be activated automatically once confirmed.",
     "requisitesTitle": "Payment details:",

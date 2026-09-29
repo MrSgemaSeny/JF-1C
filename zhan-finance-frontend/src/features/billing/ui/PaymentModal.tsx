@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Check, UploadCloud, FileText, X, AlertCircle, Building, QrCode, CheckCircle2, Loader2 } from 'lucide-react';
+import { Copy, Check, UploadCloud, FileText, X, AlertCircle, Building, QrCode, CheckCircle2, Loader2, Layers, ArrowRightLeft } from 'lucide-react';
 import { paymentReceiptApi, PaymentRequisitesDto } from '@/entities/billing/api/paymentReceiptApi';
 import { BILLING_PLANS, getLocalizedPlanName, getPlanIdBySubscription, BillingPlanItem } from '@/entities/billing/model/billingPlans';
 
@@ -171,17 +171,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
       <div 
-        className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden"
+        className="relative w-full max-w-xl md:max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-gray-100">
           <div>
             <h3 className="text-lg font-bold text-gray-900">
               {t('billing.modalTitle', { defaultValue: 'Оплата тарифа' })}
             </h3>
             {planSubtitle && (
-              <p className="text-xs text-emerald-700 font-semibold mt-0.5">
+              <p className="text-xs text-gray-500 font-medium mt-0.5">
                 {planSubtitle}
               </p>
             )}
@@ -189,7 +189,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -265,42 +265,51 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsChangingPlan(true)}
-                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer"
                   >
-                    {t('billing.changePlan', { defaultValue: 'Сменить' })}
+                    <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{t('billing.changePlan', { defaultValue: 'Сменить' })}</span>
                   </button>
                 </div>
-                <div className="p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-xl flex items-center justify-between shadow-2xs">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                      {selectedPlanItem.defaultName.charAt(0)}
+
+                <div className="p-4 bg-gray-50/85 hover:bg-gray-50 border border-gray-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs transition-colors">
+                  <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+                    <div className="w-11 h-11 rounded-xl bg-white border border-gray-200/90 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
+                      <Layers className="w-5 h-5 text-emerald-600" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-gray-900">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-base font-bold text-gray-900">
                           {t(selectedPlanItem.nameKey, selectedPlanItem.defaultName)}
                         </span>
                         {selectedPlanItem.highlighted && (
-                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 bg-emerald-600 text-white rounded">
+                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 bg-emerald-600 text-white rounded tracking-wide">
                             HIT
                           </span>
                         )}
                         {selectedPlanItem.discountPrice && (
-                          <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100/90 border border-emerald-200 px-2 py-0.5 rounded-full">
                             {t('billing.discountBadge', { defaultValue: 'Спеццена со скидкой 10%' })}
                           </span>
                         )}
                       </div>
-                      <div className="text-xs font-mono font-bold text-emerald-800 flex items-baseline gap-1.5 mt-0.5">
-                        {selectedPlanItem.discountPrice && (
-                          <span className="text-[11px] text-gray-400 line-through font-normal">
-                            {selectedPlanItem.price.toLocaleString('ru-RU')} ₸
-                          </span>
-                        )}
-                        <span>
-                          {(selectedPlanItem.discountPrice ?? selectedPlanItem.price).toLocaleString('ru-RU')} ₸ / {t('billing.monthShort', { defaultValue: 'мес' })}
-                        </span>
+                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                        {t(selectedPlanItem.descKey, selectedPlanItem.defaultDesc)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-left sm:text-right shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
+                    {selectedPlanItem.discountPrice && (
+                      <div className="text-[11px] text-gray-400 line-through font-mono">
+                        {selectedPlanItem.price.toLocaleString('ru-RU')} ₸
                       </div>
+                    )}
+                    <div className="text-base sm:text-lg font-bold font-mono text-gray-900 tracking-tight">
+                      {(selectedPlanItem.discountPrice ?? selectedPlanItem.price).toLocaleString('ru-RU')} ₸
+                      <span className="text-xs font-normal text-gray-500 font-sans ml-1">
+                        / {t('billing.monthShort', { defaultValue: 'мес' })}
+                      </span>
                     </div>
                   </div>
                 </div>
