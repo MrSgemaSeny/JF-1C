@@ -20,6 +20,7 @@ public class CrmAccessService {
         this.taskStateMachine = new TaskStateMachine();
     }
 
+    @org.springframework.beans.factory.annotation.Autowired
     public CrmAccessService(TaskStateMachine taskStateMachine) {
         this.taskStateMachine = taskStateMachine != null ? taskStateMachine : new TaskStateMachine();
     }

@@ -61,6 +61,7 @@ public class PaymentReceiptService {
     @Value("${app.billing.requisites.bank-name:АО Каспий Банк}")
     private String bankName = "АО Каспий Банк";
 
+    @org.springframework.beans.factory.annotation.Autowired
     public PaymentReceiptService(
             PaymentReceiptRepository paymentReceiptRepository,
             SubscriptionRepository subscriptionRepository,
@@ -69,7 +70,7 @@ public class PaymentReceiptService {
             PaymentReceiptStorageService storageService,
             PaymentReceiptAccessService accessService,
             TelegramOutboxService telegramOutboxService,
-            NotificationService notificationService
+            @org.springframework.beans.factory.annotation.Autowired(required = false) NotificationService notificationService
     ) {
         this.paymentReceiptRepository = paymentReceiptRepository;
         this.subscriptionRepository = subscriptionRepository;

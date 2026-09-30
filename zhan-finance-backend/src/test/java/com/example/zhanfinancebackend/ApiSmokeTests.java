@@ -49,6 +49,9 @@ class ApiSmokeTests {
     @Autowired
     private com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
 
+    @Autowired
+    private com.example.zhanfinancebackend.modules.auth.security.JwtService jwtService;
+
     @BeforeEach
     void setup() {
         if (pipelineRepository.findByIsDefaultTrue().isEmpty()) {
@@ -92,10 +95,6 @@ class ApiSmokeTests {
         assertThat(accessToken).isNotBlank();
         assertThat(refreshToken).isNotBlank();
 
-        com.example.zhanfinancebackend.modules.auth.entity.User smokeUser = userRepository.findByEmailIgnoreCase("smoke@example.com").orElseThrow();
-        smokeUser.setRole(com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN);
-        userRepository.save(smokeUser);
-
         MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login").contextPath("/api")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -135,14 +134,20 @@ class ApiSmokeTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.fullName").value("Smoke Updated"));
 
-        long invoiceId = createInvoice(accessToken);
+        // Elevate user to ADMIN and generate token for billing management
+        com.example.zhanfinancebackend.modules.auth.entity.User smokeUser = userRepository.findByEmailIgnoreCase("smoke@example.com").orElseThrow();
+        smokeUser.setRole(com.example.zhanfinancebackend.modules.auth.entity.Role.ADMIN);
+        userRepository.save(smokeUser);
+        String adminToken = jwtService.generateAccessToken(smokeUser);
+
+        long invoiceId = createInvoice(adminToken);
         mockMvc.perform(get("/api/v1/billing/invoices").contextPath("/api")
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title").value("Smoke invoice"));
 
         mockMvc.perform(put("/api/v1/billing/invoices/{id}", invoiceId).contextPath("/api")
-                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -157,17 +162,17 @@ class ApiSmokeTests {
 
         mockMvc.perform(delete("/api/v1/billing/invoices/{id}", invoiceId).contextPath("/api")
                         .header("X-Requested-With", "XMLHttpRequest")
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
 
-        long subscriptionId = createSubscription(accessToken);
+        long subscriptionId = createSubscription(adminToken);
         mockMvc.perform(get("/api/v1/billing/subscriptions").contextPath("/api")
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].planName").value("Business"));
 
         mockMvc.perform(put("/api/v1/billing/subscriptions/{id}", subscriptionId).contextPath("/api")
-                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -183,7 +188,7 @@ class ApiSmokeTests {
 
         mockMvc.perform(delete("/api/v1/billing/subscriptions/{id}", subscriptionId).contextPath("/api")
                         .header("X-Requested-With", "XMLHttpRequest")
-                        .header("Authorization", "Bearer " + accessToken))
+                        .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
     }
 

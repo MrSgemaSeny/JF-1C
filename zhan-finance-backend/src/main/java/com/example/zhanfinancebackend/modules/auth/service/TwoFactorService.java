@@ -3,6 +3,7 @@ package com.example.zhanfinancebackend.modules.auth.service;
 import com.example.zhanfinancebackend.common.exception.BadRequestException;
 import com.example.zhanfinancebackend.common.exception.UnauthorizedException;
 import com.example.zhanfinancebackend.modules.auth.dto.TwoFactorSetupDto;
+import com.example.zhanfinancebackend.modules.auth.entity.Role;
 import com.example.zhanfinancebackend.modules.auth.entity.TwoFactorPreAuth;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.repository.TwoFactorPreAuthRepository;
@@ -91,6 +92,9 @@ public class TwoFactorService {
     public void disable2FA(User user, String code) {
         User persistentUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new BadRequestException("Пользователь не найден"));
+        if (persistentUser.getRole() == Role.ADMIN) {
+            throw new BadRequestException("Отключение двухфакторной аутентификации запрещено для администратора");
+        }
         if (!persistentUser.isTwoFactorEnabled()) {
             throw new BadRequestException("Двухфакторная аутентификация не включена");
         }
@@ -100,6 +104,24 @@ public class TwoFactorService {
         persistentUser.setTotpSecret(null);
         persistentUser.setTwoFactorEnabled(false);
         userRepository.save(persistentUser);
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserByPreAuthToken(String token) {
+        TwoFactorPreAuth preAuth = preAuthRepository.findByToken(token)
+                .orElseThrow(() -> new UnauthorizedException("Недействительный токен 2FA"));
+        if (preAuth.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new UnauthorizedException("Срок действия токена 2FA истек. Войдите заново.");
+        }
+        return userRepository.findById(preAuth.getUser().getId())
+                .orElseThrow(() -> new UnauthorizedException("Пользователь не найден"));
+    }
+
+    @Transactional
+    public User confirmSetupWithPreAuth(String token, String secret, String code) {
+        User user = getUserByPreAuthToken(token);
+        confirmSetup(user, secret, code);
+        return userRepository.findById(user.getId()).orElse(user);
     }
 
     @Transactional

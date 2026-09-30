@@ -68,6 +68,10 @@ public record AuthResponse(
         return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false, false, false, false, null, null);
     }
 
+    public static AuthResponse requires2FASetup(String preAuthToken) {
+        return new AuthResponse(null, null, null, null, null, null, null, false, null, null, null, true, preAuthToken, false, false, false, false, null, null);
+    }
+
     public static AuthResponse requiresEmailOtp(String preAuthToken, String email) {
         return new AuthResponse(null, null, null, null, email, null, null, false, null, null, null, false, preAuthToken, false, false, true, false, null, null);
     }

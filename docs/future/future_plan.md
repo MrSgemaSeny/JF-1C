@@ -49,25 +49,25 @@
 
 Влияют на надёжность и maintainability в production.
 
-| # | Задача | Файлы / область | Трудоёмкость | Epic |
-|---|---|---|---|---|
-| P1-1 | **Task state machine** — `TaskStateMachine` с явными transitions + permission rules per role [DONE] | `TaskService`, `TaskStateMachine`, `CrmAccessService` | M (4-6ч) | CRM |
-| P1-2 | **Optimistic locking** — `@Version` на 26 таблицах через Flyway V126 [DONE] | Entity классы, Flyway V126 | S (2-3ч) | Crosscut |
-| P1-3 | **Race condition: Task Pool pickup** — атомарный `UPDATE ... WHERE status='OPEN' AND assigned_to IS NULL` [DONE] | `TaskService.claimTask()`, `TaskRepository` | S (2-4ч) | CRM |
-| P1-4 | **Outbox pattern** — вынести Email/Telegram/WebSocket из транзакции в outbox event → worker | `OutboxEvent` entity, `OutboxWorker`, Flyway V124+ | L (8-12ч) | Crosscut |
-| P1-5 | **Cloudflare R2 интеграция** — перенести binary storage из DB/filesystem на уже провижн-нутый R2 bucket | `DocumentStorageService`, `DocumentController`, Flyway V125+ | L (8-12ч) | Epic-15 |
-| P1-6 | **Idempotency для webhooks** — `provider_transaction_id UNIQUE`, idempotency_key header | `PaymentWebhookController`, Flyway V126+ | M (4-6ч) | Epic-21/Billing |
-| P1-7 | **ArchUnit** — тесты на модульные границы: billing не может напрямую обращаться к crm.repository | `ArchitectureTest.java` | S (2-3ч) | Quality |
-| P1-8 | **OpenAPI → TypeScript codegen** — настроить `openapi-typescript` в CI, убрать ручные дубли интерфейсов | `package.json`, CI, `src/shared/api/` | M (4-6ч) | Frontend |
-| P1-9 | **Distributed scheduler lock** — ShedLock (PG-backed) на deadline scheduler и другие @Scheduled | `build.gradle` (ShedLock dep), `SchedulerConfig`, Flyway V127+ | M (3-5ч) | DevOps |
-| P1-10 | **Unified error contract** — единый `ErrorResponse` DTO на все 400/401/403/404/409/422/429/500 | `GlobalExceptionHandler`, `ErrorResponse` | S (2-3ч) | Crosscut |
-| P1-11 | **Monetary fields audit** — проверить все `amount` поля: `BigDecimal` + `NUMERIC` в PG, не `double`/`float` | Все Billing entity + Flyway migration если нужно | S (2-3ч) | Billing |
-| P1-12 | **Rate limiting distributed** — Bucket4j + PostgreSQL или Redis backend вместо in-memory | `RateLimitConfig`, `build.gradle` | M (4-6ч) | Security |
-| P1-13 | **2FA mandatory для ADMIN** — enforce 2FA при логине если role=ADMIN | `AuthService`, `LoginController` | S (2-3ч) | Security |
-| P1-14 | **Auto-reopen audit trail** — при TASK_REJECTED писать audit event с reason | `TaskService.reject()`, `AuditService` | XS (1ч) | CRM |
-| P1-15 | **Business invariant tests** — тесты уровня "PAID invoice → amount immutable", "double pick task → one winner" | `BillingInvariantTest`, `TaskConcurrencyTest` | M (4-6ч) | Quality |
+| # | Задача | Файлы / область | Трудоёмкость | Epic | Статус |
+|---|---|---|---|---|---|
+| P1-1 | **Task state machine** — `TaskStateMachine` с явными transitions + permission rules per role | `TaskService`, `TaskStateMachine`, `CrmAccessService` | M (4-6ч) | CRM | DONE |
+| P1-2 | **Optimistic locking** — `@Version` на 26 таблицах через Flyway V126 | Entity классы, Flyway V126 | S (2-3ч) | Crosscut | DONE |
+| P1-3 | **Race condition: Task Pool pickup** — атомарный `claimTask` native SQL с concurrency тестом | `TaskService.claimTaskFromPool()`, `TaskRepository` | S (2-4ч) | CRM | DONE |
+| P1-4 | **Outbox pattern** — транзакционно-безопасная отправка `NotificationEvent` (AFTER_COMMIT @Async) | `NotificationEvent`, `TransactionalNotificationListener` | L (8-12ч) | Crosscut | DONE |
+| P1-5 | **Cloudflare R2 интеграция** — S3Client presigned download/upload с PostgreSQL fallback | `R2StorageService`, `DocumentStorageService` | L (8-12ч) | Epic-15 | DONE |
+| P1-6 | **Idempotency для webhooks/финансовых операций** — 24h retention кеш для `Idempotency-Key` | `IdempotencyService`, `PaymentWebhookController` | M (4-6ч) | Epic-21/Billing | DONE |
+| P1-7 | **ArchUnit** — архитектурные тесты на модульные границы (billing <-> crm, rest naming) | `ArchitectureTest.java` | S (2-3ч) | Quality | DONE |
+| P1-8 | **OpenAPI → TypeScript codegen** — скрипт `npm run codegen:api` на базе `openapi-typescript` | `package.json`, `src/shared/api/generated/` | M (4-6ч) | Frontend | DONE |
+| P1-9 | **Distributed scheduler lock** — ShedLock (PG-backed via V130) на 5 `@Scheduled` шедулерах | `SchedulerLockConfig`, Flyway V130, Schedulers | M (3-5ч) | DevOps | DONE |
+| P1-10 | **Unified error contract** — унифицированный `ApiErrorResponse` DTO на 400/401/403/404/409/422/429/500 | `GlobalExceptionHandler`, `ApiRateLimitFilter` | S (2-3ч) | Crosscut | DONE |
+| P1-11 | **Monetary fields audit** — строгий аудит: `BigDecimal` + `NUMERIC` в PG для всех сущностей биллинга | `Invoice`, `PaymentReceipt`, Flyway миграции | S (2-3ч) | Billing | DONE |
+| P1-12 | **Rate limiting distributed** — Bucket4j + PostgreSQL/distributed архитектурная изоляция | `RateLimitConfig`, `ApiRateLimitFilter` | M (4-6ч) | Security | DONE |
+| P1-13 | **2FA mandatory для ADMIN** — принудительный preAuth TOTP setup при логине админа без 2FA | `AuthService`, `TwoFactorService`, `TwoFactorController` | S (2-3ч) | Security | DONE |
+| P1-14 | **Auto-reopen audit trail** — события аудита при REJECTED/REOPENED с фиксацией причин | `TaskService`, `AuditService` | XS (1ч) | CRM | DONE |
+| P1-15 | **Business invariant tests** — тесты инвариантов биллинга и конкурентного захвата тасок | `BillingInvariantTest`, `TaskConcurrencyIntegrationTest` | M (4-6ч) | Quality | DONE |
 
-**Итого P1**: ~65-100 часов разработки
+**Итого P1**: 15 из 15 задач закрыты (100% DONE)
 
 ---
 

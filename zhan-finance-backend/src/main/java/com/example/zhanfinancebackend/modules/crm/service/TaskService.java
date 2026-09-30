@@ -431,6 +431,13 @@ public class TaskService {
             logStageActivity(task, user, "Изменил стадию с " + oldStage + " на " + newStage.getName(), oldStageObj, newStage);
             auditService.logAction("UPDATE_STAGE", "Task", task.getId(), "Stage changed from " + oldStage + " to " + newStage.getName());
 
+            if (newStage.getType() == StageType.LOST) {
+                String reason = (lostReason != null && !lostReason.isBlank()) ? lostReason : "No reason provided";
+                auditService.logAction("TASK_REJECTED", "Task", task.getId(), "Task rejected/lost: " + newStage.getName() + ". Reason: " + reason);
+            } else if (oldStageObj != null && oldStageObj.isPreFinal() && newStage.getType() == StageType.OPEN) {
+                auditService.logAction("TASK_REOPENED", "Task", task.getId(), "Task reopened for rework from " + oldStage + " to " + newStage.getName());
+            }
+
             if (user.getRole() == Role.CLIENT) {
                 User employee = task.getAssignedTo() != null ? task.getAssignedTo() : (task.getClient() != null ? task.getClient().getAssignedEmployee() : null);
                 if (employee != null) {
@@ -681,6 +688,7 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
 
         logActivity(task, user, "Запросил отказ от задачи");
+        auditService.logAction("TASK_REASSIGNMENT_REQUESTED", "Task", task.getId(), "Employee " + user.getFullName() + " requested reassignment");
         notificationService.notifyAdmins(
                 "Запрос на отказ от задачи",
                 "Сотрудник " + user.getFullName() + " запросил отказ от задачи '" + task.getTitle() + "'",
@@ -702,6 +710,7 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
 
         logActivity(task, admin, "Подтвердил отказ от задачи. Исполнитель снят.");
+        auditService.logAction("TASK_REASSIGNMENT_APPROVED", "Task", task.getId(), "Admin " + admin.getFullName() + " approved reassignment. Task reopened to pool.");
         if (oldAssignee != null) {
             notificationService.createNotification(
                     oldAssignee,
@@ -724,6 +733,7 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
 
         logActivity(task, admin, "Отклонил запрос на отказ от задачи.");
+        auditService.logAction("TASK_REASSIGNMENT_REJECTED", "Task", task.getId(), "Admin " + admin.getFullName() + " rejected reassignment request");
         if (task.getAssignedTo() != null) {
             notificationService.createNotification(
                     task.getAssignedTo(),

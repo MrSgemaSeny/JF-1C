@@ -92,9 +92,12 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             } else {
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 response.setHeader("Retry-After", "60");
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write("{\"error\":\"Too many requests\"}");
+                response.setContentType("application/json;charset=UTF-8");
+                String reqId = java.util.UUID.randomUUID().toString();
+                response.getWriter().write(String.format(
+                        "{\"status\":429,\"code\":\"TOO_MANY_REQUESTS\",\"message\":\"Too many requests. Please try again later.\",\"path\":\"%s\",\"requestId\":\"%s\"}",
+                        uri, reqId
+                ));
                 return;
             }
         } else {

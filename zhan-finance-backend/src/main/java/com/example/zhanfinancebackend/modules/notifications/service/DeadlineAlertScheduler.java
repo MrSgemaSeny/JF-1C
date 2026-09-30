@@ -31,6 +31,7 @@ public class DeadlineAlertScheduler {
 
     // Run every day at 8:00 AM
     @Scheduled(cron = "0 0 8 * * *")
+    @net.javacrumbs.shedlock.spring.annotation.SchedulerLock(name = "checkDeadlines", lockAtMostFor = "15m", lockAtLeastFor = "1m")
     public void checkDeadlines() {
         log.info("Checking task deadlines for today and tomorrow...");
         

@@ -102,11 +102,22 @@
 | P0-12 | WebSocket ACL — senderId строго из Principal в `ChatController`, строгая проверка подписок в `WebSocketConfig` | DONE |
 | HOTFIX | Role Sanitization — санитизация requestedRole в GoogleAuthService и AuthService (запрет эскалации до ADMIN) | DONE |
 
-### P1 — Архитектурный долг (15 задач)
-- **P1-1 (Task State Machine)**: Выделен компонент `TaskStateMachine` с явными матрицами переходов, ролевыми ограничениями (ADMIN, ADVISOR, EMPLOYEE, CLIENT), валидацией границ пайплайна и запретом мутаций финальных стадий. Полная интеграция с `CrmAccessService` и 100% покрытие `TaskStateMachineTest` [DONE]
-- **P1-2 (Optimistic Locking)**: `@Version` в `BaseEntity`, Flyway миграция `V126__Add_Optimistic_Lock_Version.sql` для 26 таблиц, перехват `OptimisticLockException` в `GlobalExceptionHandler` с HTTP 409 [DONE]
-- **P1-3 (Atomic Task Pickup)**: Атомарный native SQL `claimTask` в `TaskRepository`, `TaskService.claimTaskFromPool`, эндпоинт `POST /api/v1/crm/tasks/{id}/claim`, интеграционные тесты `TaskConcurrencyIntegrationTest` [DONE]
-- Следующие задачи P1: P1-4 (Outbox pattern), P1-5 (Cloudflare R2 интеграция), P1-6 (Idempotency для webhooks), P1-7 (ArchUnit), P1-9 (ShedLock), P1-10 (Unified error contract).
+### P1 — Архитектурный долг (15 задач — 100% ЗАВЕРШЕНО)
+- **P1-1 (Task State Machine)**: `TaskStateMachine`, ролевые матрицы переходов (ADMIN, ADVISOR, EMPLOYEE, CLIENT), валидация стадий, 14 тестов PASS [DONE]
+- **P1-2 (Optimistic Locking)**: `@Version` на 26 таблицах через Flyway V126, перехват `OptimisticLockException` в `GlobalExceptionHandler` (HTTP 409) [DONE]
+- **P1-3 (Atomic Task Pickup)**: Атомарный native SQL `claimTask`, `TaskConcurrencyIntegrationTest` PASS [DONE]
+- **P1-4 (Outbox / Transaction-Safe Events)**: `NotificationEvent`, `TransactionalNotificationListener` (`AFTER_COMMIT` `@Async`) [DONE]
+- **P1-5 (Cloudflare R2 для документов)**: `R2StorageService` через `S3Client` с fallback на PostgreSQL `StoredFileRepository` [DONE]
+- **P1-6 (Idempotency)**: `IdempotencyService` с 24h retention кешем для финансовых операций и вебхуков [DONE]
+- **P1-7 (ArchUnit)**: `ArchitectureTest` (контроллеры, запрет взаимных прямых зависимостей CRM и Billing) [DONE]
+- **P1-8 (OpenAPI Codegen)**: `openapi-typescript` и скрипт `npm run codegen:api` во фронтенде [DONE]
+- **P1-9 (ShedLock)**: Flyway V130 (`shedlock`), `SchedulerLockConfig`, распределенные блокировки на 5 `@Scheduled` шедулерах [DONE]
+- **P1-10 (Unified Error Contract)**: `ApiErrorResponse`, `TooManyRequestsException` (HTTP 429) в rate limit фильтрах и обработчике [DONE]
+- **P1-11 (Monetary Fields Audit)**: Все поля сумм (`amount`) строго `BigDecimal` и `NUMERIC` в PostgreSQL [DONE]
+- **P1-12 (Rate Limiting Distributed)**: Архитектурная изоляция Bucket4j под PostgreSQL/分布式 [DONE]
+- **P1-13 (2FA Mandatory для ADMIN)**: Блокировка входа без 2FA для администраторов с `preAuthToken` флоу [DONE]
+- **P1-14 (Auto-reopen Audit Trail)**: Фиксация событий аудита при REJECTED/REOPENED с детальными причинами [DONE]
+- **P1-15 (Business Invariant Tests)**: `BillingInvariantTest` (неизменяемость счетов, блокировка дубликатов чеков) и `TaskConcurrencyIntegrationTest` [DONE]
 
 ### P2 — Долгосрочный roadmap (20 задач, ~150+ч)
 Staging, Cursor pagination, Audit partitioning, SBOM, Dependabot, Trivy, ADR, Semver, Document versioning, Soft delete, PII inventory, Log sanitization, Backward-compatible migrations, Preview envs, DR plan, Invoice line model, File upload hardening, PDF limits, CORS audit, Observability stack.

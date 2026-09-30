@@ -344,6 +344,13 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, "UNPROCESSABLE_ENTITY", exception, request, locale);
     }
 
+    // --- 429 Too Many Requests ---
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<ErrorResponse> handleTooManyRequests(TooManyRequestsException exception, HttpServletRequest request, Locale locale) {
+        return buildResponse(HttpStatus.TOO_MANY_REQUESTS, "TOO_MANY_REQUESTS", exception, request, locale);
+    }
+
     // --- Legacy ApiException Mapping ---
     
     @ExceptionHandler(ApiException.class)

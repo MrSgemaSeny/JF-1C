@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -98,7 +99,11 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setHeader("Retry-After", "60");
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"error\":\"Too many requests\",\"retryAfter\":60}");
+            String reqId = UUID.randomUUID().toString();
+            response.getWriter().write(String.format(
+                    "{\"status\":429,\"code\":\"TOO_MANY_REQUESTS\",\"message\":\"Too many requests. Please try again later.\",\"path\":\"%s\",\"requestId\":\"%s\"}",
+                    uri, reqId
+            ));
         }
     }
 

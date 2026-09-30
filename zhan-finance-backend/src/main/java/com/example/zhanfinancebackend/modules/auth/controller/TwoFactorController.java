@@ -43,6 +43,25 @@ public class TwoFactorController {
         return ApiResponse.success(response);
     }
 
+    @GetMapping("/setup-preauth")
+    public ApiResponse<TwoFactorSetupDto> getSetupPreAuth(@org.springframework.web.bind.annotation.RequestParam String preAuthToken) {
+        User user = twoFactorService.getUserByPreAuthToken(preAuthToken);
+        TwoFactorSetupDto setupDto = twoFactorService.generateSetup(user);
+        return ApiResponse.success(setupDto);
+    }
+
+    @PostMapping("/setup-preauth/confirm")
+    public ApiResponse<AuthResponse> confirmSetupPreAuth(
+            @Valid @RequestBody com.example.zhanfinancebackend.modules.auth.dto.TwoFactorConfirmPreAuthRequest request,
+            jakarta.servlet.http.HttpServletResponse httpServletResponse
+    ) {
+        User user = twoFactorService.confirmSetupWithPreAuth(request.preAuthToken(), request.secret(), request.code());
+        twoFactorService.deletePreAuthToken(request.preAuthToken());
+        AuthResponse response = authService.buildFullAuthResponse(user);
+        authCookieHelper.setTokenCookies(httpServletResponse, response);
+        return ApiResponse.success(response);
+    }
+
     @GetMapping("/setup")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<TwoFactorSetupDto> getSetup(@AuthenticationPrincipal UserPrincipal principal) {

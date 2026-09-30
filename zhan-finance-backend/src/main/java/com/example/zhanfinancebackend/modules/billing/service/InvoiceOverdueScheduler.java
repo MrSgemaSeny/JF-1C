@@ -23,6 +23,7 @@ public class InvoiceOverdueScheduler {
 
     // Run every day at 1:00 AM
     @Scheduled(cron = "0 0 1 * * *")
+    @net.javacrumbs.shedlock.spring.annotation.SchedulerLock(name = "markOverdueInvoices", lockAtMostFor = "15m", lockAtLeastFor = "1m")
     @Transactional
     public void markOverdueInvoices() {
         log.info("Checking for overdue ISSUED invoices...");

@@ -30,6 +30,7 @@ public class TelegramCleanupScheduler {
     }
 
     @Scheduled(fixedDelay = 900000) // every 15 minutes
+    @net.javacrumbs.shedlock.spring.annotation.SchedulerLock(name = "telegramPurgeExpiredTokens", lockAtMostFor = "10m", lockAtLeastFor = "1m")
     @Transactional
     public void purgeExpiredTokens() {
         try {
@@ -42,6 +43,7 @@ public class TelegramCleanupScheduler {
     }
 
     @Scheduled(cron = "0 0 3 * * *") // Daily at 03:00 AM
+    @net.javacrumbs.shedlock.spring.annotation.SchedulerLock(name = "telegramPurgeArchivedNotifications", lockAtMostFor = "15m", lockAtLeastFor = "1m")
     @Transactional
     public void purgeArchivedNotifications() {
         try {

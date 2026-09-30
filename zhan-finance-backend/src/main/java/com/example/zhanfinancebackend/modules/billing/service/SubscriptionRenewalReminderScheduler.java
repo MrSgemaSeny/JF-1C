@@ -28,6 +28,7 @@ public class SubscriptionRenewalReminderScheduler {
     }
 
     @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Almaty")
+    @net.javacrumbs.shedlock.spring.annotation.SchedulerLock(name = "sendExpiringSubscriptionReminders", lockAtMostFor = "15m", lockAtLeastFor = "1m")
     public void sendExpiringSubscriptionReminders() {
         LocalDate reminderDate = LocalDate.now().plusDays(3);
         List<Subscription> expiring = subscriptionRepository.findByStatusAndEndsAt(
