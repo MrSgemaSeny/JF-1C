@@ -30,11 +30,25 @@ public class InternalTokenFilter extends OncePerRequestFilter {
     private final String configuredToken;
     private final ObjectMapper objectMapper;
 
+    public InternalTokenFilter(String configuredToken, ObjectMapper objectMapper) {
+        this(configuredToken, objectMapper, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
     public InternalTokenFilter(
             @Value("${app.security.internal-bot-token:}") String configuredToken,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            org.springframework.core.env.Environment env
     ) {
-        this.configuredToken = configuredToken != null ? configuredToken.trim() : "";
+        String trimmed = configuredToken != null ? configuredToken.trim() : "";
+        boolean isTest = env == null || java.util.Arrays.asList(env.getActiveProfiles()).contains("test");
+        if (!isTest && (trimmed.toLowerCase().contains("dev-") || trimmed.toLowerCase().contains("default-secret") || trimmed.length() < 32)) {
+            boolean isProdOrUnspecified = java.util.Arrays.asList(env.getActiveProfiles()).contains("prod") || env.getActiveProfiles().length == 0;
+            if (isProdOrUnspecified) {
+                throw new IllegalStateException("CRITICAL: Default or insecure INTERNAL_BOT_TOKEN is strictly forbidden in production. Minimum 32 characters required.");
+            }
+        }
+        this.configuredToken = trimmed;
         this.objectMapper = objectMapper;
     }
 

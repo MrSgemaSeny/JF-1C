@@ -80,7 +80,7 @@ public class TwoFactorController {
     }
 
     @PostMapping("/disable")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ApiResponse<Void> disable(
             @Valid @RequestBody TwoFactorDisableRequest request,
             @AuthenticationPrincipal UserPrincipal principal

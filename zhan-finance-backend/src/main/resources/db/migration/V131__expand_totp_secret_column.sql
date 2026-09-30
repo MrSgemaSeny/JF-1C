@@ -1,0 +1,1 @@
+ALTER TABLE app_users ALTER COLUMN totp_secret TYPE VARCHAR(255);

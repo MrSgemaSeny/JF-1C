@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { apiRequest } from '@/shared/api/http';
-import { useOptionalAuth } from '@/features/auth/AuthContext';
+import { apiRequest, getAccessToken } from '@/shared/api/http';
+import { AUTH_STORAGE_KEY } from '@/shared/constants/storageKeys';
 
 const LANGUAGES = [
   { code: 'ru', label: 'RU' },
@@ -11,14 +11,13 @@ const LANGUAGES = [
 
 export const LanguageSwitcher = ({ className = '' }: { className?: string }) => {
   const { i18n } = useTranslation();
-  const auth = useOptionalAuth();
-  const user = auth?.user;
 
   const handleLanguageChange = async (code: string) => {
     localStorage.setItem('jf1c_lang', code);
     await i18n.changeLanguage(code);
     
-    if (user) {
+    const hasAuth = !!getAccessToken() || !!localStorage.getItem(AUTH_STORAGE_KEY);
+    if (hasAuth) {
       try {
         await apiRequest('/api/v1/users/me/locale', {
           method: 'PATCH',

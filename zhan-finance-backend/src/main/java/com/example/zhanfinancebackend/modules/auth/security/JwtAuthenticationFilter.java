@@ -18,10 +18,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(
+            JwtService jwtService,
+            CustomUserDetailsService userDetailsService,
+            com.example.zhanfinancebackend.modules.auth.repository.UserRepository userRepository
+    ) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -58,12 +64,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long uid = jwtService.extractUserIdIfValidAccessToken(token);
 
                 if (role != null && uid != null) {
+                    boolean enabled = userRepository.findById(uid)
+                            .map(com.example.zhanfinancebackend.modules.auth.entity.User::isEnabled)
+                            .orElse(true);
+
+                    if (!enabled) {
+                        SecurityContextHolder.clearContext();
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+
                     com.example.zhanfinancebackend.modules.auth.entity.User stubUser = new com.example.zhanfinancebackend.modules.auth.entity.User();
                     stubUser.setId(uid);
                     stubUser.setEmail(username);
                     stubUser.setRole(com.example.zhanfinancebackend.modules.auth.entity.Role.valueOf(role));
                     stubUser.setEnabled(true);
-                    
+
                     UserPrincipal principal = new UserPrincipal(stubUser);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

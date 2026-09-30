@@ -3,6 +3,7 @@ package com.example.zhanfinancebackend.modules.auth.entity;
 import com.example.zhanfinancebackend.common.audit.BaseEntity;
 import com.example.zhanfinancebackend.modules.audit.annotation.AuditedEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -54,7 +55,8 @@ public class User extends BaseEntity {
     @Column(name = "deleted_at")
     private java.time.Instant deletedAt;
 
-    @Column(name = "totp_secret", length = 64)
+    @Convert(converter = com.example.zhanfinancebackend.modules.auth.security.TotpSecretConverter.class)
+    @Column(name = "totp_secret", length = 255)
     private String totpSecret;
 
     @Column(name = "two_factor_enabled", nullable = false)

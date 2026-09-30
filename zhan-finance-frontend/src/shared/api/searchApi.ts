@@ -1,5 +1,11 @@
 import { apiRequest } from '@/shared/api/http';
-import type { TaskDto } from '@/entities/task/model/types';
+
+export interface TaskSearchDto {
+  id: number;
+  title: string;
+  client?: { fullName?: string } | null;
+  stage?: { name?: string } | null;
+}
 
 export interface UserSearchDto {
   id: number;
@@ -24,7 +30,7 @@ export interface LessonSearchDto {
 }
 
 export interface GlobalSearchResponse {
-  tasks: TaskDto[];
+  tasks: TaskSearchDto[];
   users: UserSearchDto[];
   courses: CourseSearchDto[];
   lessons: LessonSearchDto[];

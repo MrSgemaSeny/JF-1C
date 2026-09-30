@@ -7,18 +7,18 @@
 - **Global Rule**: ALL architectural decisions and context updates must be synchronized with `Brain's Protocol` at `C:\Users\murat\IdeaProjects\new_world\Brain's protocol - second brain`.
 
 ## Infrastructure & Test State
-- **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`: 309+ tests PASS) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL, EmailOtp, GoogleAuth, PaymentReceipts). JaCoCo configured for coverage tracking.
-- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (25 test files, 196 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
+- **Backend (Spring Boot 3 / Java 17)**: 100% test pass rate (`./gradlew test`: 363 tests PASS) across all modules (Auth, Admin, CRM, Billing, LMS, Documents, Chat, Notifications, Search, WebSocket ACL, EmailOtp, GoogleAuth, PaymentReceipts). JaCoCo configured for coverage tracking (minimum = 0.52).
+- **Frontend (React 19 / Vite / Tailwind v4)**: 100% Vitest test pass rate (25 test files, 198 tests), strict TypeScript verification (`tsc --noEmit`), and clean ESLint 9 flat config (`eslint.config.js`, 0 errors, 0 warnings).
 - **Telegram Bot Microservice**: Отдельный микросервис `zhan-finance-tgbot` (`C:\Users\murat\IdeaProjects\zhan-finance-tgbot`, Spring Boot 3 / Java 17, порт 8081, 89 тестов PASS). Общается с монолитом через защищенные внутренние эндпоинты `/api/v1/internal/**` по `X-Internal-Token` (`Role.INTERNAL_BOT`).
 - **CI/CD (.github/workflows/ci.yml)**: Continuous quality gate enforcing backend test execution, frontend linting, typechecking, Vitest execution, and GitHub Pages deployment.
 - **Storage (Cloudflare R2)**: Presigned URLs (15 мин) для `payment_receipts` с fallback на PostgreSQL `StoredFileRepository`.
-- **Auth & Security**: JWT Bearer, refresh token rotation, TOTP 2FA, Bucket4j rate limiting, row-level CRM and Billing access controls, Google Account Linking (OAuth 2.0 / GIS), Gmail OTP Protection Flow (Flyway V127).
+- **Auth & Security**: JWT Bearer, refresh token rotation, AES-256 TOTP 2FA, Bucket4j rate limiting, row-level CRM and Billing access controls, Google Account Linking (OAuth 2.0 / GIS), Gmail OTP Protection Flow (Flyway V127).
 - **Roles (6)**: ADMIN, EMPLOYEE, CLIENT, LEARNER, CURATOR, ADVISOR (плюс INTERNAL_BOT для бота).
 
 ## Key Completed Features & Milestones
 1. **Full Automated Test Coverage Across Backend, Frontend & CI/CD**:
    - Comprehensive MockMvc, JUnit 5, Mockito, and Spring Security ACL test coverage for all controllers and domain services.
-   - 169 unit and integration tests across frontend entities, widgets, features, contexts, and pages.
+   - 198 unit and integration tests across frontend entities, widgets, features, contexts, and pages.
    - ESLint 9 flat config with zero warnings and strict TypeScript mode enabled.
    - Dual-track E2E test inventory (`TEST_READY.md`, 202 test specs across 4 tiers) and test infrastructure (`TEST_INFRA.md`).
 
@@ -28,105 +28,48 @@
    - Команда: 1 руководитель + 8 проверенных специалистов, переключатель «Сетка» / «Карусель» и модальное окно деталей.
    - Услуги (Разовые / Аутсорс с SLA), 4 тарифа, FAQ, WhatsApp QR-флоу, выбор роли на странице авторизации.
 
-2. **100% 4-Language i18n & Dictionary Parity (`ru`, `kk`, `en`, `zh`)**:
+3. **100% 4-Language i18n & Dictionary Parity (`ru`, `kk`, `en`, `zh`)**:
    - Complete key parity across all 4 locales in `src/shared/i18n/locales/` (96/96 automated parity tests).
    - 100% localized coverage across all authenticated portals, internal dashboards, admin tools, CRM boards, templates, and modals.
    - Zero hardcoded UI strings, strict absence of Cyrillic characters in Chinese locale.
    - Centralized date and currency formatting utilities (`dateFormat.ts`).
 
-3. **1C Client Hub & Report Stubs (`/client/1c`) [ТЕСТОВЫЙ / FRONTEND-ONLY]**:
-   - Раздел `/client/1c` и вложенные маршруты (`/osv`, `/saldo`, `/reconciliation`, `/account-card`, `/cash-book`, `/stock`) — исключительно тестовый фронтенд-интерфейс без данных.
-   - Бекенд-интеграции и реальных финансовых данных на текущий момент нет.
-   - Моковые/фейковые финансовые данные строго запрещены: отображается чистый Empty State в ожидании OData-шлюза.
+4. **1C Client Hub & Report Stubs (`/client/1c`) [ТЕСТОВЫЙ / FRONTEND-ONLY]**:
+   - Раздел `/client/1c` и вложенные маршруты — тестовый фронтенд-интерфейс без данных.
    - Полноценный запуск двусторонней синхронизации запланирован в Фазе 3 в рамках Epic-21 (1C Data Gateway).
 
-4. **Epic-21 Roadmap (1C Data Gateway & Fiscal Hub)**:
-   - Полная архитектурная спецификация и дорожная карта интеграции в `Epics/Plan/Epic-21-1c-data-gateway/epic.md`.
-
 5. **ZhanFinance Telegram Bot & Outbox Integration (Microservice + Backend) [DONE]**:
-   - Flyway миграции V124 (`telegram_links`, `telegram_link_tokens`) и V125 (`telegram_notifications`) со связями к `app_users(id)`.
+   - Flyway миграции V124 (`telegram_links`) и V125 (`telegram_notifications`).
    - Машинная авторизация `Role.INTERNAL_BOT` и фильтр постоянного времени `InternalTokenFilter` (`MessageDigest.isEqual`) для `/v1/internal/**`.
-   - Пользовательские эндпоинты `/api/v1/telegram/link/**` и внутренние эндпоинты бота `/api/v1/internal/**` с вайтлистом в `ApiRateLimitFilter` и `CsrfHeaderFilter`.
-   - `TelegramLinkRepository`: явные `JOIN FETCH tl.user` для исключения `LazyInitializationException` при резолве клиента.
-   - `InternalTelegramController`: `@Transactional(readOnly = true)` на контроллере и `@Transactional` на мутирующих методах.
-   - Микросервис `zhan-finance-tgbot` на порту 8081 с автозагрузкой `.env` в `bootRun`.
-   - Полная санитизация ошибок Telegram: клиентам отдаются чистые человечные подсказки без утечек JSON, кодов ошибок или стеков (все технические данные фиксируются в серверных логах).
-   - 100% покрытие тестами: 295 бекенд-тестов, 89 тестов микросервиса бота (всего 384 теста, 0 ошибок, 0 пропусков, 0 эмодзи).
+   - Микросервис `zhan-finance-tgbot` на порту 8081 с санитизацией ошибок Telegram.
 
 6. **Global Exception Hardening & Error Sanitization [DONE]**:
-   - `GlobalExceptionHandler.java`: перехват `DataIntegrityViolationException` (HTTP 409 `DATA_CONFLICT` вместо 500 ошибки при дубликатах/ограничениях БД).
-   - Перехват `MaxUploadSizeExceededException` (HTTP 400 `FILE_TOO_LARGE`), `MethodArgumentTypeMismatchException` (HTTP 400 `INVALID_PARAMETER`), `MissingServletRequestParameterException` (HTTP 400 `MISSING_PARAMETER`), `IllegalArgumentException` (HTTP 400 `BAD_REQUEST`), `ConstraintViolationException` (HTTP 400 `VALIDATION_ERROR`).
-   - Сохранение явных сообщений `ApiException` без затирания общими фразами из словаря.
-   - Синхронизированы словари локализации ошибок `messages.properties`, `messages_ru.properties`, `messages_en.properties`.
+   - `GlobalExceptionHandler.java`: перехват `DataIntegrityViolationException` (HTTP 409), `MaxUploadSizeExceededException`, `MethodArgumentTypeMismatchException`.
 
 7. **Google Account Linking & Gmail OTP Registration Protection (Flyway V127) [DONE]**:
-   - `google_sub`, `google_email`, `password_set` добавлены в `app_users` с частичным уникальным индексом.
-   - Таблица `email_verification_otps` с индексами и `last_sent_at` для персистентного кулдауна (60 сек).
-   - Защита регистрации: регистрация с адресом `@gmail.com` требует обязательного подтверждения владения почтой через 6-значный OTP код (защита от захвата чужих адресов) либо регистрацию в 1 клик через Google. Для других почтовых доменов регистрация прямая.
-   - Вход в систему: прямой и мгновенный по email + паролю (без задержек и OTP), либо через Google в 1 клик.
-   - Пароли в registration payload надежно хешируются (BCrypt) до сохранения в БД.
-   - Привязка и отвязка Google-аккаунта в Настройках пользователя (с защитой от отвязки единственного метода входа при `!password_set`).
-   - 100% покрытие: 295 backend тестов, 169 frontend тестов, 0 ошибок.
+   - Gmail OTP подтверждение (60 сек кулдаун), вход в 1 клик через Google, защита от эскалации ролей.
 
 8. **Billing v1: Manual Kaspi / Bank Transfer, Cloudflare R2 Receipts, 4 Tariffs & Full i18n [DONE]**:
-   - Flyway миграции V128 (`payment_receipts`, RLS, optimistic locking `version`) и V129 (`subscriptions_status_check` с поддержкой `PENDING`) применены и верифицированы в БД.
-   - Безопасное хранилище `DefaultPaymentReceiptStorageService`: валидация MIME через Apache Tika (строго `application/pdf`, лимит 10 МБ), upload в Cloudflare R2 с 15-минутными Presigned URLs, локальный fallback на PostgreSQL `StoredFileRepository`.
-   - Сервисный слой и безопасность: `PaymentReceiptAccessService` (RLS проверки), `PaymentReceiptService` (транзакционный перевод receipt -> `CONFIRMED`, sub -> `ACTIVE` +30 дней, invoice -> `PAID`), шедулер `SubscriptionRenewalReminderScheduler` (09:00 Asia/Almaty за 3 дня до конца).
-   - Оптимизация JPA: явные `LEFT JOIN FETCH r.reviewedBy rev` во всех запросах `PaymentReceiptRepository` для устранения N+1 и обеспечения стабильности при `spring.jpa.open-in-view=false`.
-   - Защита от параллелизма и дубликатов: превентивная проверка `AWAITING_REVIEW` чеков для подписки/инвойса/клиента и блокировка повторной отправки (HTTP 409 Conflict).
-   - 4 тарифа и полная локализация (i18n): в `ClientBillingPage` и `PaymentModal` внедрены 4 актуальных тарифа (Старт, Стандарт, Про, Корпоративный) с паритетом словарей на 4 языках (`ru`, `kk`, `en`, `zh`), динамическим переводом, форматированием цен и дат.
-   - Frontend UI & Redesign: полный переход на светлую корпоративную палитру JF-1C (`bg-white`, `border-gray-200`, `text-gray-900`, `bg-emerald-600`, без чужеродных `dark/zinc-900` блоков) в `AdminPaymentReceiptsPage`, `ClientBillingPage`, `PaymentModal`, `PaymentHistoryTable`, `RejectReceiptModal`. Удалены декоративные звезды, `PaymentModal` сфокусирован на выбранном тарифе с возможностью смены тарифа.
-   - Сквозные омниканальные уведомления о чеках: `PaymentReceiptService` интегрирован с `NotificationService` — in-app колокольчик в веб-портале, Telegram Outbox для бота и алерт в корпоративный Telegram-канал админов при подаче, подтверждении (с названием тарифа и датой) и отклонении чеков.
-   - 100% покрытие тестами: 315+ backend тестов, 198 frontend тестов (25 файлов, 100% PASS), 0 ошибок linter/typecheck, 0 эмодзи.
+   - Flyway миграции V128 (`payment_receipts`, RLS, optimistic locking `version`) и V129 (`subscriptions_status_check`).
+   - Безопасное хранилище `DefaultPaymentReceiptStorageService`, RLS проверки, омниканальные уведомления.
 
 9. **Zero Lag & Anti-Race Architecture [DONE]**:
-   - Refresh Token Rotation Grace Period (15 сек) по RFC 6819 Section 5.2.2.3 для защиты от ложных вылетов при параллельных запросах/вкладках.
-   - Пессимистическая блокировка `findByIdForUpdate` (`PESSIMISTIC_WRITE` / `SELECT ... FOR UPDATE`) для `PaymentReceipt` при подтверждении и отклонении чеков.
-   - HikariCP pool tuning: установлен `leak-detection-threshold=10000` (10с) для исключения ложных срабатываний при генерации PDF и `connection-timeout=5000`.
-   - Атомарная идемпотентность (`IdempotencyService`): потокобезопасный `putIfAbsent`, кэширование и возврат результатов (RFC/Stripe семантика) при сетевых ретраях, заголовок `Idempotency-Key` на операциях с чеками.
-   - React Query network optimization: настроены `staleTime: 30s` и `gcTime: 5m` в `queryClient.ts` для ликвидации повторных запросов и мигания UI.
-   - Optimistic UI в CRM Kanban: мгновенный drag-and-drop с фоновой синхронизацией и автоматическим откатом (`onError`) в `useUpdateTaskStage`.
-   - 100% покрытие тестами: 360+ backend тестов (включая `RefreshTokenRotationTest` и `IdempotencyServiceTest`), 198 Vitest тестов, `tsc --noEmit` — 0 ошибок.
+   - Refresh Token Rotation Grace Period (15 сек) по RFC 6819.
+   - Пессимистическая блокировка `findByIdForUpdate` (`SELECT ... FOR UPDATE`) для чеков.
+   - HikariCP pool tuning: `leak-detection-threshold=10000` (10с) и `connection-timeout=5000`.
+   - Атомарная идемпотентность (`IdempotencyService`): потокобезопасный `putIfAbsent`, кэширование результатов при сетевых ретраях.
+   - React Query network optimization: `staleTime: 30s` и `gcTime: 5m`, Optimistic UI в CRM Kanban.
 
-## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
+10. **Targeted Security & Architecture Remediation (11 Items Audit) [DONE]**:
+    - Fail-fast production check для `INTERNAL_BOT_TOKEN` в `InternalTokenFilter` и `application-prod.properties`.
+    - AES-256-GCM JPA Converter (`TotpSecretConverter`) для `totpSecret` с Flyway V131 (`VARCHAR(255)`).
+    - Ликвидирован deadlock в `TwoFactorController` (`@PreAuthorize("isAuthenticated()")` на `/disable`).
+    - Проверка `isEnabled` в `JwtAuthenticationFilter` (блокировка деактивированных пользователей).
+    - `cleartext: false` в `capacitor.config.ts`.
+    - 0 нарушений FSD в слое `src/shared` (декуплированы `searchApi`, `LanguageSwitcher`, `Badge`).
+    - Создан `src/shared/api/generated-schema.d.ts`.
+    - JaCoCo threshold повышен до 52% (0.52).
+    - 363 backend теста (100% PASS), 198 frontend тестов (100% PASS), `tsc --noEmit` — 0 ошибок.
 
-Полный план зафиксирован в `docs/future/future_plan.md`.
-Основание: ChatGPT audit части 1 и 2 (`docs/reports/full_audit_chatgpt_1.md`, `full_audit_chatgpt_2.md`).
-Цель: стабилизировать и доказать корректность существующего modular monolith. НЕ переписывать архитектуру.
-
-### P0 — Критические (12 задач — 100% ЗАВЕРШЕНО)
-| ID | Задача | Статус |
-|---|---|---|
-| P0-1 | Refresh-token lifecycle audit (reuse detection, token family, session revocation) [V122] | DONE |
-| P0-2 | PAID invoice immutability — запретить PUT/PATCH/DELETE на PAID/CANCELED | DONE |
-| P0-3 | Invoice state machine — явные allowed transitions | DONE |
-| P0-4 | Enum → HTTP 400 (перехват HttpMessageNotReadableException в GlobalExceptionHandler) | DONE |
-| P0-5 | PostgreSQL 17 в docker-compose (postgres:17-alpine, удален неиспользуемый redis) | DONE |
-| P0-6 | Flyway discipline — CI-шаг: validate checksums и сортировка миграций перед тестами | DONE |
-| P0-7 | Backup restore drill — runbook (`docs/RUNBOOK.md`) + CI workflow (`restore-drill.yml`) | DONE |
-| P0-8 | SECURITY.md — vulnerability reporting process, SLA и контакты безопасности | DONE |
-| P0-9 | Default secrets fail-fast — проверка JWT_SECRET на длину >= 32 байт и запрет change-me в prod | DONE |
-| P0-10 | CURRENT_STATE.md — актуальный стек, архитектура, инварианты и роли | DONE |
-| P0-11 | Coverage gate в CI — JaCoCo: `jacocoTestCoverageVerification` привязана к `check` | DONE |
-| P0-12 | WebSocket ACL — senderId строго из Principal в `ChatController`, строгая проверка подписок в `WebSocketConfig` | DONE |
-| HOTFIX | Role Sanitization — санитизация requestedRole в GoogleAuthService и AuthService (запрет эскалации до ADMIN) | DONE |
-
-### P1 — Архитектурный долг (15 задач — 100% ЗАВЕРШЕНО)
-- **P1-1 (Task State Machine)**: `TaskStateMachine`, ролевые матрицы переходов (ADMIN, ADVISOR, EMPLOYEE, CLIENT), валидация стадий, 14 тестов PASS [DONE]
-- **P1-2 (Optimistic Locking)**: `@Version` на 26 таблицах через Flyway V126, перехват `OptimisticLockException` в `GlobalExceptionHandler` (HTTP 409) [DONE]
-- **P1-3 (Atomic Task Pickup)**: Атомарный native SQL `claimTask`, `TaskConcurrencyIntegrationTest` PASS [DONE]
-- **P1-4 (Outbox / Transaction-Safe Events)**: `NotificationEvent`, `TransactionalNotificationListener` (`AFTER_COMMIT` `@Async`) [DONE]
-- **P1-5 (Cloudflare R2 для документов)**: `R2StorageService` через `S3Client` с fallback на PostgreSQL `StoredFileRepository` [DONE]
-- **P1-6 (Idempotency)**: `IdempotencyService` с 24h retention кешем для финансовых операций и вебхуков [DONE]
-- **P1-7 (ArchUnit)**: `ArchitectureTest` (контроллеры, запрет взаимных прямых зависимостей CRM и Billing) [DONE]
-- **P1-8 (OpenAPI Codegen)**: `openapi-typescript` и скрипт `npm run codegen:api` во фронтенде [DONE]
-- **P1-9 (ShedLock)**: Flyway V130 (`shedlock`), `SchedulerLockConfig`, распределенные блокировки на 5 `@Scheduled` шедулерах [DONE]
-- **P1-10 (Unified Error Contract)**: `ApiErrorResponse`, `TooManyRequestsException` (HTTP 429) в rate limit фильтрах и обработчике [DONE]
-- **P1-11 (Monetary Fields Audit)**: Все поля сумм (`amount`) строго `BigDecimal` и `NUMERIC` в PostgreSQL [DONE]
-- **P1-12 (Rate Limiting Distributed)**: Архитектурная изоляция Bucket4j под PostgreSQL/distributed окружение [DONE]
-- **P1-13 (2FA Mandatory для ADMIN)**: Блокировка входа без 2FA для администраторов с `preAuthToken` флоу [DONE]
-- **P1-14 (Auto-reopen Audit Trail)**: Фиксация событий аудита при REJECTED/REOPENED с детальными причинами [DONE]
-- **P1-15 (Business Invariant Tests)**: `BillingInvariantTest` (неизменяемость счетов, блокировка дубликатов чеков) и `TaskConcurrencyIntegrationTest` [DONE]
-
-### P2 — Долгосрочный roadmap (20 задач, ~150+ч)
+## NEXT: Hardening Plan (P2 Roadmap)
 Staging, Cursor pagination, Audit partitioning, SBOM, Dependabot, Trivy, ADR, Semver, Document versioning, Soft delete, PII inventory, Log sanitization, Backward-compatible migrations, Preview envs, DR plan, Invoice line model, File upload hardening, PDF limits, CORS audit, Observability stack.

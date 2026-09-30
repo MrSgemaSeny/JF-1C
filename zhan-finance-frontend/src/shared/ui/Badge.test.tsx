@@ -1,19 +1,14 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { StatusBadge } from './Badge';
-import type { StageDto } from '@/entities/task/model/types';
+import { StatusBadge, StatusBadgeStage } from './Badge';
 
 describe('StatusBadge', () => {
   it('renders correctly with a stage', () => {
-    const mockStage: StageDto = {
+    const mockStage: StatusBadgeStage = {
       id: 1,
       name: 'В работе',
-      orderIndex: 0,
-      type: 'OPEN',
-      isDefault: false,
       color: '#ff0000',
-      pipelineId: 1
     };
     render(<StatusBadge stage={mockStage} />);
     
