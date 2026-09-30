@@ -114,7 +114,7 @@
 - **P1-9 (ShedLock)**: Flyway V130 (`shedlock`), `SchedulerLockConfig`, распределенные блокировки на 5 `@Scheduled` шедулерах [DONE]
 - **P1-10 (Unified Error Contract)**: `ApiErrorResponse`, `TooManyRequestsException` (HTTP 429) в rate limit фильтрах и обработчике [DONE]
 - **P1-11 (Monetary Fields Audit)**: Все поля сумм (`amount`) строго `BigDecimal` и `NUMERIC` в PostgreSQL [DONE]
-- **P1-12 (Rate Limiting Distributed)**: Архитектурная изоляция Bucket4j под PostgreSQL/分布式 [DONE]
+- **P1-12 (Rate Limiting Distributed)**: Архитектурная изоляция Bucket4j под PostgreSQL/distributed окружение [DONE]
 - **P1-13 (2FA Mandatory для ADMIN)**: Блокировка входа без 2FA для администраторов с `preAuthToken` флоу [DONE]
 - **P1-14 (Auto-reopen Audit Trail)**: Фиксация событий аудита при REJECTED/REOPENED с детальными причинами [DONE]
 - **P1-15 (Business Invariant Tests)**: `BillingInvariantTest` (неизменяемость счетов, блокировка дубликатов чеков) и `TaskConcurrencyIntegrationTest` [DONE]
