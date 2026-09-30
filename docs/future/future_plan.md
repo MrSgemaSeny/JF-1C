@@ -51,9 +51,9 @@
 
 | # | Задача | Файлы / область | Трудоёмкость | Epic |
 |---|---|---|---|---|
-| P1-1 | **Task state machine** — `TaskStateMachine` с явными transitions + permission rules per role | `TaskService`, новый `TaskStateMachine` | M (4-6ч) | CRM |
-| P1-2 | **Optimistic locking** — `@Version` на `Task`, `Invoice`, `Subscription` | Entity классы, Flyway V123+ | S (2-3ч) | Crosscut |
-| P1-3 | **Race condition: Task Pool pickup** — атомарный `UPDATE ... WHERE status='OPEN' AND assigned_to IS NULL` | `TaskService.pickTask()`, Repository query | S (2-4ч) | CRM |
+| P1-1 | **Task state machine** — `TaskStateMachine` с явными transitions + permission rules per role [DONE] | `TaskService`, `TaskStateMachine`, `CrmAccessService` | M (4-6ч) | CRM |
+| P1-2 | **Optimistic locking** — `@Version` на 26 таблицах через Flyway V126 [DONE] | Entity классы, Flyway V126 | S (2-3ч) | Crosscut |
+| P1-3 | **Race condition: Task Pool pickup** — атомарный `UPDATE ... WHERE status='OPEN' AND assigned_to IS NULL` [DONE] | `TaskService.claimTask()`, `TaskRepository` | S (2-4ч) | CRM |
 | P1-4 | **Outbox pattern** — вынести Email/Telegram/WebSocket из транзакции в outbox event → worker | `OutboxEvent` entity, `OutboxWorker`, Flyway V124+ | L (8-12ч) | Crosscut |
 | P1-5 | **Cloudflare R2 интеграция** — перенести binary storage из DB/filesystem на уже провижн-нутый R2 bucket | `DocumentStorageService`, `DocumentController`, Flyway V125+ | L (8-12ч) | Epic-15 |
 | P1-6 | **Idempotency для webhooks** — `provider_transaction_id UNIQUE`, idempotency_key header | `PaymentWebhookController`, Flyway V126+ | M (4-6ч) | Epic-21/Billing |

@@ -102,9 +102,10 @@
 | HOTFIX | Role Sanitization — санитизация requestedRole в GoogleAuthService и AuthService (запрет эскалации до ADMIN) | DONE |
 
 ### P1 — Архитектурный долг (15 задач)
-- **P1-01 (Optimistic Locking)**: `@Version` в `BaseEntity`, Flyway миграция `V126__Add_Optimistic_Lock_Version.sql` для 26 таблиц, перехват `OptimisticLockException` в `GlobalExceptionHandler` с HTTP 409 [DONE]
-- **P1-02 (Atomic Task Pickup)**: Атомарный native SQL `claimTask` в `TaskRepository`, `TaskService.claimTaskFromPool`, эндпоинт `POST /api/v1/crm/tasks/{id}/claim`, интеграционные тесты `TaskConcurrencyIntegrationTest` [DONE]
-- Остальные задачи P1 (Outbox pattern, Cloudflare R2 интеграция, Idempotency для webhooks, ArchUnit, ShedLock, Distributed rate limiting, 2FA mandatory для ADMIN, Task state machine) — в процессе/запланированы.
+- **P1-1 (Task State Machine)**: Выделен компонент `TaskStateMachine` с явными матрицами переходов, ролевыми ограничениями (ADMIN, ADVISOR, EMPLOYEE, CLIENT), валидацией границ пайплайна и запретом мутаций финальных стадий. Полная интеграция с `CrmAccessService` и 100% покрытие `TaskStateMachineTest` [DONE]
+- **P1-2 (Optimistic Locking)**: `@Version` в `BaseEntity`, Flyway миграция `V126__Add_Optimistic_Lock_Version.sql` для 26 таблиц, перехват `OptimisticLockException` в `GlobalExceptionHandler` с HTTP 409 [DONE]
+- **P1-3 (Atomic Task Pickup)**: Атомарный native SQL `claimTask` в `TaskRepository`, `TaskService.claimTaskFromPool`, эндпоинт `POST /api/v1/crm/tasks/{id}/claim`, интеграционные тесты `TaskConcurrencyIntegrationTest` [DONE]
+- Следующие задачи P1: P1-4 (Outbox pattern), P1-5 (Cloudflare R2 интеграция), P1-6 (Idempotency для webhooks), P1-7 (ArchUnit), P1-9 (ShedLock), P1-10 (Unified error contract).
 
 ### P2 — Долгосрочный roadmap (20 задач, ~150+ч)
 Staging, Cursor pagination, Audit partitioning, SBOM, Dependabot, Trivy, ADR, Semver, Document versioning, Soft delete, PII inventory, Log sanitization, Backward-compatible migrations, Preview envs, DR plan, Invoice line model, File upload hardening, PDF limits, CORS audit, Observability stack.

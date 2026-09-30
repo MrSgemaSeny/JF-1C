@@ -9,9 +9,24 @@ import org.springframework.stereotype.Service;
 
 import com.example.zhanfinancebackend.modules.crm.entity.Stage;
 import com.example.zhanfinancebackend.modules.crm.entity.StageType;
+import com.example.zhanfinancebackend.modules.crm.statemachine.TaskStateMachine;
 
 @Service
 public class CrmAccessService {
+
+    private final TaskStateMachine taskStateMachine;
+
+    public CrmAccessService() {
+        this.taskStateMachine = new TaskStateMachine();
+    }
+
+    public CrmAccessService(TaskStateMachine taskStateMachine) {
+        this.taskStateMachine = taskStateMachine != null ? taskStateMachine : new TaskStateMachine();
+    }
+
+    public TaskStateMachine getTaskStateMachine() {
+        return taskStateMachine;
+    }
 
     public boolean canReadClient(User actor, User client) {
         if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
@@ -68,45 +83,11 @@ public class CrmAccessService {
     }
 
     public boolean canUpdateTaskStage(User actor, Task task, Stage newStage) {
-        if (actor.getRole() == Role.ADMIN || actor.getRole() == Role.ADVISOR) {
-            return true;
-        }
-        // Non-admins and non-advisors cannot move tasks out of final stages (WON or LOST)
-        if (task.getStage() != null && (task.getStage().getType() == StageType.WON || task.getStage().getType() == StageType.LOST)) {
-            return false;
-        }
-        if (actor.getRole() == Role.EMPLOYEE) {
-            if (newStage != null && (newStage.getType() == StageType.WON || newStage.getType() == StageType.LOST)) {
-                return false;
-            }
-            return assignedToEmployee(actor, task.getClient()) || sameUser(actor, task.getAssignedTo());
-        }
-        if (actor.getRole() == Role.CLIENT) {
-            if (!sameUser(actor, task.getClient()) || newStage == null) {
-                return false;
-            }
-            if (newStage.getType() == StageType.LOST) {
-                return true;
-            }
-            boolean isPreFinal = task.getStage() != null && (
-                task.getStage().isPreFinal() ||
-                "На проверке".equalsIgnoreCase(task.getStage().getName()) ||
-                "Review".equalsIgnoreCase(task.getStage().getName()) ||
-                "Согласование".equalsIgnoreCase(task.getStage().getName())
-            );
-            if (isPreFinal) {
-                return newStage.getType() == StageType.WON ||
-                       newStage.getType() == StageType.OPEN;
-            }
-            return false;
-        }
-        return false;
+        return taskStateMachine.canTransition(actor, task, newStage);
     }
 
     public void assertCanUpdateTaskStage(User actor, Task task, Stage newStage) {
-        if (!canUpdateTaskStage(actor, task, newStage)) {
-            throw new org.springframework.security.access.AccessDeniedException("Task stage update denied");
-        }
+        taskStateMachine.assertCanTransition(actor, task, newStage);
     }
 
     public boolean canUpdateTaskDetails(User actor, Task task) {
