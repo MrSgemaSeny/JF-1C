@@ -1,5 +1,6 @@
 package com.example.zhanfinancebackend.modules.billing.controller;
 
+import com.example.zhanfinancebackend.common.idempotency.IdempotencyService;
 import com.example.zhanfinancebackend.common.response.ApiResponse;
 import com.example.zhanfinancebackend.modules.auth.entity.User;
 import com.example.zhanfinancebackend.modules.auth.security.UserPrincipal;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,9 +29,11 @@ import java.util.List;
 public class AdminPaymentReceiptController {
 
     private final PaymentReceiptService paymentReceiptService;
+    private final IdempotencyService idempotencyService;
 
-    public AdminPaymentReceiptController(PaymentReceiptService paymentReceiptService) {
+    public AdminPaymentReceiptController(PaymentReceiptService paymentReceiptService, IdempotencyService idempotencyService) {
         this.paymentReceiptService = paymentReceiptService;
+        this.idempotencyService = idempotencyService;
     }
 
     @GetMapping
@@ -45,22 +49,28 @@ public class AdminPaymentReceiptController {
     @PostMapping("/{id}/confirm")
     public ResponseEntity<ApiResponse<PaymentReceiptDto>> confirmReceipt(
             @AuthenticationPrincipal UserPrincipal principal,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             @PathVariable("id") Long id
     ) {
         User admin = principal != null ? principal.getUser() : null;
-        PaymentReceiptDto result = paymentReceiptService.confirmReceipt(admin, id);
+        PaymentReceiptDto result = idempotencyService.execute(idempotencyKey, PaymentReceiptDto.class, () ->
+                paymentReceiptService.confirmReceipt(admin, id)
+        );
         return ResponseEntity.ok(ApiResponse.success(result, "Payment receipt confirmed successfully"));
     }
 
     @PostMapping("/{id}/reject")
     public ResponseEntity<ApiResponse<PaymentReceiptDto>> rejectReceipt(
             @AuthenticationPrincipal UserPrincipal principal,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             @PathVariable("id") Long id,
             @Valid @RequestBody(required = false) PaymentReceiptReviewRequest request
     ) {
         User admin = principal != null ? principal.getUser() : null;
         String note = request != null ? request.note() : null;
-        PaymentReceiptDto result = paymentReceiptService.rejectReceipt(admin, id, note);
+        PaymentReceiptDto result = idempotencyService.execute(idempotencyKey, PaymentReceiptDto.class, () ->
+                paymentReceiptService.rejectReceipt(admin, id, note)
+        );
         return ResponseEntity.ok(ApiResponse.success(result, "Payment receipt rejected successfully"));
     }
 }

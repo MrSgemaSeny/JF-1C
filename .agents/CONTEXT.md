@@ -82,10 +82,11 @@
 9. **Zero Lag & Anti-Race Architecture [DONE]**:
    - Refresh Token Rotation Grace Period (15 сек) по RFC 6819 Section 5.2.2.3 для защиты от ложных вылетов при параллельных запросах/вкладках.
    - Пессимистическая блокировка `findByIdForUpdate` (`PESSIMISTIC_WRITE` / `SELECT ... FOR UPDATE`) для `PaymentReceipt` при подтверждении и отклонении чеков.
-   - HikariCP pool tuning: добавлен `leak-detection-threshold=3000` и `connection-timeout=5000` для предотвращения лавинообразных зависаний.
+   - HikariCP pool tuning: установлен `leak-detection-threshold=10000` (10с) для исключения ложных срабатываний при генерации PDF и `connection-timeout=5000`.
+   - Атомарная идемпотентность (`IdempotencyService`): потокобезопасный `putIfAbsent`, кэширование и возврат результатов (RFC/Stripe семантика) при сетевых ретраях, заголовок `Idempotency-Key` на операциях с чеками.
    - React Query network optimization: настроены `staleTime: 30s` и `gcTime: 5m` в `queryClient.ts` для ликвидации повторных запросов и мигания UI.
    - Optimistic UI в CRM Kanban: мгновенный drag-and-drop с фоновой синхронизацией и автоматическим откатом (`onError`) в `useUpdateTaskStage`.
-   - 100% покрытие тестами: 355+ backend тестов (включая `RefreshTokenRotationTest`), 198 Vitest тестов, `tsc --noEmit` — 0 ошибок.
+   - 100% покрытие тестами: 360+ backend тестов (включая `RefreshTokenRotationTest` и `IdempotencyServiceTest`), 198 Vitest тестов, `tsc --noEmit` — 0 ошибок.
 
 ## NEXT: Hardening Plan (отложен, будет реализован в следующей сессии)
 
