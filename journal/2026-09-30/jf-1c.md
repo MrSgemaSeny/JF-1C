@@ -328,7 +328,7 @@
 
 #### Бэкенд
 1. **INTERNAL_BOT_TOKEN Hardening**:
-   - В `application.properties` и `application-prod.properties` установлено обязательное требование: `app.security.internal-bot-token=${INTERNAL_BOT_TOKEN}` без dev-дефолта в коде.
+   - В `application-prod.properties` установлено обязательное требование: `app.security.internal-bot-token=${INTERNAL_BOT_TOKEN}` без dev-дефолта.
    - В `InternalTokenFilter` добавлена fail-fast валидация: в prod запуск приложения блокируется (`IllegalStateException`), если токен отсутствует, содержит placeholder (`dev-`, `default-secret`) или короче 32 символов.
 2. **AES-256 JPA Converter для TOTP (`TotpSecretConverter.java`)**:
    - Реализован JPA `AttributeConverter<String, String>` с алгоритмом AES-256-GCM (12-байтный криптостойкий IV, 128-битный аутентификационный тег, Base64 формат с префиксом `enc:`).
