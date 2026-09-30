@@ -14,6 +14,9 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
     Optional<RefreshToken> findByToken(String token);
 
+    @Query("SELECT rt FROM RefreshToken rt WHERE rt.familyId = :familyId AND rt.isRevoked = false ORDER BY rt.createdAt DESC")
+    java.util.List<RefreshToken> findActiveByFamilyId(@Param("familyId") String familyId);
+
     @Modifying
     @Query("DELETE FROM RefreshToken rt WHERE rt.token = :token")
     int deleteByToken(@Param("token") String token);

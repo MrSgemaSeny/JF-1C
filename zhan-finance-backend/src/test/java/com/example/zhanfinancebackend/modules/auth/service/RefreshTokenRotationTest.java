@@ -89,6 +89,27 @@ class RefreshTokenRotationTest {
     }
 
     @Test
+    @DisplayName("rotate() в пределах grace period (15 сек) возвращает активный токен без сброса сессии")
+    void rotate_RevokedToken_WithinGracePeriod_ReturnsActiveToken() {
+        String familyId = UUID.randomUUID().toString();
+        RefreshToken revokedToken = new RefreshToken("recently-used-token", testUser, familyId, Instant.now().plusSeconds(3600));
+        revokedToken.setRevoked(true);
+        revokedToken.setRevokedAt(Instant.now().minusSeconds(5));
+
+        RefreshToken activeToken = new RefreshToken("active-token", testUser, familyId, Instant.now().plusSeconds(3600));
+
+        when(refreshTokenRepository.findByToken("recently-used-token")).thenReturn(Optional.of(revokedToken));
+        when(refreshTokenRepository.findActiveByFamilyId(familyId)).thenReturn(java.util.List.of(activeToken));
+
+        RefreshToken result = refreshTokenService.rotate("recently-used-token");
+
+        assertNotNull(result);
+        assertEquals("active-token", result.getToken());
+        assertEquals(familyId, result.getFamilyId());
+        verify(refreshTokenRepository, never()).revokeByFamilyId(any(), any());
+    }
+
+    @Test
     @DisplayName("rotate() выбрасывает UnauthorizedException если токен истёк")
     void rotate_ExpiredToken_ThrowsUnauthorizedException() {
         String familyId = UUID.randomUUID().toString();

@@ -47,10 +47,31 @@ export function useBatchUpdateTasksMutation() {
 export function useUpdateTaskStage() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, stageId, lostReason }: { id: number; stageId: number; lostReason?: string }) => updateTaskStage(id, stageId, lostReason),
-    onSuccess: (data) => {
+    mutationFn: ({ id, stageId, lostReason }: { id: number; stageId: number; lostReason?: string }) =>
+      updateTaskStage(id, stageId, lostReason),
+    onMutate: async ({ id, stageId, lostReason }) => {
+      await queryClient.cancelQueries({ queryKey: TASK_QUERY_KEYS.lists() });
+      const previousQueries = queryClient.getQueriesData<TaskDto[]>({ queryKey: TASK_QUERY_KEYS.lists() });
+
+      queryClient.setQueriesData<TaskDto[]>({ queryKey: TASK_QUERY_KEYS.lists() }, (oldTasks) => {
+        if (!oldTasks) return oldTasks;
+        return oldTasks.map((t) => (t.id === id ? { ...t, stageId, lostReason: lostReason ?? t.lostReason } : t));
+      });
+
+      return { previousQueries };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSettled: (data) => {
       queryClient.invalidateQueries({ queryKey: TASK_QUERY_KEYS.lists() });
-      queryClient.setQueryData(TASK_QUERY_KEYS.detail(data.id), data);
+      if (data?.id) {
+        queryClient.setQueryData(TASK_QUERY_KEYS.detail(data.id), data);
+      }
     },
   });
 }

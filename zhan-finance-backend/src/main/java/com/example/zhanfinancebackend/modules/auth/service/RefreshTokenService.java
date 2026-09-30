@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -59,6 +60,20 @@ public class RefreshTokenService {
                 });
 
         if (token.isRevoked()) {
+            // Grace Period per RFC 6819 Section 5.2.2.3: allow a 15-second window for concurrent requests from multiple tabs
+            Instant revokedAt = token.getRevokedAt();
+            if (revokedAt != null && revokedAt.isAfter(Instant.now().minusSeconds(15))) {
+                List<RefreshToken> activeTokens = refreshTokenRepository.findActiveByFamilyId(token.getFamilyId());
+                if (!activeTokens.isEmpty()) {
+                    RefreshToken activeToken = activeTokens.get(0);
+                    if (activeToken.getExpiresAt().isAfter(Instant.now())) {
+                        log.info("Grace period active for recently rotated token (family: {}). Returning active token.",
+                                token.getFamilyId());
+                        return activeToken;
+                    }
+                }
+            }
+
             log.warn("CRITICAL: Token reuse detected! Family: {}, User: {}. Revoking all tokens in family.",
                     token.getFamilyId(), token.getUser() != null ? token.getUser().getId() : "null");
             refreshTokenRepository.revokeByFamilyId(token.getFamilyId(), Instant.now());

@@ -169,7 +169,8 @@ public class PaymentReceiptService {
     public PaymentReceiptDto confirmReceipt(User admin, Long receiptId) {
         accessService.assertCanReview(admin);
 
-        PaymentReceipt receipt = paymentReceiptRepository.findById(receiptId)
+        PaymentReceipt receipt = paymentReceiptRepository.findByIdForUpdate(receiptId)
+                .or(() -> paymentReceiptRepository.findById(receiptId))
                 .orElseThrow(() -> new ResourceNotFoundException("Payment receipt not found: " + receiptId));
 
         if (receipt.getStatus() != PaymentReceiptStatus.AWAITING_REVIEW) {
@@ -232,7 +233,8 @@ public class PaymentReceiptService {
     public PaymentReceiptDto rejectReceipt(User admin, Long receiptId, String note) {
         accessService.assertCanReview(admin);
 
-        PaymentReceipt receipt = paymentReceiptRepository.findById(receiptId)
+        PaymentReceipt receipt = paymentReceiptRepository.findByIdForUpdate(receiptId)
+                .or(() -> paymentReceiptRepository.findById(receiptId))
                 .orElseThrow(() -> new ResourceNotFoundException("Payment receipt not found: " + receiptId));
 
         if (receipt.getStatus() != PaymentReceiptStatus.AWAITING_REVIEW) {
