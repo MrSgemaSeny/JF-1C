@@ -16,6 +16,7 @@ import com.example.zhanfinancebackend.modules.billing.entity.Subscription;
 import com.example.zhanfinancebackend.modules.billing.repository.InvoiceRepository;
 import com.example.zhanfinancebackend.modules.billing.repository.PaymentReceiptRepository;
 import com.example.zhanfinancebackend.modules.billing.repository.SubscriptionRepository;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
 import com.example.zhanfinancebackend.modules.telegram.service.TelegramOutboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ public class PaymentReceiptService {
     private final PaymentReceiptStorageService storageService;
     private final PaymentReceiptAccessService accessService;
     private final TelegramOutboxService telegramOutboxService;
+    private final NotificationService notificationService;
 
     @Value("${app.billing.requisites.recipient-name:ТОО ЖАН FINANCE}")
     private String recipientName = "ТОО ЖАН FINANCE";
@@ -66,7 +68,8 @@ public class PaymentReceiptService {
             UserRepository userRepository,
             PaymentReceiptStorageService storageService,
             PaymentReceiptAccessService accessService,
-            TelegramOutboxService telegramOutboxService
+            TelegramOutboxService telegramOutboxService,
+            NotificationService notificationService
     ) {
         this.paymentReceiptRepository = paymentReceiptRepository;
         this.subscriptionRepository = subscriptionRepository;
@@ -75,6 +78,20 @@ public class PaymentReceiptService {
         this.storageService = storageService;
         this.accessService = accessService;
         this.telegramOutboxService = telegramOutboxService;
+        this.notificationService = notificationService;
+    }
+
+    public PaymentReceiptService(
+            PaymentReceiptRepository paymentReceiptRepository,
+            SubscriptionRepository subscriptionRepository,
+            InvoiceRepository invoiceRepository,
+            UserRepository userRepository,
+            PaymentReceiptStorageService storageService,
+            PaymentReceiptAccessService accessService,
+            TelegramOutboxService telegramOutboxService
+    ) {
+        this(paymentReceiptRepository, subscriptionRepository, invoiceRepository, userRepository,
+                storageService, accessService, telegramOutboxService, null);
     }
 
     @Transactional
@@ -143,21 +160,7 @@ public class PaymentReceiptService {
                 fileKey
         );
         PaymentReceipt savedReceipt = paymentReceiptRepository.save(receipt);
-
-        // Notify active admins in Telegram Outbox
-        try {
-            List<User> admins = userRepository.findAllByRole(Role.ADMIN);
-            String clientDisplay = client.getFullName() != null && !client.getFullName().isBlank() ? client.getFullName() : client.getEmail();
-            String title = "Новый чек об оплате";
-            String message = String.format("Клиент %s загрузил чек на сумму %s %s. Требуется модерация в панели управления.",
-                    clientDisplay, savedReceipt.getAmount(), savedReceipt.getCurrency());
-            for (User admin : admins) {
-                telegramOutboxService.enqueue(admin, title, message, "/admin/billing/receipts");
-            }
-        } catch (Exception e) {
-            log.warn("Failed to enqueue admin Telegram notification for new receipt {}: {}", savedReceipt.getId(), e.getMessage());
-        }
-
+        notifyAdminsAboutReceipt(savedReceipt);
         return mapToDto(savedReceipt);
     }
 
@@ -220,17 +223,7 @@ public class PaymentReceiptService {
         }
 
         PaymentReceipt saved = paymentReceiptRepository.save(receipt);
-
-        // Notify client via Telegram Outbox
-        try {
-            String title = "Оплата подтверждена";
-            String message = String.format("Ваш платеж на сумму %s %s успешно подтвержден. Тариф активирован.",
-                    saved.getAmount(), saved.getCurrency());
-            telegramOutboxService.enqueue(saved.getClient(), title, message, "/client/billing");
-        } catch (Exception e) {
-            log.warn("Failed to enqueue client confirmation notification for receipt {}: {}", saved.getId(), e.getMessage());
-        }
-
+        notifyClientReceiptConfirmed(saved);
         return mapToDto(saved);
     }
 
@@ -255,17 +248,7 @@ public class PaymentReceiptService {
         receipt.setReviewedAt(Instant.now());
 
         PaymentReceipt saved = paymentReceiptRepository.save(receipt);
-
-        // Notify client via Telegram Outbox
-        try {
-            String title = "Платеж отклонен";
-            String message = String.format("Ваш чек на сумму %s %s был отклонен. Причина: %s. Пожалуйста, загрузите корректный чек.",
-                    saved.getAmount(), saved.getCurrency(), saved.getRejectNote());
-            telegramOutboxService.enqueue(saved.getClient(), title, message, "/client/billing");
-        } catch (Exception e) {
-            log.warn("Failed to enqueue client rejection notification for receipt {}: {}", saved.getId(), e.getMessage());
-        }
-
+        notifyClientReceiptRejected(saved);
         return mapToDto(saved);
     }
 
@@ -349,5 +332,76 @@ public class PaymentReceiptService {
                 r.getCreatedAt(),
                 r.getUpdatedAt()
         );
+    }
+
+    private void notifyAdminsAboutReceipt(PaymentReceipt receipt) {
+        try {
+            User client = receipt.getClient();
+            String clientDisplay = client != null && client.getFullName() != null && !client.getFullName().isBlank()
+                    ? client.getFullName()
+                    : (client != null ? client.getEmail() : "Неизвестный клиент");
+            String clientEmail = client != null && client.getEmail() != null ? " (" + client.getEmail() + ")" : "";
+
+            String title = "Новый чек об оплате";
+            String message = String.format("Клиент %s%s загрузил чек на сумму %s %s. Требуется модерация в панели управления.",
+                    clientDisplay, clientEmail, receipt.getAmount(), receipt.getCurrency());
+
+            if (notificationService != null) {
+                notificationService.notifyAdmins(title, message, "/admin/billing/receipts");
+            } else if (telegramOutboxService != null) {
+                List<User> admins = userRepository.findAllByRole(Role.ADMIN);
+                for (User admin : admins) {
+                    telegramOutboxService.enqueue(admin, title, message, "/admin/billing/receipts");
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to dispatch admin notification for receipt {}: {}", receipt.getId(), e.getMessage());
+        }
+    }
+
+    private void notifyClientReceiptConfirmed(PaymentReceipt receipt) {
+        try {
+            User client = receipt.getClient();
+            if (client == null) return;
+
+            Subscription subscription = receipt.getSubscription();
+            String planName = subscription != null && subscription.getPlanName() != null
+                    ? subscription.getPlanName()
+                    : "Бухгалтерское обслуживание";
+            String periodInfo = subscription != null && subscription.getEndsAt() != null
+                    ? "до " + subscription.getEndsAt()
+                    : "на 30 дней";
+
+            String title = "Оплата подтверждена";
+            String message = String.format("Ваш платеж на сумму %s %s за тариф «%s» успешно подтвержден. Подписка активна %s.",
+                    receipt.getAmount(), receipt.getCurrency(), planName, periodInfo);
+
+            if (notificationService != null) {
+                notificationService.createNotification(client, title, message, "/client/billing");
+            } else if (telegramOutboxService != null) {
+                telegramOutboxService.enqueue(client, title, message, "/client/billing");
+            }
+        } catch (Exception e) {
+            log.warn("Failed to dispatch client confirmation notification for receipt {}: {}", receipt.getId(), e.getMessage());
+        }
+    }
+
+    private void notifyClientReceiptRejected(PaymentReceipt receipt) {
+        try {
+            User client = receipt.getClient();
+            if (client == null) return;
+
+            String title = "Чек об оплате отклонен";
+            String message = String.format("Ваш чек на сумму %s %s был отклонен. Причина: %s. Пожалуйста, загрузите корректный чек в разделе Биллинг.",
+                    receipt.getAmount(), receipt.getCurrency(), receipt.getRejectNote());
+
+            if (notificationService != null) {
+                notificationService.createNotification(client, title, message, "/client/billing");
+            } else if (telegramOutboxService != null) {
+                telegramOutboxService.enqueue(client, title, message, "/client/billing");
+            }
+        } catch (Exception e) {
+            log.warn("Failed to dispatch client rejection notification for receipt {}: {}", receipt.getId(), e.getMessage());
+        }
     }
 }

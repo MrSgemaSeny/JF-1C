@@ -15,6 +15,7 @@ import com.example.zhanfinancebackend.modules.billing.entity.Subscription;
 import com.example.zhanfinancebackend.modules.billing.repository.InvoiceRepository;
 import com.example.zhanfinancebackend.modules.billing.repository.PaymentReceiptRepository;
 import com.example.zhanfinancebackend.modules.billing.repository.SubscriptionRepository;
+import com.example.zhanfinancebackend.modules.notifications.service.NotificationService;
 import com.example.zhanfinancebackend.modules.telegram.service.TelegramOutboxService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,6 +63,9 @@ class PaymentReceiptServiceTest {
     @Mock
     private TelegramOutboxService telegramOutboxService;
 
+    @Mock
+    private NotificationService notificationService;
+
     private PaymentReceiptService paymentReceiptService;
 
     private User admin;
@@ -78,7 +82,8 @@ class PaymentReceiptServiceTest {
                 userRepository,
                 storageService,
                 accessService,
-                telegramOutboxService
+                telegramOutboxService,
+                notificationService
         );
 
         admin = new User("admin@test.com", "hash", "Admin User", Role.ADMIN);
@@ -109,7 +114,6 @@ class PaymentReceiptServiceTest {
             r.setId(500L);
             return r;
         });
-        when(userRepository.findAllByRole(Role.ADMIN)).thenReturn(List.of(admin));
 
         PaymentReceiptDto result = paymentReceiptService.submitReceipt(
                 client, 100L, 200L, BigDecimal.valueOf(50000), "KZT", file
@@ -122,7 +126,7 @@ class PaymentReceiptServiceTest {
         assertThat(result.currency()).isEqualTo("KZT");
 
         verify(accessService).assertCanSubmit(client);
-        verify(telegramOutboxService).enqueue(eq(admin), anyString(), anyString(), eq("/admin/billing/receipts"));
+        verify(notificationService).notifyAdmins(anyString(), anyString(), eq("/admin/billing/receipts"));
     }
 
     @Test
@@ -221,7 +225,7 @@ class PaymentReceiptServiceTest {
         assertThat(invoice.getStatus()).isEqualTo(Invoice.InvoiceStatus.PAID);
 
         verify(accessService).assertCanReview(admin);
-        verify(telegramOutboxService).enqueue(eq(client), anyString(), anyString(), eq("/client/billing"));
+        verify(notificationService).createNotification(eq(client), anyString(), anyString(), eq("/client/billing"));
     }
 
     @Test
@@ -257,7 +261,7 @@ class PaymentReceiptServiceTest {
         assertThat(subscription.getStatus()).isEqualTo(Subscription.SubscriptionStatus.PENDING);
 
         verify(accessService).assertCanReview(admin);
-        verify(telegramOutboxService).enqueue(eq(client), anyString(), anyString(), eq("/client/billing"));
+        verify(notificationService).createNotification(eq(client), anyString(), anyString(), eq("/client/billing"));
     }
 
     @Test
@@ -347,5 +351,88 @@ class PaymentReceiptServiceTest {
         assertThat(requisites.recipientName()).isNotBlank();
         assertThat(requisites.bin()).isNotBlank();
         assertThat(requisites.iban()).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("Submit receipt: falls back to telegramOutboxService when notificationService is null")
+    void submitReceipt_fallbackToTelegramOutbox() {
+        PaymentReceiptService serviceWithoutNotification = new PaymentReceiptService(
+                paymentReceiptRepository,
+                subscriptionRepository,
+                invoiceRepository,
+                userRepository,
+                storageService,
+                accessService,
+                telegramOutboxService
+        );
+
+        byte[] pdfBytes = "%PDF-1.4 test".getBytes();
+        MockMultipartFile file = new MockMultipartFile("file", "receipt.pdf", "application/pdf", pdfBytes);
+
+        when(subscriptionRepository.findById(100L)).thenReturn(Optional.of(subscription));
+        when(invoiceRepository.findById(200L)).thenReturn(Optional.of(invoice));
+        when(storageService.storeReceipt(any(), anyString())).thenReturn("receipts/2026/09/uuid.pdf");
+        when(paymentReceiptRepository.save(any(PaymentReceipt.class))).thenAnswer(inv -> {
+            PaymentReceipt r = inv.getArgument(0);
+            r.setId(500L);
+            return r;
+        });
+        when(userRepository.findAllByRole(Role.ADMIN)).thenReturn(List.of(admin));
+
+        serviceWithoutNotification.submitReceipt(client, 100L, 200L, BigDecimal.valueOf(50000), "KZT", file);
+
+        verify(telegramOutboxService).enqueue(eq(admin), anyString(), anyString(), eq("/admin/billing/receipts"));
+    }
+
+    @Test
+    @DisplayName("Confirm receipt: falls back to telegramOutboxService when notificationService is null")
+    void confirmReceipt_fallbackToTelegramOutbox() {
+        PaymentReceiptService serviceWithoutNotification = new PaymentReceiptService(
+                paymentReceiptRepository,
+                subscriptionRepository,
+                invoiceRepository,
+                userRepository,
+                storageService,
+                accessService,
+                telegramOutboxService
+        );
+
+        PaymentReceipt receipt = new PaymentReceipt(
+                client, subscription, invoice, BigDecimal.valueOf(50000), "KZT", "receipts/test.pdf"
+        );
+        receipt.setId(500L);
+
+        when(paymentReceiptRepository.findById(500L)).thenReturn(Optional.of(receipt));
+        when(paymentReceiptRepository.save(any(PaymentReceipt.class))).thenReturn(receipt);
+
+        serviceWithoutNotification.confirmReceipt(admin, 500L);
+
+        verify(telegramOutboxService).enqueue(eq(client), anyString(), anyString(), eq("/client/billing"));
+    }
+
+    @Test
+    @DisplayName("Reject receipt: falls back to telegramOutboxService when notificationService is null")
+    void rejectReceipt_fallbackToTelegramOutbox() {
+        PaymentReceiptService serviceWithoutNotification = new PaymentReceiptService(
+                paymentReceiptRepository,
+                subscriptionRepository,
+                invoiceRepository,
+                userRepository,
+                storageService,
+                accessService,
+                telegramOutboxService
+        );
+
+        PaymentReceipt receipt = new PaymentReceipt(
+                client, subscription, invoice, BigDecimal.valueOf(50000), "KZT", "receipts/test.pdf"
+        );
+        receipt.setId(500L);
+
+        when(paymentReceiptRepository.findById(500L)).thenReturn(Optional.of(receipt));
+        when(paymentReceiptRepository.save(any(PaymentReceipt.class))).thenReturn(receipt);
+
+        serviceWithoutNotification.rejectReceipt(admin, 500L, "Неверная сумма");
+
+        verify(telegramOutboxService).enqueue(eq(client), anyString(), anyString(), eq("/client/billing"));
     }
 }
