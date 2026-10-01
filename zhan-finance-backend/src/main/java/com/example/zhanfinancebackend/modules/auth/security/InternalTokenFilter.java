@@ -42,11 +42,9 @@ public class InternalTokenFilter extends OncePerRequestFilter {
     ) {
         String trimmed = configuredToken != null ? configuredToken.trim() : "";
         boolean isTest = env == null || java.util.Arrays.asList(env.getActiveProfiles()).contains("test");
-        if (!isTest && (trimmed.toLowerCase().contains("dev-") || trimmed.toLowerCase().contains("default-secret") || trimmed.length() < 32)) {
-            boolean isProdOrUnspecified = java.util.Arrays.asList(env.getActiveProfiles()).contains("prod") || env.getActiveProfiles().length == 0;
-            if (isProdOrUnspecified) {
-                throw new IllegalStateException("CRITICAL: Default or insecure INTERNAL_BOT_TOKEN is strictly forbidden in production. Minimum 32 characters required.");
-            }
+        boolean isProd = env != null && java.util.Arrays.asList(env.getActiveProfiles()).contains("prod");
+        if (!isTest && isProd && (trimmed.toLowerCase().contains("dev-") || trimmed.toLowerCase().contains("default-secret") || trimmed.length() < 32)) {
+            throw new IllegalStateException("CRITICAL: Default or insecure INTERNAL_BOT_TOKEN is strictly forbidden in production. Minimum 32 characters required.");
         }
         this.configuredToken = trimmed;
         this.objectMapper = objectMapper;
