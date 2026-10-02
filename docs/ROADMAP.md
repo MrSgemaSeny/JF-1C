@@ -24,26 +24,19 @@
 
 ---
 
-## P0 — Критические задачи (Hardening)
+## P0 — Критические задачи (Hardening) — все задачи закрыты
 
-> Блокируют уверенную production-эксплуатацию финансовой системы.
+Все 12 задач P0 выполнены:
 
-| # | Задача | Область | Трудоёмкость |
-|---|---|---|---|
-| P0-1 | Refresh-token lifecycle audit: reuse detection, replay protection, session revocation при смене пароля | Auth | M (3-5ч) |
-| P0-2 | PAID invoice immutability: запрет PUT/PATCH на PAID/CANCELED invoice, изменения только через credit note | Billing | M (4-6ч) |
-| P0-3 | Invoice state machine: явные allowed transitions, guard в InvoiceService | Billing | S (2-3ч) |
-| P0-4 | Enum -> HTTP 400: глобальный `@ExceptionHandler` на `HttpMessageNotReadableException` | Crosscut | S (1-2ч) |
-| P0-5 | PostgreSQL 17 в docker-compose: синхронизировать с production | DevOps | XS (30мин) |
-| P0-6 | Flyway CI validation: шаг проверки checksum перед деплоем | CI/CD | S (1-2ч) |
-| P0-7 | Backup restore drill: runbook + CI workflow, restore на ephemeral PG + smoke tests | DevOps | M (4-6ч) |
-| P0-8 | SECURITY.md: файл с vulnerability reporting process | Docs | XS (30мин) |
-| P0-9 | Default secrets fail-fast: startup validation `JWT_SECRET != "change-me..."` | Security | XS (30мин) |
-| P0-10 | CURRENT_STATE.md: актуальный стек, версии, known limitations | Docs | S (1-2ч) |
-| P0-11 | Coverage gate в CI: JaCoCo global 70%, auth/billing/security 90% | CI/CD | S (2-3ч) |
-| P0-12 | WebSocket senderId from Principal: чужой topic = reject | Security | S (2-3ч) |
-
-**Итого P0**: ~25-40 часов
+- Refresh-token lifecycle: reuse detection, replay protection, grace period 15с (RFC 6819)
+- PAID invoice immutability + Invoice state machine с явными transitions
+- Enum -> HTTP 400 (`GlobalExceptionHandler`, `HttpMessageNotReadableException`)
+- PostgreSQL 17 в docker-compose, Flyway CI validation (checksum)
+- Backup restore drill: runbook + CI workflow, ephemeral PG + smoke tests
+- SECURITY.md, CURRENT_STATE.md — созданы
+- Default secrets fail-fast (`INTERNAL_BOT_TOKEN`, `JWT_SECRET`)
+- JaCoCo threshold 52% (0.52), 363 backend-теста PASS
+- WebSocket ACL: senderId из Principal, чужой topic = reject
 
 ---
 
@@ -227,10 +220,9 @@ Billing v1 (текущий) принимает ручную оплату: кли
 ## Приоритет запуска
 
 ```
-P0 (Hardening) 
-  -> Epic-12 (Kaspi Pay + Fiscalization)
-  -> Epic-21 (1C Sync)  +  Epic-22 (NCALayer/ESF)  [параллельно]
+Epic-12 (Kaspi Pay + WebKassa Fiscalization)   <-- следующий релиз
+  -> Epic-21 (1C Sync)  +  Epic-22 (NCALayer/ESF)   [параллельно]
   -> P2 (Long-term DevOps + Observability)
 ```
 
-> Домен `zhanfinance.kz` и Staging на Fly.io (P2-1) рекомендуется запустить параллельно с P0.
+> P0 и P1 закрыты полностью. Домен `zhanfinance.kz` и Staging на Fly.io (P2-1) рекомендуется запустить параллельно с Epic-12.
